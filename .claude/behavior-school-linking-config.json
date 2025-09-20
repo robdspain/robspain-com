@@ -1,0 +1,85 @@
+{
+  "maxLinksPerPage": 3,
+  "anchors": {
+    "generic": [
+      "Behavior School",
+      "Behavior School resources",
+      "Behavior School training",
+      "Behavior School tools for BCBAs"
+    ],
+    "byTopic": {
+      "bcba exam|exam prep|mock exam|practice questions": [
+        "BCBA practice tools at Behavior School",
+        "BCBA exam prep at Behavior School",
+        "adaptive mock exams at Behavior School"
+      ],
+      "iep|goal": [
+        "IEP goal writer at Behavior School",
+        "school-based IEP resources at Behavior School"
+      ],
+      "behavior plan|bip|fba|fa|functional analysis": [
+        "behavior plan templates at Behavior School",
+        "FBA/FA resources at Behavior School"
+      ],
+      "pfa|sbt|pbis|supervision": [
+        "PFA/SBT tools at Behavior School",
+        "PBIS supports at Behavior School",
+        "Supervision tools at Behavior School"
+      ],
+      "ioa|data collection|measurement": [
+        "IOA & measurement guides at Behavior School",
+        "data collection tools at Behavior School"
+      ],
+      "act|psychological flexibility|values": [
+        "values-based tools at Behavior School"
+      ]
+    }
+  },
+  "deepLinks": {
+    "default": "https://behaviorschool.com",
+    "routing": [
+      { "pattern": "bcba exam|mock|practice", "url": "https://behaviorschool.com/study" },
+      { "pattern": "supervision", "url": "https://behaviorschool.com/supervision-tools" },
+      { "pattern": "iep|goal", "url": "https://behaviorschool.com/iep-goals" },
+      { "pattern": "behavior plan|bip", "url": "https://behaviorschool.com/behavior-plans" },
+      { "pattern": "fba|fa|functional analysis", "url": "https://behaviorschool.com/resources" },
+      { "pattern": "ioa|measurement|data collection", "url": "https://behaviorschool.com/resources" },
+      { "pattern": "pfa|sbt|pbis", "url": "https://behaviorschool.com/resources" }
+    ]
+  },
+  "pages": {
+    "/": {
+      "insertHeroLink": true,
+      "heroText": "Rob Spain, BCBA, founder of Behavior School — an ecosystem of tools and training for school-based BCBAs.",
+      "anchorPreference": "generic"
+    },
+    "/about": {
+      "insertProjectsSection": true,
+      "projectCard": {
+        "title": "Behavior School",
+        "desc": "Tools, training, and templates for school-based BCBAs and educators.",
+        "ctaText": "Visit Behavior School",
+        "ctaUrl": "https://behaviorschool.com"
+      }
+    },
+    "/contact": {
+      "footerNote": "For school-based BCBA resources, visit Behavior School.",
+      "footerUrl": "https://behaviorschool.com"
+    }
+  },
+  "schema": {
+    "enablePersonSchema": true,
+    "person": {
+      "name": "Rob Spain",
+      "url": "https://robspain.com",
+      "founder": {
+        "name": "Behavior School",
+        "url": "https://behaviorschool.com"
+      },
+      "sameAs": [
+        "https://behaviorschool.com",
+        "https://study.behaviorschool.com"
+      ]
+    }
+  }
+}

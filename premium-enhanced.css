@@ -511,12 +511,14 @@ body {
     border-radius: var(--radius-3xl);
     overflow: hidden;
     box-shadow: var(--shadow-2xl);
+    aspect-ratio: 4 / 5;
 }
 
 .hero-image-premium {
     width: 100%;
-    height: auto;
+    height: 100%;
     display: block;
+    object-fit: cover;
     transition: transform var(--transition-slow);
 }
 

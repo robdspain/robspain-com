@@ -11,6 +11,7 @@ class PremiumInteractions {
         this.setupParallax();
         this.setupCounters();
         this.setupFormEnhancements();
+        this.setupContactForm();
         // Cursor animations disabled
         this.setupIntersectionObserver();
         this.setupSmoothScrolling();
@@ -134,7 +135,7 @@ class PremiumInteractions {
         counters.forEach(counter => observer.observe(counter));
     }
 
-    // Premium form enhancements
+    // Premium form enhancements (general UI for inputs)
     setupFormEnhancements() {
         const inputs = document.querySelectorAll('input, textarea');
 
@@ -162,9 +163,9 @@ class PremiumInteractions {
             });
         });
 
-        // Form submission with loading state
-        const forms = document.querySelectorAll('form');
-        forms.forEach(form => {
+        // Demo form(s) submission with loading state (exclude contact form)
+        const leadForms = document.querySelectorAll('form.premium-lead-form');
+        leadForms.forEach(form => {
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
                 this.handleFormSubmission(form);
@@ -192,6 +193,68 @@ class PremiumInteractions {
                 form.reset();
             }, 2000);
         }, 1500);
+    }
+
+    // Real contact form submission via Netlify Function + Mailgun
+    setupContactForm() {
+        const form = document.getElementById('contact-form');
+        if (!form) return;
+
+        const statusEl = document.getElementById('contact-status');
+        const submitBtn = document.getElementById('contact-submit');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!form.reportValidity()) return;
+
+            const originalHTML = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            if (statusEl) { statusEl.style.display = 'none'; statusEl.textContent = ''; statusEl.style.color = ''; }
+
+            const formData = {
+                name: form.name.value.trim(),
+                email: form.email.value.trim(),
+                subject: form.subject.value.trim(),
+                message: form.message.value.trim(),
+            };
+
+            try {
+                const res = await fetch('/.netlify/functions/send-contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData),
+                });
+
+                if (!res.ok) {
+                    throw new Error('Failed to send');
+                }
+
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> Sent!';
+                submitBtn.style.background = '#10b981';
+                if (statusEl) {
+                    statusEl.textContent = 'Thanks! Your message has been sent.';
+                    statusEl.style.display = 'block';
+                    statusEl.style.color = '#10b981';
+                }
+
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalHTML;
+                    submitBtn.disabled = false;
+                    submitBtn.style.background = '';
+                    form.reset();
+                }, 1800);
+            } catch (err) {
+                submitBtn.innerHTML = originalHTML;
+                submitBtn.disabled = false;
+                if (statusEl) {
+                    statusEl.textContent = 'Sorry, there was a problem sending your message. Please try again later.';
+                    statusEl.style.display = 'block';
+                    statusEl.style.color = '#ef4444';
+                }
+            }
+        });
     }
 
     // Cursor effects removed

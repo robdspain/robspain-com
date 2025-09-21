@@ -736,7 +736,7 @@
                     </div>
                 </div>
                 <div class="contact-form">
-                    <form>
+                    <form id="contact-form" novalidate>
                         <div class="form-group">
                             <label for="name">Name</label>
                             <input type="text" id="name" name="name" required>
@@ -760,7 +760,8 @@
                             <label for="message">Message</label>
                             <textarea id="message" name="message" rows="5" required></textarea>
                         </div>
-                        <button type="submit" class="submit-btn">Send Message</button>
+                        <button type="submit" class="submit-btn" id="contact-submit">Send Message</button>
+                        <p id="contact-status" style="margin-top: 0.75rem; font-size: 0.9rem; display:none;"></p>
                     </form>
                 </div>
             </div>

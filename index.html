@@ -8,7 +8,10 @@
     <meta name="keywords" content="BCBA, Board Certified Behavior Analyst, IBA, International Behavior Analyst, school behavior analysis, behavior school, BCBA training, applied behavior analysis, ABA, school psychology, special education, behavior intervention, Fresno BCBA, California behavior analyst, PBIS, functional behavior assessment, Rob Spain BCBA">
     <meta name="author" content="Rob Spain, BCBA, IBA">
     <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#10B981">
     <link rel="canonical" href="https://robspain.com">
+    <link rel="alternate" hreflang="en" href="https://robspain.com/">
+    <link rel="alternate" hreflang="x-default" href="https://robspain.com/">
 
     <!-- Google Search Console Verification -->
     <!-- Replace with your actual verification code from Google Search Console -->
@@ -27,10 +30,14 @@
     <meta property="og:url" content="https://robspain.com">
     <meta property="og:image" content="https://robspain.com/public/images/rob-spain-headshot.jpg">
     <meta property="og:site_name" content="Rob Spain, BCBA">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:creator" content="@robspainBCBA">
+    <meta name="twitter:site" content="@robspainBCBA">
     <meta name="twitter:title" content="Rob Spain, BCBA, IBA - School BCBA Transformation Expert">
     <meta name="twitter:description" content="Board Certified Behavior Analyst helping school-based BCBAs reduce burnout and improve student outcomes.">
     <meta name="twitter:image" content="https://robspain.com/public/images/rob-spain-headshot.jpg">
@@ -86,6 +93,82 @@
             "Behavior Intervention Plans",
             "Professional Development"
         ]
+    }
+    </script>
+
+    <!-- Organization Schema (Site) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Rob Spain, BCBA",
+        "url": "https://robspain.com",
+        "logo": "https://robspain.com/public/images/rob-spain-headshot.jpg",
+        "sameAs": [
+            "https://www.linkedin.com/in/robspain/",
+            "https://twitter.com/robspainBCBA",
+            "https://www.instagram.com/robdspain",
+            "https://behaviorschool.com",
+            "https://study.behaviorschool.com"
+        ]
+    }
+    </script>
+
+    <!-- Course Schema (8-Week Transformation Program) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Course",
+      "name": "School BCBA Transformation Program",
+      "description": "An 8-week cohort-based program for school-based BCBAs to develop ethical leadership, systematic frameworks, staff collaboration, and crisis management skills.",
+      "provider": {
+        "@type": "Person",
+        "name": "Rob Spain, BCBA, IBA",
+        "url": "https://robspain.com"
+      },
+      "courseMode": "Cohort",
+      "offers": {
+        "@type": "Offer",
+        "price": "2497",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "url": "https://robspain.com/#contact"
+      }
+    }
+    </script>
+
+    <!-- FAQ Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Who is this program for?",
+          "acceptedAnswer": {"@type": "Answer","text": "School-based BCBAs who want to reduce burnout and confidently lead systematic behavior support in educational settings."}
+        },
+        {
+          "@type": "Question",
+          "name": "How long is the program?",
+          "acceptedAnswer": {"@type": "Answer","text": "Eight weeks. Each week includes focused training, applied exercises, and support."}
+        },
+        {
+          "@type": "Question",
+          "name": "Are there live sessions?",
+          "acceptedAnswer": {"@type": "Answer","text": "Yes. You get weekly live cohort sessions plus community support and templates."}
+        },
+        {
+          "@type": "Question",
+          "name": "Is there a guarantee?",
+          "acceptedAnswer": {"@type": "Answer","text": "Yes. 30-day money-back guarantee if you’re not satisfied."}
+        },
+        {
+          "@type": "Question",
+          "name": "What is the time commitment?",
+          "acceptedAnswer": {"@type": "Answer","text": "Plan for 3–5 hours per week between training, implementation, and cohort calls."}
+        }
+      ]
     }
     </script>
     
@@ -167,6 +250,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preload" as="image" href="public/images/profile-Rob.webp" imagesrcset="public/images/profile-Rob.webp" type="image/webp" fetchpriority="high">
 
     <!-- Stylesheets -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -266,7 +350,7 @@
                     <div class="hero-image-container-premium">
                         <picture>
                             <source srcset="public/images/profile-Rob.webp" type="image/webp">
-                            <img src="public/images/profile-Rob.png" alt="Rob Spain, BCBA - Board Certified Behavior Analyst" class="hero-image-premium">
+                            <img src="public/images/profile-Rob.png" alt="Rob Spain, BCBA - Board Certified Behavior Analyst" class="hero-image-premium" fetchpriority="high" decoding="async">
                         </picture>
                         <div class="hero-image-overlay"></div>
                         <div class="hero-image-glow" aria-hidden="true"></div>
@@ -672,6 +756,35 @@
         </div>
     </section>
 
+    <!-- FAQ Section -->
+    <section class="faq-section">
+        <div class="container">
+            <h2 class="faq-title">Frequently Asked Questions</h2>
+            <div class="faq-grid">
+                <details class="faq-item">
+                    <summary>Who is this program for?</summary>
+                    <p>School-based BCBAs who want to reduce burnout and confidently lead systematic behavior support in educational settings.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>How long is the program?</summary>
+                    <p>Eight weeks. Each week includes focused training, applied exercises, and support.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Are there live sessions?</summary>
+                    <p>Yes. You get weekly live cohort sessions plus community support and templates.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Is there a guarantee?</summary>
+                    <p>Yes. 30-day money-back guarantee if you’re not satisfied.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>What is the time commitment?</summary>
+                    <p>Plan for 3–5 hours per week between training, implementation, and cohort calls.</p>
+                </details>
+            </div>
+        </div>
+    </section>
+
 
     <section class="achievements-section">
         <div class="container">
@@ -871,7 +984,7 @@
                             <p><strong>Valid:</strong> 01/30/25 - 01/31/26</p>
                         </div>
                         <div class="bacb-logo">
-                            <img src="public/images/bacb-ace-logo.png" alt="BACB ACE Provider" class="ace-logo">
+                            <img src="public/images/bacb-ace-logo.png" alt="BACB ACE Provider" class="ace-logo" loading="lazy" decoding="async">
                         </div>
                     </div>
                 </div>

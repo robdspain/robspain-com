@@ -60,6 +60,38 @@
     .trusted-logos { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* FAQ Section */
+.faq-section {
+    background: #0b1220;
+    padding: var(--space-24) 0;
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.faq-title { color: #fff; text-align: center; font-size: clamp(2rem, 4vw, 3rem); margin-bottom: var(--space-10); }
+
+.faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-6); max-width: 1000px; margin: 0 auto; }
+
+.faq-item {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius-xl);
+    padding: var(--space-4) var(--space-6);
+    color: rgba(255,255,255,0.9);
+}
+
+.faq-item summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: #fff;
+}
+
+.faq-item[open] { background: rgba(255,255,255,0.08); }
+.faq-item p { color: rgba(255,255,255,0.8); margin-top: var(--space-3); }
+
+@media (max-width: 900px) {
+    .faq-grid { grid-template-columns: 1fr; }
+}
+
 /* Transformation Program Section */
 .transformation-program-section {
     background: linear-gradient(180deg, #0f172a 0%, #111827 100%);

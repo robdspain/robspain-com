@@ -67,6 +67,42 @@
     border-top: 1px solid rgba(255,255,255,0.06);
 }
 
+/* About Section (Two-Column) */
+.about-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: var(--space-12);
+    align-items: start;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.about-copy p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--gray-700);
+    margin-bottom: var(--space-5);
+}
+
+.about-visual {
+    position: relative;
+}
+
+.about-image-placeholder {
+    border-radius: var(--radius-2xl);
+    background: linear-gradient(135deg, #eef2ff, #e0f7f1);
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-lg);
+    aspect-ratio: 4 / 5;
+}
+
+@media (max-width: 1024px) {
+    .about-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-8);
+    }
+}
+
 .faq-title { color: #fff; text-align: center; font-size: clamp(2rem, 4vw, 3rem); margin-bottom: var(--space-10); }
 
 .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-6); max-width: 1000px; margin: 0 auto; }

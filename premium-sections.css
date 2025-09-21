@@ -176,6 +176,8 @@
 .video-thumb {
     aspect-ratio: 16 / 9;
     background: linear-gradient(135deg, #e2e8f0, #f1f5f9);
+    background-size: cover;
+    background-position: center;
 }
 
 .video-overlay {

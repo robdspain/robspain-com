@@ -12,6 +12,7 @@ class PremiumInteractions {
         this.setupCounters();
         this.setupFormEnhancements();
         this.setupContactForm();
+        this.setupVideoThumbnails();
         // Cursor animations disabled
         this.setupIntersectionObserver();
         this.setupSmoothScrolling();
@@ -254,6 +255,51 @@ class PremiumInteractions {
                     statusEl.style.color = '#ef4444';
                 }
             }
+        });
+    }
+
+    // YouTube thumbnail loader for Interviews section
+    setupVideoThumbnails() {
+        const cards = document.querySelectorAll('.video-card');
+        if (!cards.length) return;
+
+        const getYouTubeId = (url) => {
+            if (!url) return null;
+            try {
+                const u = new URL(url, window.location.href);
+                // youtu.be/VIDEOID
+                if (u.hostname.includes('youtu.be')) {
+                    return u.pathname.replace('/', '') || null;
+                }
+                // youtube.com/watch?v=VIDEOID
+                if (u.hostname.includes('youtube.com')) {
+                    const v = u.searchParams.get('v');
+                    if (v) return v;
+                    // youtube.com/embed/VIDEOID
+                    const parts = u.pathname.split('/');
+                    const embedIndex = parts.indexOf('embed');
+                    if (embedIndex !== -1 && parts[embedIndex + 1]) return parts[embedIndex + 1];
+                }
+            } catch (_) {
+                // ignore malformed URLs
+            }
+            return null;
+        };
+
+        cards.forEach(card => {
+            const explicitId = card.getAttribute('data-video-id');
+            const href = card.getAttribute('href');
+            const id = explicitId || getYouTubeId(href);
+            if (!id) return;
+
+            const thumb = card.querySelector('.video-thumb');
+            if (!thumb) return;
+
+            const src = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+            thumb.style.backgroundImage = `url('${src}')`;
+            thumb.style.backgroundSize = 'cover';
+            thumb.style.backgroundPosition = 'center';
+            thumb.style.backgroundRepeat = 'no-repeat';
         });
     }
 

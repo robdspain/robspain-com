@@ -258,7 +258,7 @@ class PremiumInteractions {
         });
     }
 
-    // YouTube thumbnail + title loader for Interviews section
+    // Video thumbnail + title loader for Interviews section
     setupVideoThumbnails() {
         const cards = document.querySelectorAll('.video-card');
         if (!cards.length) return;
@@ -290,34 +290,40 @@ class PremiumInteractions {
             const explicitId = card.getAttribute('data-video-id');
             const href = card.getAttribute('href');
             const id = explicitId || getYouTubeId(href);
-            if (!id) return;
-
             const thumb = card.querySelector('.video-thumb');
             if (!thumb) return;
 
-            const hq = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
-            const maxres = `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`;
-            // Set HQ first for instant display
-            thumb.style.backgroundImage = `url('${hq}')`;
-            thumb.style.backgroundSize = 'cover';
-            thumb.style.backgroundPosition = 'center';
-            thumb.style.backgroundRepeat = 'no-repeat';
+            // Support custom thumbnail via data-thumb (e.g., non-YouTube platforms)
+            const dataThumb = card.getAttribute('data-thumb');
+            if (dataThumb) {
+                thumb.style.backgroundImage = `url('${dataThumb}')`;
+                thumb.style.backgroundSize = 'cover';
+                thumb.style.backgroundPosition = 'center';
+                thumb.style.backgroundRepeat = 'no-repeat';
+            } else if (id) {
+                const hq = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+                const maxres = `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`;
+                // Set HQ first for instant display
+                thumb.style.backgroundImage = `url('${hq}')`;
+                thumb.style.backgroundSize = 'cover';
+                thumb.style.backgroundPosition = 'center';
+                thumb.style.backgroundRepeat = 'no-repeat';
 
-            // Try to upgrade to max resolution if available
-            const testImg = new Image();
-            testImg.onload = () => {
-                // Only swap if the image has reasonable dimensions
-                if (testImg.naturalWidth >= 1280) {
-                    thumb.style.backgroundImage = `url('${maxres}')`;
-                }
-            };
-            testImg.onerror = () => { /* keep HQ */ };
-            testImg.src = maxres;
+                // Try to upgrade to max resolution if available
+                const testImg = new Image();
+                testImg.onload = () => {
+                    if (testImg.naturalWidth >= 1280) {
+                        thumb.style.backgroundImage = `url('${maxres}')`;
+                    }
+                };
+                testImg.onerror = () => { /* keep HQ */ };
+                testImg.src = maxres;
+            }
 
             // Populate title via YouTube oEmbed (if not explicitly provided)
             const titleOverride = card.getAttribute('data-title');
             const titleEl = card.querySelector('.video-title');
-            if (titleEl && !titleOverride) {
+            if (titleEl && !titleOverride && id) {
                 try {
                     const oembed = `https://www.youtube.com/oembed?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${id}`)}&format=json`;
                     const res = await fetch(oembed, { credentials: 'omit', mode: 'cors' });
@@ -328,6 +334,8 @@ class PremiumInteractions {
                 } catch (_) {
                     // ignore
                 }
+            } else if (titleEl && titleOverride) {
+                titleEl.textContent = titleOverride;
             }
         });
     }

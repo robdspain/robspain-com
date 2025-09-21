@@ -296,10 +296,16 @@ class PremiumInteractions {
             // Support custom thumbnail via data-thumb (e.g., non-YouTube platforms)
             const dataThumb = card.getAttribute('data-thumb');
             if (dataThumb) {
-                thumb.style.backgroundImage = `url('${dataThumb}')`;
-                thumb.style.backgroundSize = 'cover';
-                thumb.style.backgroundPosition = 'center';
-                thumb.style.backgroundRepeat = 'no-repeat';
+                // Only apply custom thumbnail after confirming it loads
+                const timg = new Image();
+                timg.onload = () => {
+                    thumb.style.backgroundImage = `url('${dataThumb}')`;
+                    thumb.style.backgroundSize = 'cover';
+                    thumb.style.backgroundPosition = 'center';
+                    thumb.style.backgroundRepeat = 'no-repeat';
+                };
+                timg.onerror = () => { /* keep gradient */ };
+                timg.src = dataThumb;
             } else if (id) {
                 const hq = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
                 const maxres = `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`;

@@ -308,6 +308,19 @@ class PremiumInteractions {
                 }
             });
         });
+
+        // Program CTA button scroll to contact
+        const joinBtn = document.querySelector('.program-join-btn');
+        if (joinBtn) {
+            joinBtn.addEventListener('click', () => {
+                const target = document.getElementById('contact');
+                if (!target) return;
+                const headerOffset = 80;
+                const elementPosition = target.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+            });
+        }
     }
 }
 

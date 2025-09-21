@@ -496,6 +496,7 @@ body {
     position: absolute;
     inset: 0;
     pointer-events: none;
+    z-index: 11; /* ensure above image/overlay */
 }
 
 .floating-card {

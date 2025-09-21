@@ -1,3 +1,4 @@
+
 # SEO & Site Ownership Setup Instructions
 
 ## 🚀 Complete SEO Implementation for RobSpain.com

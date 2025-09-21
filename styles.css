@@ -266,6 +266,130 @@ h2 {
     color: var(--text-secondary);
 }
 
+/* Teaching Experience Section */
+.teaching-experience-section {
+    background: var(--background-slate);
+    padding: 4rem 0;
+}
+
+.teaching-experience-section h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.teaching-intro {
+    text-align: center;
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    max-width: 800px;
+    margin: 0 auto 3rem;
+    line-height: 1.7;
+}
+
+.teaching-timeline {
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.teaching-timeline::before {
+    content: '';
+    position: absolute;
+    left: 120px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--accent-color);
+}
+
+.teaching-item {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    padding-left: 0;
+}
+
+.teaching-item::before {
+    content: '';
+    position: absolute;
+    left: 114px;
+    top: 8px;
+    width: 14px;
+    height: 14px;
+    background: var(--accent-color);
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 0 3px var(--accent-color);
+}
+
+.teaching-item.current::before {
+    background: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-color);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 3px var(--primary-color), 0 0 0 6px rgba(31, 77, 63, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 0 3px var(--primary-color), 0 0 0 12px rgba(31, 77, 63, 0.1);
+    }
+    100% {
+        box-shadow: 0 0 0 3px var(--primary-color), 0 0 0 6px rgba(31, 77, 63, 0.3);
+    }
+}
+
+.teaching-year {
+    background: var(--gradient-emerald);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    min-width: 100px;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+}
+
+.teaching-content {
+    background: white;
+    padding: 1.5rem 2rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-md);
+    flex: 1;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.teaching-content:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.teaching-content h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 0.25rem;
+}
+
+.teaching-content h4 {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--secondary-color);
+    margin-bottom: 0.75rem;
+}
+
+.teaching-content p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
 .contact-section {
     background: var(--gradient-primary);
     color: white;
@@ -579,6 +703,30 @@ h2 {
     .achievement {
         flex-direction: column;
         text-align: center;
+    }
+
+    .teaching-experience-section h2 {
+        font-size: 2rem;
+    }
+
+    .teaching-timeline::before {
+        left: 2rem;
+    }
+
+    .teaching-item {
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding-left: 3rem;
+    }
+
+    .teaching-item::before {
+        left: 1.4rem;
+    }
+
+    .teaching-year {
+        align-self: flex-start;
+        min-width: auto;
     }
 
     .footer-content {

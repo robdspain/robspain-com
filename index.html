@@ -841,7 +841,7 @@
 
             <div class="footer-bottom">
                 <div class="footer-bottom-content">
-                    <p>&copy; 2024 Rob Spain, BCBA, IBA. All rights reserved.</p>
+                    <p>&copy; <span id="current-year"></span> Rob Spain, BCBA, IBA. All rights reserved.</p>
                     <p class="footer-note">For comprehensive BCBA resources: <a href="https://behaviorschool.com/bcba-study-tools" target="_blank" style="color: #10B981;">Study Tools</a> | <a href="https://study.behaviorschool.com" target="_blank" style="color: #10B981;">Practice Platform</a> | <a href="https://behaviorschool.com" target="_blank" style="color: #10B981;">Behavior School</a></p>
                 </div>
             </div>
@@ -849,5 +849,11 @@
     </footer>
     <script src="premium-interactions.js"></script>
     <script src="premium-animations.js"></script>
+    <script>
+      (function(){
+        var el = document.getElementById('current-year');
+        if (el) el.textContent = new Date().getFullYear();
+      })();
+    </script>
 </body>
 </html>

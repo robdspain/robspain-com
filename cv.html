@@ -652,13 +652,18 @@
             <!-- Footer -->
             <footer class="cv-footer">
                 <div class="footer-content">
-                    <p>&copy; 2024 Rob Spain, BCBA, IBA. All rights reserved.</p>
-                    <p>Last updated: <span id="last-updated"></span></p>
+                    <p>&copy; <span id="cv-current-year"></span> Rob Spain, BCBA, IBA. All rights reserved.</p>
                 </div>
             </footer>
         </div>
     </div>
 
     <script src="cv-animations.js"></script>
+    <script>
+      (function(){
+        var el = document.getElementById('cv-current-year');
+        if (el) el.textContent = new Date().getFullYear();
+      })();
+    </script>
 </body>
 </html>

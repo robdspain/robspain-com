@@ -1,7 +1,8 @@
 // Modern CV Animations using vanilla JS (Framer Motion alternative)
 document.addEventListener('DOMContentLoaded', function() {
-    // Set last updated date
-    document.getElementById('last-updated').textContent = new Date().toLocaleDateString();
+    // Set last updated date if present (footer no longer shows it)
+    var last = document.getElementById('last-updated');
+    if (last) last.textContent = new Date().toLocaleDateString();
 
     // Intersection Observer for scroll animations
     const observerOptions = {

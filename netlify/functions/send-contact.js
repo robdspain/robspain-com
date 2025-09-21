@@ -1,7 +1,7 @@
 // Netlify Function: send-contact
 // Sends contact form submissions through Mailgun using environment variables.
 
-export async function handler(event) {
+exports.handler = async function(event) {
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
@@ -105,4 +105,3 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
-

@@ -233,6 +233,21 @@
     .program-content { grid-template-columns: 1fr; }
 }
 
+@media (max-width: 768px) {
+    .transformation-program-section { padding: var(--space-16) 0; }
+    .program-details { padding: var(--space-6); }
+    .outcomes-grid { grid-template-columns: 1fr; gap: var(--space-4); }
+    .outcome { padding: var(--space-4); }
+    .program-cta { padding: var(--space-6); }
+    .price-amount { font-size: 1.75rem; }
+}
+
+@media (max-width: 480px) {
+    .hero-highlights-premium { gap: var(--space-2); }
+    .hero-pill { font-size: 0.8rem; padding: 0.4rem 0.6rem; }
+    .trusted-logos { gap: var(--space-3); }
+}
+
 .training-background-premium {
     position: absolute;
     inset: 0;

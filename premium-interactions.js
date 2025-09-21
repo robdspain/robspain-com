@@ -285,54 +285,6 @@ class PremiumInteractions {
     }
 }
 
-// Premium page loader
-class PremiumPageLoader {
-    constructor() {
-        this.createLoader();
-        this.init();
-    }
-
-    createLoader() {
-        const loader = document.createElement('div');
-        loader.className = 'page-loader';
-        loader.innerHTML = `
-            <div class="loader-content">
-                <div class="loader-logo">Rob Spain, BCBA</div>
-                <div class="loader-progress">
-                    <div class="progress-bar"></div>
-                </div>
-                <div class="loader-text">Loading Excellence...</div>
-            </div>
-        `;
-        document.body.appendChild(loader);
-    }
-
-    init() {
-        let progress = 0;
-        const progressBar = document.querySelector('.progress-bar');
-
-        const interval = setInterval(() => {
-            progress += Math.random() * 15;
-            progressBar.style.width = Math.min(progress, 90) + '%';
-
-            if (progress >= 90) {
-                clearInterval(interval);
-
-                window.addEventListener('load', () => {
-                    progressBar.style.width = '100%';
-
-                    setTimeout(() => {
-                        document.querySelector('.page-loader').style.opacity = '0';
-                        setTimeout(() => {
-                            document.querySelector('.page-loader').remove();
-                        }, 500);
-                    }, 200);
-                });
-            }
-        }, 100);
-    }
-}
-
 // Initialize premium interactions
 document.addEventListener('DOMContentLoaded', () => {
     new PremiumInteractions();
@@ -365,55 +317,6 @@ const premiumStyles = `
     .cursor-hover {
         transform: scale(2);
         background: rgba(16, 185, 129, 0.2);
-    }
-
-    .page-loader {
-        position: fixed;
-        inset: 0;
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10000;
-        transition: opacity 0.5s ease;
-    }
-
-    .loader-content {
-        text-align: center;
-        color: white;
-    }
-
-    .loader-logo {
-        font-size: 2rem;
-        font-weight: 700;
-        margin-bottom: 2rem;
-        background: linear-gradient(135deg, #059669, #10b981, #34d399);
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    .loader-progress {
-        width: 300px;
-        height: 4px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 2px;
-        overflow: hidden;
-        margin-bottom: 1rem;
-    }
-
-    .progress-bar {
-        height: 100%;
-        background: linear-gradient(90deg, #059669, #10b981);
-        border-radius: 2px;
-        transition: width 0.3s ease;
-        width: 0%;
-    }
-
-    .loader-text {
-        font-size: 0.875rem;
-        color: rgba(255, 255, 255, 0.7);
-        animation: pulse 2s infinite;
     }
 
     .mobile-menu-btn {

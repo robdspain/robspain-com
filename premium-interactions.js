@@ -295,11 +295,24 @@ class PremiumInteractions {
             const thumb = card.querySelector('.video-thumb');
             if (!thumb) return;
 
-            const src = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
-            thumb.style.backgroundImage = `url('${src}')`;
+            const hq = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+            const maxres = `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`;
+            // Set HQ first for instant display
+            thumb.style.backgroundImage = `url('${hq}')`;
             thumb.style.backgroundSize = 'cover';
             thumb.style.backgroundPosition = 'center';
             thumb.style.backgroundRepeat = 'no-repeat';
+
+            // Try to upgrade to max resolution if available
+            const testImg = new Image();
+            testImg.onload = () => {
+                // Only swap if the image has reasonable dimensions
+                if (testImg.naturalWidth >= 1280) {
+                    thumb.style.backgroundImage = `url('${maxres}')`;
+                }
+            };
+            testImg.onerror = () => { /* keep HQ */ };
+            testImg.src = maxres;
 
             // Populate title via YouTube oEmbed (if not explicitly provided)
             const titleOverride = card.getAttribute('data-title');

@@ -258,7 +258,7 @@ class PremiumInteractions {
         });
     }
 
-    // YouTube thumbnail loader for Interviews section
+    // YouTube thumbnail + title loader for Interviews section
     setupVideoThumbnails() {
         const cards = document.querySelectorAll('.video-card');
         if (!cards.length) return;
@@ -286,7 +286,7 @@ class PremiumInteractions {
             return null;
         };
 
-        cards.forEach(card => {
+        cards.forEach(async (card) => {
             const explicitId = card.getAttribute('data-video-id');
             const href = card.getAttribute('href');
             const id = explicitId || getYouTubeId(href);
@@ -300,6 +300,22 @@ class PremiumInteractions {
             thumb.style.backgroundSize = 'cover';
             thumb.style.backgroundPosition = 'center';
             thumb.style.backgroundRepeat = 'no-repeat';
+
+            // Populate title via YouTube oEmbed (if not explicitly provided)
+            const titleOverride = card.getAttribute('data-title');
+            const titleEl = card.querySelector('.video-title');
+            if (titleEl && !titleOverride) {
+                try {
+                    const oembed = `https://www.youtube.com/oembed?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${id}`)}&format=json`;
+                    const res = await fetch(oembed, { credentials: 'omit', mode: 'cors' });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data && data.title) titleEl.textContent = data.title;
+                    }
+                } catch (_) {
+                    // ignore
+                }
+            }
         });
     }
 

@@ -328,10 +328,12 @@ body {
     grid-template-columns: 1fr 1fr;
     gap: var(--space-16);
     align-items: center;
+    justify-items: center; /* center grid items horizontally */
 }
 
 .hero-text-premium {
     color: white;
+    text-align: center; /* center text block */
 }
 
 .hero-badge-premium {
@@ -367,6 +369,7 @@ body {
     line-height: 1.1;
     margin-bottom: var(--space-6);
     letter-spacing: -0.02em;
+    text-align: center;
 }
 
 .hero-title-gradient {
@@ -380,8 +383,9 @@ body {
     font-size: 1.25rem;
     line-height: 1.6;
     color: rgba(255, 255, 255, 0.8);
-    margin-bottom: var(--space-8);
+    margin: 0 auto var(--space-8); /* center constrained width */
     max-width: 600px;
+    text-align: center;
 }
 
 /* Premium Stats */
@@ -389,6 +393,7 @@ body {
     display: flex;
     gap: var(--space-8);
     margin-bottom: var(--space-8);
+    justify-content: center; /* center stats row */
 }
 
 .stat-premium {
@@ -414,6 +419,7 @@ body {
     display: flex;
     gap: var(--space-4);
     flex-wrap: wrap;
+    justify-content: center; /* center buttons */
 }
 
 .btn-primary-premium {
@@ -462,6 +468,7 @@ body {
 /* Premium Visual Section */
 .hero-visual-premium {
     position: relative;
+    justify-self: center; /* center image column */
 }
 
 .hero-image-container-premium {

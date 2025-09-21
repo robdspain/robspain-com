@@ -610,6 +610,22 @@ document.addEventListener('DOMContentLoaded', () => {
     premiumAnimations = new PremiumAnimationSystem();
 });
 
+// Hero dynamic word cycler (lightweight, decoupled)
+document.addEventListener('DOMContentLoaded', () => {
+    const el = document.querySelector('.hero-dynamic-word');
+    if (!el) return;
+    const words = ['School-Based', 'Evidence-Based', 'Ethical', 'Impactful'];
+    let i = 0;
+    setInterval(() => {
+        i = (i + 1) % words.length;
+        el.style.opacity = '0';
+        setTimeout(() => {
+            el.textContent = words[i];
+            el.style.opacity = '1';
+        }, 200);
+    }, 2400);
+});
+
 // Performance monitoring
 if (typeof window !== 'undefined' && 'performance' in window) {
     window.addEventListener('load', () => {

@@ -335,7 +335,6 @@ class PremiumPageLoader {
 
 // Initialize premium interactions
 document.addEventListener('DOMContentLoaded', () => {
-    new PremiumPageLoader();
     new PremiumInteractions();
 });
 

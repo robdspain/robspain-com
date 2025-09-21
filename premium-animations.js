@@ -363,7 +363,13 @@ class PremiumAnimationSystem {
                 clearInterval(timer);
             }
             
-            element.textContent = Math.floor(current).toLocaleString();
+            const value = Math.floor(current);
+            // Don't add commas to years (4-digit numbers between 1900-2100)
+            if (value >= 1900 && value <= 2100) {
+                element.textContent = value.toString();
+            } else {
+                element.textContent = value.toLocaleString();
+            }
         }, 16);
     }
 

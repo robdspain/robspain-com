@@ -94,6 +94,24 @@
     border: 1px solid var(--gray-200);
     box-shadow: var(--shadow-lg);
     aspect-ratio: 4 / 5;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #334155;
+    font-weight: 600;
+}
+
+.placeholder-label {
+    position: absolute;
+    left: 0.75rem;
+    bottom: 0.75rem;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 0.35rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
 }
 
 @media (max-width: 1024px) {

@@ -328,13 +328,35 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: var(--space-12);
-    align-items: center;
+    align-items: start; /* align to top instead of center */
     justify-items: center; /* center grid items horizontally */
 }
 
 .hero-text-premium {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+}
+
+.hero-visual-premium {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: center;
+    align-self: start;
+    margin-top: 4rem; /* Push image down to align with H1 title */
+}
+
+.hero-text-premium {
     color: white;
-    text-align: center; /* center text block */
+    text-align: left; /* align text to left for better readability */
+}
+
+.hero-description-premium {
+    color: rgba(255, 255, 255, 0.9) !important;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    backdrop-filter: blur(10px);
 }
 
 .hero-badge-premium {

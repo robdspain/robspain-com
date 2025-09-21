@@ -36,28 +36,192 @@
     gap: 0.5rem;
 }
 
-.trusted-logos {
+.behavior-school-ctas {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--space-6);
 }
 
-.trusted-logo {
+.behavior-school-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: white;
+    text-decoration: none;
+    border: 2px solid #10B981;
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(52, 211, 153, 0.05));
+    transition: all 0.3s ease;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+}
+
+.behavior-school-cta:hover {
+    background: linear-gradient(135deg, #10B981, #34d399);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+    border-color: #34d399;
+}
+
+.behavior-school-cta i {
+    color: #34d399;
+    font-size: 1.25rem;
+    transition: color 0.3s ease;
+}
+
+.behavior-school-cta:hover i {
+    color: white;
+}
+
+.behavior-school-cta span {
+    font-size: 1rem;
+    transition: color 0.3s ease;
+}
+
+.behavior-school-cta:hover span {
+    color: white;
+}
+
+/* Behavior School Professional Section */
+.behavior-school-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: var(--space-24) 0;
+}
+
+.behavior-school-ctas-premium {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: var(--space-8);
+    max-width: 1200px;
+    margin: 0 auto;
+    margin-top: var(--space-12);
+}
+
+.behavior-school-cta-card {
+    background: white;
+    border-radius: var(--radius-2xl);
+    padding: var(--space-8);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(16, 185, 129, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    gap: var(--space-6);
+    align-items: flex-start;
+}
+
+.behavior-school-cta-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-2xl);
+    text-decoration: none;
+    color: inherit;
+    border-color: #10B981;
+}
+
+.behavior-school-cta-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.behavior-school-cta-card:hover::before {
+    transform: scaleX(1);
+}
+
+.cta-icon {
+    width: 64px;
+    height: 64px;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    box-shadow: 0 8px 16px rgba(16, 185, 129, 0.25);
+    transition: all 0.3s ease;
+}
+
+.behavior-school-cta-card:hover .cta-icon {
+    transform: scale(1.1);
+    box-shadow: 0 12px 24px rgba(16, 185, 129, 0.4);
+}
+
+.cta-content {
+    flex: 1;
+}
+
+.cta-content h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.cta-content p {
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.cta-link {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    color: rgba(255,255,255,0.6);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: var(--radius-lg);
-    padding: 0.5rem 0.75rem;
-    background: rgba(255,255,255,0.03);
+    color: var(--primary-600);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
 }
 
-.trusted-logo i { color: #34d399; }
+.behavior-school-cta-card:hover .cta-link {
+    color: var(--primary-700);
+    transform: translateX(4px);
+}
+
+.cta-link i {
+    transition: transform 0.2s ease;
+}
+
+.behavior-school-cta-card:hover .cta-link i {
+    transform: translateX(4px);
+}
 
 @media (max-width: 900px) {
     .trusted-inner { grid-template-columns: 1fr; justify-items: center; text-align: center; }
-    .trusted-logos { grid-template-columns: repeat(2, 1fr); }
+    .behavior-school-ctas { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
+
+    .behavior-school-ctas-premium {
+        grid-template-columns: 1fr;
+        gap: var(--space-6);
+    }
+
+    .behavior-school-cta-card {
+        padding: var(--space-6);
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+        gap: var(--space-4);
+    }
+
+    .cta-icon {
+        width: 56px;
+        height: 56px;
+        font-size: 1.25rem;
+    }
 }
 
 /* FAQ Section */
@@ -259,9 +423,9 @@
 
 .video-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: var(--space-6);
-    max-width: 1200px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-4);
+    max-width: 1400px;
     margin: 0 auto;
 }
 
@@ -467,7 +631,8 @@
 @media (max-width: 480px) {
     .hero-highlights-premium { gap: var(--space-2); }
     .hero-pill { font-size: 0.8rem; padding: 0.4rem 0.6rem; }
-    .trusted-logos { gap: var(--space-3); }
+    .behavior-school-ctas { gap: var(--space-3); }
+    .behavior-school-cta { padding: 0.75rem 1rem; font-size: 0.9rem; }
 }
 
 .training-background-premium {
@@ -1089,5 +1254,144 @@
     .author-avatar img {
         width: 48px;
         height: 48px;
+    }
+}
+
+/* Follow Section */
+.social-follow-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-8);
+    max-width: 1000px;
+    margin: 0 auto;
+    margin-top: var(--space-12);
+}
+
+.social-follow-card {
+    background: white;
+    border-radius: var(--radius-2xl);
+    padding: var(--space-8);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-light);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+}
+
+.social-follow-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-2xl);
+    text-decoration: none;
+    color: inherit;
+}
+
+.social-follow-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.social-follow-card:hover::before {
+    transform: scaleX(1);
+}
+
+.social-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    color: white;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.social-follow-card.linkedin .social-icon {
+    background: linear-gradient(135deg, #0077b5, #00a0dc);
+}
+
+.social-follow-card.facebook .social-icon {
+    background: linear-gradient(135deg, #1877f2, #42a5f5);
+}
+
+.social-follow-card.twitter .social-icon {
+    background: linear-gradient(135deg, #1da1f2, #0d8bd9);
+}
+
+.social-follow-card.instagram .social-icon {
+    background: linear-gradient(135deg, #e4405f, #fd5949, #fccc63, #f77737);
+}
+
+.social-content {
+    flex: 1;
+}
+
+.social-content h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.social-content p {
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.follow-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--primary-600);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.social-follow-card:hover .follow-cta {
+    color: var(--primary-700);
+    transform: translateX(4px);
+}
+
+.follow-cta i {
+    transition: transform 0.2s ease;
+}
+
+.social-follow-card:hover .follow-cta i {
+    transform: translateX(4px);
+}
+
+/* Responsive Design for Follow Section */
+@media (max-width: 768px) {
+    .social-follow-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-6);
+    }
+
+    .social-follow-card {
+        padding: var(--space-6);
+        flex-direction: column;
+        text-align: center;
+        gap: var(--space-4);
+    }
+
+    .social-icon {
+        width: 56px;
+        height: 56px;
+        font-size: 1.5rem;
     }
 }

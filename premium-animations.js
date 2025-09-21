@@ -91,16 +91,6 @@ class PremiumAnimationSystem {
         const scrollY = window.pageYOffset;
         const windowHeight = window.innerHeight;
 
-        // Navbar effects
-        const navbar = document.querySelector('.nav-premium');
-        if (navbar) {
-            if (scrollY > 100) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        }
-
         // Parallax effects
         this.updateParallaxElements(scrollY, windowHeight);
 

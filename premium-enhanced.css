@@ -155,8 +155,7 @@ body {
 
 /* Premium Navigation */
 .nav-premium {
-    position: fixed;
-    top: 0;
+    position: relative;
     width: 100%;
     z-index: 1000;
     background: rgba(255, 255, 255, 0.8);
@@ -165,10 +164,6 @@ body {
     transition: all var(--transition-normal);
 }
 
-.nav-premium.scrolled {
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: var(--shadow-lg);
-}
 
 .nav-content-premium {
     display: flex;
@@ -351,6 +346,18 @@ body {
     text-align: left; /* align text to left for better readability */
 }
 
+.hero-text-premium .hero-badge-premium {
+    display: block;
+    text-align: center;
+    margin-bottom: var(--space-6);
+}
+
+.hero-text-premium .hero-badge-premium > span {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
 .hero-description-premium {
     color: rgba(255, 255, 255, 0.9) !important;
     background: rgba(0, 0, 0, 0.3);
@@ -370,6 +377,7 @@ body {
     border-radius: var(--radius-full);
     font-size: 0.875rem;
     font-weight: 500;
+    margin: 0 auto;
     margin-bottom: var(--space-6);
 }
 

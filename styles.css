@@ -225,6 +225,7 @@ h2 {
 
 .achievements-section {
     background: var(--background-white);
+    padding: 2rem 0;
 }
 
 .achievements-grid {

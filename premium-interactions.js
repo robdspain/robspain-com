@@ -11,7 +11,7 @@ class PremiumInteractions {
         this.setupParallax();
         this.setupCounters();
         this.setupFormEnhancements();
-        this.setupCursorEffects();
+        // Cursor animations disabled
         this.setupIntersectionObserver();
         this.setupSmoothScrolling();
     }
@@ -194,44 +194,7 @@ class PremiumInteractions {
         }, 1500);
     }
 
-    // Premium cursor effects
-    setupCursorEffects() {
-        // Only add on desktop
-        if (window.innerWidth > 1024) {
-            this.createCustomCursor();
-        }
-    }
-
-    createCustomCursor() {
-        const cursor = document.createElement('div');
-        cursor.className = 'custom-cursor';
-        document.body.appendChild(cursor);
-
-        const cursorDot = document.createElement('div');
-        cursorDot.className = 'cursor-dot';
-        document.body.appendChild(cursorDot);
-
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-
-            setTimeout(() => {
-                cursorDot.style.left = e.clientX + 'px';
-                cursorDot.style.top = e.clientY + 'px';
-            }, 100);
-        });
-
-        // Cursor interactions
-        const interactiveElements = document.querySelectorAll('a, button, .card-premium');
-        interactiveElements.forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                cursor.classList.add('cursor-hover');
-            });
-            el.addEventListener('mouseleave', () => {
-                cursor.classList.remove('cursor-hover');
-            });
-        });
-    }
+    // Cursor effects removed
 
     // Enhanced intersection observer for complex animations
     setupIntersectionObserver() {
@@ -292,32 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Add premium styles to the document
 const premiumStyles = `
-    .custom-cursor {
-        position: fixed;
-        width: 20px;
-        height: 20px;
-        border: 2px solid #10b981;
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 9999;
-        transition: transform 0.1s ease;
-        mix-blend-mode: difference;
-    }
-
-    .cursor-dot {
-        position: fixed;
-        width: 4px;
-        height: 4px;
-        background: #10b981;
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 9998;
-    }
-
-    .cursor-hover {
-        transform: scale(2);
-        background: rgba(16, 185, 129, 0.2);
-    }
+    /* Custom cursor styles removed */
 
     .mobile-menu-btn {
         display: none;

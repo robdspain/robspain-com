@@ -77,6 +77,104 @@
     margin: 0 auto;
 }
 
+/* Projects Section (Two-Column) */
+.projects-grid {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: var(--space-12);
+    align-items: start;
+    max-width: 1200px;
+    margin: 0 auto;
+    margin-top: var(--space-12);
+}
+
+.projects-visual {
+    position: relative;
+}
+
+.projects-image-placeholder {
+    aspect-ratio: 4/3;
+    background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%);
+    border-radius: var(--radius-2xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--gray-300);
+}
+
+.projects-content {
+    padding-left: var(--space-4);
+}
+
+.projects-description {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--gray-700);
+    margin-bottom: var(--space-5);
+}
+
+.project-highlight {
+    background: white;
+    padding: var(--space-6);
+    border-radius: var(--radius-2xl);
+    border: 2px solid #10B981;
+    position: relative;
+    margin-top: var(--space-8);
+}
+
+.project-badge {
+    position: absolute;
+    top: -0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #059669, #10B981);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.project-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-800);
+    margin-bottom: var(--space-3);
+    margin-top: var(--space-2);
+}
+
+.project-description {
+    color: var(--gray-600);
+    line-height: 1.6;
+    margin-bottom: var(--space-4);
+}
+
+.project-features {
+    list-style: none;
+    padding: 0;
+    color: var(--gray-600);
+    margin-bottom: var(--space-6);
+}
+
+.project-features li {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.project-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--primary-600);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.project-link:hover {
+    color: var(--primary-700);
+}
+
 .about-copy p {
     font-size: 1.05rem;
     line-height: 1.8;
@@ -118,6 +216,13 @@
     .about-grid {
         grid-template-columns: 1fr;
         gap: var(--space-8);
+    }
+    .projects-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-8);
+    }
+    .projects-content {
+        padding-left: 0;
     }
 }
 

@@ -253,11 +253,12 @@ body {
 /* Premium Hero Section */
 .hero-premium {
     position: relative;
-    min-height: 100vh;
+    min-height: 80vh;
     display: flex;
     align-items: center;
     overflow: hidden;
     background: linear-gradient(135deg, var(--gray-50) 0%, #ffffff 100%);
+    padding: var(--space-16) 0;
 }
 
 .hero-background-premium {
@@ -660,12 +661,21 @@ body {
 
 /* Premium Sections */
 .section-premium {
-    padding: var(--space-32) 0;
+    padding: var(--space-20) 0;
     position: relative;
 }
 
-.section-premium.alt {
+/* Alternating section backgrounds for better visual flow */
+.section-premium:nth-child(even) {
+    background: var(--gray-50);
+}
+
+.section-premium:nth-child(odd) {
     background: white;
+}
+
+.section-premium.alt {
+    background: var(--gray-100);
 }
 
 .section-header-premium {

@@ -614,7 +614,7 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const el = document.querySelector('.hero-dynamic-word');
     if (!el) return;
-    const words = ['School-Based', 'Evidence-Based', 'Ethical', 'Impactful'];
+    const words = ['School BCBAs', 'Evidence-Based', 'Ethical', 'Impactful'];
     let i = 0;
     setInterval(() => {
         i = (i + 1) % words.length;

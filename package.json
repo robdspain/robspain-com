@@ -1,0 +1,25 @@
+{
+  "name": "robspain-website",
+  "version": "1.0.0",
+  "description": "Rob Spain - School BCBA professional website",
+  "main": "index.html",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'Build complete'",
+    "deploy": "netlify deploy --prod"
+  },
+  "dependencies": {
+    "mailgun-js": "^0.22.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  },
+  "keywords": [
+    "bcba",
+    "school-bcba",
+    "behavior-analysis",
+    "education"
+  ],
+  "author": "Rob Spain",
+  "license": "MIT"
+}

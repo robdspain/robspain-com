@@ -246,13 +246,13 @@ body {
 
 /* Premium Hero Section */
 .hero-premium {
-    min-height: 80vh;
+    min-height: 65vh;
     display: flex;
     align-items: center;
     position: relative;
     overflow: hidden;
     background: var(--gradient-hero);
-    padding: var(--space-16) 0;
+    padding: var(--space-12) 0;
 }
 
 .hero-background-premium {

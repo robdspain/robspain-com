@@ -253,12 +253,12 @@ body {
 /* Premium Hero Section */
 .hero-premium {
     position: relative;
-    min-height: 80vh;
+    min-height: 65vh;
     display: flex;
     align-items: center;
     overflow: hidden;
     background: linear-gradient(135deg, var(--gray-50) 0%, #ffffff 100%);
-    padding: var(--space-16) 0;
+    padding: var(--space-12) 0;
 }
 
 .hero-background-premium {

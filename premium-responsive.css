@@ -139,7 +139,7 @@
     }
 
     .hero-premium {
-        min-height: 80vh;
+        min-height: 65vh;
         padding-top: 80px;
     }
 
@@ -284,7 +284,7 @@
 /* Landscape Mobile Optimization */
 @media (max-height: 600px) and (orientation: landscape) {
     .hero-premium {
-        min-height: 100vh;
+        min-height: 80vh;
         padding-top: 60px;
     }
 

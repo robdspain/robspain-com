@@ -16,32 +16,14 @@ class PremiumInteractions {
         // Cursor animations disabled
         this.setupIntersectionObserver();
         this.setupSmoothScrolling();
+        this.setupGradientTextScroll();
+        this.setupAnimatedPaths();
     }
 
-    // Premium Navigation with scroll effects
+    // Premium Navigation - scroll effects disabled for non-persistent nav
     setupNavigation() {
-        const nav = document.querySelector('.nav-premium');
-        let lastScrollY = window.scrollY;
-
-        window.addEventListener('scroll', () => {
-            const currentScrollY = window.scrollY;
-
-            // Add/remove scrolled class
-            if (currentScrollY > 100) {
-                nav.classList.add('scrolled');
-            } else {
-                nav.classList.remove('scrolled');
-            }
-
-            // Hide/show nav on scroll direction
-            if (currentScrollY > lastScrollY && currentScrollY > 500) {
-                nav.style.transform = 'translateY(-100%)';
-            } else {
-                nav.style.transform = 'translateY(0)';
-            }
-
-            lastScrollY = currentScrollY;
-        });
+        // Removed scroll listener to make navigation non-persistent
+        // Navigation will stay in normal document flow
 
         // Mobile menu toggle
         this.setupMobileMenu();
@@ -414,6 +396,108 @@ class PremiumInteractions {
                 const elementPosition = target.getBoundingClientRect().top;
                 const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
                 window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+            });
+        }
+    }
+
+    // Gradient text scroll effect
+    setupGradientTextScroll() {
+        const gradientElements = document.querySelectorAll('.gradient-text-scroll');
+
+        gradientElements.forEach(element => {
+            const text = element.getAttribute('data-text');
+            const contentElement = element.querySelector('.gradient-text-content');
+
+            if (text && contentElement) {
+                // Split text into words for better mobile handling
+                const words = text.split(' ');
+                contentElement.textContent = text;
+
+                // Intersection Observer for triggering animation when in view
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            contentElement.style.animationPlayState = 'running';
+                        } else {
+                            contentElement.style.animationPlayState = 'paused';
+                        }
+                    });
+                }, {
+                    threshold: 0.5,
+                    rootMargin: '0px 0px -50px 0px'
+                });
+
+                observer.observe(element);
+
+                // Initially pause the animation
+                contentElement.style.animationPlayState = 'paused';
+            }
+        });
+    }
+
+    // Animated background paths with enhanced interactivity
+    setupAnimatedPaths() {
+        const pathsContainer = document.querySelector('.animated-paths-container');
+        const paths = document.querySelectorAll('.animated-path');
+
+        if (!pathsContainer || paths.length === 0) return;
+
+        // Add mouse interaction for desktop
+        if (window.innerWidth > 768) {
+            pathsContainer.addEventListener('mousemove', (e) => {
+                const rect = pathsContainer.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width;
+                const y = (e.clientY - rect.top) / rect.height;
+
+                paths.forEach((path, index) => {
+                    const intensity = 1 + (x + y) * 0.3;
+                    const offset = Math.sin(Date.now() * 0.001 + index) * 20;
+
+                    path.style.transform = `translate(${offset * x}px, ${offset * y}px) scale(${intensity})`;
+                    path.style.filter = `blur(${0.5 - (x + y) * 0.1}px)`;
+                });
+            });
+
+            pathsContainer.addEventListener('mouseleave', () => {
+                paths.forEach(path => {
+                    path.style.transform = '';
+                    path.style.filter = '';
+                });
+            });
+        }
+
+        // Scroll-based animation enhancement
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    const scrollY = window.pageYOffset;
+                    const heroHeight = document.querySelector('.hero-premium')?.offsetHeight || 600;
+
+                    if (scrollY < heroHeight) {
+                        const scrollProgress = scrollY / heroHeight;
+
+                        paths.forEach((path, index) => {
+                            const pathOffset = scrollProgress * (50 + index * 20);
+                            const opacity = 1 - scrollProgress * 0.7;
+
+                            path.style.transform = `translateY(${pathOffset}px)`;
+                            path.style.opacity = Math.max(0.2, opacity);
+                        });
+                    }
+
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        });
+
+        // Performance optimization for mobile
+        if (window.innerWidth <= 768) {
+            paths.forEach(path => {
+                path.style.animation = path.style.animation.replace(/\d+s/g, (match) => {
+                    return (parseInt(match) * 1.5) + 's'; // Slower on mobile
+                });
             });
         }
     }

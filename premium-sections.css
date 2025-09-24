@@ -101,23 +101,23 @@
 
 .behavior-school-cta-card {
     background: white;
-    border-radius: 1rem;
-    padding: 2rem 1.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(229, 231, 235, 0.8);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-8);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(16, 185, 129, 0.1);
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
     text-decoration: none;
     color: inherit;
     display: flex;
-    gap: 1.5rem;
+    gap: var(--space-6);
     align-items: flex-start;
 }
 
 .behavior-school-cta-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-2xl);
     text-decoration: none;
     color: inherit;
     border-color: #10B981;
@@ -140,17 +140,17 @@
 }
 
 .cta-icon {
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, #10B981, #059669);
-    border-radius: 1rem;
+    width: 64px;
+    height: 64px;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-xl);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     flex-shrink: 0;
-    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.25);
+    box-shadow: 0 8px 16px rgba(16, 185, 129, 0.25);
     transition: all 0.3s ease;
 }
 
@@ -164,17 +164,16 @@
 }
 
 .cta-content h3 {
-    font-size: 1.375rem;
+    font-size: 1.25rem;
     font-weight: 600;
-    color: #1f2937;
-    margin-bottom: 0.75rem;
-    line-height: 1.3;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
 }
 
 .cta-content p {
-    color: #6b7280;
+    color: var(--text-secondary);
     line-height: 1.5;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
     font-size: 0.95rem;
 }
 
@@ -182,14 +181,14 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    color: #059669;
+    color: var(--primary-600);
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     transition: all 0.2s ease;
 }
 
 .behavior-school-cta-card:hover .cta-link {
-    color: #047857;
+    color: var(--primary-700);
     transform: translateX(4px);
 }
 
@@ -358,9 +357,44 @@
 
 /* FAQ Section */
 .faq-section {
-    background: #0b1220;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
     padding: 4rem 0 2rem 0;
-    border-top: 1px solid rgba(255,255,255,0.06);
+    border-top: 1px solid rgba(0,0,0,0.06);
+    position: relative;
+    overflow: hidden;
+}
+
+.faq-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="faq-pattern" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.5" fill="%23059669" opacity="0.08"/><circle cx="15" cy="15" r="1" fill="%2310B981" opacity="0.06"/></pattern></defs><rect width="100" height="100" fill="url(%23faq-pattern)"/></svg>') repeat;
+    pointer-events: none;
+}
+
+.faq-section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -50%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(
+        45deg,
+        transparent 30%,
+        rgba(16, 185, 129, 0.02) 50%,
+        transparent 70%
+    );
+    animation: shimmer 8s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes shimmer {
+    0%, 100% { transform: translateX(-100%); }
+    50% { transform: translateX(0%); }
 }
 
 /* About Section (Two-Column) */
@@ -522,26 +556,102 @@
     }
 }
 
-.faq-title { color: #fff; text-align: center; font-size: clamp(2rem, 4vw, 3rem); margin-bottom: var(--space-10); }
+.faq-title {
+    color: #1f2937;
+    text-align: center;
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: var(--space-10);
+    font-weight: 700;
+    position: relative;
+    padding-bottom: var(--space-4);
+}
+
+.faq-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #059669, #10B981, #34d399);
+    border-radius: 2px;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
 
 .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-6); max-width: 1000px; margin: 0 auto; }
 
 .faq-item {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.8);
+    border: 1px solid rgba(0,0,0,0.1);
     border-radius: var(--radius-xl);
     padding: var(--space-4) var(--space-6);
-    color: rgba(255,255,255,0.9);
+    color: #374151;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.faq-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--gradient-primary);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
 }
 
 .faq-item summary {
     cursor: pointer;
     font-weight: 600;
-    color: #fff;
+    color: #1f2937;
+    font-size: 1.1rem;
+    transition: color 0.2s ease;
 }
 
-.faq-item[open] { background: rgba(255,255,255,0.08); }
-.faq-item p { color: rgba(255,255,255,0.8); margin-top: var(--space-3); }
+.faq-item[open] {
+    background: rgba(255,255,255,0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    border-color: rgba(16, 185, 129, 0.2);
+}
+
+.faq-item[open]::before {
+    transform: scaleX(1);
+}
+
+.faq-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+    background: rgba(255,255,255,0.85);
+}
+
+.faq-item:hover::before {
+    transform: scaleX(0.3);
+}
+
+.faq-item summary:hover {
+    color: #059669;
+}
+
+.faq-item summary {
+    position: relative;
+    z-index: 2;
+}
+
+.faq-item p {
+    color: #4b5563;
+    margin-top: var(--space-3);
+    line-height: 1.6;
+    position: relative;
+    z-index: 2;
+}
 
 @media (max-width: 900px) {
     .faq-grid { grid-template-columns: 1fr; }

@@ -1,0 +1,37 @@
+Contact: security@robspain.com
+Expires: 2025-12-31T23:59:59.000Z
+Preferred-Languages: en
+Canonical: https://robspain.com/.well-known/security.txt
+
+# Educational Professional Security Information
+# Rob Spain, BCBA - Educational Consultant & Behavior Analyst
+
+# Professional Classification
+Policy: https://robspain.com/privacy.html
+Category: Educational Consulting
+Content-Type: Professional Development
+Audience: Education Professionals
+
+# Content Safety
+Family-Friendly: true
+COPPA-Compliant: true
+Educational-Use: Professional Development
+Age-Appropriate: Adult/Professional
+
+# Professional Credentials
+BCBA-Certified: true
+Educational-Consultant: verified
+Professional-Development: true
+Evidence-Based-Practices: maintained
+
+# Purpose
+Mission: Transforming educational outcomes through behavior analysis
+Target-Audience: Educators, School Administrators, Special Education Teachers
+Content-Focus: School-Based Behavior Analysis, PBIS, Educational Leadership
+Professional-Experience: 20+ years in educational settings
+
+# Educational Verification
+Educational-Professional: true
+Teacher-Training: true
+Professional-Development: true
+Educational-Consulting: true

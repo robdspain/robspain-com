@@ -1,5 +1,15 @@
+# Educational Professional - Rob Spain, BCBA
+# Educational consultant and behavior analyst serving school districts
+# Content-Type: Professional Development, Educational Consulting
+# Audience: Educators, School Administrators, Special Education Professionals
+
 User-agent: *
 Allow: /
+
+# Educational Content Classification
+# Professional: Board Certified Behavior Analyst (BCBA)
+# Purpose: Educational consulting and professional development
+# Focus: School-based behavior analysis and teacher training
 
 # Sitemap location
 Sitemap: https://robspain.com/sitemap.xml

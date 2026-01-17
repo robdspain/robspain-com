@@ -1,6 +1,11 @@
 backend:
-  name: git-gateway
+  name: github
+  repo: robdspain/robspain-com
   branch: main
+  base_url: https://robspain.com
+  auth_endpoint: auth
+
+logo_url: /public/images/icon/robspain-icon.png
 
 media_folder: "src/public/images/uploads"
 public_folder: "/public/images/uploads"
@@ -16,8 +21,10 @@ collections:
       - {label: "Title", name: "title", widget: "string"}
       - {label: "Publish Date", name: "date", widget: "datetime"}
       - {label: "Featured Image", name: "image", widget: "image"}
+      - {label: "Excerpt", name: "description", widget: "text", hint: "Short summary for blog list and social previews"}
       - {label: "Body", name: "body", widget: "markdown"}
       - {label: "Tags", name: "tags", widget: "list", default: ["post"]}
+      - {label: "Keywords", name: "keywords", widget: "list", hint: "Specific SEO keywords for this post"}
       - {label: "Featured", name: "featured", widget: "boolean", default: false, required: false}
       - label: "SEO & Social"
         name: "seo"
@@ -28,4 +35,3 @@ collections:
           - {label: "Meta Description", name: "metaDesc", widget: "text", required: false, hint: "Description for Google results"}
           - {label: "Social Image", name: "socialImage", widget: "image", required: false, hint: "Specific image for Facebook/Twitter sharing (1200x630 recommended)"}
           - {label: "Draft Tweet / Caption", name: "socialCaption", widget: "text", required: false, hint: "Draft your social media caption here to copy/paste later"}
-admin_path: /admin

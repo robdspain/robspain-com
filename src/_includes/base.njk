@@ -33,6 +33,25 @@
     <meta name="twitter:image" content="{{ seo.socialImage or image or "/public/images/profile-Rob.png" }}">
     <meta name="twitter:creator" content="@robspainBCBA">
 
+    {% if layout == "post.njk" %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "{{ seo.metaTitle or title }}",
+      "image": ["https://robspain.com{{ image }}"],
+      "datePublished": "{{ date.toISOString() }}",
+      "author": {
+        "@type": "Person",
+        "name": "Rob Spain",
+        "url": "https://robspain.com"
+      },
+      "description": "{{ seo.metaDesc or description }}",
+      "keywords": "{{ keywords | join(', ') }}"
+    }
+    </script>
+    {% endif %}
+
     <!-- Meta tags and other head content can go here -->
 </head>
 <body>

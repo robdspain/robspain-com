@@ -204,6 +204,30 @@
             btn.onclick = (e) => { e.preventDefault(); generateAIImage(); };
             toolbar.prepend(btn);
           }
+          if (!document.getElementById('insert-video-btn')) {
+            console.log("Injecting Add Video button...");
+            const btn = document.createElement('button');
+            btn.id = 'insert-video-btn';
+            btn.innerText = "🎬 Add Video";
+            btn.style.cssText = "background: #8B5CF6; color: white; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; margin-right: 10px; cursor: pointer; height: 36px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 9999;";
+            btn.onclick = (e) => {
+              e.preventDefault();
+              const url = prompt("Paste your YouTube URL here:");
+              if (url) {
+                const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+                const match = url.match(regExp);
+                const id = (match && match[2].length == 11) ? match[2] : null;
+                if (id) {
+                  const currentBody = CMS.getEntry().getIn(['data', 'body']) || "";
+                  window.CMS.onChangeField('body', currentBody + `\n\n{% youtube "${id}" %}\n\n`);
+                  alert("Video added to the bottom of your post! You can move it anywhere you like.");
+                } else {
+                  alert("Could not find a valid YouTube ID in that link.");
+                }
+              }
+            };
+            toolbar.prepend(btn);
+          }
         }
       }, 1000);
     })();

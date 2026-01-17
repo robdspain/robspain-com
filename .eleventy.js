@@ -9,7 +9,34 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy("src/robots.txt");
   eleventyConfig.addPassthroughCopy("src/sitemap.xml");
 
-  // YouTube Shortcode
+  // Custom Markdown Settings
+  let markdownIt = require("markdown-it")({
+    html: true,
+    breaks: true,
+    linkify: true
+  });
+
+  // Auto-embed YouTube logic
+  const originalRender = markdownIt.renderer.rules.text || function(tokens, idx, options, env, self) {
+    return tokens[idx].content;
+  };
+
+  markdownIt.renderer.rules.text = function(tokens, idx, options, env, self) {
+    const content = tokens[idx].content.trim();
+    const youtubeRegex = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})$/;
+    const match = content.match(youtubeRegex);
+
+    if (match && match[1]) {
+      return `<div class="video-container">
+        <iframe src="https://www.youtube.com/embed/${match[1]}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen title="YouTube video player"></iframe>
+      </div>`;
+    }
+    return originalRender(tokens, idx, options, env, self);
+  };
+
+  eleventyConfig.setLibrary("md", markdownIt);
+
+  // YouTube Shortcode (existing)
   eleventyConfig.addShortcode("youtube", function(id) {
     return `<div class="video-container">
       <iframe src="https://www.youtube.com/embed/${id}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen title="YouTube video player"></iframe>

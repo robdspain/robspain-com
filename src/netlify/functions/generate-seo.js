@@ -1,20 +1,21 @@
 // src/netlify/functions/generate-seo.js
-const { OpenAI } = require("openai");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  const { OPENAI_API_KEY } = process.env;
-  if (!OPENAI_API_KEY) {
+  const { GEMINI_API_KEY } = process.env;
+  if (!GEMINI_API_KEY) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: "Missing OPENAI_API_KEY environment variable" }),
+      body: JSON.stringify({ error: "Missing GEMINI_API_KEY environment variable" }),
     };
   }
 
-  const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
+  const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   try {
     const { title, body } = JSON.parse(event.body || '{}');
@@ -28,21 +29,22 @@ exports.handler = async (event) => {
       4. A short 2-sentence excerpt for the blog list.
 
       Post Title: ${title}
-      Post Content: ${body.substring(0, 2000)} // Limiting to first 2000 chars
+      Post Content: ${body.substring(0, 3000)}
 
-      Return the result ONLY as a JSON object with the keys: metaTitle, metaDesc, keywords (as an array), and excerpt.
+      Return the result ONLY as a raw JSON object string (no markdown formatting, no backticks) with the keys: metaTitle, metaDesc, keywords (as an array), and excerpt.
     `;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [{ role: "user", content: prompt }],
-      response_format: { type: "json_object" },
-    });
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+    
+    // Attempt to parse text, cleaning up any markdown artifacts if Gemini adds them
+    const cleanedJson = text.replace(/```json|```/gi, '').trim();
 
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: response.choices[0].message.content,
+      body: cleanedJson,
     };
   } catch (error) {
     return {

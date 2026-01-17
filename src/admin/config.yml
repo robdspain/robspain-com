@@ -2,7 +2,6 @@ backend:
   name: github
   repo: robdspain/robspain-com
   branch: main
-  base_url: https://robspain.com
   auth_endpoint: /.netlify/functions/auth
 
 media_folder: "src/public/images/uploads"

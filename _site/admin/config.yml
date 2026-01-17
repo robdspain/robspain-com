@@ -1,0 +1,31 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "src/public/images/uploads"
+public_folder: "/public/images/uploads"
+
+collections:
+  - name: "blog"
+    label: "Blog"
+    folder: "src/posts"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - {label: "Layout", name: "layout", widget: "hidden", default: "post.njk"}
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Publish Date", name: "date", widget: "datetime"}
+      - {label: "Featured Image", name: "image", widget: "image"}
+      - {label: "Body", name: "body", widget: "markdown"}
+      - {label: "Tags", name: "tags", widget: "list", default: ["post"]}
+      - {label: "Featured", name: "featured", widget: "boolean", default: false, required: false}
+      - label: "SEO & Social"
+        name: "seo"
+        widget: "object"
+        collapsed: true
+        fields:
+          - {label: "Meta Title", name: "metaTitle", widget: "string", required: false, hint: "Title for Google and Social Cards (defaults to Post Title)"}
+          - {label: "Meta Description", name: "metaDesc", widget: "text", required: false, hint: "Description for Google results"}
+          - {label: "Social Image", name: "socialImage", widget: "image", required: false, hint: "Specific image for Facebook/Twitter sharing (1200x630 recommended)"}
+          - {label: "Draft Tweet / Caption", name: "socialCaption", widget: "text", required: false, hint: "Draft your social media caption here to copy/paste later"}
+admin_path: /admin

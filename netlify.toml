@@ -1,3 +1,6 @@
-[functions]
-  directory = "netlify/functions"
+[build]
+  command = "npx @11ty/eleventy"
+  publish = "_site"
 
+[functions]
+  directory = "src/netlify/functions"

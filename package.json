@@ -4,14 +4,15 @@
   "description": "Rob Spain - School BCBA professional website",
   "main": "index.html",
   "scripts": {
-    "dev": "netlify dev",
-    "build": "echo 'Build complete'",
+    "dev": "npx @11ty/eleventy --serve",
+    "build": "npx @11ty/eleventy",
     "deploy": "netlify deploy --prod"
   },
   "dependencies": {
     "mailgun-js": "^0.22.0"
   },
   "devDependencies": {
+    "@11ty/eleventy": "^3.1.2",
     "netlify-cli": "^17.0.0"
   },
   "keywords": [

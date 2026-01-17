@@ -1,0 +1,45 @@
+---
+layout: base.njk
+title: Blog - Rob Spain | School BCBA Insights
+description: Insights, strategies, and systematic approaches for school-based behavior analysis from Rob Spain, BCBA.
+---
+
+<header class="section-premium" style="padding-top: 140px; background: var(--gradient-hero); color: white; text-align: center;">
+    <div class="container">
+        <h1 class="display-1">School BCBA <span class="hero-title-gradient">Blog</span></h1>
+        <p class="body-large" style="color: rgba(255,255,255,0.8); max-width: 700px; margin: 1rem auto;">
+            Insights and systematic approaches to transform school behavior systems.
+        </p>
+    </div>
+</header>
+
+<section class="section-premium">
+    <div class="container">
+        <div class="cards-grid-premium" id="blog-posts">
+            {% for post in collections.blog | reverse %}
+            <article class="card-premium">
+                <div class="card-icon-premium">
+                    {% if post.data.image %}
+                        <img src="{{ post.data.image }}" alt="{{ post.data.title }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 1rem;">
+                    {% else %}
+                        <i class="fas fa-book-open"></i>
+                    {% endif %}
+                </div>
+                <h3 class="card-title-premium">{{ post.data.title }}</h3>
+                <div style="font-size: 0.85rem; color: #6b7280; margin-bottom: 0.5rem;">
+                    {{ post.date.toDateString() }}
+                </div>
+                <p class="card-description-premium">
+                    {{ post.data.description or post.templateContent | striptags | truncate(150) }}
+                </p>
+                <a href="{{ post.url }}" class="card-link-premium">Read More <i class="fas fa-arrow-right"></i></a>
+            </article>
+            {% else %}
+            <div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+                <h3>No posts yet.</h3>
+                <p>Check back soon for updates!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>

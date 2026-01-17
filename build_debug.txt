@@ -1,0 +1,9 @@
+[11ty] Writing ./_site/404/index.html from ./src/404.html (liquid)
+[11ty] Writing ./_site/index 2/index.html from ./src/index 2.html (liquid)
+[11ty] Writing ./_site/admin/index.html from ./src/admin/index.html (liquid)
+[11ty] Writing ./_site/blog/index.html from ./src/blog.njk
+[11ty] Writing ./_site/cv/index.html from ./src/cv.njk
+[11ty] Writing ./_site/index.html from ./src/index.njk
+[11ty] Writing ./_site/privacy/index.html from ./src/privacy.njk
+[11ty] Writing ./_site/terms/index.html from ./src/terms.njk
+[11ty] Copied 20 Wrote 8 files in 0.13 seconds (v3.1.2)

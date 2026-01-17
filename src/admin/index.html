@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Content Manager</title>
+  <!-- Identity Widget for Netlify Auth -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body>
+  <!-- Decap CMS Script -->
+  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <script>
+    CMS.registerPreviewStyle("/premium-styles.css");
+    CMS.registerPreviewStyle("/premium-responsive.css");
+    CMS.registerPreviewStyle("/styles.css");
+    {% raw %}
+    CMS.registerEditorComponent({
+      id: "youtube",
+      label: "YouTube",
+      fields: [{name: 'id', label: 'YouTube Video ID or URL', widget: 'string'}],
+      pattern: /^{% youtube "([^"]+)" %}$/,
+      fromBlock: function(match) {
+        return { id: match[1] };
+      },
+      toBlock: function(obj) {
+        // Extract ID if full URL is pasted
+        let id = obj.id;
+        if (id.includes('v=')) {
+          id = id.split('v=')[1].split('&')[0];
+        } else if (id.includes('youtu.be/')) {
+          id = id.split('youtu.be/')[1].split('?')[0];
+        }
+        return `{% youtube "${id}" %}`;
+      },
+      toPreview: function(obj) {
+        return `<img src="http://img.youtube.com/vi/${obj.id}/0.jpg" alt="YouTube Video" />`;
+      }
+    });
+    {% endraw %}
+  </script>
+</body>
+</html>

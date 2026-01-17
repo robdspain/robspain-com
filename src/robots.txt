@@ -1,0 +1,34 @@
+# Educational Professional - Rob Spain, BCBA
+# Educational consultant and behavior analyst serving school districts
+# Content-Type: Professional Development, Educational Consulting
+# Audience: Educators, School Administrators, Special Education Professionals
+
+User-agent: *
+Allow: /
+
+# Educational Content Classification
+# Professional: Board Certified Behavior Analyst (BCBA)
+# Purpose: Educational consulting and professional development
+# Focus: School-based behavior analysis and teacher training
+
+# Sitemap location
+Sitemap: https://robspain.com/sitemap.xml
+
+# Allow all search engines to crawl the site
+# Priority pages for crawling
+Allow: /index.html
+Allow: /cv.html
+Allow: /privacy.html
+Allow: /terms.html
+
+# Allow images and assets
+Allow: /public/images/
+Allow: /*.css
+Allow: /*.js
+
+# Block sensitive areas (if any)
+Disallow: /.claude/
+Disallow: /private/
+
+# Crawl delay (optional - remove if not needed)
+# Crawl-delay: 1

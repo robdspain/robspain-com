@@ -1,0 +1,49 @@
+---
+layout: base.njk
+---
+
+<header class="section-premium" style="padding-top: 140px; background: var(--gradient-hero); color: white; text-align: center;">
+    <div class="container" style="max-width: 800px;">
+        <div class="section-badge-premium">Blog Post</div>
+        <h1 class="display-2" style="font-size: 2.5rem; margin-bottom: 1rem;">{{ title }}</h1>
+        <div style="color: rgba(255,255,255,0.7); font-size: 1rem;">
+            <i class="far fa-calendar-alt"></i> {{ date.toDateString() }}
+        </div>
+    </div>
+</header>
+
+<section class="section-premium" style="padding: 4rem 0;">
+    <div class="container" style="max-width: 800px;">
+        {% if image %}
+        <div style="margin-bottom: 3rem; border-radius: 1rem; overflow: hidden; box-shadow: var(--shadow-xl);">
+            <img src="{{ image }}" alt="{{ title }}" style="width: 100%; height: auto; display: block;">
+        </div>
+        {% endif %}
+
+        <div class="about-copy" style="font-size: 1.125rem; line-height: 1.8; color: var(--gray-700);">
+            {{ content | safe }}
+        </div>
+
+        <!-- Share & Navigation -->
+        <div style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--gray-200);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+                <div style="font-weight: 600; color: var(--gray-600);">Share this insights:</div>
+                <div style="display: flex; gap: 1rem;">
+                    <a href="https://twitter.com/intent/tweet?text={{ title | urlencode }}&url=https://robspain.com{{ page.url }}" target="_blank" rel="noopener" class="btn-secondary-premium" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                        <i class="fab fa-twitter"></i> Twitter
+                    </a>
+                    <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://robspain.com{{ page.url }}" target="_blank" rel="noopener" class="btn-secondary-premium" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                        <i class="fab fa-linkedin"></i> LinkedIn
+                    </a>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=https://robspain.com{{ page.url }}" target="_blank" rel="noopener" class="btn-secondary-premium" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                        <i class="fab fa-facebook"></i> Facebook
+                    </a>
+                </div>
+            </div>
+
+            <a href="/blog.html" class="btn-secondary-premium" style="display: inline-flex; width: auto;">
+                <i class="fas fa-arrow-left"></i> Back to Blog
+            </a>
+        </div>
+    </div>
+</section>

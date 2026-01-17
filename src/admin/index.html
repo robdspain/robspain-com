@@ -169,22 +169,28 @@
 
       // Periodically check for the editor to inject the buttons
       setInterval(() => {
-        const toolbar = document.querySelector('div[class*="nc-app-header-actions"]');
-        if (toolbar) {
+        // Try multiple possible selectors for the toolbar
+        const toolbar = document.querySelector('div[class*="nc-app-header-actions"]') || 
+                        document.querySelector('div[class*="AppHeaderActions"]') ||
+                        document.querySelector('header div:last-child');
+
+        if (toolbar && toolbar.children.length > 0) {
           if (!document.getElementById('ai-seo-btn')) {
+            console.log("Injecting AI SEO button...");
             const btn = document.createElement('button');
             btn.id = 'ai-seo-btn';
             btn.innerText = "✨ AI SEO";
-            btn.style.cssText = "background: #10B981; color: white; border: none; padding: 0 15px; border-radius: 4px; font-weight: bold; margin-right: 10px; cursor: pointer; height: 32px;";
-            btn.onclick = generateAISEO;
+            btn.style.cssText = "background: #10B981; color: white; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; margin-right: 10px; cursor: pointer; height: 36px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 9999;";
+            btn.onclick = (e) => { e.preventDefault(); generateAISEO(); };
             toolbar.prepend(btn);
           }
           if (!document.getElementById('ai-img-btn')) {
+            console.log("Injecting AI Image button...");
             const btn = document.createElement('button');
             btn.id = 'ai-img-btn';
             btn.innerText = "🎨 AI Image";
-            btn.style.cssText = "background: #3B82F6; color: white; border: none; padding: 0 15px; border-radius: 4px; font-weight: bold; margin-right: 10px; cursor: pointer; height: 32px;";
-            btn.onclick = generateAIImage;
+            btn.style.cssText = "background: #3B82F6; color: white; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; margin-right: 10px; cursor: pointer; height: 36px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 9999;";
+            btn.onclick = (e) => { e.preventDefault(); generateAIImage(); };
             toolbar.prepend(btn);
           }
         }

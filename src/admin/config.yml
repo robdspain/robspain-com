@@ -5,6 +5,8 @@ backend:
   base_url: https://robspain.com
   auth_endpoint: auth
 
+logo_url: /public/images/icon/robspain-icon.png
+
 media_folder: "src/public/images/uploads"
 public_folder: "/public/images/uploads"
 

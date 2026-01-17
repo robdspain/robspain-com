@@ -14,7 +14,15 @@ layout: base.njk
 
 <section class="section-premium" style="padding: 4rem 0;">
     <div class="container" style="max-width: 800px;">
-        {% if image %}
+        {% if youtubeUrl %}
+        <div style="margin-bottom: 3rem;">
+            {% set videoId = youtubeUrl | replace("https://www.youtube.com/watch?v=", "") | replace("https://youtu.be/", "") | replace("https://www.youtube.com/embed/", "") %}
+            {# Basic string manipulation to extract ID, assuming simple URL formats #}
+            {% youtube videoId %}
+        </div>
+        {% endif %}
+
+        {% if image and not youtubeUrl %}
         <div style="margin-bottom: 3rem; border-radius: 1rem; overflow: hidden; box-shadow: var(--shadow-xl);">
             <img src="{{ image }}" alt="{{ title }}" style="width: 100%; height: auto; display: block;">
         </div>

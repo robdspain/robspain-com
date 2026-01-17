@@ -15,7 +15,8 @@ exports.handler = async (event) => {
   }
 
   const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  // Using the latest Gemini 2.0 Flash model
+  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
   try {
     const { title, body } = JSON.parse(event.body || '{}');
@@ -29,7 +30,7 @@ exports.handler = async (event) => {
       4. A short 2-sentence excerpt for the blog list.
 
       Post Title: ${title}
-      Post Content: ${body.substring(0, 3000)}
+      Post Content: ${body.substring(0, 4000)}
 
       Return the result ONLY as a raw JSON object string (no markdown formatting, no backticks) with the keys: metaTitle, metaDesc, keywords (as an array), and excerpt.
     `;
@@ -38,7 +39,6 @@ exports.handler = async (event) => {
     const response = await result.response;
     const text = response.text();
     
-    // Attempt to parse text, cleaning up any markdown artifacts if Gemini adds them
     const cleanedJson = text.replace(/```json|```/gi, '').trim();
 
     return {

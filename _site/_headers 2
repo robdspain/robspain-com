@@ -1,0 +1,35 @@
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Cross-Origin-Resource-Policy: same-origin
+  Cross-Origin-Opener-Policy: same-origin
+  X-XSS-Protection: 0
+  Content-Security-Policy: default-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com https://www.youtube.com https://api.github.com
+
+/index.html
+  Cache-Control: max-age=0, must-revalidate
+
+/cv.html
+  Cache-Control: max-age=0, must-revalidate
+
+/privacy.html
+  Cache-Control: max-age=0, must-revalidate
+
+/terms.html
+  Cache-Control: max-age=0, must-revalidate
+
+/.netlify/functions/send-contact
+  Cache-Control: no-store
+  Content-Type: application/json; charset=utf-8
+
+/public/images/*
+  Cache-Control: public, max-age=31536000
+
+/*.css
+  Cache-Control: public, max-age=604800
+
+/*.js
+  Cache-Control: public, max-age=604800

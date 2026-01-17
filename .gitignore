@@ -45,3 +45,4 @@ dist/
 build/
 # Local Netlify folder
 .netlify
+_site/

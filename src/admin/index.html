@@ -149,11 +149,22 @@
           const data = await response.json();
           if (data.error) throw new Error(data.error);
 
-          // In Decap CMS, we can't easily "upload" via URL from a button, 
-          // so we'll show the user the image and let them know it's ready.
-          const confirmUse = confirm("I've generated a professional image for you. Would you like to see it? (You can then right-click and save it to upload)");
+          // Create a blob from base64
+          const byteCharacters = atob(data.base64);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], {type: 'image/png'});
+          const blobUrl = URL.createObjectURL(blob);
+
+          // Open image in new tab and offer download
+          const confirmUse = confirm("Gemini has generated a professional image for you! Would you like to see it? (It will open in a new tab where you can save it)");
           if (confirmUse) {
-            window.open(data.imageUrl, '_blank');
+            const win = window.open();
+            win.document.write('<img src="' + blobUrl + '" style="max-width:100%; height:auto;">');
+            win.document.write('<div style="margin-top:20px; font-family:sans-serif;"><h3>AI Image Generated!</h3><p>Right-click the image and "Save Image As" to your computer, then upload it to your post.</p></div>');
           }
           
           btn.innerText = "🎨 Image Ready!";

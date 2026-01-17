@@ -1,5 +1,5 @@
 // src/netlify/functions/generate-seo.js
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { GoogleGenAI } = require("@google/genai");
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -14,9 +14,9 @@ exports.handler = async (event) => {
     };
   }
 
-  const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+  const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
   // Using the latest Gemini 2.0 Flash model
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+  const model = ai.getGenerativeModel({ model: "gemini-2.0-flash" });
 
   try {
     const { title, body } = JSON.parse(event.body || '{}');
@@ -36,8 +36,7 @@ exports.handler = async (event) => {
     `;
 
     const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    const text = result.response.text();
     
     const cleanedJson = text.replace(/```json|```/gi, '').trim();
 

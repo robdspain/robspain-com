@@ -533,7 +533,8 @@ body {
     border-radius: var(--radius-3xl);
     overflow: hidden;
     box-shadow: var(--shadow-2xl);
-    aspect-ratio: 1 / 1;
+    aspect-ratio: auto;
+    background: transparent;
 }
 
 .hero-image-premium {
@@ -584,6 +585,27 @@ body {
     bottom: 20%;
     left: -15%;
     animation-delay: 2s;
+}
+
+/* Contact Section Contrast Fixes */
+.contact-section .section-title-premium {
+    color: white;
+}
+
+.contact-section .section-description-premium {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.contact-section .text-gradient {
+    background: linear-gradient(135deg, #34d399 0%, #6ee7b7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.contact-section .section-badge-premium {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* Animation Classes */

@@ -1706,9 +1706,8 @@
 
 /* Unified Services Section */
 .service-tiers {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-6);
+    display: flex;
+    justify-content: center;
     max-width: 1200px;
     margin: 0 auto;
     margin-top: var(--space-12);
@@ -1724,6 +1723,8 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    max-width: 400px;
+    width: 100%;
 }
 
 .service-tier:hover {

@@ -36,3 +36,13 @@ collections:
           - {label: "Meta Description", name: "metaDesc", widget: "text", required: false, hint: "Description for Google results"}
           - {label: "Social Image", name: "socialImage", widget: "image", required: false, hint: "Specific image for Facebook/Twitter sharing (1200x630 recommended)"}
           - {label: "Draft Tweet / Caption", name: "socialCaption", widget: "text", required: false, hint: "Draft your social media caption here to copy/paste later"}
+
+  - name: "video_scripts"
+    label: "Onboarding Video Scripts"
+    folder: "src/video-funnel-scripts"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Funnel Step Number", name: "step", widget: "number", value_type: "int", min: 1, max: 10}
+      - {label: "Script Content", name: "body", widget: "markdown"}

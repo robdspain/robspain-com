@@ -1,0 +1,142 @@
+---
+layout: base.njk
+title: Admin Dashboard - Rob Spain
+---
+
+<div class="admin-dashboard-premium">
+    <div class="container">
+        <div class="section-header-premium animate-fade-up">
+            <div class="section-badge-premium">Control Center</div>
+            <h2 class="section-title-premium">
+                Admin <span class="text-gradient">Dashboard</span>
+            </h2>
+            <p class="section-description-premium">
+                Manage your content and preview your onboarding sequences from one central location.
+            </p>
+        </div>
+
+        <div class="dashboard-grid-premium animate-fade-up stagger-1">
+            <!-- Blog Component -->
+            <a href="/admin/cms/index.html" class="dashboard-card-premium">
+                <div class="card-icon-premium">
+                    <i class="fas fa-edit"></i>
+                </div>
+                <div class="card-content-premium">
+                    <h3>Blog Content Manager</h3>
+                    <p>Create, edit, and publish blog posts with AI-powered SEO and image generation tools.</p>
+                    <span class="card-cta-premium">Launch Manager <i class="fas fa-arrow-right"></i></span>
+                </div>
+            </a>
+
+            <!-- Onboarding / Video Funnel Component -->
+            <a href="/admin/video-funnel-preview/" class="dashboard-card-premium">
+                <div class="card-icon-premium">
+                    <i class="fas fa-play-circle"></i>
+                </div>
+                <div class="card-content-premium">
+                    <h3>Onboarding Sequence</h3>
+                    <p>Manage and preview the 10-part "Crisis Manager to Systems Leader" video funnel.</p>
+                    <span class="card-cta-premium">View Sequence <i class="fas fa-arrow-right"></i></span>
+                </div>
+            </a>
+
+            <!-- Analytics Placeholder -->
+            <div class="dashboard-card-premium disabled">
+                <div class="card-icon-premium">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="card-content-premium">
+                    <h3>Site Analytics</h3>
+                    <p>Track engagement and conversion rates for your funnel and blog posts.</p>
+                    <span class="card-status-premium">COMING SOON</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.admin-dashboard-premium {
+    padding: 8rem 0;
+    background: #f8fafc;
+    min-height: 80vh;
+}
+
+.dashboard-grid-premium {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.dashboard-card-premium {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 24px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+}
+
+.dashboard-card-premium:hover:not(.disabled) {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+    border-color: #10B981;
+}
+
+.card-icon-premium {
+    width: 60px;
+    height: 60px;
+    background: rgba(16, 185, 129, 0.1);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #10B981;
+    margin-bottom: 1.5rem;
+}
+
+.dashboard-card-premium h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #1e293b;
+}
+
+.dashboard-card-premium p {
+    color: #64748b;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    flex-grow: 1;
+}
+
+.card-cta-premium {
+    font-weight: 600;
+    color: #10B981;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card-status-premium {
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: #e2e8f0;
+    color: #64748b;
+    padding: 4px 12px;
+    border-radius: 100px;
+    width: fit-content;
+}
+
+.dashboard-card-premium.disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    background: #f1f5f9;
+}
+</style>

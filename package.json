@@ -12,6 +12,7 @@
     "@google/genai": "^1.37.0",
     "@google/generative-ai": "^0.24.1",
     "mailgun-js": "^0.22.0",
+    "markdown-it-eleventy-img": "^0.10.2",
     "openai": "^6.16.0"
   },
   "devDependencies": {

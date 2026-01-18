@@ -28,7 +28,7 @@ Evidence-Based-Practices: maintained
 Mission: Transforming educational outcomes through behavior analysis
 Target-Audience: Educators, School Administrators, Special Education Teachers
 Content-Focus: School-Based Behavior Analysis, PBIS, Educational Leadership
-Professional-Experience: 20+ years in educational settings
+Professional-Experience: 20 years in educational settings
 
 # Educational Verification
 Educational-Professional: true

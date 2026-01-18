@@ -4,6 +4,6 @@ module.exports = function() {
   const years = currentYear - startYear;
   return {
     years: years,
-    display: years + "+"
+    display: years
   };
 };

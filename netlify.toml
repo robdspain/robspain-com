@@ -6,6 +6,12 @@
   directory = "src/netlify/functions"
 
 [[redirects]]
+  from = "http:///*"
+  to = "https://:splat"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/auth"
   to = "/.netlify/functions/auth"
   status = 200

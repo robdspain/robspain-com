@@ -180,36 +180,59 @@
 
       // Periodically check for the editor to inject the buttons
       setInterval(() => {
-        // Try multiple possible selectors for the toolbar
+        // Check if we are in the editor view
+        const isEditor = window.location.hash.includes('/entries/') || window.location.hash.includes('/new');
+        
+        if (!isEditor) {
+          // Remove buttons if we leave the editor
+          ['ai-seo-btn', 'ai-img-btn', 'insert-video-btn'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+          });
+          return;
+        }
+
+        // Target the editor header actions area
         const toolbar = document.querySelector('div[class*="nc-app-header-actions"]') || 
                         document.querySelector('div[class*="AppHeaderActions"]') ||
                         document.querySelector('header div:last-child');
 
         if (toolbar && toolbar.children.length > 0) {
+          // AI SEO Button
           if (!document.getElementById('ai-seo-btn')) {
-            console.log("Injecting AI SEO button...");
             const btn = document.createElement('button');
             btn.id = 'ai-seo-btn';
-            btn.innerText = "✨ AI SEO";
-            btn.style.cssText = "background: #10B981; color: white; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; margin-right: 10px; cursor: pointer; height: 36px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 9999;";
+            btn.innerHTML = "✨ AI SEO";
+            btn.title = "Generate Meta Title, Description, and Keywords";
+            btn.style.cssText = "background: #10B981; color: white; border: none; padding: 0 12px; border-radius: 6px; font-weight: 600; margin-right: 8px; cursor: pointer; height: 32px; font-size: 13px; transition: all 0.2s;";
+            btn.onmouseover = () => btn.style.filter = "brightness(1.1)";
+            btn.onmouseout = () => btn.style.filter = "none";
             btn.onclick = (e) => { e.preventDefault(); generateAISEO(); };
             toolbar.prepend(btn);
           }
+
+          // AI Image Button
           if (!document.getElementById('ai-img-btn')) {
-            console.log("Injecting AI Image button...");
             const btn = document.createElement('button');
             btn.id = 'ai-img-btn';
-            btn.innerText = "🎨 AI Image";
-            btn.style.cssText = "background: #3B82F6; color: white; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; margin-right: 10px; cursor: pointer; height: 36px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 9999;";
+            btn.innerHTML = "🎨 AI Image";
+            btn.title = "Generate a featured image for this post";
+            btn.style.cssText = "background: #3B82F6; color: white; border: none; padding: 0 12px; border-radius: 6px; font-weight: 600; margin-right: 8px; cursor: pointer; height: 32px; font-size: 13px; transition: all 0.2s;";
+            btn.onmouseover = () => btn.style.filter = "brightness(1.1)";
+            btn.onmouseout = () => btn.style.filter = "none";
             btn.onclick = (e) => { e.preventDefault(); generateAIImage(); };
             toolbar.prepend(btn);
           }
+
+          // Add Video Button
           if (!document.getElementById('insert-video-btn')) {
-            console.log("Injecting Add Video button...");
             const btn = document.createElement('button');
             btn.id = 'insert-video-btn';
-            btn.innerText = "🎬 Add Video";
-            btn.style.cssText = "background: #8B5CF6; color: white; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; margin-right: 10px; cursor: pointer; height: 36px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 9999;";
+            btn.innerHTML = "🎬 Add Video";
+            btn.title = "Insert a YouTube video into the post body";
+            btn.style.cssText = "background: #8B5CF6; color: white; border: none; padding: 0 12px; border-radius: 6px; font-weight: 600; margin-right: 8px; cursor: pointer; height: 32px; font-size: 13px; transition: all 0.2s;";
+            btn.onmouseover = () => btn.style.filter = "brightness(1.1)";
+            btn.onmouseout = () => btn.style.filter = "none";
             btn.onclick = (e) => {
               e.preventDefault();
               const url = prompt("Paste your YouTube URL here:");
@@ -219,10 +242,11 @@
                 const id = (match && match[2].length == 11) ? match[2] : null;
                 if (id) {
                   const currentBody = CMS.getEntry().getIn(['data', 'body']) || "";
+                  // Try to find the markdown editor and append/insert
                   window.CMS.onChangeField('body', currentBody + `\n\n{% youtube "${id}" %}\n\n`);
-                  alert("Video added to the bottom of your post! You can move it anywhere you like.");
+                  alert("Video code added to the bottom of the post body. You can move it anywhere!");
                 } else {
-                  alert("Could not find a valid YouTube ID in that link.");
+                  alert("Invalid YouTube URL.");
                 }
               }
             };

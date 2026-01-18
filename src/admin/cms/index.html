@@ -180,14 +180,17 @@
 
       // Periodically check for the editor to inject the buttons
       setInterval(() => {
-        // Check if we are in the editor view
-        const isEditor = window.location.hash.includes('/entries/') || window.location.hash.includes('/new');
+        try {
+          // Check if we are in the editor view
+          const isEditor = window.location.hash.includes('/entries/') || window.location.hash.includes('/new');
         
         if (!isEditor) {
           // Remove buttons if we leave the editor
           ['ai-seo-btn', 'ai-img-btn', 'insert-video-btn'].forEach(id => {
             const el = document.getElementById(id);
-            if (el) el.remove();
+            if (el && el.parentNode) {
+              el.parentNode.removeChild(el);
+            }
           });
           return;
         }
@@ -197,7 +200,7 @@
                         document.querySelector('div[class*="AppHeaderActions"]') ||
                         document.querySelector('header div:last-child');
 
-        if (toolbar && toolbar.children.length > 0) {
+        if (toolbar && toolbar.children && toolbar.children.length > 0) {
           // AI SEO Button
           if (!document.getElementById('ai-seo-btn')) {
             const btn = document.createElement('button');
@@ -253,6 +256,9 @@
             toolbar.prepend(btn);
           }
         }
+      } catch (error) {
+        console.warn('CMS enhancement error:', error);
+      }
       }, 1000);
     })();
 

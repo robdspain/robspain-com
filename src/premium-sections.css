@@ -369,27 +369,27 @@
 .proposition-icon {
     width: 48px;
     height: 48px;
-    background: rgba(16, 185, 129, 0.1);
+    background: rgba(16, 185, 129, 0.15);
     border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: var(--space-6);
-    color: var(--primary-400);
+    color: #10b981 !important; /* High contrast emerald icon color */
     font-size: 1.25rem;
     transition: all 0.3s ease;
 }
 
 .proposition-card:hover .proposition-icon {
-    background: var(--primary-500);
-    color: white;
+    background: #10b981;
+    color: #ffffff !important;
     transform: scale(1.1) rotate(5deg);
 }
 
 .proposition-card h3 {
     font-size: 1.25rem;
     font-weight: 700;
-    color: white;
+    color: #ffffff !important; /* Force high contrast on dark background */
     margin-bottom: var(--space-4);
     line-height: 1.4;
 }
@@ -397,10 +397,13 @@
 .proposition-card p {
     font-size: 1.05rem;
     line-height: 1.6;
-    color: var(--gray-400);
+    color: #cbd5e1 !important; /* Force high contrast (light slate) on dark background */
     margin: 0;
     flex-grow: 1;
 }
+
+/* NOTE: NEVER USE BLACK OR DARK TEXT IN THE PROPOSITION SECTION. 
+   IT HAS A DARK BACKGROUND (#0f172a) AND REQUIRES LIGHT TEXT FOR ACCESSIBILITY. */
 
 @media (max-width: 1024px) {
     .proposition-grid {

@@ -358,6 +358,7 @@
     text-align: center;
     position: relative;
     overflow: hidden;
+    margin-bottom: 48px;
 }
 
 .transformation-quote::before {

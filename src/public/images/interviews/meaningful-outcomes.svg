@@ -1,0 +1,39 @@
+<svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#064e3b;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#10b981;stop-opacity:1" />
+        </linearGradient>
+        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" stroke-width="0.5" opacity="0.1"/>
+        </pattern>
+    </defs>
+    
+    <!-- Background -->
+    <rect width="1280" height="720" fill="url(#bgGradient)" />
+    <rect width="1280" height="720" fill="url(#grid)" />
+    
+    <!-- Decorative Elements -->
+    <circle cx="1100" cy="150" r="200" fill="white" opacity="0.05" />
+    <circle cx="150" cy="600" r="150" fill="white" opacity="0.05" />
+    
+    <!-- Title Section -->
+    <rect x="100" y="200" width="800" height="320" rx="20" fill="black" opacity="0.2" />
+    
+    <text x="140" y="320" font-family="Inter, Arial, sans-serif" font-size="72" font-weight="900" fill="white" letter-spacing="-2">ACHIEVING</text>
+    <text x="140" y="400" font-family="Inter, Arial, sans-serif" font-size="72" font-weight="900" fill="white" letter-spacing="-2">MEANINGFUL</text>
+    <text x="140" y="480" font-family="Inter, Arial, sans-serif" font-size="72" font-weight="900" fill="white" letter-spacing="-2">OUTCOMES</text>
+    
+    <text x="140" y="560" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="600" fill="#34d399">IN SCHOOLS (PFA/SBT)</text>
+    
+    <!-- Video Icon / Play Button -->
+    <g transform="translate(1000, 360)">
+        <circle r="100" fill="white" opacity="0.2" />
+        <circle r="80" fill="white" />
+        <path d="M -20 -30 L 40 0 L -20 30 Z" fill="#059669" />
+    </g>
+    
+    <!-- Author Badge -->
+    <rect x="140" y="120" width="300" height="50" rx="25" fill="#34d399" />
+    <text x="290" y="155" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700" fill="#064e3b">ROB SPAIN, BCBA</text>
+</svg>

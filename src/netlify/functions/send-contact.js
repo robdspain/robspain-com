@@ -64,7 +64,8 @@ exports.handler = async function(event) {
     <p><strong>Message:</strong><br>${escapeHtml(message).replace(/\n/g, '<br>')}</p>
   `;
 
-  const auth = Buffer.from(`api:${MAILGUN_API_KEY}`).toString('base64');
+  const authKey = MAILGUN_API_KEY.startsWith('api:') ? MAILGUN_API_KEY : `api:${MAILGUN_API_KEY}`;
+  const auth = Buffer.from(authKey).toString('base64');
   const body = new URLSearchParams({
     from: fromAddress,
     to: MAILGUN_TO_EMAIL,

@@ -128,11 +128,14 @@ class VideoFunnel {
             container.addEventListener('click', (e) => {
                 if (e.target.closest('.optin-overlay')) return;
                 
+                const step = this.steps[this.currentIndex];
+                if (!step) return;
+
                 // Show the script content as if it were the video
                 container.innerHTML = `
                     <div class="script-content-view animate-fade-up" style="text-align: left; padding: 2rem; overflow-y: auto; max-height: 100%; width: 100%; background: #0f172a;">
                         <div style="max-width: 600px; margin: 0 auto;">
-                            ${step.content}
+                            ${step.content || '<p>No script content available for this step.</p>'}
                         </div>
                     </div>
                 `;

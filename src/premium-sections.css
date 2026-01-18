@@ -315,61 +315,108 @@
     transform: translateX(2px);
 }
 
-/* Value Proposition Section */
+/* Value Proposition Section - Modern Bento Style */
 .value-proposition-section {
-    background: #1a1a1a;
-    padding: 0 0 var(--space-16) 0;
-    border-bottom: 1px solid #333;
+    background: #0f172a;
+    padding: var(--space-20) 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.value-grid {
+.proposition-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: var(--space-8);
-    max-width: 1400px;
-    margin: var(--space-6) auto 0;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.value-item {
-    background: transparent;
-    padding: var(--space-8);
-    border-radius: var(--radius-lg);
-    border-left: 4px solid var(--primary-500);
-    transition: all 0.3s ease;
-    font-size: 1.125rem;
-    line-height: 1.7;
-    color: white;
-    font-weight: 400;
+.proposition-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-10);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
-.value-item:hover {
+.proposition-card:hover {
     background: rgba(255, 255, 255, 0.05);
-    border-left-color: var(--primary-400);
+    border-color: var(--primary-500);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.5);
 }
 
-.value-item strong {
+.proposition-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary-500), transparent);
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+}
+
+.proposition-card:hover::before {
+    transform: scaleX(1);
+}
+
+.proposition-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(16, 185, 129, 0.1);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--space-6);
     color: var(--primary-400);
-    font-weight: 700;
-    display: block;
-    margin-bottom: 0.75rem;
     font-size: 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.proposition-card:hover .proposition-icon {
+    background: var(--primary-500);
+    color: white;
+    transform: scale(1.1) rotate(5deg);
+}
+
+.proposition-card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: var(--space-4);
+    line-height: 1.4;
+}
+
+.proposition-card p {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--gray-400);
+    margin: 0;
+    flex-grow: 1;
 }
 
 @media (max-width: 1024px) {
-    .value-grid {
+    .proposition-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: var(--space-6);
     }
 }
 
 @media (max-width: 768px) {
-    .value-grid {
+    .proposition-grid {
         grid-template-columns: 1fr;
-        gap: var(--space-4);
+        gap: var(--space-6);
     }
-
-    .value-proposition-section {
-        padding: var(--space-12) 0;
+    
+    .proposition-card {
+        padding: var(--space-8);
     }
 }
 

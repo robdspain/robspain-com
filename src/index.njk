@@ -1,7 +1,7 @@
 ---
 layout: base.njk
-title: Rob Spain - School BCBA | 20+ Years Experience
-description: Rob Spain, School BCBA with 20+ years experience helping educators transform challenging behaviors. Founder of Behavior School platform with proven systematic approaches.
+title: Rob Spain - School BCBA | {{ experience.display }} Years Experience
+description: Rob Spain, School BCBA with {{ experience.display }} years experience helping educators transform challenging behaviors. Founder of Behavior School platform with proven systematic approaches.
 ---
 
 <!-- Premium Hero Section -->
@@ -207,7 +207,7 @@ description: Rob Spain, School BCBA with 20+ years experience helping educators 
             </div>
             <div class="about-grid">
                 <div class="about-copy animate-fade-up">
-                    <p>Rob Spain is the leading School BCBA, redefining what it means for behavior analysts to work in public education. As a recognized School BCBA with over 25 years in schools, Rob Spain has shown that BCBAs aren't just crisis managers—they are systems leaders who can transform outcomes for students and staff across all tiers of support.</p>
+                    <p>Rob Spain is the leading School BCBA, redefining what it means for behavior analysts to work in public education. As a recognized School BCBA with over {{ experience.years }} years in schools, Rob Spain has shown that BCBAs aren't just crisis managers—they are systems leaders who can transform outcomes for students and staff across all tiers of support.</p>
 
                     <p>Rob proved this by creating Behavior School, an ecosystem of AI-powered tools, training programs, and professional networks designed to give school-based BCBAs and educators the structure they need to succeed. From Behavior Study Tools—an infinitely generating BCBA exam prep platform—to micro-apps for IEP goals, FBAs, and supervision, his innovations are already shaping daily practice in classrooms across the country.</p>
 
@@ -229,7 +229,7 @@ description: Rob Spain, School BCBA with 20+ years experience helping educators 
         <div class="container">
             <div class="hero-stats-premium animate-fade-up">
                 <div class="stat-premium">
-                    <span class="stat-number-premium" data-counter="24">0</span>
+                    <span class="stat-number-premium" data-counter="{{ experience.years }}" data-counter-exp>0</span>
                     <span class="stat-label-premium">Years in Education</span>
                 </div>
                 <div class="stat-premium">
@@ -386,7 +386,7 @@ description: Rob Spain, School BCBA with 20+ years experience helping educators 
                                 <span>GET FREE MASTERCLASS</span>
                                 <i class="fas fa-arrow-right"></i>
                             </a>
-                            <p class="cta-subtitle">Used successfully in 25+ years of school-based practice</p>
+                            <p class="cta-subtitle">Used successfully in <span class="js-years-exp">{{ experience.display }}</span> years of school-based practice</p>
                         </div>
                     </div>
                 </div>
@@ -408,7 +408,7 @@ description: Rob Spain, School BCBA with 20+ years experience helping educators 
                     </div>
 
                     <div class="story-paragraph">
-                        <p>For over 25 years, I've worked in school settings, and I've experienced the frustration of reactive crisis management, the struggle of getting teacher buy-in, and the overwhelming complexity of educational systems.</p>
+                        <p>For over <span class="js-years-exp">{{ experience.years }}</span> years, I've worked in school settings, and I've experienced the frustration of reactive crisis management, the struggle of getting teacher buy-in, and the overwhelming complexity of educational systems.</p>
                     </div>
 
                     <div class="story-paragraph">
@@ -450,7 +450,7 @@ description: Rob Spain, School BCBA with 20+ years experience helping educators 
 
                             <div class="credentials-stats">
                                 <div class="stat-item">
-                                    <div class="stat-number">25+</div>
+                                    <div class="stat-number js-years-exp">{{ experience.display }}</div>
                                     <div class="stat-label">Years School Experience</div>
                                 </div>
                                 <div class="stat-item">

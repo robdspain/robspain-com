@@ -175,6 +175,22 @@
       (function(){
         var el = document.getElementById('current-year');
         if (el) el.textContent = new Date().getFullYear();
+        
+        // Dynamically update years of experience
+        var startYear = 2001;
+        var currentYear = new Date().getFullYear();
+        var years = currentYear - startYear;
+        var yearsDisplay = years + "+";
+        
+        // Update all elements with the js-years-exp class
+        document.querySelectorAll('.js-years-exp').forEach(function(element) {
+          element.textContent = yearsDisplay;
+        });
+        
+        // Update data-counter attributes for the index page stats
+        document.querySelectorAll('[data-counter-exp]').forEach(function(element) {
+          element.setAttribute('data-counter', years);
+        });
       })();
     </script>
 </body>

@@ -84,12 +84,24 @@ exports.handler = async function(event) {
       body,
     });
 
-    const data = await res.json().catch(() => ({}));
+    const responseText = await res.text();
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
+      data = { raw: responseText };
+    }
+
     if (!res.ok) {
+      console.error('Mailgun error response:', responseText);
       return {
         statusCode: res.status,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: 'Mailgun error', details: data }),
+        body: JSON.stringify({ 
+          error: 'Mailgun error', 
+          status: res.status,
+          details: data 
+        }),
       };
     }
 

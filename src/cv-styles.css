@@ -131,11 +131,11 @@ body {
 
 /* Hero Section */
 .cv-hero {
-    min-height: 100vh;
+    min-height: auto;
     display: flex;
     align-items: center;
     position: relative;
-    padding: 8rem 2rem 4rem;
+    padding: 5rem 2rem 3rem;
     overflow: hidden;
 }
 
@@ -765,7 +765,7 @@ body {
     }
     
     .cv-hero {
-        padding: 6rem 1rem 3rem;
+        padding: 4rem 1rem 2rem;
     }
     
     .profile-image {

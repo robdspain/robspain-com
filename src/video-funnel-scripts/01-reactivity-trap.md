@@ -1,10 +1,16 @@
 ---
-title: "01: The Reactivity Trap"
-order: 1
-job: "The Hook (Pattern Interrupt)"
+title: "Video 01: The Reactivity Trap & Admin Setup"
+series: "school-bcba"
+step: 1
 ---
-If you’re a School BCBA and you feel like your entire day is just running from one fire to the next, I have something important to tell you: It’s not your fault, but it *is* your problem.
+**[Scene: Rob on camera, professional office background]**
 
-Most of us were trained to be clinical experts, not systems leaders. We’re taught to fix one student at a time. But in a school with 600 kids, that math never works.
+**Rob:** Most organizations start with a vision of growth, but they immediately fall into "The Reactivity Trap." You spend your first week just trying to get your team through the front door. 
 
-In the next 60 seconds, I’m going to show you why your clinical expertise is actually what’s keeping you stuck in the reactivity trap. Click the next video.
+Right now, we have a manual bottleneck. Every single board member who signs up is stuck in "Pending" until someone else logs in to click 'Approve.' It kills your momentum. 
+
+**[Visual: Graphic showing "Whitelist Domain"]**
+
+**Rob:** That’s why the first step in our new onboarding is Domain Whitelisting. If your team uses your official email—like @baesig.org—they are auto-approved. We’re also adding a notification badge to the Admin button so you never have a stale request sitting in the queue for months. 
+
+We’re moving from permission-based friction to instant access. Let’s get your core team inside so you can stop reacting and start leading.

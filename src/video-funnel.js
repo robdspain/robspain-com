@@ -1,104 +1,66 @@
 /**
  * Video Funnel Interactive Logic
- * Handles progress tracking, video switching, and gating states.
+ * Handles progress tracking, single video switching, and gating states.
  */
 
 class VideoFunnel {
     constructor() {
-        this.currentStep = 1;
+        // Initialize steps from global data or fallback to defaults
+        this.steps = window.videoFunnelData && window.videoFunnelData.length > 0 
+            ? window.videoFunnelData 
+            : [
+                { id: 1, title: "The Reactivity Trap" },
+                { id: 2, title: "The Myth of Individual Support" },
+                { id: 3, title: "University-Validated Shifts" },
+                { id: 4, title: "The 10-Minute Staff Hack" }
+            ];
+
+        this.currentIndex = 0;
         this.unlockedUntil = 3; // Initial free videos (1-3)
         this.isGated = true; // Gate is active at step 4
-        this.steps = [
-            { id: 1, title: "The Reactivity Trap" },
-            { id: 2, title: "The Myth of Individual Support" },
-            { id: 3, title: "University-Validated Shifts" },
-            { id: 4, title: "The 10-Minute Staff Hack" },
-            { id: 5, title: "The 5-Pillar System" },
-            { id: 6, title: "Automation for BCBAs" },
-            { id: 7, title: "The 'No Time' Fallacy" },
-            { id: 8, title: "From Chaos to Confidence" },
-            { id: 9, title: "The 8-Week Transformation" },
-            { id: 10, title: "Final Choice" }
-        ];
-
+        
         this.init();
     }
 
     init() {
         // Check local storage for previous unlock
         if (localStorage.getItem('videoFunnelUnlocked') === 'true') {
-            this.unlockedUntil = 10;
+            this.unlockedUntil = this.steps.length;
             this.isGated = false;
         }
 
-        this.renderGrid();
+        this.renderCurrentStep();
         this.setupEventListeners();
         this.updateProgress();
     }
 
-    renderGrid() {
-        const grid = document.querySelector('.video-bento-grid');
-        if (!grid) return;
+    renderCurrentStep() {
+        const step = this.steps[this.currentIndex];
+        if (!step) return;
 
-        grid.innerHTML = this.steps.map(step => {
-            const isLocked = step.id > this.unlockedUntil;
-            const isGateKeeper = isLocked && step.id === 4 && this.isGated;
-            const lockedClass = isLocked ? 'locked' : '';
-            const gateClass = isGateKeeper ? 'gate-keeper' : '';
-            const activeClass = step.id === this.currentStep ? 'active' : '';
+        const isLocked = step.id > this.unlockedUntil;
+        const isGateKeeper = isLocked && step.id === 4 && this.isGated;
 
-            return `
-            <div class="video-step-card ${lockedClass} ${gateClass} ${activeClass}" 
-                 data-id="${step.id}">
-                <div class="step-number">STEP ${step.id < 10 ? '0' + step.id : step.id}</div>
-                <div class="step-title">${step.title}</div>
-                ${isLocked ? '<div class="lock-badge"><i class="fas fa-lock"></i></div>' : ''}
-            </div>
-        `}).join('');
-    }
-
-    setupEventListeners() {
-        const grid = document.querySelector('.video-bento-grid');
-        if (grid) {
-            grid.addEventListener('click', (e) => {
-                const card = e.target.closest('.video-step-card');
-                if (!card) return;
-
-                // Allow click if not locked OR if it is the gate keeper (step 4)
-                if (card.classList.contains('locked') && !card.classList.contains('gate-keeper')) return;
-
-                const id = parseInt(card.dataset.id);
-                this.switchVideo(id);
-            });
-        }
-    }
-
-    switchVideo(id) {
-        this.currentStep = id;
-        
-        // Update Grid UI
-        document.querySelectorAll('.video-step-card').forEach(card => {
-            card.classList.remove('active');
-            if (parseInt(card.dataset.id) === id) card.classList.add('active');
-        });
-
-        // Update Title
+        // Update titles
         const activeTitle = document.querySelector('.active-video-title');
-        if (activeTitle) activeTitle.textContent = this.steps.find(s => s.id === id).title;
+        const currentStepTitle = document.querySelector('.current-step-title');
+        const stepLabel = document.querySelector('.step-label');
+        
+        if (activeTitle) activeTitle.textContent = step.title;
+        if (currentStepTitle) currentStepTitle.textContent = step.title;
+        if (stepLabel) stepLabel.textContent = `STEP ${step.id < 10 ? '0' + step.id : step.id}`;
 
         // Handle Content Display
         const container = document.querySelector('.video-placeholder-overlay');
         if (!container) return;
 
-        // Clear container
         container.innerHTML = '';
 
-        if (id === 4 && this.isGated) {
-            // Show Opt-in Form
+        if (isGateKeeper) {
             container.innerHTML = `
                 <div class="optin-overlay animate-fade-up">
                     <h3 class="optin-title">Unlock The Full Series</h3>
-                    <p style="margin-bottom: 1.5rem; color: #cbd5e1;">Enter your email to unlock the "10-Minute Staff Reset Script" and the remaining 6 videos.</p>
+                    <p style="margin-bottom: 1.5rem; color: #cbd5e1;">Enter your email to unlock the "10-Minute Staff Reset Script" and the remaining videos.</p>
                     <form class="optin-form" id="funnel-optin-form">
                         <input type="email" class="optin-input" placeholder="Your Best Email Address" required>
                         <button type="submit" class="optin-btn">Unlock Now <i class="fas fa-unlock"></i></button>
@@ -106,35 +68,83 @@ class VideoFunnel {
                 </div>
             `;
 
-            // Attach submit listener dynamically
             document.getElementById('funnel-optin-form').addEventListener('submit', (e) => {
                 e.preventDefault();
                 const email = e.target.querySelector('input').value;
-                if(email) {
-                    this.handleOptIn(email);
-                }
+                if(email) this.handleOptIn(email);
             });
-
         } else {
-            // Show Video Placeholder (or standard play button)
             container.innerHTML = `
                 <div class="play-btn-large">
                     <i class="fas fa-play"></i>
                 </div>
-                <h3 class="active-video-title">${this.steps.find(s => s.id === id).title}</h3>
-                <p style="color: #94a3b8; margin-top: 1rem;">Video Player Placeholder</p>
+                <h3 class="active-video-title">${step.title}</h3>
+                <p style="color: #94a3b8; margin-top: 1rem;">Click to Play Video</p>
             `;
+        }
+
+        // Update Next Button State
+        const nextBtn = document.getElementById('next-video');
+        if (nextBtn) {
+            if (this.currentIndex >= this.steps.length - 1) {
+                nextBtn.innerHTML = '<span>Finish Series</span> <i class="fas fa-check"></i>';
+            } else {
+                nextBtn.innerHTML = '<span>Next Video</span> <i class="fas fa-arrow-right"></i>';
+            }
+            
+            // Disable if next is locked and we haven't unlocked yet
+            const nextStep = this.steps[this.currentIndex + 1];
+            if (nextStep && nextStep.id > this.unlockedUntil && !(nextStep.id === 4 && this.isGated)) {
+                nextBtn.style.opacity = '0.5';
+                nextBtn.style.pointerEvents = 'none';
+            } else {
+                nextBtn.style.opacity = '1';
+                nextBtn.style.pointerEvents = 'auto';
+            }
+        }
+    }
+
+    setupEventListeners() {
+        const nextBtn = document.getElementById('next-video');
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                if (this.currentIndex < this.steps.length - 1) {
+                    this.currentIndex++;
+                    this.renderCurrentStep();
+                    window.scrollTo({
+                        top: document.getElementById('free-training').offsetTop - 100,
+                        behavior: 'smooth'
+                    });
+                } else {
+                    // Final CTA or restart
+                    alert("Congratulations on completing the series!");
+                }
+            });
+        }
+
+        // Allow clicking the placeholder to "play"
+        const container = document.querySelector('.video-placeholder-overlay');
+        if (container) {
+            container.addEventListener('click', (e) => {
+                if (e.target.closest('.optin-overlay')) return;
+                
+                // Show the script content as if it were the video
+                container.innerHTML = `
+                    <div class="script-content-view animate-fade-up" style="text-align: left; padding: 2rem; overflow-y: auto; max-height: 100%; width: 100%; background: #0f172a;">
+                        <div style="max-width: 600px; margin: 0 auto;">
+                            ${step.content}
+                        </div>
+                    </div>
+                `;
+                container.style.cursor = 'default';
+                container.style.background = '#0f172a';
+            });
         }
     }
 
     handleOptIn(email) {
-        // Simulate API call / Email capture
         console.log("Opt-in captured:", email);
-        
-        // Save state
         localStorage.setItem('videoFunnelUnlocked', 'true');
-        
-        // Unlock
         this.unlockRest();
     }
 
@@ -149,17 +159,14 @@ class VideoFunnel {
     }
 
     unlockRest() {
-        this.unlockedUntil = 10;
+        this.unlockedUntil = this.steps.length;
         this.isGated = false;
-        this.renderGrid();
+        this.renderCurrentStep();
         this.updateProgress();
-        
-        // Automatically switch to the now-unlocked video 4 view (remove form)
-        this.switchVideo(4);
     }
 }
 
-// Initialize when section becomes visible
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
     if (document.querySelector('.video-funnel-section')) {
         window.videoFunnel = new VideoFunnel();

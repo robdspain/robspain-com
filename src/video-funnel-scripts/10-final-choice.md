@@ -1,10 +1,12 @@
 ---
-title: "10: Systems Leader vs. Crisis Manager"
-order: 10
-job: "The Final Push"
+title: "Video 10: The Systems Leader Choice"
+series: "school-bcba"
+step: 10
 ---
-You have a choice. You can keep running toward the fires, or you can start building the safety net.
+**[Scene: Rob close-up, powerful finish]**
 
-Schools run better when BCBAs lead. You have the skills. You just need the system. I’m here to give it to you.
+**Rob:** You have a choice today. You can keep running toward the fires, or you can start building the safety net. 
 
-Click the button below to join the program or book a strategy audit. Let’s transform your school together.
+Schools run better when BCBAs lead. You already have the clinical skills; you just need the system to amplify them. I’m here to give you that system. 
+
+**Rob:** Click the button below to join the program or book a strategy audit. Let’s transform your school, together. I’ll see you on the inside.

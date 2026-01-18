@@ -1,10 +1,14 @@
 ---
-title: "08: From Chaos to Confidence"
-order: 8
-job: "The Proof"
+title: "Video 08: From Chaos to Confidence"
+series: "school-bcba"
+step: 8
 ---
-Meet Sarah. She was a BCBA in a high-needs district, ready to quit in November.
+**[Scene: Rob walking outside or in a bright, positive environment]**
 
-We implemented the 5-Pillar System. By February, her "fire-fighting" calls dropped from 15 a day to 2. She finally felt like the expert she was trained to be.
+**Rob:** I want you to meet Sarah. She was a School BCBA in a high-needs district, and by November, she was ready to quit. She was the classic "Crisis Manager."
 
-You can have this same transformation. Here is how we do it together.
+**[Visual: Side-by-side "Before" vs "After"]**
+
+**Rob:** We implemented the 5-Pillar System together. By February, her crisis calls dropped from fifteen a day to just two. She wasn't running anymore; she was leading. She finally felt like the expert she was trained to be. 
+
+Sarah’s story isn't a fluke—it’s the natural result of moving from clinical intervention to systematic leadership.

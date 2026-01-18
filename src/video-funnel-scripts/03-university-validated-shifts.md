@@ -1,10 +1,16 @@
 ---
-title: "03: University-Validated Shifts"
-order: 3
-job: "The Authority"
+title: "Video 03: University-Validated Shifts & Role Flexibility"
+series: "school-bcba"
+step: 3
 ---
-As a University Faculty member teaching Graduate ABA, I started looking at the data differently.
+**[Scene: Rob walking in a professional environment]**
 
-I realized that the most successful schools don't have the best BCBAs; they have the best *systems*. We moved from clinical interventions to systematic leadership, and the referrals dropped by 40% in one semester.
+**Rob:** At the university level, we learn that systems must be flexible to survive. But in most software, roles are a maze. 
 
-I want to give you a piece of this system right now. In the next video, I'm giving you the exact 10-minute script I use to stop staff resistance.
+Currently, if an ACE Coordinator accidentally signs up as a Board Member, they’re trapped. You’d have to delete their account and start over. That’s not a system; that’s a cage.
+
+**[Visual: Admin screen showing "Re-Role" toggle]**
+
+**Rob:** We’re introducing "Re-Role" capabilities. Admins can now shift permissions with a single click from the verification screen. It’s a university-validated approach: define the person first, and let the system adapt to their changing responsibilities.
+
+By removing the role maze, we ensure your team can actually do the work they were hired to do.

@@ -1,12 +1,12 @@
 ---
-title: "07: The 'No Time' Fallacy"
-order: 7
-job: "The Objection (Time)"
+title: "Video 07: The 'No Time' Fallacy"
+series: "school-bcba"
+step: 7
 ---
-The most common thing I hear is: "Rob, I love this, but I don't have time to build systems."
+**[Scene: Rob speaking directly to camera, very earnest]**
 
-The truth is, you don't have time *not* to. Every hour you spend on a system today saves you 10 hours of crisis management next month. 
+**Rob:** The most common thing I hear from BCBAs is: "Rob, I love this, but I don't have time to build systems. I'm too busy in meetings."
 
-You’re not too busy; you’re just trapped in a loop.
+**Rob:** The truth is, you don't have time *not* to. Every hour you spend building a Tier 1 system today saves you ten hours of crisis management next month. You’re not too busy; you’re just trapped in a loop of reactivity. 
 
-Let me show you a real-world example of what happens when you break that loop.
+It’s time to break the loop. Let me show you what happens when you finally decide to invest in your system instead of just your students.

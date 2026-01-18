@@ -15,13 +15,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (entry.isIntersecting) {
                 entry.target.classList.add('visible');
                 
-                // Special handling for skill bars
-                if (entry.target.classList.contains('skill-fill')) {
-                    setTimeout(() => {
-                        entry.target.classList.add('animated');
-                    }, 200);
-                }
-                
                 // Special handling for stats counter
                 if (entry.target.classList.contains('stat-number')) {
                     animateCounter(entry.target);

@@ -13,10 +13,20 @@ exports.handler = async function(event) {
   const { MAILGUN_API_KEY, MAILGUN_DOMAIN, MAILGUN_TO_EMAIL } = process.env;
 
   if (!MAILGUN_API_KEY || !MAILGUN_DOMAIN || !MAILGUN_TO_EMAIL) {
+    const missing = [];
+    if (!MAILGUN_API_KEY) missing.push('MAILGUN_API_KEY');
+    if (!MAILGUN_DOMAIN) missing.push('MAILGUN_DOMAIN');
+    if (!MAILGUN_TO_EMAIL) missing.push('MAILGUN_TO_EMAIL');
+    
+    console.error('Missing env vars:', missing.join(', '));
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: 'Server not configured. Missing Mailgun env vars.' }),
+      body: JSON.stringify({ 
+        error: 'Server not configured', 
+        missing: missing,
+        context: process.env.NODE_ENV || 'unknown'
+      }),
     };
   }
 

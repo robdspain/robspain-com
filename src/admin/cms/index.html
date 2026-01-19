@@ -104,18 +104,52 @@
         setTimeout(function() { toast.remove(); }, 3500);
       }
 
-      function getFieldValue(fieldName) {
+      function findField(fieldName) {
+        // Try multiple selector strategies for Decap CMS fields
         var selectors = [
           'input[id*="' + fieldName + '"]',
           'textarea[id*="' + fieldName + '"]',
+          'input[id*="' + fieldName.toLowerCase() + '"]',
+          'textarea[id*="' + fieldName.toLowerCase() + '"]',
           '[data-field-name="' + fieldName + '"] input',
           '[data-field-name="' + fieldName + '"] textarea'
         ];
+
         for (var i = 0; i < selectors.length; i++) {
           var el = document.querySelector(selectors[i]);
-          if (el && el.value) return el.value;
+          if (el) return el;
         }
-        return '';
+
+        // Try finding by label text for nested fields
+        var labels = document.querySelectorAll('label');
+        for (var j = 0; j < labels.length; j++) {
+          var labelText = labels[j].textContent.toLowerCase();
+          var searchTerms = {
+            'socialCaption': ['draft tweet', 'caption'],
+            'metaTitle': ['meta title'],
+            'metaDesc': ['meta description'],
+            'keywords': ['keywords'],
+            'description': ['excerpt']
+          };
+
+          var terms = searchTerms[fieldName] || [fieldName.toLowerCase()];
+          for (var k = 0; k < terms.length; k++) {
+            if (labelText.includes(terms[k])) {
+              var container = labels[j].closest('[class*="ControlContainer"], [class*="Field"]');
+              if (container) {
+                var input = container.querySelector('input, textarea');
+                if (input) return input;
+              }
+            }
+          }
+        }
+
+        return null;
+      }
+
+      function getFieldValue(fieldName) {
+        var el = findField(fieldName);
+        return el ? el.value : '';
       }
 
       function isFieldEmpty(fieldName) {
@@ -123,21 +157,14 @@
       }
 
       function setFieldValue(fieldName, value) {
-        var selectors = [
-          'input[id*="' + fieldName + '"]',
-          'textarea[id*="' + fieldName + '"]',
-          '[data-field-name="' + fieldName + '"] input',
-          '[data-field-name="' + fieldName + '"] textarea'
-        ];
-        for (var i = 0; i < selectors.length; i++) {
-          var el = document.querySelector(selectors[i]);
-          if (el) {
-            el.value = value;
-            el.dispatchEvent(new Event('input', { bubbles: true }));
-            el.dispatchEvent(new Event('change', { bubbles: true }));
-            return true;
-          }
+        var el = findField(fieldName);
+        if (el) {
+          el.value = value;
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+          el.dispatchEvent(new Event('change', { bubbles: true }));
+          return true;
         }
+        console.log('[AI SEO] Could not find field:', fieldName);
         return false;
       }
 

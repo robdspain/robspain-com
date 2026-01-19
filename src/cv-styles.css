@@ -191,17 +191,18 @@ body {
 }
 
 .hero-content {
-    max-width: 1400px;
+    max-width: 1600px; /* Increased for wider display */
     margin: 0 auto;
     width: 100%;
     position: relative;
     z-index: 1;
+    padding: 0 4rem;
 }
 
 .profile-section {
     display: grid;
     grid-template-columns: auto 1fr;
-    gap: 5rem; /* Increased gap */
+    gap: 8rem; /* Dramatically increased gap for breathability */
     align-items: center;
 }
 
@@ -211,79 +212,83 @@ body {
 }
 
 .profile-image {
-    width: 320px; /* Larger image */
-    height: 320px;
+    width: 380px; /* Significantly larger for Pro Max presence */
+    height: 380px;
     border-radius: 50%;
     object-fit: cover;
-    border: 8px solid white;
-    box-shadow: 0 25px 50px -12px rgba(16, 185, 129, 0.25);
-    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 12px solid white; /* Thicker premium border */
+    box-shadow: 0 30px 60px -12px rgba(16, 185, 129, 0.2);
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .profile-image:hover {
-    transform: scale(1.05) rotate(2deg);
-    box-shadow: 0 40px 80px -12px rgba(16, 185, 129, 0.35);
+    transform: scale(1.03) rotate(-2deg); /* Reversed rotation for variety */
+    box-shadow: 0 50px 100px -20px rgba(16, 185, 129, 0.3);
 }
 
 .profile-info {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.25rem;
+    justify-content: center;
 }
 
 .profile-pre-title {
-    font-size: 0.875rem;
-    font-weight: 800;
+    font-size: 1rem; /* Slightly larger */
+    font-weight: 900;
     text-transform: uppercase;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.3em; /* More tracking for luxury feel */
     color: var(--secondary-color);
-    margin-bottom: -0.5rem;
+    margin-bottom: 0rem;
 }
 
 .profile-name {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
 }
 
 .name-line {
     display: block;
     color: var(--text-primary);
-    letter-spacing: -0.04em;
-    margin-left: -4px; /* Optical alignment */
+    letter-spacing: -0.05em;
+    margin-left: -6px; 
 }
 
 .credentials-line {
     display: block;
     font-weight: 900;
     letter-spacing: -0.02em;
-    margin-top: 0.25rem;
+    margin-top: 0.5rem;
+    font-size: 3rem; /* Larger credentials */
 }
 
 .profile-title {
     color: var(--text-secondary);
-    line-height: 1.5;
-    max-width: 700px;
-    margin-bottom: 1rem;
+    line-height: 1.4;
+    max-width: 850px;
+    margin-bottom: 1.5rem;
+    font-size: 1.75rem; /* Upgraded size */
 }
 
 .expertise-highlights {
     display: flex;
-    gap: 1rem;
+    gap: 1.5rem; /* More space between pills */
     flex-wrap: wrap;
-    margin-top: 1.5rem;
+    margin-top: 2rem;
 }
 
 .expertise-pill {
     display: inline-flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1.5rem;
-    background: white;
-    border: 1px solid rgba(16, 185, 129, 0.1);
+    gap: 1rem;
+    padding: 1rem 2rem; /* Luxury padding */
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(16, 185, 129, 0.15);
     border-radius: var(--radius-full);
     color: var(--text-primary);
-    font-weight: 700;
-    font-size: 0.95rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    font-weight: 800;
+    font-size: 1rem;
+    box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.05);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 

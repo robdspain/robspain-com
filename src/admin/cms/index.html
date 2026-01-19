@@ -168,6 +168,31 @@
       float: left;
       height: 0;
     }
+    .tiptap-editor .youtube-embed {
+      display: inline-block;
+      background: #f1f5f9;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px;
+      margin: 1em 0;
+      text-align: center;
+    }
+    .tiptap-editor .youtube-embed:hover {
+      border-color: #059669;
+    }
+    .tiptap-editor .youtube-embed img {
+      margin: 0;
+      border-radius: 8px;
+    }
+    .tiptap-toolbar button[title="YouTube Video"] {
+      background: #FF0000;
+      color: white;
+      border-color: #FF0000;
+    }
+    .tiptap-toolbar button[title="YouTube Video"]:hover {
+      background: #CC0000;
+      border-color: #CC0000;
+    }
   </style>
 </head>
 <body>
@@ -256,6 +281,8 @@
         markdownToHtml: function(md) {
           if (!md) return '<p></p>';
           var html = md
+            // Convert YouTube shortcode to visual placeholder
+            .replace(/\{% youtube "([^"]+)" %\}/gim, '<div class="youtube-embed" data-video-id="$1"><img src="https://img.youtube.com/vi/$1/mqdefault.jpg" alt="YouTube Video: $1" style="max-width:320px;border-radius:8px;cursor:pointer;"><span style="display:block;font-size:12px;color:#666;margin-top:4px;">▶ YouTube: $1</span></div>')
             .replace(/^### (.*$)/gim, '<h3>$1</h3>')
             .replace(/^## (.*$)/gim, '<h2>$1</h2>')
             .replace(/^# (.*$)/gim, '<h1>$1</h1>')
@@ -286,6 +313,10 @@
         htmlToMarkdown: function(html) {
           if (!html) return '';
           var md = html
+            // Convert YouTube visual placeholder back to shortcode
+            .replace(/<div class="youtube-embed" data-video-id="([^"]+)"[^>]*>.*?<\/div>/gi, '{% youtube "$1" %}\n\n')
+            // Also handle raw shortcode that might be in a paragraph
+            .replace(/<p>\s*(\{% youtube "[^"]+" %\})\s*<\/p>/gi, '$1\n\n')
             .replace(/<h1[^>]*>(.*?)<\/h1>/gi, '# $1\n\n')
             .replace(/<h2[^>]*>(.*?)<\/h2>/gi, '## $1\n\n')
             .replace(/<h3[^>]*>(.*?)<\/h3>/gi, '### $1\n\n')
@@ -303,12 +334,16 @@
             .replace(/<ul[^>]*>|<\/ul>/gi, '\n')
             .replace(/<ol[^>]*>|<\/ol>/gi, '\n')
             .replace(/<a href="([^"]+)"[^>]*>(.*?)<\/a>/gi, '[$2]($1)')
+            // Skip YouTube thumbnail images
+            .replace(/<img[^>]*src="https:\/\/img\.youtube\.com[^"]*"[^>]*\/?>/gi, '')
             .replace(/<img[^>]*src="([^"]+)"[^>]*alt="([^"]*)"[^>]*\/?>/gi, '![$2]($1)')
             .replace(/<img[^>]*src="([^"]+)"[^>]*\/?>/gi, '![]($1)')
             .replace(/<hr\s*\/?>/gi, '\n---\n')
             .replace(/<br\s*\/?>/gi, '\n')
             .replace(/<p[^>]*>/gi, '')
             .replace(/<\/p>/gi, '\n\n')
+            // Remove span tags (used in YouTube placeholder)
+            .replace(/<span[^>]*>.*?<\/span>/gi, '')
             .replace(/<[^>]+>/g, '')
             .replace(/&nbsp;/g, ' ')
             .replace(/&amp;/g, '&')
@@ -348,6 +383,23 @@
             case 'image':
               var imgUrl = prompt('Enter image URL:');
               if (imgUrl) editor.chain().focus().setImage({ src: imgUrl }).run();
+              break;
+            case 'youtube':
+              var ytInput = prompt('Enter YouTube URL or Video ID:');
+              if (ytInput) {
+                var videoId = ytInput;
+                // Extract video ID from various YouTube URL formats
+                if (ytInput.includes('v=')) {
+                  videoId = ytInput.split('v=')[1].split('&')[0];
+                } else if (ytInput.includes('youtu.be/')) {
+                  videoId = ytInput.split('youtu.be/')[1].split('?')[0];
+                } else if (ytInput.includes('youtube.com/embed/')) {
+                  videoId = ytInput.split('youtube.com/embed/')[1].split('?')[0];
+                }
+                // Insert YouTube shortcode as a paragraph
+                var shortcode = '{% youtube "' + videoId + '" %}';
+                editor.chain().focus().insertContent('<p>' + shortcode + '</p>').run();
+              }
               break;
             case 'undo': editor.chain().focus().undo().run(); break;
             case 'redo': editor.chain().focus().redo().run(); break;
@@ -402,6 +454,7 @@
             { type: 'separator' },
             { cmd: 'link', label: '🔗', title: 'Link' },
             { cmd: 'image', label: '🖼', title: 'Image' },
+            { cmd: 'youtube', label: '▶', title: 'YouTube Video' },
             { cmd: 'code', label: '</>', title: 'Inline Code' },
             { cmd: 'hr', label: '―', title: 'Horizontal Rule' },
             { type: 'separator' },

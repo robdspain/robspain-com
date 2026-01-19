@@ -1,6 +1,7 @@
 ---
 title: "Video 07: The 'Manual' Fallacy"
 series: "ace-provider"
+published: false
 step: 7
 ---
 **HOOK:** "If it ain't broke, don't fix it" is the most dangerous phrase in an ACE provider’s vocabulary.

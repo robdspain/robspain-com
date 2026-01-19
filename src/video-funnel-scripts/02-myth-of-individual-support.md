@@ -1,6 +1,7 @@
 ---
 title: "Video 02: The Myth of Individual Support & Integrity"
 series: "school-bcba"
+published: false
 step: 2
 ---
 **[Scene: Rob at desk, looking at a tablet/laptop]**

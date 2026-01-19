@@ -1,6 +1,7 @@
 ---
 title: "Video 10: The Systems Leader Choice"
 series: "ace-provider"
+published: false
 step: 10
 ---
 **HOOK:** You are at a crossroads. One path leads to more "fire-fighting," the other leads to freedom.

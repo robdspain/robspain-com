@@ -1,6 +1,7 @@
 ---
 title: "Video 02: High-Fidelity Identity"
 series: "ace-provider"
+published: false
 step: 2
 ---
 **HOOK:** A signature is a legal requirement, not a digital doodle.

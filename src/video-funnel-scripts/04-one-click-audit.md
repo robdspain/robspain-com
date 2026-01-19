@@ -1,6 +1,7 @@
 ---
 title: "Video 04: The One-Click Audit"
 series: "ace-provider"
+published: false
 step: 4
 ---
 **HOOK:** When an auditor calls, the last thing you need is a spreadsheet of broken links.

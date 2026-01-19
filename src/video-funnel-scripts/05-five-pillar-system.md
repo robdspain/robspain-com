@@ -1,6 +1,7 @@
 ---
 title: "Video 05: The 5-Pillar System"
 series: "school-bcba"
+published: false
 step: 5
 ---
 **[Scene: Rob standing in front of a whiteboard or digital screen with 5 pillars]**

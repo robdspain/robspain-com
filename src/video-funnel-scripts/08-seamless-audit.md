@@ -1,6 +1,7 @@
 ---
 title: "Video 08: The Seamless Audit"
 series: "ace-provider"
+published: false
 step: 8
 ---
 **HOOK:** Imagine getting an audit notice and feeling... nothing. No panic, no late nights, just confidence.

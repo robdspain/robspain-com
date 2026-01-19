@@ -1,6 +1,7 @@
 ---
 title: "Video 08: From Chaos to Confidence"
 series: "school-bcba"
+published: false
 step: 8
 ---
 **[Scene: Rob walking outside or in a bright, positive environment]**

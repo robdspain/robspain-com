@@ -1,6 +1,7 @@
 ---
 title: "Video 03: University-Validated Shifts & Role Flexibility"
 series: "school-bcba"
+published: false
 step: 3
 ---
 **[Scene: Rob walking in a professional environment]**

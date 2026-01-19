@@ -1,6 +1,7 @@
 ---
 title: "Video 01: The Reactivity Trap & Admin Setup"
 series: "school-bcba"
+published: false
 step: 1
 ---
 **[Scene: Rob on camera, professional office background]**

@@ -1,6 +1,7 @@
 ---
 title: "Video 04: The 10-Minute Staff Hack"
 series: "school-bcba"
+published: false
 step: 4
 ---
 **[Scene: Rob holding a physical document / script]**

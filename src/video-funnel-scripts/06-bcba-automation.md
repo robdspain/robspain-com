@@ -1,6 +1,7 @@
 ---
 title: "Video 06: Automation for BCBAs"
 series: "school-bcba"
+published: false
 step: 6
 ---
 **[Scene: Rob sitting at a computer, showing the Behavior School dashboard]**

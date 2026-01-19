@@ -1,6 +1,7 @@
 ---
 title: "Video 05: Bulletproof Compliance"
 series: "ace-provider"
+published: false
 step: 5
 ---
 **HOOK:** Your ACE provider status is built on the integrity of your records.

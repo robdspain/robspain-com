@@ -81,6 +81,196 @@
         return '<img src="https://img.youtube.com/vi/' + obj.id + '/0.jpg" alt="YouTube Video" />';
       }
     });
+
+    // Auto SEO Generation System
+    (function() {
+      var debounceTimer = null;
+      var lastContent = '';
+      var hasGenerated = false;
+      var isGenerating = false;
+
+      function showStatus(message, isError) {
+        console.log('[AI SEO]', message);
+        var existing = document.getElementById('ai-status-toast');
+        if (existing) existing.remove();
+
+        var toast = document.createElement('div');
+        toast.id = 'ai-status-toast';
+        toast.style.cssText = 'position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:8px;font-size:14px;font-weight:500;z-index:10000;transition:opacity 0.3s;' +
+          (isError ? 'background:#EF4444;color:white;' : 'background:#10B981;color:white;');
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(function() { toast.style.opacity = '0'; }, 3000);
+        setTimeout(function() { toast.remove(); }, 3500);
+      }
+
+      function getFieldValue(fieldName) {
+        var selectors = [
+          'input[id*="' + fieldName + '"]',
+          'textarea[id*="' + fieldName + '"]',
+          '[data-field-name="' + fieldName + '"] input',
+          '[data-field-name="' + fieldName + '"] textarea'
+        ];
+        for (var i = 0; i < selectors.length; i++) {
+          var el = document.querySelector(selectors[i]);
+          if (el && el.value) return el.value;
+        }
+        return '';
+      }
+
+      function isFieldEmpty(fieldName) {
+        return !getFieldValue(fieldName);
+      }
+
+      function setFieldValue(fieldName, value) {
+        var selectors = [
+          'input[id*="' + fieldName + '"]',
+          'textarea[id*="' + fieldName + '"]',
+          '[data-field-name="' + fieldName + '"] input',
+          '[data-field-name="' + fieldName + '"] textarea'
+        ];
+        for (var i = 0; i < selectors.length; i++) {
+          var el = document.querySelector(selectors[i]);
+          if (el) {
+            el.value = value;
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+            return true;
+          }
+        }
+        return false;
+      }
+
+      function getEditorContent() {
+        var editor = document.querySelector('[data-slate-editor="true"]');
+        if (editor) return editor.textContent || '';
+        var cm = document.querySelector('.CodeMirror');
+        if (cm && cm.CodeMirror) return cm.CodeMirror.getValue() || '';
+        var ce = document.querySelector('[contenteditable="true"]');
+        if (ce) return ce.textContent || '';
+        return '';
+      }
+
+      async function generateSEO(isManual) {
+        if (isGenerating) return;
+
+        var title = getFieldValue('title');
+        var body = getEditorContent();
+
+        if (!title || title.length < 10) {
+          if (isManual) showStatus('Title too short (min 10 chars)', true);
+          return;
+        }
+        if (!body || body.length < 50) {
+          if (isManual) showStatus('Content too short (min 50 chars)', true);
+          return;
+        }
+
+        // Skip if all fields already filled (unless manual)
+        var allFilled = !isFieldEmpty('keywords') && !isFieldEmpty('metaTitle') && !isFieldEmpty('metaDesc');
+        if (allFilled && !isManual) return;
+
+        isGenerating = true;
+        showStatus('Generating SEO content...');
+
+        try {
+          var response = await fetch('/.netlify/functions/generate-seo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: title, body: body })
+          });
+
+          if (!response.ok) throw new Error('API error');
+          var data = await response.json();
+          if (data.error) throw new Error(data.error);
+
+          // Only fill empty fields (unless manual regenerate)
+          var filled = [];
+          if ((isFieldEmpty('keywords') || isManual) && data.keywords) {
+            setFieldValue('keywords', data.keywords.join(', '));
+            filled.push('keywords');
+          }
+          if ((isFieldEmpty('metaTitle') || isManual) && data.metaTitle) {
+            setFieldValue('metaTitle', data.metaTitle);
+            filled.push('meta title');
+          }
+          if ((isFieldEmpty('metaDesc') || isManual) && data.metaDesc) {
+            setFieldValue('metaDesc', data.metaDesc);
+            filled.push('meta desc');
+          }
+          if ((isFieldEmpty('description') || isManual) && data.excerpt) {
+            setFieldValue('description', data.excerpt);
+            filled.push('excerpt');
+          }
+          if ((isFieldEmpty('socialCaption') || isManual) && data.socialCaption) {
+            setFieldValue('socialCaption', data.socialCaption);
+            filled.push('social caption');
+          }
+
+          if (filled.length > 0) {
+            showStatus('Generated: ' + filled.join(', '));
+            hasGenerated = true;
+          } else {
+            showStatus('All fields already filled');
+          }
+
+          console.log('[AI SEO] Full response:', data);
+
+        } catch (err) {
+          console.error('[AI SEO] Error:', err);
+          showStatus('Generation failed: ' + err.message, true);
+        } finally {
+          isGenerating = false;
+        }
+      }
+
+      function checkForChanges() {
+        var title = getFieldValue('title');
+        var body = getEditorContent();
+        var content = title + '|||' + body;
+
+        if (content !== lastContent && title && body) {
+          lastContent = content;
+          clearTimeout(debounceTimer);
+          // Auto-generate 3 seconds after user stops typing
+          debounceTimer = setTimeout(function() {
+            generateSEO(false);
+          }, 3000);
+        }
+      }
+
+      function addManualButton() {
+        if (document.getElementById('ai-generate-btn')) return;
+
+        var btn = document.createElement('button');
+        btn.id = 'ai-generate-btn';
+        btn.innerHTML = '✨ Regenerate SEO';
+        btn.style.cssText = 'position:fixed;bottom:24px;right:24px;padding:12px 20px;background:linear-gradient(135deg,#8B5CF6,#6366F1);color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;z-index:9999;box-shadow:0 4px 12px rgba(139,92,246,0.4);';
+        btn.onclick = function() { generateSEO(true); };
+        document.body.appendChild(btn);
+      }
+
+      function removeButton() {
+        var btn = document.getElementById('ai-generate-btn');
+        if (btn) btn.remove();
+      }
+
+      function checkEditor() {
+        var url = window.location.href;
+        var isBlogEditor = url.includes('/collections/blog/') || url.includes('collection=blog');
+
+        if (isBlogEditor) {
+          addManualButton();
+          checkForChanges();
+        } else {
+          removeButton();
+          hasGenerated = false;
+          lastContent = '';
+        }
+      }
+
+      setInterval(checkEditor, 1000);
+    })();
   </script>
   {% endraw %}
 </body>

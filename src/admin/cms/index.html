@@ -86,18 +86,89 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
-    .ai-generate-all {
+    .ai-button-container {
       position: fixed;
       bottom: 24px;
       right: 24px;
       z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .ai-generate-all {
       padding: 12px 20px;
       font-size: 14px;
       box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
     }
+    .ai-generate-image {
+      background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+      padding: 12px 20px;
+      font-size: 14px;
+      box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4);
+    }
+    .ai-generate-image:hover {
+      box-shadow: 0 4px 20px rgba(245, 158, 11, 0.6);
+    }
+    .ai-image-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.8);
+      z-index: 10001;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .ai-image-modal-content {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 800px;
+      width: 100%;
+      max-height: 90vh;
+      overflow: auto;
+    }
+    .ai-image-modal h3 {
+      margin: 0 0 16px 0;
+      font-size: 1.25rem;
+      color: #1e293b;
+    }
+    .ai-image-modal img {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+    .ai-image-modal-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .ai-image-modal button {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    .ai-image-modal .btn-primary {
+      background: #10B981;
+      color: white;
+    }
+    .ai-image-modal .btn-secondary {
+      background: #E2E8F0;
+      color: #475569;
+    }
+    .ai-image-modal .btn-close {
+      background: #EF4444;
+      color: white;
+    }
     .ai-toast {
       position: fixed;
-      bottom: 80px;
+      bottom: 140px;
       right: 24px;
       background: #10B981;
       color: white;
@@ -154,11 +225,14 @@
       }
     });
 
-    // AI SEO Generation System
+    // AI SEO & Image Generation System
     (function() {
-      var aiButton = null;
+      var buttonContainer = null;
+      var seoButton = null;
+      var imageButton = null;
       var toast = null;
       var isGenerating = false;
+      var isGeneratingImage = false;
 
       function showToast(message, isError) {
         if (!toast) {
@@ -169,14 +243,13 @@
         toast.textContent = message;
         toast.className = 'ai-toast' + (isError ? ' error' : '');
         setTimeout(function() { toast.classList.add('show'); }, 10);
-        setTimeout(function() { toast.classList.remove('show'); }, 3000);
+        setTimeout(function() { toast.classList.remove('show'); }, 4000);
       }
 
       function getFieldValue(fieldName) {
         var input = document.querySelector('[id*="' + fieldName + '"] input, [id*="' + fieldName + '"] textarea');
         if (input) return input.value;
 
-        // Try data attribute approach
         var field = document.querySelector('[data-field-name="' + fieldName + '"] input, [data-field-name="' + fieldName + '"] textarea');
         if (field) return field.value;
 
@@ -184,18 +257,13 @@
       }
 
       function setFieldValue(fieldName, value, isArray) {
-        // For list widgets (tags, keywords), we need special handling
         if (isArray && Array.isArray(value)) {
-          // Find the list field container
           var containers = document.querySelectorAll('[class*="ListControl"]');
           containers.forEach(function(container) {
             var label = container.closest('[class*="ControlContainer"]');
             if (label && label.textContent.toLowerCase().includes(fieldName.toLowerCase())) {
-              // Clear existing items and add new ones via input
-              var addBtn = container.querySelector('button');
               var input = container.querySelector('input');
-              if (input && addBtn) {
-                // Clear current value and set new
+              if (input) {
                 value.forEach(function(item, index) {
                   if (index === 0) {
                     input.value = item;
@@ -209,7 +277,6 @@
           return;
         }
 
-        // For regular text fields
         var selectors = [
           '[id*="' + fieldName + '"] input',
           '[id*="' + fieldName + '"] textarea',
@@ -231,25 +298,21 @@
       }
 
       function getEditorContent() {
-        // Try to get markdown content from CodeMirror or contenteditable
         var cm = document.querySelector('.CodeMirror');
         if (cm && cm.CodeMirror) {
           return cm.CodeMirror.getValue();
         }
 
-        // Try slate editor
         var editor = document.querySelector('[data-slate-editor="true"]');
         if (editor) {
           return editor.textContent;
         }
 
-        // Try contenteditable
         var contentEditable = document.querySelector('[contenteditable="true"]');
         if (contentEditable) {
           return contentEditable.textContent;
         }
 
-        // Try textarea
         var textarea = document.querySelector('.cms-editor textarea, [class*="body"] textarea');
         if (textarea) {
           return textarea.value;
@@ -270,9 +333,9 @@
         }
 
         isGenerating = true;
-        if (aiButton) {
-          aiButton.innerHTML = '<span class="spinner"></span> Generating...';
-          aiButton.disabled = true;
+        if (seoButton) {
+          seoButton.innerHTML = '<span class="spinner"></span> Generating...';
+          seoButton.disabled = true;
         }
 
         try {
@@ -282,17 +345,11 @@
             body: JSON.stringify({ title: title, body: body })
           });
 
-          if (!response.ok) {
-            throw new Error('API request failed');
-          }
+          if (!response.ok) throw new Error('API request failed');
 
           var data = await response.json();
+          if (data.error) throw new Error(data.error);
 
-          if (data.error) {
-            throw new Error(data.error);
-          }
-
-          // Fill in the fields
           if (data.tags) setFieldValue('tags', data.tags, true);
           if (data.keywords) setFieldValue('keywords', data.keywords, true);
           if (data.metaTitle) setFieldValue('metaTitle', data.metaTitle);
@@ -300,9 +357,7 @@
           if (data.excerpt) setFieldValue('description', data.excerpt);
           if (data.socialCaption) setFieldValue('socialCaption', data.socialCaption);
 
-          showToast('AI content generated successfully!');
-
-          // Log what was generated for manual copying if auto-fill didn't work
+          showToast('SEO content generated! Check console for full data.');
           console.log('AI Generated Content:', data);
 
         } catch (err) {
@@ -310,31 +365,147 @@
           showToast('Generation failed: ' + err.message, true);
         } finally {
           isGenerating = false;
-          if (aiButton) {
-            aiButton.innerHTML = '✨ Generate with AI';
-            aiButton.disabled = false;
+          if (seoButton) {
+            seoButton.innerHTML = '✨ Generate SEO';
+            seoButton.disabled = false;
           }
         }
       }
 
-      function createAIButton() {
-        if (aiButton && document.body.contains(aiButton)) return;
+      async function generateAIImage() {
+        if (isGeneratingImage) return;
 
-        aiButton = document.createElement('button');
-        aiButton.className = 'ai-generate-btn ai-generate-all';
-        aiButton.innerHTML = '✨ Generate with AI';
-        aiButton.onclick = generateAIContent;
-        document.body.appendChild(aiButton);
-      }
+        var title = getFieldValue('title');
+        var body = getEditorContent();
 
-      function removeAIButton() {
-        if (aiButton && aiButton.parentNode) {
-          aiButton.parentNode.removeChild(aiButton);
-          aiButton = null;
+        if (!title) {
+          showToast('Please enter a title first', true);
+          return;
+        }
+
+        isGeneratingImage = true;
+        if (imageButton) {
+          imageButton.innerHTML = '<span class="spinner"></span> Creating image...';
+          imageButton.disabled = true;
+        }
+
+        showToast('Generating image... this may take 15-30 seconds');
+
+        try {
+          var response = await fetch('/.netlify/functions/generate-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: title, body: body, keywords: [] })
+          });
+
+          if (!response.ok) throw new Error('Image generation failed');
+
+          var data = await response.json();
+          if (data.error) throw new Error(data.error);
+
+          // Create blob from base64
+          var byteCharacters = atob(data.base64);
+          var byteNumbers = new Array(byteCharacters.length);
+          for (var i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          var byteArray = new Uint8Array(byteNumbers);
+          var blob = new Blob([byteArray], { type: 'image/png' });
+          var blobUrl = URL.createObjectURL(blob);
+
+          // Show modal with the image
+          showImageModal(blobUrl, data.filename || 'featured-image.png', blob);
+
+        } catch (err) {
+          console.error('Image generation failed:', err);
+          showToast('Image generation failed: ' + err.message, true);
+        } finally {
+          isGeneratingImage = false;
+          if (imageButton) {
+            imageButton.innerHTML = '🎨 Generate Image';
+            imageButton.disabled = false;
+          }
         }
       }
 
-      // Watch for navigation to blog editor
+      function showImageModal(blobUrl, filename, blob) {
+        var modal = document.createElement('div');
+        modal.className = 'ai-image-modal';
+        modal.innerHTML = '<div class="ai-image-modal-content">' +
+          '<h3>AI Generated Featured Image</h3>' +
+          '<img src="' + blobUrl + '" alt="Generated image" />' +
+          '<p style="color:#64748b;font-size:13px;margin-bottom:16px;">Right-click the image to copy or save it, then use "Choose different image" or "Replace with URL" in the CMS to upload it.</p>' +
+          '<div class="ai-image-modal-actions">' +
+            '<button class="btn-primary" id="ai-download-btn">Download Image</button>' +
+            '<button class="btn-secondary" id="ai-copy-btn">Copy to Clipboard</button>' +
+            '<button class="btn-close" id="ai-close-btn">Close</button>' +
+          '</div>' +
+        '</div>';
+
+        document.body.appendChild(modal);
+
+        document.getElementById('ai-download-btn').onclick = function() {
+          var a = document.createElement('a');
+          a.href = blobUrl;
+          a.download = filename;
+          a.click();
+          showToast('Image downloaded!');
+        };
+
+        document.getElementById('ai-copy-btn').onclick = async function() {
+          try {
+            await navigator.clipboard.write([
+              new ClipboardItem({ 'image/png': blob })
+            ]);
+            showToast('Image copied to clipboard!');
+          } catch (e) {
+            showToast('Could not copy - try right-click instead', true);
+          }
+        };
+
+        document.getElementById('ai-close-btn').onclick = function() {
+          modal.remove();
+          URL.revokeObjectURL(blobUrl);
+        };
+
+        modal.onclick = function(e) {
+          if (e.target === modal) {
+            modal.remove();
+            URL.revokeObjectURL(blobUrl);
+          }
+        };
+      }
+
+      function createButtons() {
+        if (buttonContainer && document.body.contains(buttonContainer)) return;
+
+        buttonContainer = document.createElement('div');
+        buttonContainer.className = 'ai-button-container';
+
+        seoButton = document.createElement('button');
+        seoButton.className = 'ai-generate-btn ai-generate-all';
+        seoButton.innerHTML = '✨ Generate SEO';
+        seoButton.onclick = generateAIContent;
+
+        imageButton = document.createElement('button');
+        imageButton.className = 'ai-generate-btn ai-generate-image';
+        imageButton.innerHTML = '🎨 Generate Image';
+        imageButton.onclick = generateAIImage;
+
+        buttonContainer.appendChild(seoButton);
+        buttonContainer.appendChild(imageButton);
+        document.body.appendChild(buttonContainer);
+      }
+
+      function removeButtons() {
+        if (buttonContainer && buttonContainer.parentNode) {
+          buttonContainer.parentNode.removeChild(buttonContainer);
+          buttonContainer = null;
+          seoButton = null;
+          imageButton = null;
+        }
+      }
+
       function checkForBlogEditor() {
         var url = window.location.href;
         var isBlogEditor = url.includes('/collections/blog/') ||
@@ -342,17 +513,15 @@
                           (url.includes('/entries/') && document.querySelector('[class*="EditorControlPane"]'));
 
         if (isBlogEditor) {
-          createAIButton();
+          createButtons();
         } else {
-          removeAIButton();
+          removeButtons();
         }
       }
 
-      // Initial check and interval for SPA navigation
       setTimeout(checkForBlogEditor, 1000);
       setInterval(checkForBlogEditor, 2000);
 
-      // Also watch for hash changes
       window.addEventListener('hashchange', function() {
         setTimeout(checkForBlogEditor, 500);
       });

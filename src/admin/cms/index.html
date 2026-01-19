@@ -55,10 +55,151 @@
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   {% raw %}
   <script>
+    // Register preview styles
     CMS.registerPreviewStyle("/premium-styles.css");
     CMS.registerPreviewStyle("/premium-responsive.css");
     CMS.registerPreviewStyle("/styles.css");
-    
+    CMS.registerPreviewStyle("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+    // Custom preview template for blog posts
+    var BlogPreview = createClass({
+      render: function() {
+        var entry = this.props.entry;
+        var title = entry.getIn(['data', 'title']) || 'Untitled';
+        var body = this.props.widgetFor('body');
+        var image = entry.getIn(['data', 'image']);
+        var date = entry.getIn(['data', 'date']);
+        var description = entry.getIn(['data', 'description']);
+
+        return h('div', { className: 'preview-container', style: {
+          fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
+          maxWidth: '800px',
+          margin: '0 auto',
+          padding: '2rem',
+          lineHeight: '1.7',
+          color: '#1e293b'
+        }},
+          h('article', { className: 'blog-post' },
+            image && h('img', {
+              src: image,
+              alt: title,
+              style: {
+                width: '100%',
+                height: 'auto',
+                borderRadius: '12px',
+                marginBottom: '2rem'
+              }
+            }),
+            h('h1', { style: {
+              fontSize: '2.5rem',
+              fontWeight: '800',
+              marginBottom: '1rem',
+              lineHeight: '1.2',
+              color: '#0f172a'
+            }}, title),
+            date && h('p', { style: {
+              color: '#64748b',
+              fontSize: '0.9rem',
+              marginBottom: '1rem'
+            }}, new Date(date).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })),
+            description && h('p', { style: {
+              fontSize: '1.25rem',
+              color: '#475569',
+              marginBottom: '2rem',
+              fontStyle: 'italic'
+            }}, description),
+            h('div', {
+              className: 'blog-content',
+              style: {
+                fontSize: '1.1rem'
+              }
+            }, body)
+          )
+        );
+      }
+    });
+
+    CMS.registerPreviewTemplate('blog', BlogPreview);
+
+    // Add preview-specific styles
+    CMS.registerPreviewStyle(`
+      .blog-content h1, .blog-content h2, .blog-content h3, .blog-content h4 {
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+        line-height: 1.3;
+        color: #0f172a;
+      }
+      .blog-content h2 {
+        font-size: 1.75rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #10B981;
+      }
+      .blog-content h3 {
+        font-size: 1.4rem;
+      }
+      .blog-content h4 {
+        font-size: 1.2rem;
+      }
+      .blog-content p {
+        margin-bottom: 1.25rem;
+        color: #334155;
+      }
+      .blog-content ul, .blog-content ol {
+        margin: 1.5rem 0;
+        padding-left: 1.5rem;
+      }
+      .blog-content li {
+        margin-bottom: 0.75rem;
+        padding-left: 0.5rem;
+      }
+      .blog-content ul li {
+        list-style-type: disc;
+      }
+      .blog-content ol li {
+        list-style-type: decimal;
+      }
+      .blog-content strong {
+        font-weight: 600;
+        color: #0f172a;
+      }
+      .blog-content a {
+        color: #10B981;
+        text-decoration: underline;
+      }
+      .blog-content blockquote {
+        border-left: 4px solid #10B981;
+        padding-left: 1.5rem;
+        margin: 1.5rem 0;
+        font-style: italic;
+        color: #475569;
+      }
+      .blog-content code {
+        background: #f1f5f9;
+        padding: 0.2rem 0.4rem;
+        border-radius: 4px;
+        font-size: 0.9em;
+      }
+      .blog-content pre {
+        background: #1e293b;
+        color: #e2e8f0;
+        padding: 1rem;
+        border-radius: 8px;
+        overflow-x: auto;
+        margin: 1.5rem 0;
+      }
+      .blog-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin: 1.5rem 0;
+      }
+    `, { raw: true });
+
     // Register YouTube editor component
     CMS.registerEditorComponent({
       id: "youtube",

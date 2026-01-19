@@ -4,94 +4,127 @@ title: Blog - Rob Spain | School BCBA Insights
 description: Insights, strategies, and systematic approaches for school-based behavior analysis from Rob Spain, BCBA.
 ---
 
-<header class="section-premium" style="padding-top: 140px; background: var(--gradient-hero); color: white; text-align: center;">
+<header class="blog-header-premium animate-fade-up">
     <div class="container">
-        <h1 class="display-1">School BCBA <span class="hero-title-gradient">Blog</span></h1>
-        <p class="body-large" style="color: rgba(255,255,255,0.8); max-width: 700px; margin: 1rem auto;">
-            Insights and systematic approaches to transform school behavior systems.
-        </p>
+        <div class="blog-header-content">
+            <span class="section-badge-premium">Professional Insights</span>
+            <h1 class="text-display-md">School BCBA <span class="text-gradient">Blog</span></h1>
+            <p class="body-large">Systematic approaches to transform school behavior systems, reduce burnout, and improve student outcomes.</p>
+        </div>
     </div>
 </header>
 
-<section class="section-premium">
+<section class="section-premium" style="padding-top: 0;">
     <div class="container">
-        <!-- Featured/Latest Post Highlight -->
+        <!-- Featured Post: The Crisis Story -->
         {% if collections.blog | length > 0 %}
         {% set latestPost = collections.blog | reverse | first %}
-        <div class="latest-post-highlight animate-fade-up">
-            <div class="highlight-card card-premium">
+        <div class="latest-post-highlight animate-fade-up stagger-1">
+            <a href="{{ latestPost.url }}" class="highlight-card card-premium">
                 <div class="highlight-image">
                     {% if latestPost.data.image %}
                         <img src="{{ latestPost.data.image }}" alt="{{ latestPost.data.title }}">
                     {% else %}
-                        <div class="placeholder-icon"><i class="fas fa-rocket"></i></div>
+                        <div class="placeholder-icon-highlight"><i class="fas fa-rocket"></i></div>
                     {% endif %}
                 </div>
                 <div class="highlight-content">
-                    <span class="section-badge-premium">Latest Insights</span>
+                    <div class="post-meta-premium">
+                        <span class="post-date-pill"><i class="far fa-calendar-alt"></i> {{ latestPost.date.toDateString() }}</span>
+                        <span class="read-time-pill"><i class="far fa-clock"></i> 5 min read</span>
+                    </div>
                     <h2 class="text-h1">{{ latestPost.data.title }}</h2>
-                    <p class="body-large">{{ latestPost.data.description or latestPost.templateContent | striptags | truncate(200) }}</p>
-                    <a href="{{ latestPost.url }}" class="btn-primary-premium">Read Full Story <i class="fas fa-arrow-right"></i></a>
+                    <p class="body-large">{{ latestPost.data.description or latestPost.templateContent | striptags | truncate(220) }}</p>
+                    <div class="post-cta-premium">
+                        <span>Read Full Insight</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
         {% endif %}
 
+        <!-- Grid for Remaining Posts -->
         <div class="cards-grid-premium" id="blog-posts" style="margin-top: 4rem;">
             {% for post in collections.blog | reverse %}
             {% if loop.index > 1 %}
-            <article class="card-premium">
-                <div class="card-icon-premium">
+            <article class="card-premium animate-fade-up">
+                <div class="card-image-wrapper">
                     {% if post.data.image %}
-                        <img src="{{ post.data.image }}" alt="{{ post.data.title }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 1rem;">
+                        <img src="{{ post.data.image }}" alt="{{ post.data.title }}" class="card-image">
                     {% else %}
-                        <i class="fas fa-book-open"></i>
+                        <div class="card-icon-placeholder"><i class="fas fa-book-open"></i></div>
                     {% endif %}
                 </div>
-                <h3 class="card-title-premium">{{ post.data.title }}</h3>
-                <div style="font-size: 0.85rem; color: #6b7280; margin-bottom: 0.5rem;">
-                    {{ post.date.toDateString() }}
+                <div class="card-content-inner">
+                    <div class="post-meta-small">
+                        <span>{{ post.date.toDateString() }}</span>
+                    </div>
+                    <h3 class="card-title-premium">{{ post.data.title }}</h3>
+                    <p class="card-description-premium">
+                        {{ post.data.description or post.templateContent | striptags | truncate(120) }}
+                    </p>
+                    <a href="{{ post.url }}" class="card-link-premium">View Full Post <i class="fas fa-arrow-right"></i></a>
                 </div>
-                <p class="card-description-premium">
-                    {{ post.data.description or post.templateContent | striptags | truncate(150) }}
-                </p>
-                <a href="{{ post.url }}" class="card-link-premium">Read More <i class="fas fa-arrow-right"></i></a>
             </article>
             {% endif %}
             {% else %}
-            <div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
-                <h3>No posts yet.</h3>
-                <p>Check back soon for updates!</p>
+            {% if collections.blog | length == 0 %}
+            <div style="grid-column: 1 / -1; text-align: center; padding: 4rem; background: white; border-radius: 24px; border: 2px dashed var(--border-light);">
+                <i class="fas fa-feather-alt" style="font-size: 3rem; color: var(--primary-300); margin-bottom: 1.5rem;"></i>
+                <h3 class="text-h3">No posts yet.</h3>
+                <p class="body-medium">I'm currently drafting new insights. Check back soon!</p>
             </div>
+            {% endif %}
             {% endfor %}
         </div>
     </div>
 </section>
 
 <style>
+.blog-header-premium {
+    padding: 10rem 0 4rem;
+    background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
+}
+
+.blog-header-content {
+    max-width: 800px;
+}
+
+.blog-header-content h1 {
+    margin: 1.5rem 0;
+}
+
 .latest-post-highlight {
     margin-bottom: 6rem;
 }
 
 .highlight-card {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.2fr 1fr;
     gap: 4rem;
     align-items: center;
-    padding: 4rem !important;
+    padding: 3rem !important;
+    text-decoration: none;
+    color: inherit;
 }
 
 .highlight-image {
-    border-radius: 24px;
+    border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.2);
+    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1);
+    height: 450px;
 }
 
 .highlight-image img {
     width: 100%;
-    height: 400px;
+    height: 100%;
     object-fit: cover;
-    display: block;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.highlight-card:hover .highlight-image img {
+    transform: scale(1.05);
 }
 
 .highlight-content {
@@ -100,14 +133,91 @@ description: Insights, strategies, and systematic approaches for school-based be
     gap: 1.5rem;
 }
 
+.post-meta-premium {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--primary-600);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.post-meta-premium i {
+    margin-right: 0.5rem;
+}
+
+.post-cta-premium {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-weight: 800;
+    color: var(--primary-500);
+    margin-top: 1rem;
+}
+
+.post-cta-premium i {
+    transition: transform 0.3s ease;
+}
+
+.highlight-card:hover .post-cta-premium i {
+    transform: translateX(8px);
+}
+
+.card-image-wrapper {
+    height: 240px;
+    margin: -2rem -2rem 1.5rem -2rem;
+    overflow: hidden;
+}
+
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.card-premium:hover .card-image {
+    transform: scale(1.08);
+}
+
+.post-meta-small {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.75rem;
+}
+
+.placeholder-icon-highlight {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gradient-emerald);
+    color: white;
+    font-size: 4rem;
+}
+
 @media (max-width: 1024px) {
     .highlight-card {
         grid-template-columns: 1fr;
         padding: 2rem !important;
         gap: 2rem;
     }
-    .highlight-image img {
-        height: 250px;
+    .highlight-image {
+        height: 300px;
+    }
+}
+
+@media (max-width: 768px) {
+    .blog-header-premium {
+        padding: 8rem 0 3rem;
+        text-align: center;
+    }
+    .blog-header-content {
+        margin: 0 auto;
     }
 }
 </style>

@@ -157,7 +157,51 @@
           if (el) return el;
         }
 
-        // Try finding by label text for nested fields
+        // Handle nested field names like 'twitter-text' or 'linkedin-hashtags'
+        if (fieldName.includes('-')) {
+          var parts = fieldName.split('-');
+          var parentName = parts[0]; // e.g., 'twitter', 'facebook'
+          var childName = parts[1];  // e.g., 'text', 'hashtags'
+
+          // Find the parent section first
+          var parentLabels = {
+            'twitter': 'twitter',
+            'facebook': 'facebook',
+            'linkedin': 'linkedin',
+            'instagram': 'instagram'
+          };
+
+          var childLabels = {
+            'text': ['tweet text', 'post text', 'caption'],
+            'hashtags': ['hashtags']
+          };
+
+          // Find all collapsible sections
+          var sections = document.querySelectorAll('[class*="ObjectControl"], [class*="ObjectWidget"]');
+          for (var s = 0; s < sections.length; s++) {
+            var sectionText = sections[s].textContent.toLowerCase();
+            // Check if this section contains the parent name (e.g., "twitter/x post")
+            if (sectionText.includes(parentLabels[parentName])) {
+              // Now find the child field within this section
+              var childTerms = childLabels[childName] || [childName];
+              var labels = sections[s].querySelectorAll('label');
+              for (var l = 0; l < labels.length; l++) {
+                var labelText = labels[l].textContent.toLowerCase().trim();
+                for (var t = 0; t < childTerms.length; t++) {
+                  if (labelText === childTerms[t] || labelText.includes(childTerms[t])) {
+                    var container = labels[l].closest('[class*="ControlContainer"], [class*="Field"]');
+                    if (container) {
+                      var input = container.querySelector('input, textarea');
+                      if (input) return input;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        // Try finding by label text for simple fields
         var labels = document.querySelectorAll('label');
         for (var j = 0; j < labels.length; j++) {
           var labelText = labels[j].textContent.toLowerCase();
@@ -269,6 +313,41 @@
           if ((isFieldEmpty('socialCaption') || isManual) && data.socialCaption) {
             setFieldValue('socialCaption', data.socialCaption);
             filled.push('social caption');
+          }
+
+          // Fill social media platform fields
+          if (data.twitter) {
+            if ((isFieldEmpty('twitter-text') || isManual) && data.twitter.text) {
+              setFieldValue('twitter-text', data.twitter.text);
+              filled.push('twitter');
+            }
+            if ((isFieldEmpty('twitter-hashtags') || isManual) && data.twitter.hashtags) {
+              setFieldValue('twitter-hashtags', data.twitter.hashtags);
+            }
+          }
+          if (data.facebook) {
+            if ((isFieldEmpty('facebook-text') || isManual) && data.facebook.text) {
+              setFieldValue('facebook-text', data.facebook.text);
+              filled.push('facebook');
+            }
+          }
+          if (data.linkedin) {
+            if ((isFieldEmpty('linkedin-text') || isManual) && data.linkedin.text) {
+              setFieldValue('linkedin-text', data.linkedin.text);
+              filled.push('linkedin');
+            }
+            if ((isFieldEmpty('linkedin-hashtags') || isManual) && data.linkedin.hashtags) {
+              setFieldValue('linkedin-hashtags', data.linkedin.hashtags);
+            }
+          }
+          if (data.instagram) {
+            if ((isFieldEmpty('instagram-text') || isManual) && data.instagram.text) {
+              setFieldValue('instagram-text', data.instagram.text);
+              filled.push('instagram');
+            }
+            if ((isFieldEmpty('instagram-hashtags') || isManual) && data.instagram.hashtags) {
+              setFieldValue('instagram-hashtags', data.instagram.hashtags);
+            }
           }
 
           if (filled.length > 0) {

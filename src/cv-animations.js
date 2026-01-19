@@ -25,18 +25,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add animation classes to elements
     function initializeAnimations() {
-        // Hero elements
-        const heroElements = document.querySelectorAll('.profile-image, .profile-name, .profile-title, .profile-location');
-        heroElements.forEach((el, index) => {
-            el.classList.add('fade-in');
-            el.style.transitionDelay = `${index * 0.2}s`;
-            observer.observe(el);
-        });
-
-        // Stats
-        document.querySelectorAll('.stat').forEach((el, index) => {
-            el.classList.add('scale-in');
-            el.style.transitionDelay = `${index * 0.1}s`;
+        // Hero elements - use existing animate-fade-up classes
+        const heroElements = document.querySelectorAll('.profile-image, .profile-info .animate-fade-up');
+        heroElements.forEach((el) => {
             observer.observe(el);
         });
 
@@ -349,7 +340,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initNavbarScroll();
     initParallaxEffect();
     initHoverEffects();
-    initTypingAnimation();
+    // initTypingAnimation(); // Disabled for Pro Max stability
     initDownloadFeature();
     initLazyLoading();
 

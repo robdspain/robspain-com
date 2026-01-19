@@ -4,7 +4,6 @@ backend:
   branch: main
   base_url: https://robspain.com
   auth_endpoint: auth
-  publish_mode: editorial_workflow
 
 logo_url: /public/images/icon/robspain-icon.png
 

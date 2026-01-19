@@ -48,6 +48,77 @@
       transform: translateY(-2px) !important;
       box-shadow: 0 8px 20px rgba(5, 150, 105, 0.3) !important;
     }
+
+    /* AI Generation Button Styles */
+    .ai-generate-btn {
+      background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+      margin-bottom: 8px;
+    }
+    .ai-generate-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+    }
+    .ai-generate-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .ai-generate-btn .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .ai-generate-all {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      padding: 12px 20px;
+      font-size: 14px;
+      box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+    }
+    .ai-toast {
+      position: fixed;
+      bottom: 80px;
+      right: 24px;
+      background: #10B981;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 10000;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    .ai-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .ai-toast.error {
+      background: #EF4444;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
   </style>
 </head>
 <body>
@@ -82,6 +153,210 @@
         return '<img src="https://img.youtube.com/vi/' + obj.id + '/0.jpg" alt="YouTube Video" />';
       }
     });
+
+    // AI SEO Generation System
+    (function() {
+      var aiButton = null;
+      var toast = null;
+      var isGenerating = false;
+
+      function showToast(message, isError) {
+        if (!toast) {
+          toast = document.createElement('div');
+          toast.className = 'ai-toast';
+          document.body.appendChild(toast);
+        }
+        toast.textContent = message;
+        toast.className = 'ai-toast' + (isError ? ' error' : '');
+        setTimeout(function() { toast.classList.add('show'); }, 10);
+        setTimeout(function() { toast.classList.remove('show'); }, 3000);
+      }
+
+      function getFieldValue(fieldName) {
+        var input = document.querySelector('[id*="' + fieldName + '"] input, [id*="' + fieldName + '"] textarea');
+        if (input) return input.value;
+
+        // Try data attribute approach
+        var field = document.querySelector('[data-field-name="' + fieldName + '"] input, [data-field-name="' + fieldName + '"] textarea');
+        if (field) return field.value;
+
+        return '';
+      }
+
+      function setFieldValue(fieldName, value, isArray) {
+        // For list widgets (tags, keywords), we need special handling
+        if (isArray && Array.isArray(value)) {
+          // Find the list field container
+          var containers = document.querySelectorAll('[class*="ListControl"]');
+          containers.forEach(function(container) {
+            var label = container.closest('[class*="ControlContainer"]');
+            if (label && label.textContent.toLowerCase().includes(fieldName.toLowerCase())) {
+              // Clear existing items and add new ones via input
+              var addBtn = container.querySelector('button');
+              var input = container.querySelector('input');
+              if (input && addBtn) {
+                // Clear current value and set new
+                value.forEach(function(item, index) {
+                  if (index === 0) {
+                    input.value = item;
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                  }
+                });
+              }
+            }
+          });
+          return;
+        }
+
+        // For regular text fields
+        var selectors = [
+          '[id*="' + fieldName + '"] input',
+          '[id*="' + fieldName + '"] textarea',
+          '[data-field-name="' + fieldName + '"] input',
+          '[data-field-name="' + fieldName + '"] textarea',
+          'input[name*="' + fieldName + '"]',
+          'textarea[name*="' + fieldName + '"]'
+        ];
+
+        for (var i = 0; i < selectors.length; i++) {
+          var input = document.querySelector(selectors[i]);
+          if (input) {
+            input.value = value;
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+            return;
+          }
+        }
+      }
+
+      function getEditorContent() {
+        // Try to get markdown content from CodeMirror or contenteditable
+        var cm = document.querySelector('.CodeMirror');
+        if (cm && cm.CodeMirror) {
+          return cm.CodeMirror.getValue();
+        }
+
+        // Try slate editor
+        var editor = document.querySelector('[data-slate-editor="true"]');
+        if (editor) {
+          return editor.textContent;
+        }
+
+        // Try contenteditable
+        var contentEditable = document.querySelector('[contenteditable="true"]');
+        if (contentEditable) {
+          return contentEditable.textContent;
+        }
+
+        // Try textarea
+        var textarea = document.querySelector('.cms-editor textarea, [class*="body"] textarea');
+        if (textarea) {
+          return textarea.value;
+        }
+
+        return '';
+      }
+
+      async function generateAIContent() {
+        if (isGenerating) return;
+
+        var title = getFieldValue('title');
+        var body = getEditorContent();
+
+        if (!title) {
+          showToast('Please enter a title first', true);
+          return;
+        }
+
+        isGenerating = true;
+        if (aiButton) {
+          aiButton.innerHTML = '<span class="spinner"></span> Generating...';
+          aiButton.disabled = true;
+        }
+
+        try {
+          var response = await fetch('/.netlify/functions/generate-seo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: title, body: body })
+          });
+
+          if (!response.ok) {
+            throw new Error('API request failed');
+          }
+
+          var data = await response.json();
+
+          if (data.error) {
+            throw new Error(data.error);
+          }
+
+          // Fill in the fields
+          if (data.tags) setFieldValue('tags', data.tags, true);
+          if (data.keywords) setFieldValue('keywords', data.keywords, true);
+          if (data.metaTitle) setFieldValue('metaTitle', data.metaTitle);
+          if (data.metaDesc) setFieldValue('metaDesc', data.metaDesc);
+          if (data.excerpt) setFieldValue('description', data.excerpt);
+          if (data.socialCaption) setFieldValue('socialCaption', data.socialCaption);
+
+          showToast('AI content generated successfully!');
+
+          // Log what was generated for manual copying if auto-fill didn't work
+          console.log('AI Generated Content:', data);
+
+        } catch (err) {
+          console.error('AI Generation failed:', err);
+          showToast('Generation failed: ' + err.message, true);
+        } finally {
+          isGenerating = false;
+          if (aiButton) {
+            aiButton.innerHTML = '✨ Generate with AI';
+            aiButton.disabled = false;
+          }
+        }
+      }
+
+      function createAIButton() {
+        if (aiButton && document.body.contains(aiButton)) return;
+
+        aiButton = document.createElement('button');
+        aiButton.className = 'ai-generate-btn ai-generate-all';
+        aiButton.innerHTML = '✨ Generate with AI';
+        aiButton.onclick = generateAIContent;
+        document.body.appendChild(aiButton);
+      }
+
+      function removeAIButton() {
+        if (aiButton && aiButton.parentNode) {
+          aiButton.parentNode.removeChild(aiButton);
+          aiButton = null;
+        }
+      }
+
+      // Watch for navigation to blog editor
+      function checkForBlogEditor() {
+        var url = window.location.href;
+        var isBlogEditor = url.includes('/collections/blog/') ||
+                          url.includes('collection=blog') ||
+                          (url.includes('/entries/') && document.querySelector('[class*="EditorControlPane"]'));
+
+        if (isBlogEditor) {
+          createAIButton();
+        } else {
+          removeAIButton();
+        }
+      }
+
+      // Initial check and interval for SPA navigation
+      setTimeout(checkForBlogEditor, 1000);
+      setInterval(checkForBlogEditor, 2000);
+
+      // Also watch for hash changes
+      window.addEventListener('hashchange', function() {
+        setTimeout(checkForBlogEditor, 500);
+      });
+    })();
   </script>
   {% endraw %}
 </body>

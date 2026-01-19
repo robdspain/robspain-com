@@ -2,7 +2,7 @@
 layout: base.njk
 title: "The School BCBA Crisis: Why 70% of Behavior Analysts Burn Out Within 3 Years"
 date: 2025-01-18
-image: /public/images/uploads/unnamed.png
+image: /public/images/uploads/9be7bd5d-ed9b-4ab6-bed7-9912fcad4a42.png
 description: Discover why school-based BCBAs face unprecedented burnout rates
   and learn systematic approaches to transform from crisis manager to systems
   leader.

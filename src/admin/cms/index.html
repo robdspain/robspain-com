@@ -48,13 +48,398 @@
       transform: translateY(-2px) !important;
       box-shadow: 0 8px 20px rgba(5, 150, 105, 0.3) !important;
     }
+
+    /* Tiptap Editor Styles */
+    .tiptap-wrapper {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .tiptap-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 8px 12px;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .tiptap-toolbar button {
+      padding: 6px 10px;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: #475569;
+      transition: all 0.15s ease;
+    }
+    .tiptap-toolbar button:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+    .tiptap-toolbar button.is-active {
+      background: #059669;
+      color: #fff;
+      border-color: #059669;
+    }
+    .tiptap-toolbar .separator {
+      width: 1px;
+      background: #e2e8f0;
+      margin: 0 4px;
+    }
+    .tiptap-editor {
+      padding: 16px;
+      min-height: 300px;
+      max-height: 600px;
+      overflow-y: auto;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      color: #1e293b;
+    }
+    .tiptap-editor:focus {
+      outline: none;
+    }
+    .tiptap-editor p {
+      margin: 0 0 1em 0;
+    }
+    .tiptap-editor h1, .tiptap-editor h2, .tiptap-editor h3 {
+      font-weight: 700;
+      line-height: 1.3;
+      margin: 1.5em 0 0.5em 0;
+    }
+    .tiptap-editor h1 { font-size: 2rem; }
+    .tiptap-editor h2 { font-size: 1.5rem; border-bottom: 2px solid #10B981; padding-bottom: 0.25em; }
+    .tiptap-editor h3 { font-size: 1.25rem; color: #10B981; }
+    .tiptap-editor ul, .tiptap-editor ol {
+      padding-left: 1.5em;
+      margin: 1em 0;
+    }
+    .tiptap-editor li { margin-bottom: 0.5em; }
+    .tiptap-editor blockquote {
+      border-left: 4px solid #10B981;
+      padding-left: 1em;
+      margin: 1em 0;
+      font-style: italic;
+      color: #64748b;
+    }
+    .tiptap-editor code {
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.9em;
+    }
+    .tiptap-editor pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1em;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+    .tiptap-editor pre code {
+      background: none;
+      padding: 0;
+      color: inherit;
+    }
+    .tiptap-editor a {
+      color: #059669;
+      text-decoration: underline;
+    }
+    .tiptap-editor hr {
+      border: none;
+      border-top: 2px solid #e2e8f0;
+      margin: 2em 0;
+    }
+    .tiptap-editor img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+    .tiptap-editor .ProseMirror-selectednode {
+      outline: 2px solid #059669;
+    }
+    .tiptap-editor p.is-editor-empty:first-child::before {
+      content: attr(data-placeholder);
+      color: #94a3b8;
+      pointer-events: none;
+      float: left;
+      height: 0;
+    }
   </style>
 </head>
 <body>
   <!-- Decap CMS Script -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+
+  <!-- Tiptap Editor Dependencies -->
+  <script type="module">
+    // Import Tiptap modules with pinned versions to avoid ProseMirror conflicts
+    import { Editor } from 'https://cdn.jsdelivr.net/npm/@tiptap/core@2.2.4/+esm';
+    import StarterKit from 'https://cdn.jsdelivr.net/npm/@tiptap/starter-kit@2.2.4/+esm';
+    import Link from 'https://cdn.jsdelivr.net/npm/@tiptap/extension-link@2.2.4/+esm';
+    import Image from 'https://cdn.jsdelivr.net/npm/@tiptap/extension-image@2.2.4/+esm';
+    import Placeholder from 'https://cdn.jsdelivr.net/npm/@tiptap/extension-placeholder@2.2.4/+esm';
+    import Underline from 'https://cdn.jsdelivr.net/npm/@tiptap/extension-underline@2.2.4/+esm';
+    import TextAlign from 'https://cdn.jsdelivr.net/npm/@tiptap/extension-text-align@2.2.4/+esm';
+
+    // Store Tiptap on window for the widget to access
+    window.TiptapEditor = Editor;
+    window.TiptapExtensions = { StarterKit, Link, Image, Placeholder, Underline, TextAlign };
+    window.tiptapLoaded = true;
+
+    // Dispatch event to notify CMS that Tiptap is ready
+    window.dispatchEvent(new Event('tiptap-ready'));
+  </script>
+
   {% raw %}
   <script>
+    // Wait for Tiptap to load, then register the widget
+    function registerTiptapWidget() {
+      if (!window.tiptapLoaded) {
+        window.addEventListener('tiptap-ready', registerTiptapWidget, { once: true });
+        return;
+      }
+
+      var TiptapControl = createClass({
+        getInitialState: function() {
+          return { editor: null, ready: false };
+        },
+
+        componentDidMount: function() {
+          this.initEditor();
+        },
+
+        componentWillUnmount: function() {
+          if (this.state.editor) {
+            this.state.editor.destroy();
+          }
+        },
+
+        initEditor: function() {
+          var self = this;
+          var editorElement = this.editorRef;
+          if (!editorElement || !window.TiptapEditor) return;
+
+          var ext = window.TiptapExtensions;
+          var initialContent = this.props.value || '';
+
+          // Convert markdown to HTML for initial content
+          var htmlContent = this.markdownToHtml(initialContent);
+
+          var editor = new window.TiptapEditor({
+            element: editorElement,
+            extensions: [
+              ext.StarterKit.configure({
+                heading: { levels: [1, 2, 3] }
+              }),
+              ext.Link.configure({ openOnClick: false }),
+              ext.Image,
+              ext.Underline,
+              ext.TextAlign.configure({ types: ['heading', 'paragraph'] }),
+              ext.Placeholder.configure({ placeholder: 'Start writing your content...' })
+            ],
+            content: htmlContent,
+            onUpdate: function(ctx) {
+              var html = ctx.editor.getHTML();
+              var markdown = self.htmlToMarkdown(html);
+              self.props.onChange(markdown);
+            }
+          });
+
+          this.setState({ editor: editor, ready: true });
+        },
+
+        // Simple markdown to HTML conversion
+        markdownToHtml: function(md) {
+          if (!md) return '<p></p>';
+          var html = md
+            .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+            .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+            .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+            .replace(/\*\*\*(.*?)\*\*\*/gim, '<strong><em>$1</em></strong>')
+            .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/gim, '<em>$1</em>')
+            .replace(/__(.*?)__/gim, '<u>$1</u>')
+            .replace(/~~(.*?)~~/gim, '<s>$1</s>')
+            .replace(/`([^`]+)`/gim, '<code>$1</code>')
+            .replace(/^\> (.*$)/gim, '<blockquote>$1</blockquote>')
+            .replace(/^\- (.*$)/gim, '<li>$1</li>')
+            .replace(/^\* (.*$)/gim, '<li>$1</li>')
+            .replace(/^\d+\. (.*$)/gim, '<li>$1</li>')
+            .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2">$1</a>')
+            .replace(/!\[([^\]]*)\]\(([^)]+)\)/gim, '<img src="$2" alt="$1">')
+            .replace(/^---$/gim, '<hr>')
+            .replace(/\n\n/g, '</p><p>')
+            .replace(/\n/g, '<br>');
+
+          // Wrap in paragraphs if not already wrapped
+          if (!html.startsWith('<')) {
+            html = '<p>' + html + '</p>';
+          }
+          return html;
+        },
+
+        // Simple HTML to markdown conversion
+        htmlToMarkdown: function(html) {
+          if (!html) return '';
+          var md = html
+            .replace(/<h1[^>]*>(.*?)<\/h1>/gi, '# $1\n\n')
+            .replace(/<h2[^>]*>(.*?)<\/h2>/gi, '## $1\n\n')
+            .replace(/<h3[^>]*>(.*?)<\/h3>/gi, '### $1\n\n')
+            .replace(/<strong><em>(.*?)<\/em><\/strong>/gi, '***$1***')
+            .replace(/<em><strong>(.*?)<\/strong><\/em>/gi, '***$1***')
+            .replace(/<strong>(.*?)<\/strong>/gi, '**$1**')
+            .replace(/<b>(.*?)<\/b>/gi, '**$1**')
+            .replace(/<em>(.*?)<\/em>/gi, '*$1*')
+            .replace(/<i>(.*?)<\/i>/gi, '*$1*')
+            .replace(/<u>(.*?)<\/u>/gi, '__$1__')
+            .replace(/<s>(.*?)<\/s>/gi, '~~$1~~')
+            .replace(/<code>(.*?)<\/code>/gi, '`$1`')
+            .replace(/<blockquote[^>]*>(.*?)<\/blockquote>/gi, '> $1\n\n')
+            .replace(/<li>(.*?)<\/li>/gi, '- $1\n')
+            .replace(/<ul[^>]*>|<\/ul>/gi, '\n')
+            .replace(/<ol[^>]*>|<\/ol>/gi, '\n')
+            .replace(/<a href="([^"]+)"[^>]*>(.*?)<\/a>/gi, '[$2]($1)')
+            .replace(/<img[^>]*src="([^"]+)"[^>]*alt="([^"]*)"[^>]*\/?>/gi, '![$2]($1)')
+            .replace(/<img[^>]*src="([^"]+)"[^>]*\/?>/gi, '![]($1)')
+            .replace(/<hr\s*\/?>/gi, '\n---\n')
+            .replace(/<br\s*\/?>/gi, '\n')
+            .replace(/<p[^>]*>/gi, '')
+            .replace(/<\/p>/gi, '\n\n')
+            .replace(/<[^>]+>/g, '')
+            .replace(/&nbsp;/g, ' ')
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/\n{3,}/g, '\n\n')
+            .trim();
+          return md;
+        },
+
+        execCommand: function(cmd, value) {
+          var editor = this.state.editor;
+          if (!editor) return;
+
+          switch(cmd) {
+            case 'bold': editor.chain().focus().toggleBold().run(); break;
+            case 'italic': editor.chain().focus().toggleItalic().run(); break;
+            case 'underline': editor.chain().focus().toggleUnderline().run(); break;
+            case 'strike': editor.chain().focus().toggleStrike().run(); break;
+            case 'h1': editor.chain().focus().toggleHeading({ level: 1 }).run(); break;
+            case 'h2': editor.chain().focus().toggleHeading({ level: 2 }).run(); break;
+            case 'h3': editor.chain().focus().toggleHeading({ level: 3 }).run(); break;
+            case 'bulletList': editor.chain().focus().toggleBulletList().run(); break;
+            case 'orderedList': editor.chain().focus().toggleOrderedList().run(); break;
+            case 'blockquote': editor.chain().focus().toggleBlockquote().run(); break;
+            case 'code': editor.chain().focus().toggleCode().run(); break;
+            case 'codeBlock': editor.chain().focus().toggleCodeBlock().run(); break;
+            case 'hr': editor.chain().focus().setHorizontalRule().run(); break;
+            case 'alignLeft': editor.chain().focus().setTextAlign('left').run(); break;
+            case 'alignCenter': editor.chain().focus().setTextAlign('center').run(); break;
+            case 'alignRight': editor.chain().focus().setTextAlign('right').run(); break;
+            case 'link':
+              var url = prompt('Enter URL:');
+              if (url) editor.chain().focus().setLink({ href: url }).run();
+              break;
+            case 'unlink': editor.chain().focus().unsetLink().run(); break;
+            case 'image':
+              var imgUrl = prompt('Enter image URL:');
+              if (imgUrl) editor.chain().focus().setImage({ src: imgUrl }).run();
+              break;
+            case 'undo': editor.chain().focus().undo().run(); break;
+            case 'redo': editor.chain().focus().redo().run(); break;
+          }
+          this.forceUpdate();
+        },
+
+        isActive: function(cmd, attrs) {
+          var editor = this.state.editor;
+          if (!editor) return false;
+
+          switch(cmd) {
+            case 'bold': return editor.isActive('bold');
+            case 'italic': return editor.isActive('italic');
+            case 'underline': return editor.isActive('underline');
+            case 'strike': return editor.isActive('strike');
+            case 'h1': return editor.isActive('heading', { level: 1 });
+            case 'h2': return editor.isActive('heading', { level: 2 });
+            case 'h3': return editor.isActive('heading', { level: 3 });
+            case 'bulletList': return editor.isActive('bulletList');
+            case 'orderedList': return editor.isActive('orderedList');
+            case 'blockquote': return editor.isActive('blockquote');
+            case 'code': return editor.isActive('code');
+            case 'codeBlock': return editor.isActive('codeBlock');
+            case 'link': return editor.isActive('link');
+            case 'alignLeft': return editor.isActive({ textAlign: 'left' });
+            case 'alignCenter': return editor.isActive({ textAlign: 'center' });
+            case 'alignRight': return editor.isActive({ textAlign: 'right' });
+            default: return false;
+          }
+        },
+
+        render: function() {
+          var self = this;
+          var toolbarButtons = [
+            { cmd: 'bold', label: 'B', title: 'Bold' },
+            { cmd: 'italic', label: 'I', title: 'Italic' },
+            { cmd: 'underline', label: 'U', title: 'Underline' },
+            { cmd: 'strike', label: 'S', title: 'Strikethrough' },
+            { type: 'separator' },
+            { cmd: 'h1', label: 'H1', title: 'Heading 1' },
+            { cmd: 'h2', label: 'H2', title: 'Heading 2' },
+            { cmd: 'h3', label: 'H3', title: 'Heading 3' },
+            { type: 'separator' },
+            { cmd: 'bulletList', label: '•', title: 'Bullet List' },
+            { cmd: 'orderedList', label: '1.', title: 'Numbered List' },
+            { cmd: 'blockquote', label: '"', title: 'Quote' },
+            { type: 'separator' },
+            { cmd: 'alignLeft', label: '⬅', title: 'Align Left' },
+            { cmd: 'alignCenter', label: '⬌', title: 'Align Center' },
+            { cmd: 'alignRight', label: '➡', title: 'Align Right' },
+            { type: 'separator' },
+            { cmd: 'link', label: '🔗', title: 'Link' },
+            { cmd: 'image', label: '🖼', title: 'Image' },
+            { cmd: 'code', label: '</>', title: 'Inline Code' },
+            { cmd: 'hr', label: '―', title: 'Horizontal Rule' },
+            { type: 'separator' },
+            { cmd: 'undo', label: '↩', title: 'Undo' },
+            { cmd: 'redo', label: '↪', title: 'Redo' }
+          ];
+
+          return h('div', { className: 'tiptap-wrapper' },
+            h('div', { className: 'tiptap-toolbar' },
+              toolbarButtons.map(function(btn, idx) {
+                if (btn.type === 'separator') {
+                  return h('div', { key: idx, className: 'separator' });
+                }
+                return h('button', {
+                  key: idx,
+                  type: 'button',
+                  title: btn.title,
+                  className: self.isActive(btn.cmd) ? 'is-active' : '',
+                  onClick: function(e) { e.preventDefault(); self.execCommand(btn.cmd); }
+                }, btn.label);
+              })
+            ),
+            h('div', {
+              className: 'tiptap-editor',
+              ref: function(el) { self.editorRef = el; }
+            })
+          );
+        }
+      });
+
+      // Register the Tiptap widget
+      CMS.registerWidget('tiptap', TiptapControl);
+      console.log('[Tiptap] Widget registered successfully');
+    }
+
+    // Initialize registration
+    registerTiptapWidget();
+
     // Register preview styles - order matters, preview.css last to override
     CMS.registerPreviewStyle("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
     CMS.registerPreviewStyle("/admin/preview.css");

@@ -23,7 +23,7 @@ collections:
       - {label: "YouTube URL", name: "youtubeUrl", widget: "string", required: false, hint: "Paste the YouTube video link here"}
       - {label: "Featured Image", name: "image", widget: "image"}
       - {label: "Excerpt", name: "description", widget: "text", hint: "Short summary for blog list and social previews"}
-      - {label: "Body", name: "body", widget: "markdown"}
+      - {label: "Body", name: "body", widget: "tiptap"}
       - {label: "Tags", name: "tags", widget: "list", default: ["post"]}
       - {label: "Keywords", name: "keywords", widget: "list", hint: "Specific SEO keywords for this post"}
       - {label: "Featured", name: "featured", widget: "boolean", default: false, required: false}

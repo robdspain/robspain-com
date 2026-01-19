@@ -43,6 +43,13 @@ module.exports = function(eleventyConfig) {
     </div>`;
   });
 
+  // Published Video Scripts Collection
+  eleventyConfig.addCollection("published_scripts", function(collectionApi) {
+    return collectionApi.getFilteredByGlob("src/video-funnel-scripts/*.md")
+      .filter(item => item.data.published === true)
+      .sort((a, b) => a.data.step - b.data.step);
+  });
+
   return {
     dir: {
       input: "src",

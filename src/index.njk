@@ -647,24 +647,23 @@ description: Rob Spain, School BCBA with {{ experience.display }} years experien
 
 <script>
   window.videoFunnelData = [
-    {%- set schoolScripts = [] -%}
-    {%- for script in collections.video_scripts -%}
-      {%- if script.data.series == "school-bcba" and script.data.published -%}
-        {%- set schoolScripts = (schoolScripts.push(script), schoolScripts) -%}
+    {%- set first = true -%}
+    {%- for script in collections.published_scripts -%}
+      {%- if script.data.series == "school-bcba" -%}
+        {%- if not first %},{% endif -%}
+        {
+            id: {{ script.data.step }},
+            title: "{{ script.data.title }}",
+            content: `{{ script.templateContent | safe | replace('`', '\\`') }}`,
+            series: "{{ script.data.series }}"
+        }
+        {%- set first = false -%}
       {%- endif -%}
-    {%- endfor -%}
-    {%- for script in schoolScripts | sort(attribute='data.step') -%}
-    {
-        id: {{ script.data.step }},
-        title: "{{ script.data.title }}",
-        content: `{{ script.templateContent | safe | replace('`', '\\`') }}`,
-        series: "{{ script.data.series }}"
-    }{% if not loop.last %},{% endif %}
     {%- endfor -%}
   ];
 </script>
 
-{% if collections.video_scripts | selectattr("data.series", "equalto", "school-bcba") | selectattr("data.published", "equalto", true) | first %}
+{% if collections.published_scripts | selectattr("data.series", "equalto", "school-bcba") | first %}
     <!-- Video Funnel Section (Dynamic) -->
     <section class="video-funnel-section" id="free-training">
         <div class="container">

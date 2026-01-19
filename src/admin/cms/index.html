@@ -54,10 +54,12 @@
   <!-- Decap CMS Script -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <script>
-    CMS.registerPreviewStyle("../../premium-styles.css");
-    CMS.registerPreviewStyle("../../premium-responsive.css");
-    CMS.registerPreviewStyle("../../styles.css");
-    {% raw %}
+    // Register preview styles
+    CMS.registerPreviewStyle("/premium-styles.css");
+    CMS.registerPreviewStyle("/premium-responsive.css");
+    CMS.registerPreviewStyle("/styles.css");
+
+    // Register YouTube editor component
     CMS.registerEditorComponent({
       id: "youtube",
       label: "YouTube",
@@ -67,180 +69,16 @@
         return { id: match[1] };
       },
       toBlock: function(obj) {
-        // Extract ID if full URL is pasted
-        let id = obj.id;
+        var id = obj.id || '';
         if (id.includes('v=')) {
           id = id.split('v=')[1].split('&')[0];
         } else if (id.includes('youtu.be/')) {
           id = id.split('youtu.be/')[1].split('?')[0];
         }
-        return `{% youtube "${id}" %}`;
+        return '{% youtube "' + id + '" %}';
       },
       toPreview: function(obj) {
-        return `<img src="https://img.youtube.com/vi/${obj.id}/0.jpg" alt="YouTube Video" />`;
-      }
-    });
-    {% endraw %}
-  </script>
-  <script>
-    // AI SEO Generation Helper
-    (function() {
-      async function generateAISEO() {
-        const title = CMS.getEntry().getIn(['data', 'title']);
-        const body = CMS.getEntry().getIn(['data', 'body']);
-
-        if (!title || !body) {
-          alert("Please write a title and some content first!");
-          return;
-        }
-
-        const btn = document.getElementById('ai-seo-btn');
-        const originalText = btn.innerText;
-        btn.innerText = "🪄 Magic in progress...";
-        btn.disabled = true;
-
-        try {
-          const response = await fetch('/.netlify/functions/generate-seo', {
-            method: 'POST',
-            body: JSON.stringify({ title, body })
-          });
-          
-          const data = await response.json();
-          
-          if (data.error) throw new Error(data.error);
-
-          // Update CMS fields
-          window.CMS.onChangeField('seo.metaTitle', data.metaTitle);
-          window.CMS.onChangeField('seo.metaDesc', data.metaDesc);
-          window.CMS.onChangeField('description', data.excerpt);
-          window.CMS.onChangeField('keywords', data.keywords);
-
-          btn.innerText = "✨ SEO Generated!";
-          setTimeout(() => btn.innerText = originalText, 3000);
-        } catch (err) {
-          console.error(err);
-          alert("Magic failed: " + err.message);
-          btn.innerText = originalText;
-        } finally {
-          btn.disabled = false;
-        }
-      }
-
-      async function generateAIImage() {
-        const title = CMS.getEntry().getIn(['data', 'title']);
-        const keywords = CMS.getEntry().getIn(['data', 'keywords']);
-
-        if (!title) {
-          alert("Please write a title first so I know what to draw!");
-          return;
-        }
-
-        const btn = document.getElementById('ai-img-btn');
-        const originalText = btn.innerText;
-        btn.innerText = "🎨 Drawing...";
-        btn.disabled = true;
-
-        try {
-          const response = await fetch('/.netlify/functions/generate-image', {
-            method: 'POST',
-            body: JSON.stringify({ title, keywords: keywords || [] })
-          });
-          
-          const data = await response.json();
-          if (data.error) throw new Error(data.error);
-
-          // Create a blob from base64
-          const byteCharacters = atob(data.base64);
-          const byteNumbers = new Array(byteCharacters.length);
-          for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-          }
-          const byteArray = new Uint8Array(byteNumbers);
-          const blob = new Blob([byteArray], {type: 'image/png'});
-          const blobUrl = URL.createObjectURL(blob);
-
-          // Open image in new tab and offer download
-          const confirmUse = confirm("Gemini has generated a professional image for you! Would you like to see it? (It will open in a new tab where you can save it)");
-          if (confirmUse) {
-            const win = window.open();
-            win.document.write('<img src="' + blobUrl + '" style="max-width:100%; height:auto;">');
-            win.document.write('<div style="margin-top:20px; font-family:sans-serif;"><h3>AI Image Generated!</h3><p>Right-click the image and "Save Image As" to your computer, then upload it to your post.</p></div>');
-          }
-          
-          btn.innerText = "🎨 Image Ready!";
-          setTimeout(() => btn.innerText = originalText, 3000);
-        } catch (err) {
-          console.error(err);
-          alert("Drawing failed: " + err.message);
-          btn.innerText = originalText;
-        } finally {
-          btn.disabled = false;
-        }
-      }
-
-// AI enhancements disabled to prevent DOM conflicts with Decap CMS
-      // Focus on core CMS functionality for stable editing experience
-    })();
-
-    // Initialize Decap CMS
-    CMS.init({
-      config: {
-        backend: {
-          name: 'github',
-          repo: 'robdspain/robspain-com',
-          branch: 'main',
-          base_url: 'https://robspain.com',
-          auth_endpoint: 'auth'
-        },
-        logo_url: '/public/images/icon/robspain-icon.png',
-        media_folder: 'src/public/images/uploads',
-        public_folder: '/public/images/uploads',
-        collections: [
-          {
-            name: 'blog',
-            label: 'Blog',
-            folder: 'src/posts',
-            create: true,
-            slug: '{{year}}-{{month}}-{{day}}-{{slug}}',
-            fields: [
-              {label: 'Layout', name: 'layout', widget: 'hidden', default: 'base.njk'},
-              {label: 'Title', name: 'title', widget: 'string'},
-              {label: 'Publish Date', name: 'date', widget: 'datetime'},
-              {label: 'YouTube URL', name: 'youtubeUrl', widget: 'string', required: false, hint: 'Paste YouTube video link here'},
-              {label: 'Featured Image', name: 'image', widget: 'image'},
-              {label: 'Excerpt', name: 'description', widget: 'text', hint: 'Short summary for blog list and social previews'},
-              {label: 'Body', name: 'body', widget: 'markdown'},
-              {label: 'Tags', name: 'tags', widget: 'list', default: ['post']},
-              {label: 'Keywords', name: 'keywords', widget: 'list', hint: 'Specific SEO keywords for this post'},
-              {label: 'Featured', name: 'featured', widget: 'boolean', default: false, required: false},
-              {
-                label: 'SEO & Social',
-                name: 'seo',
-                widget: 'object',
-                collapsed: true,
-                fields: [
-                  {label: 'Meta Title', name: 'metaTitle', widget: 'string', required: false, hint: 'Title for Google and Social Cards (defaults to Post Title)'},
-                  {label: 'Meta Description', name: 'metaDesc', widget: 'text', required: false, hint: 'Description for Google results'},
-                  {label: 'Social Image', name: 'socialImage', widget: 'image', required: false, hint: 'Specific image for Facebook/Twitter sharing (1200x630 recommended)'},
-                  {label: 'Draft Tweet / Caption', name: 'socialCaption', widget: 'text', required: false, hint: 'Draft your social media caption here to copy/paste later'}
-                ]
-              }
-            ]
-          },
-          {
-            name: 'video_scripts',
-            label: 'Onboarding Video Scripts',
-            folder: 'src/video-funnel-scripts',
-            create: true,
-            slug: '{{slug}}',
-            fields: [
-              {label: 'Title', name: 'title', widget: 'string'},
-              {label: 'Series', name: 'series', widget: 'select', options: ['school-bcba', 'ace-provider']},
-              {label: 'Funnel Step Number', name: 'step', widget: 'number', value_type: 'int', min: 1, max: 10},
-              {label: 'Script Content', name: 'body', widget: 'markdown'}
-            ]
-          }
-        ]
+        return '<img src="https://img.youtube.com/vi/' + obj.id + '/0.jpg" alt="YouTube Video" />';
       }
     });
   </script>

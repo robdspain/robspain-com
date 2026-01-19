@@ -27,15 +27,40 @@ collections:
       - {label: "Tags", name: "tags", widget: "list", default: ["post"]}
       - {label: "Keywords", name: "keywords", widget: "list", hint: "Specific SEO keywords for this post"}
       - {label: "Featured", name: "featured", widget: "boolean", default: false, required: false}
-      - label: "SEO & Social"
+      - label: "SEO Settings"
         name: "seo"
         widget: "object"
         collapsed: true
         fields:
-          - {label: "Meta Title", name: "metaTitle", widget: "string", required: false, hint: "Title for Google and Social Cards (defaults to Post Title)"}
-          - {label: "Meta Description", name: "metaDesc", widget: "text", required: false, hint: "Description for Google results"}
-          - {label: "Social Image", name: "socialImage", widget: "image", required: false, hint: "Specific image for Facebook/Twitter sharing (1200x630 recommended)"}
-          - {label: "Draft Tweet / Caption", name: "socialCaption", widget: "text", required: false, hint: "Draft your social media caption here to copy/paste later"}
+          - {label: "Meta Title", name: "metaTitle", widget: "string", required: false, hint: "Title for Google (max 60 chars)"}
+          - {label: "Meta Description", name: "metaDesc", widget: "text", required: false, hint: "Description for Google results (max 155 chars)"}
+      - label: "Twitter/X Post"
+        name: "twitter"
+        widget: "object"
+        collapsed: true
+        fields:
+          - {label: "Tweet Text", name: "text", widget: "text", required: false, hint: "Max 280 characters including hashtags and link"}
+          - {label: "Hashtags", name: "hashtags", widget: "string", required: false, hint: "e.g. #BCBA #SchoolBehavior #Education"}
+      - label: "Facebook Post"
+        name: "facebook"
+        widget: "object"
+        collapsed: true
+        fields:
+          - {label: "Post Text", name: "text", widget: "text", required: false, hint: "Engaging post with question or hook (optimal: 40-80 chars, max: 500)"}
+      - label: "LinkedIn Post"
+        name: "linkedin"
+        widget: "object"
+        collapsed: true
+        fields:
+          - {label: "Post Text", name: "text", widget: "text", required: false, hint: "Professional tone with insights (optimal: 150-300 chars)"}
+          - {label: "Hashtags", name: "hashtags", widget: "string", required: false, hint: "e.g. #BehaviorAnalysis #Education #SchoolPsychology"}
+      - label: "Instagram Caption"
+        name: "instagram"
+        widget: "object"
+        collapsed: true
+        fields:
+          - {label: "Caption", name: "text", widget: "text", required: false, hint: "Engaging caption with emojis (max 2200 chars)"}
+          - {label: "Hashtags", name: "hashtags", widget: "string", required: false, hint: "Up to 30 hashtags for reach"}
 
   - name: "video_scripts"
     label: "Onboarding Video Scripts"

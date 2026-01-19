@@ -15,8 +15,31 @@ description: Insights, strategies, and systematic approaches for school-based be
 
 <section class="section-premium">
     <div class="container">
-        <div class="cards-grid-premium" id="blog-posts">
+        <!-- Featured/Latest Post Highlight -->
+        {% if collections.blog | length > 0 %}
+        {% set latestPost = collections.blog | reverse | first %}
+        <div class="latest-post-highlight animate-fade-up">
+            <div class="highlight-card card-premium">
+                <div class="highlight-image">
+                    {% if latestPost.data.image %}
+                        <img src="{{ latestPost.data.image }}" alt="{{ latestPost.data.title }}">
+                    {% else %}
+                        <div class="placeholder-icon"><i class="fas fa-rocket"></i></div>
+                    {% endif %}
+                </div>
+                <div class="highlight-content">
+                    <span class="section-badge-premium">Latest Insights</span>
+                    <h2 class="text-h1">{{ latestPost.data.title }}</h2>
+                    <p class="body-large">{{ latestPost.data.description or latestPost.templateContent | striptags | truncate(200) }}</p>
+                    <a href="{{ latestPost.url }}" class="btn-primary-premium">Read Full Story <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="cards-grid-premium" id="blog-posts" style="margin-top: 4rem;">
             {% for post in collections.blog | reverse %}
+            {% if loop.index > 1 %}
             <article class="card-premium">
                 <div class="card-icon-premium">
                     {% if post.data.image %}
@@ -34,6 +57,7 @@ description: Insights, strategies, and systematic approaches for school-based be
                 </p>
                 <a href="{{ post.url }}" class="card-link-premium">Read More <i class="fas fa-arrow-right"></i></a>
             </article>
+            {% endif %}
             {% else %}
             <div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
                 <h3>No posts yet.</h3>
@@ -43,3 +67,47 @@ description: Insights, strategies, and systematic approaches for school-based be
         </div>
     </div>
 </section>
+
+<style>
+.latest-post-highlight {
+    margin-bottom: 6rem;
+}
+
+.highlight-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    padding: 4rem !important;
+}
+
+.highlight-image {
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.2);
+}
+
+.highlight-image img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    display: block;
+}
+
+.highlight-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+    .highlight-card {
+        grid-template-columns: 1fr;
+        padding: 2rem !important;
+        gap: 2rem;
+    }
+    .highlight-image img {
+        height: 250px;
+    }
+}
+</style>

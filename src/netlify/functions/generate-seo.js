@@ -27,26 +27,41 @@ exports.handler = async (event) => {
       };
     }
 
-    const prompt = `You are an SEO expert for a School BCBA (Board Certified Behavior Analyst) and Behavior Specialist blog focused on behavior analysis in schools, PBIS, supervision, and professional development.
+    const prompt = `You are a social media and SEO expert for a School BCBA (Board Certified Behavior Analyst) blog focused on behavior analysis in schools, PBIS, supervision, and professional development.
 
-Based on the following blog post title and content, generate ALL of the following:
-
-1. **tags**: An array of 3-6 relevant category tags. Choose from these preferred tags when applicable: school-bcba, burnout-prevention, systems-thinking, behavior-analysis, pbis, supervision, data-collection, iep-goals, professional-development, classroom-management, staff-training, compliance. Only add custom tags if none of the preferred tags fit.
-
-2. **keywords**: An array of 5-8 specific SEO keywords/phrases that people would search for.
-
-3. **metaTitle**: A highly optimized title for Google (max 60 characters). Should be compelling and include primary keyword.
-
-4. **metaDesc**: A compelling meta description for Google results (max 155 characters). Should include a call-to-action or value proposition.
-
-5. **excerpt**: A 2-3 sentence summary for the blog listing page that hooks the reader.
-
-6. **socialCaption**: A ready-to-post Twitter/LinkedIn caption (max 280 characters) with 2-3 relevant hashtags. Make it engaging and shareable.
+Based on the following blog post, generate optimized content for SEO and each social media platform:
 
 Post Title: ${title}
 Post Content: ${(body || '').substring(0, 4000)}
 
-Return ONLY a raw JSON object (no markdown, no backticks, no explanation) with these exact keys: tags, keywords, metaTitle, metaDesc, excerpt, socialCaption`;
+Generate ALL of the following (return as JSON):
+
+1. **tags**: Array of 3-6 tags from: school-bcba, burnout-prevention, systems-thinking, behavior-analysis, pbis, supervision, data-collection, iep-goals, professional-development, classroom-management, staff-training, compliance
+
+2. **keywords**: Array of 5-8 SEO keywords/phrases
+
+3. **metaTitle**: Google title (max 60 chars) with primary keyword
+
+4. **metaDesc**: Google description (max 155 chars) with call-to-action
+
+5. **excerpt**: 2-3 sentence blog summary that hooks readers
+
+6. **twitter**: Object with:
+   - "text": Engaging tweet (max 200 chars to leave room for link). Use conversational tone, ask questions or share insights. Include 1-2 emojis.
+   - "hashtags": String of 3-4 hashtags like "#BCBA #SchoolBehavior #Education"
+
+7. **facebook**: Object with:
+   - "text": Engaging post (80-150 chars). Start with hook/question. Conversational, relatable tone. Can include emojis.
+
+8. **linkedin**: Object with:
+   - "text": Professional post (150-250 chars). Share key insight or statistic. Thought-leadership tone.
+   - "hashtags": String of 3-5 professional hashtags like "#BehaviorAnalysis #Education #Leadership"
+
+9. **instagram**: Object with:
+   - "text": Engaging caption (200-300 chars). Start with hook, include emojis, end with call-to-action.
+   - "hashtags": String of 15-20 relevant hashtags for maximum reach (mix of popular and niche)
+
+Return ONLY raw JSON (no markdown, no backticks) with keys: tags, keywords, metaTitle, metaDesc, excerpt, twitter, facebook, linkedin, instagram`;
 
     const result = await model.generateContent(prompt);
     const text = result.response.text();

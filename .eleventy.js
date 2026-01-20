@@ -1,5 +1,46 @@
 // YouTube Embed Plugin with Lite mode for better performance
 const embedYouTube = require("eleventy-plugin-youtube-embed");
+const Image = require("@11ty/eleventy-img");
+const path = require("path");
+
+// Async image optimization function
+async function imageShortcode(src, alt, sizes = "100vw", widths = [400, 800, 1200]) {
+  // Handle empty/null images
+  if (!src) return "";
+
+  // Resolve the image path
+  let inputPath = src;
+  if (src.startsWith("/")) {
+    inputPath = path.join("src", src);
+  }
+
+  let metadata;
+  try {
+    metadata = await Image(inputPath, {
+      widths: widths,
+      formats: ["webp", "jpeg"],
+      outputDir: "./_site/img/",
+      urlPath: "/img/",
+      filenameFormat: function (id, src, width, format) {
+        const name = path.basename(src, path.extname(src));
+        return `${name}-${width}w.${format}`;
+      }
+    });
+  } catch (e) {
+    // If image processing fails, return original img tag
+    console.warn(`Image processing failed for ${src}: ${e.message}`);
+    return `<img src="${src}" alt="${alt || ''}" loading="lazy">`;
+  }
+
+  let imageAttributes = {
+    alt: alt || "",
+    sizes,
+    loading: "lazy",
+    decoding: "async"
+  };
+
+  return Image.generateHTML(metadata, imageAttributes);
+}
 
 module.exports = function(eleventyConfig) {
   // Pass-through copies for static assets
@@ -10,6 +51,11 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy("src/_headers");
   eleventyConfig.addPassthroughCopy("src/robots.txt");
   eleventyConfig.addPassthroughCopy("src/sitemap.xml");
+
+  // Image optimization shortcode - converts to WebP with responsive sizes
+  eleventyConfig.addNunjucksAsyncShortcode("image", imageShortcode);
+  eleventyConfig.addLiquidShortcode("image", imageShortcode);
+  eleventyConfig.addJavaScriptFunction("image", imageShortcode);
 
   // YouTube Embed Plugin - Lite mode for faster page loads
   // Lazy-loads iframe only when user clicks, uses youtube-nocookie.com for privacy

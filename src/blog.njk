@@ -23,7 +23,7 @@ description: Insights, strategies, and systematic approaches for school-based be
             <a href="{{ latestPost.url }}" class="highlight-card card-premium">
                 <div class="highlight-image">
                     {% if latestPost.data.image %}
-                        <img src="{{ latestPost.data.image }}" alt="{{ latestPost.data.title }}">
+                        {% image latestPost.data.image, latestPost.data.title, "(max-width: 1024px) 100vw, 600px" %}
                     {% else %}
                         <div class="placeholder-icon-highlight"><i class="fas fa-rocket"></i></div>
                     {% endif %}
@@ -31,10 +31,10 @@ description: Insights, strategies, and systematic approaches for school-based be
                 <div class="highlight-content">
                     <div class="post-meta-premium">
                         <span class="post-date-pill"><i class="far fa-calendar-alt"></i> {{ latestPost.date.toDateString() }}</span>
-                        <span class="read-time-pill"><i class="far fa-clock"></i> {{ latestPost.templateContent | readingTime }}</span>
+                        <span class="read-time-pill"><i class="far fa-clock"></i> {{ latestPost.rawInput | readingTime }}</span>
                     </div>
                     <h2 class="text-h1">{{ latestPost.data.title }}</h2>
-                    <p class="body-large">{{ latestPost.data.description or latestPost.templateContent | striptags | truncate(220) }}</p>
+                    <p class="body-large">{{ latestPost.data.description }}</p>
                     <div class="post-cta-premium">
                         <span>Read Full Insight</span>
                         <i class="fas fa-arrow-right"></i>
@@ -51,7 +51,7 @@ description: Insights, strategies, and systematic approaches for school-based be
             <article class="card-premium animate-fade-up">
                 <div class="card-image-wrapper">
                     {% if post.data.image %}
-                        <img src="{{ post.data.image }}" alt="{{ post.data.title }}" class="card-image">
+                        {% image post.data.image, post.data.title, "(max-width: 768px) 100vw, 400px", [400, 600] %}
                     {% else %}
                         <div class="card-icon-placeholder"><i class="fas fa-book-open"></i></div>
                     {% endif %}
@@ -62,7 +62,7 @@ description: Insights, strategies, and systematic approaches for school-based be
                     </div>
                     <h3 class="card-title-premium">{{ post.data.title }}</h3>
                     <p class="card-description-premium">
-                        {{ post.data.description or post.templateContent | striptags | truncate(120) }}
+                        {{ post.data.description }}
                     </p>
                     <a href="{{ post.url }}" class="card-link-premium">View Full Post <i class="fas fa-arrow-right"></i></a>
                 </div>
@@ -170,14 +170,14 @@ description: Insights, strategies, and systematic approaches for school-based be
     overflow: hidden;
 }
 
-.card-image {
+.card-image-wrapper img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.5s ease;
 }
 
-.card-premium:hover .card-image {
+.card-premium:hover .card-image-wrapper img {
     transform: scale(1.08);
 }
 

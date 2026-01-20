@@ -17,8 +17,8 @@ description: Insights, strategies, and systematic approaches for school-based be
 <section class="section-premium" style="padding-top: 0;">
     <div class="container">
         <!-- Featured Post: The Crisis Story -->
-        {% if collections.blog | length > 0 %}
-        {% set latestPost = collections.blog | reverse | first %}
+        {% if collections.posts | length > 0 %}
+        {% set latestPost = collections.posts | reverse | first %}
         <div class="latest-post-highlight animate-fade-up stagger-1">
             <a href="{{ latestPost.url }}" class="highlight-card card-premium">
                 <div class="highlight-image">
@@ -46,7 +46,7 @@ description: Insights, strategies, and systematic approaches for school-based be
 
         <!-- Grid for Remaining Posts -->
         <div class="cards-grid-premium" id="blog-posts" style="margin-top: 4rem;">
-            {% for post in collections.blog | reverse %}
+            {% for post in collections.posts | reverse %}
             {% if loop.index > 1 %}
             <article class="card-premium animate-fade-up">
                 <div class="card-image-wrapper">
@@ -69,7 +69,7 @@ description: Insights, strategies, and systematic approaches for school-based be
             </article>
             {% endif %}
             {% else %}
-            {% if collections.blog | length == 0 %}
+            {% if collections.posts | length == 0 %}
             <div style="grid-column: 1 / -1; text-align: center; padding: 4rem; background: white; border-radius: 24px; border: 2px dashed var(--border-light);">
                 <i class="fas fa-feather-alt" style="font-size: 3rem; color: var(--primary-300); margin-bottom: 1.5rem;"></i>
                 <h3 class="text-h3">No posts yet.</h3>

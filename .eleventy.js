@@ -50,6 +50,19 @@ module.exports = function(eleventyConfig) {
       .sort((a, b) => a.data.step - b.data.step);
   });
 
+  // Published Blog Posts Collection (excludes drafts)
+  eleventyConfig.addCollection("posts", function(collectionApi) {
+    return collectionApi.getFilteredByGlob("src/posts/*.md")
+      .filter(item => item.data.draft !== true)
+      .sort((a, b) => b.date - a.date);
+  });
+
+  // All Blog Posts including drafts (for admin preview)
+  eleventyConfig.addCollection("allPosts", function(collectionApi) {
+    return collectionApi.getFilteredByGlob("src/posts/*.md")
+      .sort((a, b) => b.date - a.date);
+  });
+
   return {
     dir: {
       input: "src",

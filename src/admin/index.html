@@ -4,6 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Content Manager</title>
+  <!-- Redirect to new CMS with sidebar -->
+  <script>
+    // Redirect to the new CMS location
+    if (window.location.hash && window.location.hash.includes('collections')) {
+      // If already navigating to a collection, redirect to cms
+      window.location.href = '/admin/cms/' + window.location.hash;
+    }
+  </script>
   <!-- Identity Widget for Netlify Auth -->
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   <style>
@@ -230,6 +238,26 @@
           }
         }
       }, 1000);
+    })();
+
+    // Redirect to new CMS with sidebar after login
+    (function() {
+      // Check if user is logged in and redirect to new CMS
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on('login', function() {
+          window.location.href = '/admin/cms/#/collections/blog';
+        });
+      }
+
+      // If already logged in (has CMS loaded), redirect
+      setTimeout(function() {
+        var cmsLoaded = document.querySelector('[class*="nc-app"]') || document.querySelector('#nc-root');
+        if (cmsLoaded && !window.location.href.includes('/admin/cms/')) {
+          // User is logged in and CMS is loaded, redirect to new CMS
+          var hash = window.location.hash || '#/collections/blog';
+          window.location.href = '/admin/cms/' + hash;
+        }
+      }, 2000);
     })();
   </script>
 </body>

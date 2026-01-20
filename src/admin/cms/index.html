@@ -49,6 +49,127 @@
       box-shadow: 0 8px 20px rgba(5, 150, 105, 0.3) !important;
     }
 
+    /* Admin Sidebar */
+    #admin-sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 260px;
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      z-index: 100000;
+      transform: translateX(-260px);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+    }
+    #admin-sidebar.open {
+      transform: translateX(0);
+    }
+    #admin-sidebar-header {
+      padding: 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    #admin-sidebar-header h2 {
+      color: white;
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #admin-sidebar-header h2 span {
+      color: #10B981;
+    }
+    #admin-sidebar-nav {
+      flex: 1;
+      padding: 16px 0;
+      overflow-y: auto;
+    }
+    .sidebar-section {
+      padding: 0 12px;
+      margin-bottom: 24px;
+    }
+    .sidebar-section-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #64748b;
+      padding: 8px 12px;
+      margin-bottom: 4px;
+    }
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      color: #94a3b8;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    .sidebar-link:hover {
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+    .sidebar-link.active {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10B981;
+    }
+    .sidebar-link i {
+      width: 20px;
+      text-align: center;
+      font-size: 16px;
+    }
+    #sidebar-toggle {
+      position: fixed;
+      left: 12px;
+      top: 12px;
+      width: 44px;
+      height: 44px;
+      background: #1e293b;
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      z-index: 100001;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: all 0.2s ease;
+    }
+    #sidebar-toggle:hover {
+      background: #10B981;
+      transform: scale(1.05);
+    }
+    #sidebar-toggle.open {
+      left: 272px;
+    }
+    #admin-sidebar-footer {
+      padding: 16px 24px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .sidebar-footer-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #64748b;
+      text-decoration: none;
+      font-size: 13px;
+      padding: 8px 0;
+      transition: color 0.2s;
+    }
+    .sidebar-footer-link:hover {
+      color: #10B981;
+    }
+
     /* Fix Preview Pane Scrolling */
     [class*="PreviewPane"] {
       overflow-y: auto !important;
@@ -1345,6 +1466,102 @@
       }
 
       setInterval(checkAndInject, 1000);
+    })();
+
+    // Admin Sidebar Navigation
+    (function() {
+      function injectSidebar() {
+        if (document.getElementById('admin-sidebar')) return;
+
+        // Create sidebar toggle button
+        var toggle = document.createElement('button');
+        toggle.id = 'sidebar-toggle';
+        toggle.innerHTML = '<i class="fas fa-bars"></i>';
+        toggle.onclick = function() {
+          var sidebar = document.getElementById('admin-sidebar');
+          sidebar.classList.toggle('open');
+          toggle.classList.toggle('open');
+          toggle.innerHTML = toggle.classList.contains('open')
+            ? '<i class="fas fa-times"></i>'
+            : '<i class="fas fa-bars"></i>';
+        };
+        document.body.appendChild(toggle);
+
+        // Create sidebar
+        var sidebar = document.createElement('div');
+        sidebar.id = 'admin-sidebar';
+        sidebar.innerHTML = '\
+          <div id="admin-sidebar-header">\
+            <h2><span>●</span> Admin Panel</h2>\
+          </div>\
+          <nav id="admin-sidebar-nav">\
+            <div class="sidebar-section">\
+              <div class="sidebar-section-label">Dashboard</div>\
+              <a href="/admin/dashboard/" class="sidebar-link">\
+                <i class="fas fa-th-large"></i> Overview\
+              </a>\
+            </div>\
+            <div class="sidebar-section">\
+              <div class="sidebar-section-label">Content</div>\
+              <a href="/admin/cms/#/collections/blog" class="sidebar-link">\
+                <i class="fas fa-blog"></i> Blog Posts\
+              </a>\
+              <a href="/admin/cms/#/collections/video_scripts" class="sidebar-link">\
+                <i class="fas fa-video"></i> Video Scripts\
+              </a>\
+            </div>\
+            <div class="sidebar-section">\
+              <div class="sidebar-section-label">Tools</div>\
+              <a href="/admin/video-funnel-preview/" class="sidebar-link">\
+                <i class="fas fa-play-circle"></i> Funnel Preview\
+              </a>\
+              <a href="/feed.xml" target="_blank" class="sidebar-link">\
+                <i class="fas fa-rss"></i> RSS Feed\
+              </a>\
+            </div>\
+          </nav>\
+          <div id="admin-sidebar-footer">\
+            <a href="/" class="sidebar-footer-link" target="_blank">\
+              <i class="fas fa-external-link-alt"></i> View Site\
+            </a>\
+            <a href="/blog.html" class="sidebar-footer-link" target="_blank">\
+              <i class="fas fa-newspaper"></i> View Blog\
+            </a>\
+          </div>\
+        ';
+        document.body.appendChild(sidebar);
+
+        // Highlight current section
+        var url = window.location.href;
+        var links = sidebar.querySelectorAll('.sidebar-link');
+        links.forEach(function(link) {
+          if (url.includes(link.getAttribute('href').replace('#', ''))) {
+            link.classList.add('active');
+          }
+        });
+
+        console.log('[Admin] Sidebar injected');
+      }
+
+      // Wait for DOM and CMS to load
+      function init() {
+        // Load Font Awesome if not present
+        if (!document.querySelector('link[href*="font-awesome"]')) {
+          var fa = document.createElement('link');
+          fa.rel = 'stylesheet';
+          fa.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+          document.head.appendChild(fa);
+        }
+
+        // Inject sidebar after short delay to ensure CMS has loaded
+        setTimeout(injectSidebar, 500);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
     })();
   </script>
   {% endraw %}

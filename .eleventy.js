@@ -22,6 +22,20 @@ module.exports = function(eleventyConfig) {
     recommendSelfOnly: true
   });
 
+  // Reading Time Filter
+  eleventyConfig.addFilter("readingTime", function(content) {
+    if (!content) return "1 min read";
+    const words = content.replace(/<[^>]*>/g, '').split(/\s+/).filter(word => word.length > 0).length;
+    const minutes = Math.ceil(words / 200);
+    return minutes + " min read";
+  });
+
+  // RSS Date Filter (RFC 2822 format)
+  eleventyConfig.addFilter("rssDate", function(date) {
+    if (!date) return "";
+    return new Date(date).toUTCString();
+  });
+
   // Custom Markdown Settings
   let markdownIt = require("markdown-it")({
     html: true,

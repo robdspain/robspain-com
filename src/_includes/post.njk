@@ -8,6 +8,7 @@ layout: base.njk
         <h1 class="display-2" style="font-size: 2.5rem; margin-bottom: 1rem;">{{ title }}</h1>
         <div style="color: rgba(255,255,255,0.7); font-size: 1rem;">
             <i class="far fa-calendar-alt"></i> {{ date.toDateString() }}
+            <span style="margin-left: 1rem;"><i class="far fa-clock"></i> {{ content | readingTime }}</span>
         </div>
     </div>
 </header>

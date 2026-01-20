@@ -31,7 +31,7 @@ description: Insights, strategies, and systematic approaches for school-based be
                 <div class="highlight-content">
                     <div class="post-meta-premium">
                         <span class="post-date-pill"><i class="far fa-calendar-alt"></i> {{ latestPost.date.toDateString() }}</span>
-                        <span class="read-time-pill"><i class="far fa-clock"></i> 5 min read</span>
+                        <span class="read-time-pill"><i class="far fa-clock"></i> {{ latestPost.templateContent | readingTime }}</span>
                     </div>
                     <h2 class="text-h1">{{ latestPost.data.title }}</h2>
                     <p class="body-large">{{ latestPost.data.description or latestPost.templateContent | striptags | truncate(220) }}</p>

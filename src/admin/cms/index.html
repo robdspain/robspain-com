@@ -49,6 +49,21 @@
       box-shadow: 0 8px 20px rgba(5, 150, 105, 0.3) !important;
     }
 
+    /* Fix Preview Pane Scrolling */
+    [class*="PreviewPane"] {
+      overflow-y: auto !important;
+    }
+    [class*="PreviewPane"] > div {
+      overflow-y: auto !important;
+      height: 100% !important;
+    }
+    [class*="PreviewPaneFrame"] {
+      overflow-y: auto !important;
+    }
+    iframe[class*="PreviewPane"] {
+      overflow: auto !important;
+    }
+
     /* Tiptap Editor Styles */
     .tiptap-wrapper {
       border: 1px solid #ddd;

@@ -54,8 +54,8 @@
         "name": "Rob Spain",
         "url": "https://robspain.com"
       },
-      "description": "{{ seo.metaDesc or description }}",
-      "keywords": "{{ keywords | join(', ') }}"
+      "description": "{{ seo.metaDesc or description }}"{% if tags or keywords %},
+      "keywords": "{{ (tags or keywords) | join(', ') }}"{% endif %}
     }
     </script>
     {% endif %}

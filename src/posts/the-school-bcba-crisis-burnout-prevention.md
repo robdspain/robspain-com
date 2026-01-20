@@ -1,5 +1,5 @@
 ---
-layout: base.njk
+layout: post.njk
 title: "The School BCBA Crisis: Why 70% of Behavior Analysts Burn Out Within 3 Years"
 date: 2025-01-18
 image: /public/images/uploads/9be7bd5d-ed9b-4ab6-bed7-9912fcad4a42.png

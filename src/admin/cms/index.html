@@ -132,7 +132,23 @@
       padding-left: 1.5em;
       margin: 1em 0;
     }
-    .tiptap-editor li { margin-bottom: 0.5em; }
+    .tiptap-editor ul {
+      list-style-type: disc;
+    }
+    .tiptap-editor ol {
+      list-style-type: decimal;
+    }
+    .tiptap-editor li {
+      margin-bottom: 0.5em;
+      display: list-item;
+    }
+    .tiptap-editor li p {
+      margin: 0;
+      display: inline;
+    }
+    .tiptap-editor li::marker {
+      color: #10B981;
+    }
     .tiptap-editor blockquote {
       border-left: 4px solid #10B981;
       padding-left: 1em;
@@ -258,6 +274,88 @@
           }
         },
 
+        openMediaLibrary: function() {
+          var self = this;
+          var editor = this.state.editor;
+          if (!editor) return;
+
+          // Create a modal for image insertion
+          var modal = document.createElement('div');
+          modal.id = 'tiptap-media-modal';
+          modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:100000;display:flex;align-items:center;justify-content:center;';
+
+          var content = document.createElement('div');
+          content.style.cssText = 'background:white;padding:24px;border-radius:12px;max-width:500px;width:90%;';
+          content.innerHTML = '\
+            <h3 style="margin:0 0 16px 0;font-size:18px;font-weight:600;">Insert Image</h3>\
+            <div style="margin-bottom:16px;">\
+              <label style="display:block;margin-bottom:8px;font-weight:500;">Image URL</label>\
+              <input type="text" id="tiptap-img-url" placeholder="https://..." style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;">\
+            </div>\
+            <div style="margin-bottom:16px;">\
+              <label style="display:block;margin-bottom:8px;font-weight:500;">Or upload from computer</label>\
+              <input type="file" id="tiptap-img-file" accept="image/*" style="width:100%;">\
+            </div>\
+            <div style="margin-bottom:16px;">\
+              <label style="display:block;margin-bottom:8px;font-weight:500;">Alt text (optional)</label>\
+              <input type="text" id="tiptap-img-alt" placeholder="Image description" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;">\
+            </div>\
+            <div style="display:flex;gap:12px;justify-content:flex-end;">\
+              <button id="tiptap-img-cancel" style="padding:10px 20px;border:1px solid #ddd;border-radius:6px;background:white;cursor:pointer;">Cancel</button>\
+              <button id="tiptap-img-insert" style="padding:10px 20px;border:none;border-radius:6px;background:#059669;color:white;cursor:pointer;font-weight:500;">Insert Image</button>\
+            </div>\
+            <p id="tiptap-img-preview" style="margin-top:16px;text-align:center;"></p>\
+          ';
+
+          modal.appendChild(content);
+          document.body.appendChild(modal);
+
+          var urlInput = document.getElementById('tiptap-img-url');
+          var fileInput = document.getElementById('tiptap-img-file');
+          var altInput = document.getElementById('tiptap-img-alt');
+          var previewEl = document.getElementById('tiptap-img-preview');
+
+          // Handle file upload preview
+          fileInput.onchange = function(e) {
+            var file = e.target.files[0];
+            if (file) {
+              var reader = new FileReader();
+              reader.onload = function(ev) {
+                urlInput.value = ev.target.result;
+                previewEl.innerHTML = '<img src="' + ev.target.result + '" style="max-width:200px;max-height:150px;border-radius:8px;">';
+              };
+              reader.readAsDataURL(file);
+            }
+          };
+
+          // URL input preview
+          urlInput.onchange = function() {
+            if (urlInput.value && urlInput.value.startsWith('http')) {
+              previewEl.innerHTML = '<img src="' + urlInput.value + '" style="max-width:200px;max-height:150px;border-radius:8px;" onerror="this.style.display=\'none\'">';
+            }
+          };
+
+          // Cancel button
+          document.getElementById('tiptap-img-cancel').onclick = function() {
+            modal.remove();
+          };
+
+          // Click outside to close
+          modal.onclick = function(e) {
+            if (e.target === modal) modal.remove();
+          };
+
+          // Insert button
+          document.getElementById('tiptap-img-insert').onclick = function() {
+            var imgSrc = urlInput.value;
+            var imgAlt = altInput.value || '';
+            if (imgSrc) {
+              editor.chain().focus().setImage({ src: imgSrc, alt: imgAlt }).run();
+            }
+            modal.remove();
+          };
+        },
+
         initEditor: function() {
           var self = this;
           var editorElement = this.editorRef;
@@ -295,33 +393,122 @@
         // Simple markdown to HTML conversion
         markdownToHtml: function(md) {
           if (!md) return '<p></p>';
-          var html = md
-            // Convert YouTube shortcode to visual placeholder
-            .replace(/\{% youtube "([^"]+)" %\}/gim, '<div class="youtube-embed" data-video-id="$1"><img src="https://img.youtube.com/vi/$1/mqdefault.jpg" alt="YouTube Video: $1" style="max-width:320px;border-radius:8px;cursor:pointer;"><span style="display:block;font-size:12px;color:#666;margin-top:4px;">▶ YouTube: $1</span></div>')
-            .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-            .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-            .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-            .replace(/\*\*\*(.*?)\*\*\*/gim, '<strong><em>$1</em></strong>')
-            .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/gim, '<em>$1</em>')
-            .replace(/__(.*?)__/gim, '<u>$1</u>')
-            .replace(/~~(.*?)~~/gim, '<s>$1</s>')
-            .replace(/`([^`]+)`/gim, '<code>$1</code>')
-            .replace(/^\> (.*$)/gim, '<blockquote>$1</blockquote>')
-            .replace(/^\- (.*$)/gim, '<li>$1</li>')
-            .replace(/^\* (.*$)/gim, '<li>$1</li>')
-            .replace(/^\d+\. (.*$)/gim, '<li>$1</li>')
-            .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2">$1</a>')
-            .replace(/!\[([^\]]*)\]\(([^)]+)\)/gim, '<img src="$2" alt="$1">')
-            .replace(/^---$/gim, '<hr>')
-            .replace(/\n\n/g, '</p><p>')
-            .replace(/\n/g, '<br>');
 
-          // Wrap in paragraphs if not already wrapped
-          if (!html.startsWith('<')) {
-            html = '<p>' + html + '</p>';
+          // Process line by line for better list handling
+          var lines = md.split('\n');
+          var html = '';
+          var inList = false;
+          var listType = '';
+
+          for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+
+            // Check for YouTube shortcode
+            if (/\{% youtube "([^"]+)" %\}/.test(line)) {
+              if (inList) { html += '</' + listType + '>'; inList = false; }
+              line = line.replace(/\{% youtube "([^"]+)" %\}/gi, '<div class="youtube-embed" data-video-id="$1"><img src="https://img.youtube.com/vi/$1/mqdefault.jpg" alt="YouTube Video: $1" style="max-width:320px;border-radius:8px;cursor:pointer;"><span style="display:block;font-size:12px;color:#666;margin-top:4px;">▶ YouTube: $1</span></div>');
+              html += line;
+              continue;
+            }
+
+            // Check for headings
+            if (/^### (.*)$/.test(line)) {
+              if (inList) { html += '</' + listType + '>'; inList = false; }
+              html += line.replace(/^### (.*)$/, '<h3>$1</h3>');
+              continue;
+            }
+            if (/^## (.*)$/.test(line)) {
+              if (inList) { html += '</' + listType + '>'; inList = false; }
+              html += line.replace(/^## (.*)$/, '<h2>$1</h2>');
+              continue;
+            }
+            if (/^# (.*)$/.test(line)) {
+              if (inList) { html += '</' + listType + '>'; inList = false; }
+              html += line.replace(/^# (.*)$/, '<h1>$1</h1>');
+              continue;
+            }
+
+            // Check for horizontal rule
+            if (/^---$/.test(line)) {
+              if (inList) { html += '</' + listType + '>'; inList = false; }
+              html += '<hr>';
+              continue;
+            }
+
+            // Check for blockquote
+            if (/^> (.*)$/.test(line)) {
+              if (inList) { html += '</' + listType + '>'; inList = false; }
+              html += line.replace(/^> (.*)$/, '<blockquote>$1</blockquote>');
+              continue;
+            }
+
+            // Check for unordered list
+            if (/^[\-\*] (.*)$/.test(line)) {
+              if (!inList || listType !== 'ul') {
+                if (inList) html += '</' + listType + '>';
+                html += '<ul>';
+                inList = true;
+                listType = 'ul';
+              }
+              var content = line.replace(/^[\-\*] (.*)$/, '$1');
+              content = this.processInlineMarkdown(content);
+              html += '<li>' + content + '</li>';
+              continue;
+            }
+
+            // Check for ordered list
+            if (/^\d+\. (.*)$/.test(line)) {
+              if (!inList || listType !== 'ol') {
+                if (inList) html += '</' + listType + '>';
+                html += '<ol>';
+                inList = true;
+                listType = 'ol';
+              }
+              var content = line.replace(/^\d+\. (.*)$/, '$1');
+              content = this.processInlineMarkdown(content);
+              html += '<li>' + content + '</li>';
+              continue;
+            }
+
+            // Close list if we hit a non-list line
+            if (inList && line.trim() !== '') {
+              html += '</' + listType + '>';
+              inList = false;
+            }
+
+            // Empty line
+            if (line.trim() === '') {
+              if (inList) {
+                html += '</' + listType + '>';
+                inList = false;
+              }
+              continue;
+            }
+
+            // Regular paragraph
+            var processed = this.processInlineMarkdown(line);
+            html += '<p>' + processed + '</p>';
           }
-          return html;
+
+          // Close any open list
+          if (inList) {
+            html += '</' + listType + '>';
+          }
+
+          return html || '<p></p>';
+        },
+
+        // Process inline markdown (bold, italic, links, images, etc.)
+        processInlineMarkdown: function(text) {
+          return text
+            .replace(/!\[([^\]]*)\]\(([^)]+)\)/gi, '<img src="$2" alt="$1">')
+            .replace(/\[([^\]]+)\]\(([^)]+)\)/gi, '<a href="$2">$1</a>')
+            .replace(/\*\*\*(.*?)\*\*\*/gi, '<strong><em>$1</em></strong>')
+            .replace(/\*\*(.*?)\*\*/gi, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/gi, '<em>$1</em>')
+            .replace(/__(.*?)__/gi, '<u>$1</u>')
+            .replace(/~~(.*?)~~/gi, '<s>$1</s>')
+            .replace(/`([^`]+)`/gi, '<code>$1</code>');
         },
 
         // Simple HTML to markdown conversion
@@ -396,8 +583,7 @@
               break;
             case 'unlink': editor.chain().focus().unsetLink().run(); break;
             case 'image':
-              var imgUrl = prompt('Enter image URL:');
-              if (imgUrl) editor.chain().focus().setImage({ src: imgUrl }).run();
+              self.openMediaLibrary();
               break;
             case 'youtube':
               var ytInput = prompt('Enter YouTube URL or Video ID:');

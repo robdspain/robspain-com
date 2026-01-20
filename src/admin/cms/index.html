@@ -1131,6 +1131,9 @@
         }
       }
 
+      // Make generateSEO globally accessible for toolbar button
+      window.generateSEO = generateSEO;
+
       function checkForChanges() {
         var title = getFieldValue('title');
         var body = getEditorContent();
@@ -1177,6 +1180,171 @@
       }
 
       setInterval(checkEditor, 1000);
+    })();
+
+    // AI Toolbar Buttons - Add Video, AI Image, AI SEO
+    (function() {
+      function injectToolbarButtons() {
+        // Find the header actions area
+        var toolbar = document.querySelector('[class*="ToolbarButton"]')?.parentElement ||
+                      document.querySelector('[class*="EditorToolbar"]') ||
+                      document.querySelector('header [class*="actions"]');
+
+        // If can't find toolbar, try the app header
+        if (!toolbar) {
+          var appHeader = document.querySelector('[class*="AppHeader"]');
+          if (appHeader) {
+            var headerButtons = appHeader.querySelector('div:last-child');
+            if (headerButtons) toolbar = headerButtons;
+          }
+        }
+
+        // Create button container if we found a place to put it
+        if (!document.getElementById('ai-toolbar-container')) {
+          var container = document.createElement('div');
+          container.id = 'ai-toolbar-container';
+          container.style.cssText = 'display:flex;gap:8px;position:fixed;top:12px;right:200px;z-index:10000;';
+
+          // Add Video Button
+          var videoBtn = document.createElement('button');
+          videoBtn.id = 'add-video-btn';
+          videoBtn.innerHTML = '🎬 Add Video';
+          videoBtn.style.cssText = 'background:#8B5CF6;color:white;border:none;padding:8px 16px;border-radius:8px;font-weight:600;cursor:pointer;font-size:14px;box-shadow:0 2px 8px rgba(139,92,246,0.3);';
+          videoBtn.onclick = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var url = prompt('Paste your YouTube URL:');
+            if (url) {
+              var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+              var match = url.match(regExp);
+              var videoId = (match && match[2].length === 11) ? match[2] : null;
+              if (videoId) {
+                // Find the Tiptap editor and insert
+                var editor = document.querySelector('.tiptap-editor .ProseMirror');
+                if (editor && editor.editor) {
+                  editor.editor.chain().focus().insertContent('<p>{% youtube "' + videoId + '" %}</p>').run();
+                } else {
+                  // Fallback: insert at cursor using execCommand
+                  document.execCommand('insertText', false, '\n{% youtube "' + videoId + '" %}\n');
+                }
+                alert('YouTube video added! ID: ' + videoId);
+              } else {
+                alert('Could not extract YouTube video ID from that URL.');
+              }
+            }
+          };
+          container.appendChild(videoBtn);
+
+          // AI Image Button
+          var imgBtn = document.createElement('button');
+          imgBtn.id = 'ai-image-btn';
+          imgBtn.innerHTML = '🎨 AI Image';
+          imgBtn.style.cssText = 'background:#3B82F6;color:white;border:none;padding:8px 16px;border-radius:8px;font-weight:600;cursor:pointer;font-size:14px;box-shadow:0 2px 8px rgba(59,130,246,0.3);';
+          imgBtn.onclick = async function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var title = getFieldValue('title');
+            if (!title || title.length < 5) {
+              alert('Please enter a title first so I know what to draw!');
+              return;
+            }
+            imgBtn.innerHTML = '🎨 Generating...';
+            imgBtn.disabled = true;
+            try {
+              var response = await fetch('/.netlify/functions/generate-image', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: title, keywords: [] })
+              });
+              var data = await response.json();
+              if (data.error) throw new Error(data.error);
+
+              // Convert base64 to blob and open in new tab
+              var byteChars = atob(data.base64);
+              var byteNums = new Array(byteChars.length);
+              for (var i = 0; i < byteChars.length; i++) {
+                byteNums[i] = byteChars.charCodeAt(i);
+              }
+              var byteArray = new Uint8Array(byteNums);
+              var blob = new Blob([byteArray], { type: 'image/png' });
+              var blobUrl = URL.createObjectURL(blob);
+
+              var win = window.open();
+              win.document.write('<html><head><title>AI Generated Image</title></head><body style="margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:#f0f0f0;font-family:sans-serif;">');
+              win.document.write('<img src="' + blobUrl + '" style="max-width:90%;max-height:80vh;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.2);">');
+              win.document.write('<p style="margin-top:20px;color:#333;">Right-click the image → Save Image As → then upload to your post</p>');
+              win.document.write('</body></html>');
+
+              imgBtn.innerHTML = '🎨 Done!';
+              setTimeout(function() { imgBtn.innerHTML = '🎨 AI Image'; }, 3000);
+            } catch (err) {
+              console.error('AI Image error:', err);
+              alert('Image generation failed: ' + err.message);
+              imgBtn.innerHTML = '🎨 AI Image';
+            } finally {
+              imgBtn.disabled = false;
+            }
+          };
+          container.appendChild(imgBtn);
+
+          // AI SEO Button
+          var seoBtn = document.createElement('button');
+          seoBtn.id = 'ai-seo-btn';
+          seoBtn.innerHTML = '✨ AI SEO';
+          seoBtn.style.cssText = 'background:#10B981;color:white;border:none;padding:8px 16px;border-radius:8px;font-weight:600;cursor:pointer;font-size:14px;box-shadow:0 2px 8px rgba(16,185,129,0.3);';
+          seoBtn.onclick = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            // Trigger the existing generateSEO function
+            if (typeof window.generateSEO === 'function') {
+              window.generateSEO(true);
+            } else {
+              alert('SEO generation not available. Please refresh the page.');
+            }
+          };
+          container.appendChild(seoBtn);
+
+          document.body.appendChild(container);
+          console.log('[AI Toolbar] Buttons injected');
+        }
+      }
+
+      // Helper to get field value (reuse from SEO system)
+      function getFieldValue(fieldName) {
+        var selectors = [
+          'input[id*="' + fieldName + '"]',
+          'textarea[id*="' + fieldName + '"]'
+        ];
+        for (var i = 0; i < selectors.length; i++) {
+          var el = document.querySelector(selectors[i]);
+          if (el) return el.value;
+        }
+        var labels = document.querySelectorAll('label');
+        for (var j = 0; j < labels.length; j++) {
+          if (labels[j].textContent.toLowerCase().includes(fieldName.toLowerCase())) {
+            var container = labels[j].closest('[class*="Field"]');
+            if (container) {
+              var input = container.querySelector('input, textarea');
+              if (input) return input.value;
+            }
+          }
+        }
+        return '';
+      }
+
+      // Check for blog editor and inject buttons
+      function checkAndInject() {
+        var url = window.location.href;
+        var isBlogEditor = url.includes('/collections/blog/') || url.includes('collection=blog');
+        if (isBlogEditor) {
+          injectToolbarButtons();
+        } else {
+          var container = document.getElementById('ai-toolbar-container');
+          if (container) container.remove();
+        }
+      }
+
+      setInterval(checkAndInject, 1000);
     })();
   </script>
   {% endraw %}

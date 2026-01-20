@@ -686,9 +686,134 @@
         }
       });
 
-      // Register the Tiptap widget
-      CMS.registerWidget('tiptap', TiptapControl);
-      console.log('[Tiptap] Widget registered successfully');
+      // Preview component for Tiptap widget - converts markdown to styled HTML
+      var TiptapPreview = createClass({
+        markdownToHtml: function(md) {
+          if (!md) return '';
+
+          var lines = md.split('\n');
+          var html = '';
+          var inList = false;
+          var listType = '';
+
+          for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+
+            // YouTube shortcode
+            if (/\{% youtube "([^"]+)" %\}/.test(line)) {
+              if (inList) { html += '</' + listType + '>'; inList = false; }
+              line = line.replace(/\{% youtube "([^"]+)" %\}/gi, '<div style="position:relative;padding-bottom:56.25%;height:0;margin:1.5rem 0;"><iframe src="https://www.youtube.com/embed/$1" style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:12px;" frameborder="0" allowfullscreen></iframe></div>');
+              html += line;
+              continue;
+            }
+
+            // Headings
+            if (/^### (.*)$/.test(line)) {
+              if (inList) { html += '</' + listType + '>'; inList = false; }
+              html += line.replace(/^### (.*)$/, '<h3>$1</h3>');
+              continue;
+            }
+            if (/^## (.*)$/.test(line)) {
+              if (inList) { html += '</' + listType + '>'; inList = false; }
+              html += line.replace(/^## (.*)$/, '<h2>$1</h2>');
+              continue;
+            }
+            if (/^# (.*)$/.test(line)) {
+              if (inList) { html += '</' + listType + '>'; inList = false; }
+              html += line.replace(/^# (.*)$/, '<h1>$1</h1>');
+              continue;
+            }
+
+            // Horizontal rule
+            if (/^---$/.test(line)) {
+              if (inList) { html += '</' + listType + '>'; inList = false; }
+              html += '<hr>';
+              continue;
+            }
+
+            // Blockquote
+            if (/^> (.*)$/.test(line)) {
+              if (inList) { html += '</' + listType + '>'; inList = false; }
+              html += line.replace(/^> (.*)$/, '<blockquote>$1</blockquote>');
+              continue;
+            }
+
+            // Unordered list
+            if (/^[\-\*] (.*)$/.test(line)) {
+              if (!inList || listType !== 'ul') {
+                if (inList) html += '</' + listType + '>';
+                html += '<ul>';
+                inList = true;
+                listType = 'ul';
+              }
+              var content = line.replace(/^[\-\*] (.*)$/, '$1');
+              content = this.processInline(content);
+              html += '<li>' + content + '</li>';
+              continue;
+            }
+
+            // Ordered list
+            if (/^\d+\. (.*)$/.test(line)) {
+              if (!inList || listType !== 'ol') {
+                if (inList) html += '</' + listType + '>';
+                html += '<ol>';
+                inList = true;
+                listType = 'ol';
+              }
+              var content = line.replace(/^\d+\. (.*)$/, '$1');
+              content = this.processInline(content);
+              html += '<li>' + content + '</li>';
+              continue;
+            }
+
+            // Close list on non-list line
+            if (inList && line.trim() !== '') {
+              html += '</' + listType + '>';
+              inList = false;
+            }
+
+            // Empty line
+            if (line.trim() === '') {
+              if (inList) {
+                html += '</' + listType + '>';
+                inList = false;
+              }
+              continue;
+            }
+
+            // Regular paragraph
+            html += '<p>' + this.processInline(line) + '</p>';
+          }
+
+          if (inList) html += '</' + listType + '>';
+          return html;
+        },
+
+        processInline: function(text) {
+          return text
+            .replace(/!\[([^\]]*)\]\(([^)]+)\)/gi, '<img src="$2" alt="$1" style="max-width:100%;border-radius:8px;">')
+            .replace(/\[([^\]]+)\]\(([^)]+)\)/gi, '<a href="$2" style="color:#10B981;">$1</a>')
+            .replace(/\*\*\*(.*?)\*\*\*/gi, '<strong><em>$1</em></strong>')
+            .replace(/\*\*(.*?)\*\*/gi, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/gi, '<em>$1</em>')
+            .replace(/__(.*?)__/gi, '<u>$1</u>')
+            .replace(/~~(.*?)~~/gi, '<s>$1</s>')
+            .replace(/`([^`]+)`/gi, '<code style="background:#f1f5f9;padding:2px 6px;border-radius:4px;">$1</code>');
+        },
+
+        render: function() {
+          var value = this.props.value || '';
+          var htmlContent = this.markdownToHtml(value);
+          return h('div', {
+            className: 'tiptap-preview',
+            dangerouslySetInnerHTML: { __html: htmlContent }
+          });
+        }
+      });
+
+      // Register the Tiptap widget with preview component
+      CMS.registerWidget('tiptap', TiptapControl, TiptapPreview);
+      console.log('[Tiptap] Widget registered with preview component');
     }
 
     // Initialize registration

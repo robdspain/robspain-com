@@ -70,7 +70,7 @@ collections:
     slug: "{{slug}}"
     fields:
       - {label: "Title", name: "title", widget: "string"}
-      - {label: "Series", name: "series", widget: "select", options: ["school-bcba", "ace-provider"]}
+      - {label: "Series", name: "series", widget: "select", options: ["transformation"], default: "transformation"}
       - {label: "Funnel Step Number", name: "step", widget: "number", value_type: "int", min: 1, max: 10}
       - {label: "Published", name: "published", widget: "boolean", default: false}
       - {label: "Script Content", name: "body", widget: "markdown"}

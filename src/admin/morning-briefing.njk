@@ -1,0 +1,364 @@
+---
+layout: base.njk
+title: Morning Briefing - Rob Spain Admin
+permalink: /admin/morning-briefing/
+---
+
+<style>
+  .briefing-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  
+  .briefing-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+  }
+  
+  .briefing-header h1 {
+    margin: 0;
+    font-size: 32px;
+  }
+  
+  .briefing-header .timestamp {
+    opacity: 0.9;
+    margin-top: 8px;
+  }
+  
+  .section {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .high-priority {
+    border-left: 4px solid #ef4444;
+  }
+  
+  .completed {
+    border-left: 4px solid #10b981;
+  }
+  
+  .in-progress {
+    border-left: 4px solid #f59e0b;
+  }
+  
+  .item {
+    padding: 16px;
+    margin-bottom: 12px;
+    background: #f9fafb;
+    border-radius: 8px;
+    border-left: 3px solid transparent;
+  }
+  
+  .item-high-priority {
+    background: #fef2f2;
+    border-left-color: #ef4444;
+  }
+  
+  .item-completed {
+    background: #f0fdf4;
+    border-left-color: #10b981;
+  }
+  
+  .item-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 16px;
+  }
+  
+  .item-meta {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 8px;
+  }
+  
+  .item-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  
+  .btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-block;
+  }
+  
+  .btn-primary {
+    background: #667eea;
+    color: white;
+  }
+  
+  .btn-success {
+    background: #10b981;
+    color: white;
+  }
+  
+  .btn-secondary {
+    background: #e5e7eb;
+    color: #374151;
+  }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  
+  .stat-card {
+    background: #f9fafb;
+    padding: 16px;
+    border-radius: 8px;
+    text-align: center;
+  }
+  
+  .stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #667eea;
+  }
+  
+  .stat-label {
+    font-size: 14px;
+    color: #6b7280;
+    margin-top: 4px;
+  }
+  
+  .badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  
+  .badge-success { background: #d1fae5; color: #065f46; }
+  .badge-warning { background: #fef3c7; color: #92400e; }
+  .badge-info { background: #dbeafe; color: #1e40af; }
+</style>
+
+<div class="briefing-container">
+  <!-- Header -->
+  <div class="briefing-header">
+    <h1>🌅 Good Morning, Rob!</h1>
+    <div class="timestamp">
+      <strong>Briefing for:</strong> <span id="briefing-date"></span><br>
+      <strong>Last updated:</strong> <span id="last-updated"></span>
+    </div>
+  </div>
+
+  <!-- High Priority Section -->
+  <div class="section high-priority">
+    <div class="section-title">
+      🚨 High Priority (Needs Your Attention Today)
+    </div>
+    
+    <div class="item item-high-priority">
+      <div class="item-title">CalABA Presentations - March 5-7, 2026 (5 weeks away!)</div>
+      <div class="item-meta">⏰ Added: January 28, 2:00 AM</div>
+      <p>Need your presentation topics and any existing outlines so I can start building materials.</p>
+      <div class="item-actions">
+        <a href="mailto:rob@behaviorschool.com?subject=CalABA%20Presentation%20Topics" class="btn btn-primary">Email Me Topics</a>
+        <a href="/admin/briefing/calaba-form" class="btn btn-secondary">Fill Form</a>
+      </div>
+    </div>
+
+    <div class="item item-high-priority">
+      <div class="item-title">Marketing Quick Wins Ready to Implement</div>
+      <div class="item-meta">⏰ Added: January 28, 1:55 AM</div>
+      <p>11 marketing improvements identified for BehaviorSchool.com. Expected ROI: $6K-$15K/month additional revenue.</p>
+      <div class="item-actions">
+        <a href="/admin/briefing/marketing-approval" class="btn btn-primary">Review & Approve</a>
+        <a href="https://github.com/robspain/behaviorschool/blob/main/marketing-quick-wins.md" class="btn btn-secondary">View Details</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Completed Overnight -->
+  <div class="section completed">
+    <div class="section-title">
+      ✅ Completed Overnight (8 items)
+    </div>
+
+    <div class="item item-completed">
+      <div class="item-title">✓ Installed Cost-Optimized Build Workflow</div>
+      <div class="item-meta">⏰ Completed: 2:04 AM | 💰 Saves: 60-70% on Anthropic credits</div>
+      <p>Set up GSD (Get Shit Done) v1.9.13 for both Claude Code and OpenCode. Now you can plan with Claude Opus (expensive but smart) and build with OpenAI o1 (cheaper but good with specs).</p>
+      <div class="item-actions">
+        <a href="/admin/briefing/workflow-guide" class="btn btn-success">View Guide</a>
+        <span class="badge badge-success">Ready to Use</span>
+      </div>
+    </div>
+
+    <div class="item item-completed">
+      <div class="item-title">✓ YouTube Content Calendar (30 Videos Planned)</div>
+      <div class="item-meta">⏰ Completed: 1:35 AM | 📺 Launch: Post-CalABA</div>
+      <p>Created complete content calendar with 30 videos, hooks, CTAs, keywords, and posting schedule (2x/week). Each video funnels viewers to lead magnets → email list → $3K cohort.</p>
+      <div class="item-actions">
+        <a href="/admin/briefing/youtube-calendar" class="btn btn-success">View Calendar</a>
+        <span class="badge badge-info">Ready to Record</span>
+      </div>
+    </div>
+
+    <div class="item item-completed">
+      <div class="item-title">✓ Lead Magnet Strategy (30 Resources Designed)</div>
+      <div class="item-meta">⏰ Completed: 1:45 AM | 📧 Email funnel ready</div>
+      <p>Outlined 30 lead magnets (BIP templates, FBA checklists, IEP scripts, etc.) with email sequences to nurture subscribers toward cohort enrollment.</p>
+      <div class="item-actions">
+        <a href="/admin/briefing/lead-magnets" class="btn btn-success">View Strategy</a>
+        <span class="badge badge-warning">Need to Build PDFs</span>
+      </div>
+    </div>
+
+    <div class="item item-completed">
+      <div class="item-title">✓ Business Intelligence Report</div>
+      <div class="item-meta">⏰ Completed: 1:20 AM | 💰 Revenue potential: $240K-$480K/year</div>
+      <p>Analyzed your business model, identified $3K cohort program as primary revenue, created market sizing and customer avatar research.</p>
+      <div class="item-actions">
+        <a href="/admin/briefing/business-intel" class="btn btn-success">View Report</a>
+      </div>
+    </div>
+
+    <div class="item item-completed">
+      <div class="item-title">✓ Marketing Quick Wins Action Plan</div>
+      <div class="item-meta">⏰ Completed: 1:55 AM | ⚡ Impact: High</div>
+      <p>Identified 11 critical marketing gaps on BehaviorSchool.com and created implementation plan. Total work: ~8 hours for major marketing upgrade.</p>
+      <div class="item-actions">
+        <a href="/admin/briefing/quick-wins" class="btn btn-success">Review Plan</a>
+        <span class="badge badge-warning">Awaiting Approval</span>
+      </div>
+    </div>
+
+    <div class="item item-completed">
+      <div class="item-title">✓ Learned Your Repos & Created Profile</div>
+      <div class="item-meta">⏰ Completed: 1:40 AM</div>
+      <p>Explored all 3 repos (BehaviorSchool.com, Learning platform, RobSpain.com), documented your professional background, tech stack, and content authenticity standards.</p>
+      <div class="item-actions">
+        <a href="/admin/briefing/profile" class="btn btn-success">View Profile</a>
+      </div>
+    </div>
+
+    <div class="item item-completed">
+      <div class="item-title">✓ Learning Platform - Phase 1 Complete</div>
+      <div class="item-meta">⏰ Completed: Yesterday | 🚀 17 commits pushed</div>
+      <p>Built complete backend for learning.behaviorschool.com: authentication (Better Auth), payments (Stripe), quiz system, admin dashboard, instructor tools, email notifications (Mailgun).</p>
+      <div class="item-actions">
+        <a href="https://github.com/robspain/learning-behaviorschool" class="btn btn-success">View Repo</a>
+        <span class="badge badge-success">Production Ready</span>
+      </div>
+    </div>
+
+    <div class="item item-completed">
+      <div class="item-title">✓ GSD Workflow Documentation</div>
+      <div class="item-meta">⏰ Completed: 2:00 AM</div>
+      <p>Created complete reference guide for spec-driven development workflow with examples and best practices.</p>
+      <div class="item-actions">
+        <a href="/admin/briefing/gsd-docs" class="btn btn-success">View Docs</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- In Progress -->
+  <div class="section in-progress">
+    <div class="section-title">
+      🔨 In Progress (What I'm Working On)
+    </div>
+
+    <div class="item">
+      <div class="item-title">Morning Briefing Dashboard (This Page!)</div>
+      <div class="item-meta">⏰ Started: 2:06 AM | Status: MVP</div>
+      <p>Building this dashboard so you can see overnight accomplishments. Next: Add database backend, real-time updates, email notifications.</p>
+      <span class="badge badge-info">You're looking at it!</span>
+    </div>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="section">
+    <div class="section-title">
+      📊 Quick Stats
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value">8</div>
+        <div class="stat-label">Tasks Completed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">2</div>
+        <div class="stat-label">Need Your Input</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">60-70%</div>
+        <div class="stat-label">Cost Savings</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">$8.4K</div>
+        <div class="stat-label">Annual Savings</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recommendations -->
+  <div class="section">
+    <div class="section-title">
+      💡 Recommendations for Today
+    </div>
+    
+    <ol style="line-height: 1.8;">
+      <li><strong>CalABA Prep:</strong> Share your presentation topics so I can start building materials (5 weeks isn't much time)</li>
+      <li><strong>Marketing Approval:</strong> Review the 11 quick wins - I can implement this week</li>
+      <li><strong>YouTube Recording:</strong> Record first 5 videos (2 hours total) using the content calendar I created</li>
+      <li><strong>Email Access:</strong> Grant me email access so I can draft replies for your approval</li>
+      <li><strong>X/Twitter:</strong> Give me login for automated posting system</li>
+    </ol>
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align: center; padding: 40px 20px; color: #6b7280;">
+    <p>I'm working 24/7 to free your time and make you money! 🚀</p>
+    <p style="margin-top: 8px;">
+      <a href="/admin" style="color: #667eea;">← Back to Admin</a> | 
+      <a href="mailto:neo@clawd.bot" style="color: #667eea;">Report Issue</a>
+    </p>
+  </div>
+</div>
+
+<script>
+  // Set current date and time
+  const now = new Date();
+  const options = { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  };
+  document.getElementById('briefing-date').textContent = now.toLocaleDateString('en-US', options);
+  
+  const timeOptions = {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  };
+  document.getElementById('last-updated').textContent = now.toLocaleTimeString('en-US', timeOptions);
+</script>

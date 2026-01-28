@@ -17,6 +17,18 @@ permalink: /admin/dashboard/
         </div>
 
         <div class="dashboard-grid-premium animate-fade-up stagger-1">
+            <!-- Morning Briefing Component (NEW!) -->
+            <a href="/admin/morning-briefing/" class="dashboard-card-premium card-highlight">
+                <div class="card-icon-premium" style="background: rgba(102, 126, 234, 0.1);">
+                    <i class="fas fa-sun" style="color: #667eea;"></i>
+                </div>
+                <div class="card-content-premium">
+                    <h3>🌅 Morning Briefing</h3>
+                    <p>See what I accomplished overnight while you slept. High-priority items, completed tasks, and recommendations for today.</p>
+                    <span class="card-cta-premium" style="color: #667eea;">View Briefing <i class="fas fa-arrow-right"></i></span>
+                </div>
+            </a>
+
             <!-- Site Content Manager Component -->
             <a href="/admin/cms/index.html" class="dashboard-card-premium">
                 <div class="card-icon-premium">
@@ -139,5 +151,15 @@ permalink: /admin/dashboard/
     opacity: 0.7;
     cursor: not-allowed;
     background: #f1f5f9;
+}
+
+.dashboard-card-premium.card-highlight {
+    background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+    border: 2px solid #667eea;
+}
+
+.dashboard-card-premium.card-highlight:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 35px -5px rgba(102, 126, 234, 0.3);
 }
 </style>

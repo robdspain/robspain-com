@@ -872,6 +872,87 @@ let tasks = JSON.parse(localStorage.getItem('robTasks')) || {
         <li>Click "Sign in with Google" - should work!</li>
       </ol>`,
       time: '5 min'
+    },
+    {
+      id: 7,
+      title: '💾 VM → Mac Mini Migration',
+      description: 'Migrate Clawdbot from Google Cloud VM to Mac mini - SAVE $40-50/MONTH',
+      priority: 'high',
+      steps: `<strong>💰 Cost Savings: $40-50/month = $480-600/year</strong>
+      <p><strong>Complete guide:</strong> <code>/home/rob/clawd/VM_TO_MAC_MINI_MIGRATION.md</code></p>
+      <strong>Phase 1: Backup (30 min)</strong>
+      <ol>
+        <li>SSH to VM: <code>ssh rob@clawdbot-vm</code></li>
+        <li>Backup workspace: <code>cd /home/rob && tar -czf clawd-backup-$(date +%Y%m%d).tar.gz clawd/</code></li>
+        <li>Backup config: <code>tar -czf clawdbot-config-$(date +%Y%m%d).tar.gz .clawdbot/</code></li>
+        <li>Export config: <code>clawdbot gateway config.get > config-export.json</code></li>
+        <li>Copy to Mac mini via Tailscale or scp</li>
+      </ol>
+      <strong>Phase 2: Mac Mini Setup (45 min)</strong>
+      <ol>
+        <li>Extract backups on Mac mini</li>
+        <li>Install LanceDB deps: <code>cd ~/.npm-global/lib/node_modules/clawdbot/extensions/memory-lancedb && npm install</code></li>
+        <li>Start gateway: <code>clawdbot gateway start</code></li>
+        <li>Test Telegram connection</li>
+      </ol>
+      <strong>Phase 3: Switch Over (15 min)</strong>
+      <ol>
+        <li>Stop VM gateway: <code>clawdbot gateway stop</code></li>
+        <li>Confirm Mac mini running</li>
+        <li>Test all features</li>
+      </ol>
+      <strong>Phase 4: VM Backup (30 min)</strong>
+      <ol>
+        <li>Configure minimal VM for emergencies</li>
+        <li>Downgrade to e2-micro ($7/month) or stop ($2/month for disk)</li>
+      </ol>
+      <p><strong>Auto-start on boot:</strong> Create launchd service (instructions in migration doc)</p>`,
+      time: '2-3 hours'
+    },
+    {
+      id: 8,
+      title: '⏰ Daily Briefings at 6 AM',
+      description: 'Cron job for morning status reports',
+      priority: 'high',
+      steps: `<strong>What it does:</strong>
+      <ul>
+        <li>AI token usage status (alert if >75%)</li>
+        <li>BehaviorSchool.com uptime check</li>
+        <li>Overnight work completed</li>
+        <li>CalABA countdown (March 5, 2026)</li>
+        <li>High-priority tasks for today</li>
+      </ul>
+      <strong>Setup Instructions:</strong>
+      <ol>
+        <li>Neo will create cron job using cron tool</li>
+        <li>Schedule: 6:00 AM Pacific daily</li>
+        <li>Delivery: Voice message via Telegram</li>
+        <li>Follows HEARTBEAT.md spec</li>
+      </ol>
+      <p><strong>Status:</strong> Ready to enable - waiting for Mac mini migration</p>`,
+      time: '5 min setup'
+    },
+    {
+      id: 9,
+      title: '🚨 Gmail Monitoring for Amy Emails',
+      description: 'Proactive alerts when Amy Tipton emails',
+      priority: 'high',
+      steps: `<strong>Why:</strong> Amy's emails are custody-related and time-sensitive
+      <strong>Setup:</strong>
+      <ol>
+        <li>Grant Neo access to Gmail (robspain@gmail.com)</li>
+        <li>Configure filters for:
+          <ul>
+            <li>Amy Tipton emails</li>
+            <li>Custody evaluator</li>
+            <li>Legal contacts</li>
+          </ul>
+        </li>
+        <li>Alert via Telegram immediately</li>
+        <li>Optional: Voice call for critical items</li>
+      </ol>
+      <p><strong>Privacy:</strong> Neo only monitors for keywords, doesn't read full emails unless flagged</p>`,
+      time: '15 min setup'
     }
   ],
   
@@ -1128,6 +1209,142 @@ let tasks = JSON.parse(localStorage.getItem('robTasks')) || {
         <li>Need 3-5 screenshots showing key features</li>
       </ul>`,
       time: '1 hour'
+    },
+    {
+      id: 107,
+      title: '📧 Google Workspace Access Setup',
+      description: 'Grant Neo access to Gmail accounts for automation',
+      priority: 'high',
+      steps: `<strong>Accounts to connect:</strong>
+      <ul>
+        <li><strong>robspain@gmail.com</strong> (personal)</li>
+        <li><strong>california.bae.sig@gmail.com</strong> (CalABA BAE SIG)</li>
+      </ul>
+      <strong>Setup Instructions:</strong>
+      <ol>
+        <li>Go to <a href="https://console.cloud.google.com" target="_blank">Google Cloud Console</a></li>
+        <li>Create new project: "Clawdbot Gmail Integration"</li>
+        <li>Enable Gmail API</li>
+        <li>Create OAuth 2.0 credentials</li>
+        <li>Add authorized scopes:
+          <ul>
+            <li><code>gmail.readonly</code> (read emails)</li>
+            <li><code>gmail.send</code> (send emails)</li>
+            <li><code>gmail.modify</code> (mark as read, archive)</li>
+          </ul>
+        </li>
+        <li>Download credentials JSON</li>
+        <li>Run auth flow:
+          <ul>
+            <li>For robspain@gmail.com first</li>
+            <li>Then california.bae.sig@gmail.com</li>
+          </ul>
+        </li>
+        <li>Store tokens securely in Mac mini</li>
+      </ol>
+      <strong>What this enables:</strong>
+      <ul>
+        <li>Monitor for Amy Tipton custody emails</li>
+        <li>Send CalABA BAE SIG email campaigns</li>
+        <li>Automated email responses</li>
+        <li>Email list management</li>
+      </ul>
+      <p><strong>Privacy:</strong> Neo only accesses when explicitly requested or for configured alerts</p>`,
+      time: '30 min'
+    },
+    {
+      id: 108,
+      title: '💰 Mighty Networks Replacement Research',
+      description: 'Find open-source/cheap alternative - SAVE $120/month',
+      priority: 'high',
+      steps: `<strong>Current Cost:</strong> Mighty Networks = $120/month ($1,440/year)
+      <p><strong>Background agent researching:</strong> See COST_REDUCTION_PLAN.md</p>
+      <strong>Options to evaluate:</strong>
+      <ol>
+        <li><strong>Discourse</strong> (open source, self-hosted)
+          <ul>
+            <li>Cost: $10-30/month hosting</li>
+            <li>Migration: Email export → import</li>
+            <li>Features: Forums, groups, badges, SSO</li>
+          </ul>
+        </li>
+        <li><strong>Forem</strong> (DEV Community platform)
+          <ul>
+            <li>Cost: Free (self-host) or $25/month managed</li>
+            <li>Features: Articles, discussions, community</li>
+          </ul>
+        </li>
+        <li><strong>NodeBB</strong> (modern forums)
+          <ul>
+            <li>Cost: $5-15/month hosting</li>
+            <li>Features: Real-time chat, gamification</li>
+          </ul>
+        </li>
+        <li><strong>Custom Next.js</strong> (build it ourselves)
+          <ul>
+            <li>Cost: $0 (use existing Vercel/Supabase)</li>
+            <li>Full control, integrate with learning platform</li>
+          </ul>
+        </li>
+      </ol>
+      <strong>Decision criteria:</strong>
+      <ul>
+        <li>Cost < $30/month</li>
+        <li>Easy migration from Mighty Networks</li>
+        <li>Member authentication</li>
+        <li>Cohort-based groups</li>
+        <li>Mobile-friendly</li>
+      </ul>
+      <p><strong>Target savings: $90-110/month = $1,080-1,320/year</strong> 🎯</p>`,
+      time: 'Research complete in ~10 min'
+    },
+    {
+      id: 109,
+      title: '📅 Calendly Replacement Research',
+      description: 'Find open-source booking alternative - SAVE $10/month',
+      priority: 'medium',
+      steps: `<strong>Current Cost:</strong> Calendly = $10/month ($120/year)
+      <p><strong>Background agent researching:</strong> See COST_REDUCTION_PLAN.md</p>
+      <strong>Options to evaluate:</strong>
+      <ol>
+        <li><strong>Cal.com</strong> (open source #1 choice)
+          <ul>
+            <li>Cost: Free (self-host) or $12/month managed</li>
+            <li>Features: Google Calendar sync, Zoom integration, team scheduling</li>
+            <li>Migration: Import Calendly events</li>
+          </ul>
+        </li>
+        <li><strong>Zoom Scheduling</strong> (you already pay $18/month)
+          <ul>
+            <li>Cost: $0 (included in Zoom Pro)</li>
+            <li>Features: Basic scheduling, Zoom meetings</li>
+            <li>Limitation: Less flexible than Calendly</li>
+          </ul>
+        </li>
+        <li><strong>Custom Next.js</strong> (build it ourselves)
+          <ul>
+            <li>Cost: $0</li>
+            <li>Integrate with robspain.com</li>
+            <li>Full control over branding</li>
+          </ul>
+        </li>
+      </ol>
+      <strong>Where it's used:</strong>
+      <ul>
+        <li>behaviorschool.com (consultation bookings)</li>
+        <li>robspain.com (speaking engagements)</li>
+        <li>KCUSD site (team meetings)</li>
+      </ul>
+      <strong>Decision criteria:</strong>
+      <ul>
+        <li>Cost: $0-5/month</li>
+        <li>Google Calendar integration</li>
+        <li>Zoom auto-add to meetings</li>
+        <li>Email reminders</li>
+        <li>Easy to embed</li>
+      </ul>
+      <p><strong>Target savings: $10/month = $120/year</strong></p>`,
+      time: 'Research complete in ~10 min'
     }
   ],
   

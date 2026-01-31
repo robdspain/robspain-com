@@ -576,6 +576,7 @@ permalink: /admin/tasks/
       <p class="last-updated">Last updated: <span id="last-updated"></span></p>
     </div>
     <div class="board-controls">
+      <button class="control-btn export-btn" onclick="syncToNeo()">🤖 Sync to Neo</button>
       <button class="control-btn export-btn" onclick="exportTasks()">📥 Export JSON</button>
       <button class="control-btn clear-done-btn" onclick="clearDone()">🗑️ Clear Done</button>
     </div>
@@ -2509,6 +2510,27 @@ function exportTasks() {
   link.href = url;
   link.download = `rob-tasks-${new Date().toISOString().split('T')[0]}.json`;
   link.click();
+}
+
+function syncToNeo() {
+  // Create sync file format for Neo
+  const syncData = {
+    lastUpdated: new Date().toISOString(),
+    source: 'web',
+    version: 1,
+    tasks: tasks
+  };
+  
+  const dataStr = JSON.stringify(syncData, null, 2);
+  const dataBlob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(dataBlob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'task-sync.json';
+  link.click();
+  
+  // Show instructions
+  alert('✅ Downloaded task-sync.json!\n\nSave to: /home/rob/clawd/task-sync.json\n\nThen run: /home/rob/clawd/scripts/sync-tasks.sh\n\nOr Neo will auto-sync on next heartbeat!');
 }
 
 function clearDone() {

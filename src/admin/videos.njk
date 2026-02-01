@@ -1,0 +1,259 @@
+---
+layout: base.njk
+title: Video Library - Rob Spain
+permalink: /admin/videos/
+---
+
+<div class="r2-admin">
+  <div class="container">
+    <div class="section-header-premium">
+      <div class="section-badge-premium">Cloudflare R2</div>
+      <h2 class="section-title-premium">Video Library</h2>
+      <p class="section-description-premium">
+        Upload, manage, and preview videos stored in Cloudflare R2.
+      </p>
+    </div>
+
+    <div class="r2-grid">
+      <section class="r2-card">
+        <h3>Upload New Video</h3>
+        {% include "components/video/R2VideoUpload.njk" %}
+        <p class="r2-help">Uploads use multipart chunking and support mp4, mov, and webm.</p>
+      </section>
+
+      <section class="r2-card">
+        <h3>Preview Player</h3>
+        <form class="r2-preview" data-r2-preview-form>
+          <label>
+            HLS (.m3u8) URL
+            <input type="url" name="hls_url" placeholder="https://.../playlist.m3u8">
+          </label>
+          <label>
+            MP4 fallback URL
+            <input type="url" name="mp4_url" placeholder="https://.../video.mp4">
+          </label>
+          <button type="submit" class="r2-button">Load Preview</button>
+        </form>
+        <div class="r2-preview-player">
+          {% include "components/video/R2VideoPlayer.njk" %}
+        </div>
+      </section>
+    </div>
+
+    <section class="r2-card r2-card--list">
+      <div class="r2-list__header">
+        <h3>Uploaded Videos</h3>
+        <button class="r2-button r2-button--ghost" type="button" data-r2-refresh>Refresh</button>
+      </div>
+      <div class="r2-list" data-r2-list></div>
+    </section>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
+<script src="/r2-video-player.js"></script>
+<script src="/r2-video-upload.js"></script>
+<script src="/r2-video-admin.js"></script>
+
+<style>
+.r2-admin {
+  padding: 6rem 0 8rem;
+  background: #f8fafc;
+}
+
+.r2-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  margin: 2.5rem 0 3rem;
+}
+
+.r2-card {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.r2-card h3 {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  color: #0f172a;
+}
+
+.r2-help {
+  margin-top: 1rem;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.r2-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.r2-upload__dropzone {
+  border: 2px dashed #94a3b8;
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #f1f5f9;
+}
+
+.r2-upload__dropzone.is-dragover {
+  border-color: #10b981;
+  background: #ecfdf5;
+}
+
+.r2-upload__icon {
+  font-size: 2rem;
+  color: #10b981;
+  margin-bottom: 0.75rem;
+}
+
+.r2-upload__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  color: #0f172a;
+}
+
+.r2-upload__input {
+  display: none;
+}
+
+.r2-upload__progress {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.r2-upload__progress-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+
+.r2-upload__status {
+  color: #475569;
+  font-size: 0.85rem;
+}
+
+.r2-preview {
+  display: grid;
+  gap: 1rem;
+}
+
+.r2-preview label {
+  display: grid;
+  gap: 0.4rem;
+  color: #334155;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.r2-preview input {
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
+  border: 1px solid #cbd5f5;
+  font-size: 0.95rem;
+}
+
+.r2-preview-player {
+  margin-top: 1.5rem;
+}
+
+.r2-video-player__video {
+  width: 100%;
+  border-radius: 16px;
+  background: #0f172a;
+}
+
+.r2-button {
+  background: #10b981;
+  color: white;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.r2-button:hover {
+  transform: translateY(-1px);
+}
+
+.r2-button--ghost {
+  background: transparent;
+  color: #0f172a;
+  border: 1px solid #cbd5f5;
+}
+
+.r2-button--danger {
+  background: #ef4444;
+  color: white;
+}
+
+.r2-card--list {
+  margin-top: 2rem;
+}
+
+.r2-list__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.r2-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.r2-list__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #f8fafc;
+}
+
+.r2-list__meta {
+  display: grid;
+  gap: 0.25rem;
+  color: #0f172a;
+  font-size: 0.95rem;
+}
+
+.r2-list__meta span {
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.r2-list__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.r2-loading,
+.r2-error,
+.r2-empty {
+  color: #64748b;
+}
+
+@media (max-width: 720px) {
+  .r2-list__row {
+    align-items: flex-start;
+  }
+}
+</style>

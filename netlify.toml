@@ -20,3 +20,33 @@
   from = "/callback"
   to = "/.netlify/functions/callback"
   status = 200
+
+[[redirects]]
+  from = "/api/r2/multipart/init"
+  to = "/.netlify/functions/r2-presign-init"
+  status = 200
+
+[[redirects]]
+  from = "/api/r2/multipart/part"
+  to = "/.netlify/functions/r2-presign-part"
+  status = 200
+
+[[redirects]]
+  from = "/api/r2/multipart/complete"
+  to = "/.netlify/functions/r2-presign-complete"
+  status = 200
+
+[[redirects]]
+  from = "/api/r2/multipart/abort"
+  to = "/.netlify/functions/r2-presign-abort"
+  status = 200
+
+[[redirects]]
+  from = "/api/r2/list"
+  to = "/.netlify/functions/r2-list"
+  status = 200
+
+[[redirects]]
+  from = "/api/r2/delete"
+  to = "/.netlify/functions/r2-delete"
+  status = 200

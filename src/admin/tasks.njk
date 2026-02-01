@@ -1,2555 +1,1341 @@
 ---
 layout: base.njk
-title: Task Board - Rob Spain Admin
+title: Neo Dashboard v2 - Rob Spain Admin
 permalink: /admin/tasks/
 ---
 
 <style>
-  .task-board {
-    padding: 20px;
-    max-width: 1800px;
+  .neo-dashboard {
+    background: var(--background-slate);
+    min-height: 100vh;
+    padding: 2.5rem 1.5rem 4rem;
+    color: var(--text-primary);
+  }
+
+  .neo-shell {
+    max-width: 1400px;
     margin: 0 auto;
   }
-  
-  .task-board h1 {
-    margin-bottom: 10px;
-    color: #1a202c;
-  }
-  
-  .board-header {
+
+  .neo-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .neo-title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .neo-subtitle {
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+  }
+
+  .neo-actions {
+    display: flex;
+    gap: 0.75rem;
     flex-wrap: wrap;
-    gap: 15px;
   }
-  
-  .last-updated {
-    color: #718096;
-    font-size: 14px;
-  }
-  
-  .board-controls {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .control-btn {
-    padding: 8px 16px;
+
+  .neo-btn {
     border: none;
-    border-radius: 6px;
+    border-radius: 999px;
+    padding: 0.65rem 1.3rem;
+    font-weight: 600;
+    font-size: 0.9rem;
     cursor: pointer;
-    font-weight: 600;
-    font-size: 14px;
-    transition: all 0.2s;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
-  
-  .export-btn {
-    background: #4299e1;
-    color: white;
+
+  .neo-btn-primary {
+    background: var(--gradient-emerald);
+    color: #ffffff;
+    box-shadow: var(--shadow-md);
   }
-  
-  .export-btn:hover {
-    background: #3182ce;
+
+  .neo-btn-secondary {
+    background: #ffffff;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
   }
-  
-  .clear-done-btn {
-    background: #f7fafc;
-    color: #718096;
-    border: 1px solid #e2e8f0;
+
+  .neo-btn-ghost {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px dashed var(--border-color);
   }
-  
-  .clear-done-btn:hover {
-    background: #edf2f7;
+
+  .neo-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
   }
-  
-  .stats-bar {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 15px;
-    margin-bottom: 30px;
-  }
-  
-  .stat-card {
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    border-left: 4px solid #cbd5e0;
-  }
-  
-  .stat-card.urgent { border-left-color: #f56565; }
-  .stat-card.progress { border-left-color: #ed8936; }
-  .stat-card.blocked { border-left-color: #ecc94b; }
-  .stat-card.automate { border-left-color: #9f7aea; }
-  .stat-card.done { border-left-color: #48bb78; }
-  
-  .stat-label {
-    font-size: 12px;
-    color: #718096;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 600;
-  }
-  
-  .stat-value {
-    font-size: 28px;
-    font-weight: 700;
-    color: #2d3748;
-    margin-top: 5px;
-  }
-  
-  .stat-sublabel {
-    font-size: 11px;
-    color: #a0aec0;
-    margin-top: 3px;
-  }
-  
-  .section {
-    margin-bottom: 40px;
-  }
-  
-  .section-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: #2d3748;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 3px solid #e2e8f0;
-    display: flex;
+
+  .neo-status-pill {
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
   }
-  
-  .section-count {
-    background: #edf2f7;
-    color: #4a5568;
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 14px;
+
+  .status-active { background: #dcfce7; color: #166534; }
+  .status-blocked { background: #fef3c7; color: #92400e; }
+  .status-done { background: #e0f2fe; color: #075985; }
+  .status-paused { background: #e2e8f0; color: #475569; }
+
+  .neo-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
   }
-  
-  .board-columns {
+
+  .panel {
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 1.75rem;
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+  }
+
+  .panel-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .panel-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+
+  .panel-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+  }
+
+  .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-    gap: 20px;
-    margin-bottom: 30px;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
-  
-  .column {
-    background: #f7fafc;
-    border-radius: 8px;
-    padding: 15px;
-    min-height: 200px;
+
+  .project-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
-  
-  .column-header {
+
+  .project-card {
+    border-radius: 18px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    padding: 1.2rem;
+    background: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .project-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .project-card.expanded {
+    background: #ffffff;
+  }
+
+  .project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .project-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+  }
+
+  .project-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .progress-track {
+    background: #e2e8f0;
+    border-radius: 999px;
+    overflow: hidden;
+    height: 10px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--gradient-emerald);
+  }
+
+  .progress-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #e2e8f0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
   }
-  
-  .column-title {
-    font-weight: 600;
-    font-size: 16px;
+
+  .project-details {
+    display: none;
+    border-top: 1px solid var(--border-color);
+    padding-top: 0.9rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    gap: 0.65rem;
+  }
+
+  .project-card.expanded .project-details {
+    display: grid;
+  }
+
+  .project-detail-row {
     display: flex;
-    align-items: center;
-    gap: 8px;
+    justify-content: space-between;
+    gap: 1rem;
   }
-  
-  .column-count {
-    background: #cbd5e0;
-    color: #2d3748;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 12px;
+
+  .project-detail-label {
     font-weight: 600;
+    color: var(--text-primary);
   }
-  
-  .urgent-col { border-left: 4px solid #f56565; }
-  .progress-col { border-left: 4px solid #ed8936; }
-  .blocked-col { border-left: 4px solid #ecc94b; }
-  .automate-col { border-left: 4px solid #9f7aea; }
-  .done-col { border-left: 4px solid #48bb78; }
-  
-  .task-card {
-    background: white;
-    border-radius: 6px;
-    padding: 15px;
-    margin-bottom: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    cursor: move;
-    transition: all 0.2s;
-  }
-  
-  .task-card:hover {
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transform: translateY(-2px);
-  }
-  
-  .task-card.dragging {
-    opacity: 0.5;
-  }
-  
-  .task-title {
-    font-weight: 700;
-    margin-bottom: 8px;
-    color: #2d3748;
-    font-size: 15px;
-  }
-  
-  .task-description {
-    font-size: 13px;
-    color: #4a5568;
-    margin-bottom: 10px;
-    line-height: 1.6;
-  }
-  
-  .task-steps {
-    background: #f7fafc;
-    padding: 12px;
-    border-radius: 4px;
-    margin: 10px 0;
-    font-size: 13px;
-    line-height: 1.6;
-  }
-  
-  .task-steps strong {
-    color: #2d3748;
-    display: block;
-    margin-bottom: 6px;
-  }
-  
-  .task-steps ol, .task-steps ul {
-    margin: 8px 0;
-    padding-left: 20px;
-  }
-  
-  .task-steps li {
-    margin: 6px 0;
-    color: #2d3748;
-  }
-  
-  .task-steps code {
-    background: #e2e8f0;
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-size: 12px;
-    color: #2d3748;
-    font-family: 'Monaco', 'Courier New', monospace;
-  }
-  
-  .task-steps a {
-    color: #4299e1;
+
+  .project-link {
+    color: var(--secondary-color);
     text-decoration: none;
     font-weight: 600;
   }
-  
-  .task-steps a:hover {
-    text-decoration: underline;
+
+  .blocked-section {
+    margin-top: 1.5rem;
+    background: #fff7ed;
+    border-radius: 16px;
+    padding: 1.25rem;
+    border: 1px solid #fed7aa;
   }
-  
-  .automation-card {
-    background: white;
-    border-radius: 6px;
-    padding: 15px;
-    margin-bottom: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    border-left: 3px solid #9f7aea;
-  }
-  
-  .automation-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: start;
-    margin-bottom: 10px;
-  }
-  
-  .automation-title {
-    font-weight: 700;
-    color: #2d3748;
-    font-size: 15px;
-  }
-  
-  .automation-badge {
-    padding: 3px 8px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 600;
-    white-space: nowrap;
-  }
-  
-  .can-automate {
-    background: #c6f6d5;
-    color: #22543d;
-  }
-  
-  .partial-automate {
-    background: #fef5e7;
-    color: #975a16;
-  }
-  
-  .cant-automate {
-    background: #fed7d7;
-    color: #742a2a;
-  }
-  
-  .automation-grid {
+
+  .blocked-list {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 8px;
-    margin-top: 10px;
-    font-size: 13px;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
   }
-  
-  .automation-row {
+
+  .blocked-item {
     display: flex;
-    align-items: start;
-    gap: 8px;
-  }
-  
-  .automation-label {
-    font-weight: 600;
-    color: #4a5568;
-    min-width: 90px;
-  }
-  
-  .automation-value {
-    color: #2d3748;
-    flex: 1;
-  }
-  
-  .automation-value code {
-    background: #edf2f7;
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-size: 12px;
-  }
-  
-  .time-saved {
-    color: #38a169;
-    font-weight: 600;
-  }
-  
-  .cost {
-    color: #e53e3e;
-    font-weight: 600;
-  }
-  
-  .website-card {
-    background: white;
-    border-radius: 6px;
-    padding: 15px;
-    margin-bottom: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  }
-  
-  .website-header {
-    display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-  }
-  
-  .website-name {
-    font-weight: 700;
-    color: #2d3748;
-    font-size: 15px;
-  }
-  
-  .status-badge {
-    padding: 4px 10px;
+    gap: 1rem;
+    background: #ffffff;
     border-radius: 12px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
+    padding: 0.75rem 1rem;
+    border: 1px solid #fed7aa;
   }
-  
-  .status-live {
-    background: #c6f6d5;
-    color: #22543d;
-  }
-  
-  .status-broken {
-    background: #fed7d7;
-    color: #742a2a;
-  }
-  
-  .status-dev {
-    background: #bee3f8;
-    color: #2c5282;
-  }
-  
-  .website-url {
-    font-size: 12px;
-    color: #4299e1;
-    margin-bottom: 10px;
-    word-break: break-all;
-  }
-  
-  .website-section {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid #e2e8f0;
-  }
-  
-  .website-section-title {
-    font-weight: 600;
-    font-size: 12px;
-    color: #718096;
-    margin-bottom: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  
-  .website-list {
-    font-size: 13px;
-    color: #2d3748;
-    line-height: 1.6;
-  }
-  
-  .website-list li {
-    margin: 4px 0;
-  }
-  
-  .task-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 12px;
-    padding-top: 10px;
-    border-top: 1px solid #e2e8f0;
-  }
-  
-  .task-meta {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
-  
-  .task-time {
-    font-size: 12px;
-    color: #fff;
-    background: #4299e1;
-    padding: 3px 10px;
-    border-radius: 12px;
-    font-weight: 600;
-  }
-  
-  .task-priority {
-    font-size: 11px;
-    padding: 3px 8px;
-    border-radius: 12px;
-    font-weight: 600;
-  }
-  
-  .priority-high {
-    background: #fed7d7;
-    color: #742a2a;
-  }
-  
-  .priority-medium {
-    background: #fef5e7;
-    color: #975a16;
-  }
-  
-  .priority-low {
-    background: #e6fffa;
-    color: #234e52;
-  }
-  
-  .task-actions {
-    display: flex;
-    gap: 8px;
-  }
-  
-  .task-btn {
-    background: none;
+
+  .blocked-item button {
     border: none;
-    cursor: pointer;
-    padding: 6px 12px;
-    border-radius: 4px;
-    font-size: 13px;
+    background: #f97316;
+    color: #ffffff;
     font-weight: 600;
-    transition: all 0.2s;
-  }
-  
-  .task-btn:hover {
-    background: #edf2f7;
-  }
-  
-  .complete-btn {
-    color: #48bb78;
-  }
-  
-  .edit-btn {
-    color: #4299e1;
-  }
-  
-  .delete-btn {
-    color: #f56565;
-  }
-  
-  .add-task-btn {
-    width: 100%;
-    padding: 12px;
-    background: white;
-    border: 2px dashed #cbd5e0;
-    border-radius: 6px;
-    color: #718096;
-    font-size: 14px;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
     cursor: pointer;
-    transition: all 0.2s;
-    font-weight: 600;
   }
-  
-  .add-task-btn:hover {
-    border-color: #4299e1;
-    color: #4299e1;
-    background: #ebf8ff;
+
+  .quick-wins-list {
+    display: grid;
+    gap: 0.9rem;
   }
-  
-  @media (max-width: 768px) {
-    .board-columns {
-      grid-template-columns: 1fr;
-    }
-    
-    .stats-bar {
-      grid-template-columns: repeat(2, 1fr);
-    }
+
+  .quick-win {
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 16px;
+    padding: 1rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background: #f8fafc;
   }
-  
-  .collapsible-section {
-    margin-bottom: 30px;
+
+  .quick-win-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
   }
-  
-  .section-toggle {
-    background: white;
+
+  .quick-win-title {
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  .quick-win-estimate {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #0f766e;
+    background: #ccfbf1;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+  }
+
+  .quick-win-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .quick-win-actions button,
+  .quick-win-actions a {
+    text-decoration: none;
     border: none;
-    width: 100%;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    background: #e2e8f0;
+    color: #1f2937;
+    padding: 0.45rem 0.8rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
     cursor: pointer;
+  }
+
+  .quick-win-actions .primary {
+    background: #10b981;
+    color: #ffffff;
+  }
+
+  .quick-win-actions .done {
+    background: #0f172a;
+    color: #ffffff;
+  }
+
+  .quick-win-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+
+  .quick-wins-footer {
+    margin-top: 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 18px;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .calendar-shell {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .calendar-nav {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .calendar-nav button {
+    border: 1px solid var(--border-color);
+    background: #ffffff;
+    padding: 0.4rem 0.7rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .calendar-weekday {
+    font-size: 0.75rem;
     font-weight: 700;
-    color: #2d3748;
-    margin-bottom: 15px;
-    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-light);
+    text-align: center;
   }
-  
-  .section-toggle:hover {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+
+  .calendar-day {
+    background: #f8fafc;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 12px;
+    min-height: 90px;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    cursor: pointer;
+    position: relative;
   }
-  
-  .section-toggle-icon {
-    font-size: 20px;
-    transition: transform 0.3s;
+
+  .calendar-day.inactive {
+    opacity: 0.4;
   }
-  
-  .section-toggle.collapsed .section-toggle-icon {
-    transform: rotate(-90deg);
+
+  .calendar-day.today {
+    border-color: #10b981;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
   }
-  
-  .section-content {
-    max-height: 5000px;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
+
+  .calendar-date {
+    font-weight: 700;
+    font-size: 0.85rem;
   }
-  
-  .section-content.collapsed {
-    max-height: 0;
+
+  .calendar-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem;
+  }
+
+  .calendar-item {
+    font-size: 0.75rem;
+    background: #e2e8f0;
+    padding: 0.15rem 0.45rem;
+    border-radius: 999px;
+  }
+
+  .calendar-item.status-review { background: #fef3c7; color: #92400e; }
+  .calendar-item.status-approved { background: #dcfce7; color: #166534; }
+  .calendar-item.status-drafting { background: #e0e7ff; color: #3730a3; }
+  .calendar-item.status-idea { background: #f1f5f9; color: #475569; }
+  .calendar-item.status-published { background: #cffafe; color: #0e7490; }
+
+  .calendar-detail {
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 1.25rem;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+  }
+
+  .calendar-detail h4 {
+    margin-bottom: 0.75rem;
+  }
+
+  .calendar-detail-list {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .content-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .content-card-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: center;
+    font-weight: 600;
+  }
+
+  .content-card-actions {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .content-card-actions button,
+  .content-card-actions a {
+    border: none;
+    background: #e2e8f0;
+    color: #1f2937;
+    padding: 0.35rem 0.7rem;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .content-card-actions .primary {
+    background: #10b981;
+    color: #ffffff;
+  }
+
+  .upcoming-list {
+    display: grid;
+    gap: 0.8rem;
+  }
+
+  .upcoming-item {
+    border-radius: 14px;
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    padding: 0.9rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .upcoming-item .meta {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+  }
+
+  .data-status {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+
+  .data-status strong {
+    color: var(--text-primary);
+  }
+
+  .connect-panel {
+    background: #f8fafc;
+    border: 1px dashed var(--border-color);
+    border-radius: 14px;
+    padding: 1rem;
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .connect-panel input {
+    padding: 0.55rem 0.75rem;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    font-size: 0.9rem;
+    width: 100%;
+  }
+
+  .calendar-warning {
+    background: #fef2f2;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    border: 1px solid #fecaca;
+    color: #7f1d1d;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  @media (min-width: 900px) {
+    .neo-header {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .dashboard-grid {
+      grid-template-columns: 1fr 1.4fr;
+    }
+
+    .project-cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .calendar-shell {
+      grid-template-columns: 2fr 1fr;
+    }
   }
 </style>
 
-<div class="task-board">
-  <div class="board-header">
-    <div>
-      <h1>🎯 Task Board</h1>
-      <p class="last-updated">Last updated: <span id="last-updated"></span></p>
-    </div>
-    <div class="board-controls">
-      <button class="control-btn export-btn" onclick="syncToNeo()">🤖 Sync to Neo</button>
-      <button class="control-btn export-btn" onclick="exportTasks()">📥 Export JSON</button>
-      <button class="control-btn clear-done-btn" onclick="clearDone()">🗑️ Clear Done</button>
-    </div>
-  </div>
-  
-  <div class="stats-bar">
-    <div class="stat-card urgent">
-      <div class="stat-label">Urgent Tonight</div>
-      <div class="stat-value" id="stat-urgent">0</div>
-      <div class="stat-sublabel">Critical fixes</div>
-    </div>
-    <div class="stat-card progress">
-      <div class="stat-label">In Progress</div>
-      <div class="stat-value" id="stat-progress">0</div>
-      <div class="stat-sublabel">Active work</div>
-    </div>
-    <div class="stat-card blocked">
-      <div class="stat-label">Blocked</div>
-      <div class="stat-value" id="stat-blocked">0</div>
-      <div class="stat-sublabel">Need action</div>
-    </div>
-    <div class="stat-card automate">
-      <div class="stat-label">Can Automate</div>
-      <div class="stat-value" id="stat-automate">0</div>
-      <div class="stat-sublabel">Neo-ready tasks</div>
-    </div>
-    <div class="stat-card done">
-      <div class="stat-label">Done Today</div>
-      <div class="stat-value" id="stat-done">0</div>
-      <div class="stat-sublabel">Completed</div>
-    </div>
-  </div>
+<div class="neo-dashboard">
+  <div class="neo-shell">
+    <header class="neo-header">
+      <div>
+        <div class="neo-title">Neo Dashboard</div>
+        <div class="neo-subtitle">Visual projects, fast wins, and content planning in one place.</div>
+      </div>
+      <div class="neo-actions">
+        <button class="neo-btn neo-btn-primary" id="add-quick-win">+ Add Quick Win</button>
+        <button class="neo-btn neo-btn-secondary" id="refresh-data">↻ Refresh</button>
+        <button class="neo-btn neo-btn-ghost" id="toggle-connection">Supabase Settings</button>
+      </div>
+    </header>
 
-  <!-- URGENT TONIGHT SECTION -->
-  <div class="section">
-    <h2 class="section-title">
-      🔴 URGENT TONIGHT
-      <span class="section-count" id="section-count-urgent">0</span>
-    </h2>
-    <div class="board-columns">
-      <div class="column urgent-col" data-column="urgent">
-        <div class="column-header">
-          <span class="column-title">Critical Fixes</span>
-          <span class="column-count" id="count-urgent">0</span>
-        </div>
-        <div class="task-list" id="urgent-tasks"></div>
-        <button class="add-task-btn" onclick="addTask('urgent')">+ Add Urgent Task</button>
+    <div class="panel connect-panel" id="connection-panel" style="display:none;">
+      <div class="data-status" id="connection-status">Data source: <strong>Sample data</strong></div>
+      <div>
+        <label for="supabase-url">Supabase URL</label>
+        <input id="supabase-url" type="text" placeholder="https://xxxx.supabase.co" />
+      </div>
+      <div>
+        <label for="supabase-key">Supabase anon key</label>
+        <input id="supabase-key" type="password" placeholder="eyJhbGciOi..." />
+      </div>
+      <div class="neo-actions">
+        <button class="neo-btn neo-btn-primary" id="save-connection">Save & Connect</button>
+        <button class="neo-btn neo-btn-secondary" id="clear-connection">Use Sample Data</button>
       </div>
     </div>
-  </div>
 
-  <!-- BUSINESS/ADMIN TASKS -->
-  <div class="collapsible-section">
-    <button class="section-toggle" onclick="toggleSection('business')">
-      <span>💼 BUSINESS/ADMIN TASKS <span class="section-count" id="section-count-business">0</span></span>
-      <span class="section-toggle-icon">▼</span>
-    </button>
-    <div class="section-content" id="business-content">
-      <div class="board-columns">
-        <div class="column progress-col">
-          <div class="column-header">
-            <span class="column-title">Business Tasks</span>
-            <span class="column-count" id="count-business">0</span>
+    <div class="dashboard-grid">
+      <section class="panel" id="quick-wins-section">
+        <div class="panel-header">
+          <div class="panel-title">⚡ Quick Wins (5-15 min)</div>
+          <div class="panel-subtitle">Knock out the fastest wins first. Sorted by time.</div>
+        </div>
+        <div class="quick-wins-list" id="quick-wins-list"></div>
+        <div class="quick-wins-footer">
+          <div class="data-status">Completed today: <strong id="quick-wins-done">0</strong></div>
+          <div class="data-status">Next up: <strong id="quick-wins-next">—</strong></div>
+        </div>
+      </section>
+
+      <section class="panel" id="projects-section">
+        <div class="panel-header">
+          <div class="panel-title">📊 Project Dashboard</div>
+          <div class="panel-subtitle">Tap a card to expand. Progress and status update in real time.</div>
+        </div>
+        <div class="project-cards" id="project-cards"></div>
+        <div class="blocked-section" id="blocked-section">
+          <div class="panel-title">⏸️ Blocked / Waiting on Rob</div>
+          <div class="blocked-list" id="blocked-list"></div>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel" id="calendar-section" style="margin-top:1.5rem;">
+      <div class="panel-header">
+        <div class="panel-title">📅 Content Calendar</div>
+        <div class="panel-subtitle">Monthly view with channel icons and quick approvals.</div>
+      </div>
+      <div class="calendar-shell">
+        <div>
+          <div class="calendar-header">
+            <div>
+              <div class="panel-title" id="calendar-month">February 2026</div>
+              <div class="panel-subtitle">📧 Email · 🎥 YouTube · 💼 LinkedIn · 📝 Blog · 🐦 Twitter</div>
+            </div>
+            <div class="calendar-nav">
+              <button id="prev-month">◀</button>
+              <button id="today-month">Today</button>
+              <button id="next-month">▶</button>
+            </div>
           </div>
-          <div class="task-list" id="business-tasks"></div>
-          <button class="add-task-btn" onclick="addTask('business')">+ Add Business Task</button>
+          <div class="calendar-warning" id="calendar-warning" style="display:none;"></div>
+          <div class="calendar-grid" id="calendar-weekdays"></div>
+          <div class="calendar-grid" id="calendar-days"></div>
+        </div>
+        <div class="calendar-detail">
+          <h4 id="calendar-detail-title">Select a date</h4>
+          <div class="calendar-detail-list" id="calendar-detail-list"></div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- WEBSITE STATUS TRACKERS -->
-  <div class="collapsible-section">
-    <button class="section-toggle" onclick="toggleSection('websites')">
-      <span>🌐 WEBSITE STATUS TRACKERS <span class="section-count">5 sites</span></span>
-      <span class="section-toggle-icon">▼</span>
-    </button>
-    <div class="section-content" id="websites-content">
-      <div class="board-columns">
-        <div class="column">
-          <div class="column-header">
-            <span class="column-title">All Websites</span>
-          </div>
-          <div id="website-cards"></div>
-        </div>
+      <div style="margin-top:1.5rem;">
+        <div class="panel-title">📋 Upcoming Content</div>
+        <div class="panel-subtitle">Sorted by schedule date.</div>
+        <div class="upcoming-list" id="upcoming-list"></div>
       </div>
-    </div>
-  </div>
-
-  <!-- MOBILE APPS -->
-  <div class="collapsible-section">
-    <button class="section-toggle" onclick="toggleSection('mobile')">
-      <span>📱 MOBILE APPS <span class="section-count" id="section-count-mobile">0</span></span>
-      <span class="section-toggle-icon">▼</span>
-    </button>
-    <div class="section-content" id="mobile-content">
-      <div class="board-columns">
-        <div class="column progress-col">
-          <div class="column-header">
-            <span class="column-title">iOS Development</span>
-            <span class="column-count" id="count-mobile">0</span>
-          </div>
-          <div class="task-list" id="mobile-tasks"></div>
-          <button class="add-task-btn" onclick="addTask('mobile')">+ Add Mobile Task</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- CALABA CONFERENCE -->
-  <div class="collapsible-section">
-    <button class="section-toggle" onclick="toggleSection('calaba')">
-      <span>🎤 CALABA CONFERENCE (March 5-7, 2026) <span class="section-count" id="section-count-calaba">0</span></span>
-      <span class="section-toggle-icon">▼</span>
-    </button>
-    <div class="section-content" id="calaba-content">
-      <div class="board-columns">
-        <div class="column progress-col">
-          <div class="column-header">
-            <span class="column-title">Conference Prep</span>
-            <span class="column-count" id="count-calaba">0</span>
-          </div>
-          <div class="task-list" id="calaba-tasks"></div>
-          <button class="add-task-btn" onclick="addTask('calaba')">+ Add Conference Task</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- CAPABILITY EXPANSION -->
-  <div class="collapsible-section">
-    <button class="section-toggle" onclick="toggleSection('capabilities')">
-      <span>⚡ CAPABILITY EXPANSION <span class="section-count" id="section-count-capabilities">0</span></span>
-      <span class="section-toggle-icon">▼</span>
-    </button>
-    <div class="section-content" id="capabilities-content">
-      <div class="board-columns">
-        <div class="column progress-col">
-          <div class="column-header">
-            <span class="column-title">New Capabilities</span>
-            <span class="column-count" id="count-capabilities">0</span>
-          </div>
-          <div class="task-list" id="capabilities-tasks"></div>
-          <button class="add-task-btn" onclick="addTask('capabilities')">+ Add Capability</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- COULD AUTOMATE SECTION -->
-  <div class="section">
-    <h2 class="section-title">
-      🤖 COULD AUTOMATE (Neo-Ready Tasks)
-      <span class="section-count" id="section-count-automation">0</span>
-    </h2>
-    <div class="board-columns">
-      <div class="column automate-col">
-        <div class="column-header">
-          <span class="column-title">Automation Analysis</span>
-          <span class="column-count" id="count-automation">0</span>
-        </div>
-        <div id="automation-cards"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- IN PROGRESS / BLOCKED / DONE -->
-  <div class="section">
-    <h2 class="section-title">📊 WORKFLOW STATUS</h2>
-    <div class="board-columns">
-      <div class="column progress-col" data-column="progress">
-        <div class="column-header">
-          <span class="column-title">🟡 In Progress</span>
-          <span class="column-count" id="count-progress">0</span>
-        </div>
-        <div class="task-list" id="progress-tasks"></div>
-        <button class="add-task-btn" onclick="addTask('progress')">+ Add Task</button>
-      </div>
-      
-      <div class="column blocked-col" data-column="blocked">
-        <div class="column-header">
-          <span class="column-title">⏸️ Blocked</span>
-          <span class="column-count" id="count-blocked">0</span>
-        </div>
-        <div class="task-list" id="blocked-tasks"></div>
-        <button class="add-task-btn" onclick="addTask('blocked')">+ Add Blocked Task</button>
-      </div>
-      
-      <div class="column done-col" data-column="done">
-        <div class="column-header">
-          <span class="column-title">✅ Done</span>
-          <span class="column-count" id="count-done">0</span>
-        </div>
-        <div class="task-list" id="done-tasks"></div>
-      </div>
-    </div>
+    </section>
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// Initialize comprehensive task data
-let tasks = JSON.parse(localStorage.getItem('robTasks')) || {
-  urgent: [
-    {
-      id: 1,
-      title: '🔑 Fix study.behaviorschool.com Auth',
-      description: 'Add Supabase environment variables to Netlify',
-      priority: 'high',
-      steps: `<strong>Step-by-Step Instructions:</strong>
-      <ol>
-        <li>Go to <a href="https://supabase.com/dashboard" target="_blank">Supabase Dashboard</a> (sign in with GitHub)</li>
-        <li>Find project: <code>bcbaaistudytool</code> (nazqgumhstlrtebuzery)</li>
-        <li>Click Settings → API</li>
-        <li>Copy these 3 values:
-          <ul>
-            <li><strong>Project URL:</strong> <code>https://nazqgumhstlrtebuzery.supabase.co</code></li>
-            <li><strong>anon public key:</strong> starts with <code>eyJhbGciOi...</code></li>
-            <li><strong>service_role key:</strong> click "Reveal" first, then copy</li>
-          </ul>
-        </li>
-        <li>Open new tab: <a href="https://app.netlify.com" target="_blank">Netlify Dashboard</a></li>
-        <li>Find site: <code>study-behaviorschool</code></li>
-        <li>Site settings → Environment variables → "Add a variable"</li>
-        <li>Add these 3 variables:
-          <ul>
-            <li>Name: <code>VITE_SUPABASE_URL</code> → Value: paste project URL</li>
-            <li>Name: <code>VITE_SUPABASE_ANON_KEY</code> → Value: paste anon key</li>
-            <li>Name: <code>SUPABASE_SERVICE_ROLE_KEY</code> → Value: paste service role key</li>
-          </ul>
-        </li>
-        <li>Click "Save" - Netlify will auto-deploy (2-3 minutes)</li>
-        <li>Test: Go to <a href="https://study.behaviorschool.com/auth" target="_blank">study.behaviorschool.com/auth</a></li>
-        <li>Try signing in - should work now!</li>
-      </ol>`,
-      time: '15 min'
-    },
-    {
-      id: 2,
-      title: '🤖 Get Gemini API Key (FREE)',
-      description: 'Enable ACT BSP AI generation - required for Neo to test',
-      priority: 'high',
-      steps: `<strong>Step-by-Step Instructions:</strong>
-      <ol>
-        <li>Go to <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a></li>
-        <li>Sign in with Google account</li>
-        <li>Click "Create API Key" button</li>
-        <li>Select project or create new one</li>
-        <li>Copy the key (starts with <code>AIza...</code>)</li>
-        <li>⚠️ Save it somewhere - you can't see it again!</li>
-        <li>Open new tab: <a href="https://vercel.com/dashboard" target="_blank">Vercel Dashboard</a></li>
-        <li>Find project: <code>kcusd-behavior-team</code></li>
-        <li>Settings → Environment Variables</li>
-        <li>Click "Add New"</li>
-        <li>Add:
-          <ul>
-            <li>Name: <code>GEMINI_API_KEY</code></li>
-            <li>Value: paste the <code>AIza...</code> key</li>
-            <li>Environment: Production, Preview, Development (all 3)</li>
-          </ul>
-        </li>
-        <li>Click "Save"</li>
-        <li>Go to Deployments tab → click "..." on latest → "Redeploy"</li>
-        <li>✅ Neo can now test ACT BSP generation!</li>
-      </ol>
-      <strong>Free Tier Limits:</strong>
-      <ul>
-        <li>15 requests/minute</li>
-        <li>1,500 requests/day</li>
-        <li>1 million tokens/day</li>
-        <li>Perfect for testing!</li>
-      </ul>`,
-      time: '5 min'
-    },
-    {
-      id: 3,
-      title: '🔐 Fix Google OAuth Redirect',
-      description: 'Add authorized redirect URI for learning.behaviorschool.com',
-      priority: 'high',
-      steps: `<strong>Step-by-Step Instructions:</strong>
-      <ol>
-        <li>Go to <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Google Cloud Console</a></li>
-        <li>Sign in with Google account</li>
-        <li>Make sure correct project is selected (check top dropdown)</li>
-        <li>Find OAuth 2.0 Client ID: <code>894893276187-7c1os6kpp1pg1t8sq6bmrop6pfajnumo</code></li>
-        <li>Click the pencil icon (Edit) next to it</li>
-        <li>Scroll to "Authorized redirect URIs"</li>
-        <li>Click "+ ADD URI"</li>
-        <li>Add production URI: <code>https://learning.behaviorschool.com/api/auth/callback/google</code></li>
-        <li>Click "+ ADD URI" again</li>
-        <li>Add local testing URI: <code>http://localhost:3000/api/auth/callback/google</code></li>
-        <li>Click "SAVE" at bottom</li>
-        <li>Wait 5 minutes for changes to propagate</li>
-        <li>Test: Go to <a href="https://learning.behaviorschool.com" target="_blank">learning.behaviorschool.com</a></li>
-        <li>Click "Sign in with Google" - should work!</li>
-      </ol>`,
-      time: '5 min'
-    },
-    {
-      id: 7,
-      title: '💾 VM → Mac Mini Migration',
-      description: 'Migrate Clawdbot from Google Cloud VM to Mac mini - SAVE $40-50/MONTH',
-      priority: 'high',
-      steps: `<strong>💰 Cost Savings: $40-50/month = $480-600/year</strong>
-      <p><strong>Complete guide:</strong> <code>/home/rob/clawd/VM_TO_MAC_MINI_MIGRATION.md</code></p>
-      <strong>Phase 1: Backup (30 min)</strong>
-      <ol>
-        <li>SSH to VM: <code>ssh rob@clawdbot-vm</code></li>
-        <li>Backup workspace: <code>cd /home/rob && tar -czf clawd-backup-$(date +%Y%m%d).tar.gz clawd/</code></li>
-        <li>Backup config: <code>tar -czf clawdbot-config-$(date +%Y%m%d).tar.gz .clawdbot/</code></li>
-        <li>Export config: <code>clawdbot gateway config.get > config-export.json</code></li>
-        <li>Copy to Mac mini via Tailscale or scp</li>
-      </ol>
-      <strong>Phase 2: Mac Mini Setup (45 min)</strong>
-      <ol>
-        <li>Extract backups on Mac mini</li>
-        <li>Install LanceDB deps: <code>cd ~/.npm-global/lib/node_modules/clawdbot/extensions/memory-lancedb && npm install</code></li>
-        <li>Start gateway: <code>clawdbot gateway start</code></li>
-        <li>Test Telegram connection</li>
-      </ol>
-      <strong>Phase 3: Switch Over (15 min)</strong>
-      <ol>
-        <li>Stop VM gateway: <code>clawdbot gateway stop</code></li>
-        <li>Confirm Mac mini running</li>
-        <li>Test all features</li>
-      </ol>
-      <strong>Phase 4: VM Backup (30 min)</strong>
-      <ol>
-        <li>Configure minimal VM for emergencies</li>
-        <li>Downgrade to e2-micro ($7/month) or stop ($2/month for disk)</li>
-      </ol>
-      <p><strong>Auto-start on boot:</strong> Create launchd service (instructions in migration doc)</p>`,
-      time: '2-3 hours'
-    },
-    {
-      id: 8,
-      title: '⏰ Daily Briefings at 6 AM',
-      description: 'Cron job for morning status reports',
-      priority: 'high',
-      steps: `<strong>What it does:</strong>
-      <ul>
-        <li>AI token usage status (alert if >75%)</li>
-        <li>BehaviorSchool.com uptime check</li>
-        <li>Overnight work completed</li>
-        <li>CalABA countdown (March 5, 2026)</li>
-        <li>High-priority tasks for today</li>
-      </ul>
-      <strong>Setup Instructions:</strong>
-      <ol>
-        <li>Neo will create cron job using cron tool</li>
-        <li>Schedule: 6:00 AM Pacific daily</li>
-        <li>Delivery: Voice message via Telegram</li>
-        <li>Follows HEARTBEAT.md spec</li>
-      </ol>
-      <p><strong>Status:</strong> Ready to enable - waiting for Mac mini migration</p>`,
-      time: '5 min setup'
-    },
-    {
-      id: 9,
-      title: '🚨 Gmail Monitoring for Amy Emails',
-      description: 'Proactive alerts when Amy Tipton emails',
-      priority: 'high',
-      steps: `<strong>Why:</strong> Amy's emails are custody-related and time-sensitive
-      <strong>Setup:</strong>
-      <ol>
-        <li>Grant Neo access to Gmail (robspain@gmail.com)</li>
-        <li>Configure filters for:
-          <ul>
-            <li>Amy Tipton emails</li>
-            <li>Custody evaluator</li>
-            <li>Legal contacts</li>
-          </ul>
-        </li>
-        <li>Alert via Telegram immediately</li>
-        <li>Optional: Voice call for critical items</li>
-      </ol>
-      <p><strong>Privacy:</strong> Neo only monitors for keywords, doesn't read full emails unless flagged</p>`,
-      time: '15 min setup'
-    }
-  ],
-  
-  business: [
-    {
-      id: 101,
-      title: '📧 Email Amy',
-      description: 'Follow up on previous conversation (context needed)',
-      priority: 'medium',
-      steps: `<strong>Context:</strong>
-      <p>⚠️ Need to search chat history for Amy context. Check:</p>
-      <ul>
-        <li>Telegram history</li>
-        <li>Email threads</li>
-        <li>Previous meeting notes</li>
-      </ul>
-      <strong>When context found, email should include:</strong>
-      <ol>
-        <li>Reference to last conversation</li>
-        <li>Update on promised items</li>
-        <li>Next steps/questions</li>
-      </ol>`,
-      time: '10 min'
-    },
-    {
-      id: 102,
-      title: '📮 Mailgun Setup for CalABA Campaign',
-      description: 'Configure email sending for BAE SIG member outreach',
-      priority: 'high',
-      steps: `<strong>Step-by-Step Instructions:</strong>
-      <ol>
-        <li>Go to <a href="https://app.mailgun.com" target="_blank">Mailgun Dashboard</a></li>
-        <li>Create account or sign in</li>
-        <li>Add domain: <code>mail.behaviorschool.com</code></li>
-        <li>Mailgun will show DNS records to add:
-          <ul>
-            <li>TXT record for verification</li>
-            <li>2 MX records</li>
-            <li>CNAME for tracking</li>
-          </ul>
-        </li>
-        <li>Go to your domain registrar (GoDaddy/Cloudflare/etc)</li>
-        <li>Add all DNS records exactly as shown</li>
-        <li>Wait 10-30 min for DNS propagation</li>
-        <li>Back in Mailgun, click "Verify DNS Settings"</li>
-        <li>Once verified, go to Settings → API Keys</li>
-        <li>Copy the Private API Key</li>
-        <li>Store in environment variables for robspain.com:
-          <ul>
-            <li><code>MAILGUN_API_KEY</code> = your private key</li>
-            <li><code>MAILGUN_DOMAIN</code> = mail.behaviorschool.com</li>
-          </ul>
-        </li>
-        <li>Test send: <code>curl -s --user 'api:YOUR_KEY' https://api.mailgun.net/v3/mail.behaviorschool.com/messages -F from='Rob Spain &lt;rob@behaviorschool.com&gt;' -F to='your-email@test.com' -F subject='Test' -F text='Test email'</code></li>
-      </ol>
-      <strong>Pricing:</strong>
-      <ul>
-        <li>Free tier: 5,000 emails/month for 3 months</li>
-        <li>Then $35/month for 50,000 emails</li>
-      </ul>`,
-      time: '30 min'
-    },
-    {
-      id: 103,
-      title: '🔐 Bitwarden Login/Setup',
-      description: 'Set up password manager for secure credential storage',
-      priority: 'medium',
-      steps: `<strong>Step-by-Step Instructions:</strong>
-      <ol>
-        <li>Go to <a href="https://bitwarden.com" target="_blank">Bitwarden.com</a></li>
-        <li>Click "Get Started" (free account)</li>
-        <li>Create account with:
-          <ul>
-            <li>Email: rob@behaviorschool.com</li>
-            <li>Strong master password (write this down!)</li>
-          </ul>
-        </li>
-        <li>Verify email address</li>
-        <li>Install browser extension:
-          <ul>
-            <li>Chrome: <a href="https://chrome.google.com/webstore/detail/bitwarden/nngceckbapebfimnlniiiahkandclblb" target="_blank">Chrome Web Store</a></li>
-            <li>Firefox: <a href="https://addons.mozilla.org/firefox/addon/bitwarden-password-manager/" target="_blank">Firefox Add-ons</a></li>
-          </ul>
-        </li>
-        <li>Sign in to extension with master password</li>
-        <li>Start importing credentials:
-          <ul>
-            <li>Supabase keys</li>
-            <li>Netlify tokens</li>
-            <li>Vercel tokens</li>
-            <li>API keys</li>
-            <li>SSH passwords</li>
-          </ul>
-        </li>
-        <li>Enable 2FA for extra security:
-          <ul>
-            <li>Settings → Two-step Login</li>
-            <li>Use authenticator app (Authy/Google Authenticator)</li>
-          </ul>
-        </li>
-      </ol>
-      <strong>Why Bitwarden:</strong>
-      <ul>
-        <li>Free for unlimited passwords</li>
-        <li>Open source & audited</li>
-        <li>Sync across devices</li>
-        <li>Auto-fill credentials</li>
-      </ul>`,
-      time: '20 min'
-    },
-    {
-      id: 104,
-      title: '🎥 Bunny.net CDN for Videos',
-      description: 'Fast, cheap video hosting for course content',
-      priority: 'medium',
-      steps: `<strong>Step-by-Step Instructions:</strong>
-      <ol>
-        <li>Go to <a href="https://bunny.net" target="_blank">Bunny.net</a></li>
-        <li>Create account</li>
-        <li>Go to Stream → Create Stream Library</li>
-        <li>Name: <code>BehaviorSchool Videos</code></li>
-        <li>Region: Choose closest to your audience (US West for California)</li>
-        <li>Enable: 
-          <ul>
-            <li>Player Branding (remove watermark)</li>
-            <li>DRM Protection (optional, for paid courses)</li>
-          </ul>
-        </li>
-        <li>Copy the Library ID and API Key</li>
-        <li>Upload test video:
-          <ul>
-            <li>Click "Upload Videos"</li>
-            <li>Drag & drop video file</li>
-            <li>Wait for processing (shows progress)</li>
-          </ul>
-        </li>
-        <li>Get embed code:
-          <ul>
-            <li>Click video → Embed tab</li>
-            <li>Copy iframe code</li>
-            <li>Paste in learning.behaviorschool.com course pages</li>
-          </ul>
-        </li>
-        <li>For API integration:
-          <ul>
-            <li>Install: <code>npm i @bunny.net/stream</code></li>
-            <li>Add to .env: <code>BUNNY_STREAM_LIBRARY_ID=xxx</code></li>
-            <li>Add to .env: <code>BUNNY_STREAM_API_KEY=xxx</code></li>
-          </ul>
-        </li>
-      </ol>
-      <strong>Pricing:</strong>
-      <ul>
-        <li>$0.005/GB storage (~$5 for 1000 GB)</li>
-        <li>$0.01/GB bandwidth (~$10 for 1000 GB streamed)</li>
-        <li>Much cheaper than Vimeo ($20/mo) or Wistia ($99/mo)</li>
-      </ul>`,
-      time: '45 min'
-    },
-    {
-      id: 105,
-      title: '💰 Tax Preparation Tasks',
-      description: 'Organize documents for 2025 tax filing',
-      priority: 'low',
-      steps: `<strong>Step-by-Step Checklist:</strong>
-      <ol>
-        <li>Gather income documents:
-          <ul>
-            <li>W-2s from employer(s)</li>
-            <li>1099-MISC for consulting/speaking</li>
-            <li>1099-K if revenue > $600 from Stripe/PayPal</li>
-          </ul>
-        </li>
-        <li>Business expenses (BehaviorSchool):
-          <ul>
-            <li>Hosting: Netlify, Vercel, Supabase</li>
-            <li>Domains: GoDaddy, Namecheap</li>
-            <li>Software: Adobe, Canva, etc</li>
-            <li>Email: Mailgun</li>
-            <li>Video hosting: Bunny.net</li>
-          </ul>
-        </li>
-        <li>Education expenses:
-          <ul>
-            <li>BCBA continuing education</li>
-            <li>Conference fees (CalABA)</li>
-            <li>Books, courses</li>
-          </ul>
-        </li>
-        <li>Home office deduction:
-          <ul>
-            <li>Measure office square footage</li>
-            <li>Calculate % of home</li>
-            <li>Utilities, internet, rent/mortgage</li>
-          </ul>
-        </li>
-        <li>Create spreadsheet with all expenses by category</li>
-        <li>Schedule appointment with accountant OR use:
-          <ul>
-            <li>TurboTax Self-Employed (~$120)</li>
-            <li>FreeTaxUSA (~$15 for state)</li>
-          </ul>
-        </li>
-      </ol>
-      <strong>Deadline:</strong> April 15, 2026`,
-      time: '2-3 hours'
-    },
-    {
-      id: 106,
-      title: '📸 Screenshots from Behavior Study Tools',
-      description: 'Capture app screenshots for marketing materials',
-      priority: 'low',
-      steps: `<strong>Step-by-Step Instructions:</strong>
-      <ol>
-        <li>Open study.behaviorschool.com on Mac/PC</li>
-        <li>Sign in to account</li>
-        <li>Screenshots needed:
-          <ul>
-            <li>Dashboard view (clean, no personal data)</li>
-            <li>Study session in progress</li>
-            <li>Progress tracking chart</li>
-            <li>Flashcard example</li>
-            <li>Question answering interface</li>
-            <li>Results/analytics page</li>
-          </ul>
-        </li>
-        <li>For each screenshot:
-          <ul>
-            <li>Mac: Cmd+Shift+4, drag to select area</li>
-            <li>Windows: Win+Shift+S</li>
-            <li>Save as PNG</li>
-          </ul>
-        </li>
-        <li>Edit in preview/Photoshop:
-          <ul>
-            <li>Blur any personal data</li>
-            <li>Crop to 16:9 ratio</li>
-            <li>Add subtle shadow for depth</li>
-          </ul>
-        </li>
-        <li>Save to: <code>repos/behaviorschool-com-and-marketing/src/public/images/screenshots/</code></li>
-        <li>Optimize images:
-          <ul>
-            <li>Use TinyPNG.com or</li>
-            <li><code>npx @squoosh/cli --webp auto *.png</code></li>
-          </ul>
-        </li>
-        <li>Add to website marketing pages</li>
-      </ol>
-      <strong>For iOS App Store:</strong>
-      <ul>
-        <li>Also need 6.5" and 5.5" iPhone screenshots</li>
-        <li>Use Xcode Simulator → Cmd+S to capture</li>
-        <li>Need 3-5 screenshots showing key features</li>
-      </ul>`,
-      time: '1 hour'
-    },
-    {
-      id: 107,
-      title: '📧 Google Workspace Access Setup',
-      description: 'Grant Neo access to Gmail accounts for automation',
-      priority: 'high',
-      steps: `<strong>Accounts to connect:</strong>
-      <ul>
-        <li><strong>robspain@gmail.com</strong> (personal)</li>
-        <li><strong>california.bae.sig@gmail.com</strong> (CalABA BAE SIG)</li>
-      </ul>
-      <strong>Setup Instructions:</strong>
-      <ol>
-        <li>Go to <a href="https://console.cloud.google.com" target="_blank">Google Cloud Console</a></li>
-        <li>Create new project: "Clawdbot Gmail Integration"</li>
-        <li>Enable Gmail API</li>
-        <li>Create OAuth 2.0 credentials</li>
-        <li>Add authorized scopes:
-          <ul>
-            <li><code>gmail.readonly</code> (read emails)</li>
-            <li><code>gmail.send</code> (send emails)</li>
-            <li><code>gmail.modify</code> (mark as read, archive)</li>
-          </ul>
-        </li>
-        <li>Download credentials JSON</li>
-        <li>Run auth flow:
-          <ul>
-            <li>For robspain@gmail.com first</li>
-            <li>Then california.bae.sig@gmail.com</li>
-          </ul>
-        </li>
-        <li>Store tokens securely in Mac mini</li>
-      </ol>
-      <strong>What this enables:</strong>
-      <ul>
-        <li>Monitor for Amy Tipton custody emails</li>
-        <li>Send CalABA BAE SIG email campaigns</li>
-        <li>Automated email responses</li>
-        <li>Email list management</li>
-      </ul>
-      <p><strong>Privacy:</strong> Neo only accesses when explicitly requested or for configured alerts</p>`,
-      time: '30 min'
-    },
-    {
-      id: 108,
-      title: '💰 Mighty Networks Replacement Research',
-      description: 'Find open-source/cheap alternative - SAVE $120/month',
-      priority: 'high',
-      steps: `<strong>Current Cost:</strong> Mighty Networks = $120/month ($1,440/year)
-      <p><strong>Background agent researching:</strong> See COST_REDUCTION_PLAN.md</p>
-      <strong>Options to evaluate:</strong>
-      <ol>
-        <li><strong>Discourse</strong> (open source, self-hosted)
-          <ul>
-            <li>Cost: $10-30/month hosting</li>
-            <li>Migration: Email export → import</li>
-            <li>Features: Forums, groups, badges, SSO</li>
-          </ul>
-        </li>
-        <li><strong>Forem</strong> (DEV Community platform)
-          <ul>
-            <li>Cost: Free (self-host) or $25/month managed</li>
-            <li>Features: Articles, discussions, community</li>
-          </ul>
-        </li>
-        <li><strong>NodeBB</strong> (modern forums)
-          <ul>
-            <li>Cost: $5-15/month hosting</li>
-            <li>Features: Real-time chat, gamification</li>
-          </ul>
-        </li>
-        <li><strong>Custom Next.js</strong> (build it ourselves)
-          <ul>
-            <li>Cost: $0 (use existing Vercel/Supabase)</li>
-            <li>Full control, integrate with learning platform</li>
-          </ul>
-        </li>
-      </ol>
-      <strong>Decision criteria:</strong>
-      <ul>
-        <li>Cost < $30/month</li>
-        <li>Easy migration from Mighty Networks</li>
-        <li>Member authentication</li>
-        <li>Cohort-based groups</li>
-        <li>Mobile-friendly</li>
-      </ul>
-      <p><strong>Target savings: $90-110/month = $1,080-1,320/year</strong> 🎯</p>`,
-      time: 'Research complete in ~10 min'
-    },
-    {
-      id: 109,
-      title: '📅 Calendly Replacement Research',
-      description: 'Find open-source booking alternative - SAVE $10/month',
-      priority: 'medium',
-      steps: `<strong>Current Cost:</strong> Calendly = $10/month ($120/year)
-      <p><strong>Background agent researching:</strong> See COST_REDUCTION_PLAN.md</p>
-      <strong>Options to evaluate:</strong>
-      <ol>
-        <li><strong>Cal.com</strong> (open source #1 choice)
-          <ul>
-            <li>Cost: Free (self-host) or $12/month managed</li>
-            <li>Features: Google Calendar sync, Zoom integration, team scheduling</li>
-            <li>Migration: Import Calendly events</li>
-          </ul>
-        </li>
-        <li><strong>Zoom Scheduling</strong> (you already pay $18/month)
-          <ul>
-            <li>Cost: $0 (included in Zoom Pro)</li>
-            <li>Features: Basic scheduling, Zoom meetings</li>
-            <li>Limitation: Less flexible than Calendly</li>
-          </ul>
-        </li>
-        <li><strong>Custom Next.js</strong> (build it ourselves)
-          <ul>
-            <li>Cost: $0</li>
-            <li>Integrate with robspain.com</li>
-            <li>Full control over branding</li>
-          </ul>
-        </li>
-      </ol>
-      <strong>Where it's used:</strong>
-      <ul>
-        <li>behaviorschool.com (consultation bookings)</li>
-        <li>robspain.com (speaking engagements)</li>
-        <li>KCUSD site (team meetings)</li>
-      </ul>
-      <strong>Decision criteria:</strong>
-      <ul>
-        <li>Cost: $0-5/month</li>
-        <li>Google Calendar integration</li>
-        <li>Zoom auto-add to meetings</li>
-        <li>Email reminders</li>
-        <li>Easy to embed</li>
-      </ul>
-      <p><strong>Target savings: $10/month = $120/year</strong></p>`,
-      time: 'Research complete in ~10 min'
-    }
-  ],
-  
-  mobile: [
-    {
-      id: 201,
-      title: '🍎 Apple Developer Account',
-      description: 'Required for iOS app deployment ($99/year)',
-      priority: 'high',
-      steps: `<strong>Step-by-Step Instructions:</strong>
-      <ol>
-        <li>Go to <a href="https://developer.apple.com/programs/enroll/" target="_blank">Apple Developer Program</a></li>
-        <li>Sign in with Apple ID</li>
-        <li>Click "Start Your Enrollment"</li>
-        <li>Choose "Individual" (not Organization unless you have business license)</li>
-        <li>Complete profile:
-          <ul>
-            <li>Legal name: Rob Spain</li>
-            <li>Phone number</li>
-            <li>Address</li>
-          </ul>
-        </li>
-        <li>Review Developer Agreement</li>
-        <li>Complete purchase: $99 USD/year</li>
-        <li>Wait for Apple review (usually 24-48 hours)</li>
-        <li>Once approved, you'll get email confirmation</li>
-        <li>Access: <a href="https://developer.apple.com/account" target="_blank">developer.apple.com/account</a></li>
-      </ol>
-      <strong>After Approval:</strong>
-      <ul>
-        <li>Can submit apps to App Store</li>
-        <li>Access to TestFlight for beta testing</li>
-        <li>Can create certificates & provisioning profiles</li>
-        <li>Required for Apple Sign In implementation</li>
-      </ul>`,
-      time: '15 min + 24-48hr wait'
-    },
-    {
-      id: 202,
-      title: '📱 iOS App Build & TestFlight',
-      description: 'Build study.behaviorschool.com iOS app and deploy to TestFlight',
-      priority: 'medium',
-      steps: `<strong>Prerequisites:</strong>
-      <ul>
-        <li>✅ Apple Developer Account (task #201)</li>
-        <li>✅ Xcode installed on Mac</li>
-        <li>✅ iOS code ready in repos/bcbaaistudytool/ios/</li>
-      </ul>
-      
-      <strong>Step-by-Step Build:</strong>
-      <ol>
-        <li>Open Terminal on Mac</li>
-        <li><code>cd repos/bcbaaistudytool</code></li>
-        <li>Install CocoaPods dependencies:
-          <ul>
-            <li><code>cd ios && pod install</code></li>
-          </ul>
-        </li>
-        <li>Open in Xcode:
-          <ul>
-            <li><code>open BehaviorStudyTools.xcworkspace</code></li>
-          </ul>
-        </li>
-        <li>Configure signing:
-          <ul>
-            <li>Click project in sidebar</li>
-            <li>Signing & Capabilities tab</li>
-            <li>Select your Team (Apple Developer account)</li>
-            <li>Bundle ID: <code>com.behaviorschool.study</code></li>
-          </ul>
-        </li>
-        <li>Update version:
-          <ul>
-            <li>Version: 1.0.0</li>
-            <li>Build: 1</li>
-          </ul>
-        </li>
-        <li>Build archive:
-          <ul>
-            <li>Product → Archive</li>
-            <li>Wait 5-10 min for build</li>
-          </ul>
-        </li>
-        <li>In Organizer window:
-          <ul>
-            <li>Click "Distribute App"</li>
-            <li>Choose "TestFlight & App Store"</li>
-            <li>Follow prompts</li>
-            <li>Upload to App Store Connect</li>
-          </ul>
-        </li>
-        <li>Go to <a href="https://appstoreconnect.apple.com" target="_blank">App Store Connect</a></li>
-        <li>TestFlight tab → Enable testing</li>
-        <li>Add internal testers (your email)</li>
-        <li>Wait ~10 min for processing</li>
-        <li>You'll get TestFlight invite email</li>
-        <li>Install TestFlight app on iPhone</li>
-        <li>Accept invite and test!</li>
-      </ol>`,
-      time: '1-2 hours'
-    },
-    {
-      id: 203,
-      title: '📝 App Store Listing Preparation',
-      description: 'Prepare metadata, screenshots, and description for App Store submission',
-      priority: 'low',
-      steps: `<strong>Required Materials:</strong>
-      <ol>
-        <li><strong>App Store Icon (1024x1024 PNG):</strong>
-          <ul>
-            <li>No transparency</li>
-            <li>No rounded corners (Apple adds them)</li>
-            <li>Current icon in: repos/bcbaaistudytool/ios/BehaviorStudyTools/Assets.xcassets/</li>
-          </ul>
-        </li>
-        <li><strong>Screenshots (need 3-5 per device size):</strong>
-          <ul>
-            <li>6.5" iPhone (1284 x 2778 px) - iPhone 14 Pro Max</li>
-            <li>5.5" iPhone (1242 x 2208 px) - iPhone 8 Plus</li>
-            <li>12.9" iPad Pro (2048 x 2732 px) - optional</li>
-          </ul>
-        </li>
-        <li><strong>App Preview Video (optional but recommended):</strong>
-          <ul>
-            <li>15-30 seconds</li>
-            <li>Show key features</li>
-            <li>Screen recording with Cmd+5 in Simulator</li>
-          </ul>
-        </li>
-        <li><strong>Description Text:</strong>
-          <ul>
-            <li>Title: "Behavior Study Tools - BCBA Exam Prep"</li>
-            <li>Subtitle: "Master the BCBA exam with AI-powered study tools"</li>
-            <li>Description (4000 char max):
-              <pre>Prepare for your BCBA certification exam with Behavior Study Tools - the comprehensive study app designed specifically for behavior analysts.
-
-Features:
-• 1000+ practice questions covering all BCBA task list areas
-• AI-powered flashcards that adapt to your learning
-• Progress tracking and performance analytics
-• Timed practice exams that simulate the real test
-• Detailed explanations for every answer
-• Study reminders and goal setting
-
-Perfect for:
-• BCBA exam candidates
-• BCaBA professionals pursuing certification
-• Graduate students in ABA programs
-• Anyone studying applied behavior analysis
-
-Created by Rob Spain, School BCBA with 10+ years experience preparing students for certification success.
-
-Download now and start your journey to BCBA certification!</pre>
-            </li>
-          </ul>
-        </li>
-        <li><strong>Keywords (100 char max):</strong>
-          <ul>
-            <li><code>bcba,bcaba,aba,behavior,analysis,exam,study,flashcards,certification,rbt</code></li>
-          </ul>
-        </li>
-        <li><strong>Support URL:</strong>
-          <ul>
-            <li><code>https://study.behaviorschool.com/support</code></li>
-          </ul>
-        </li>
-        <li><strong>Privacy Policy URL:</strong>
-          <ul>
-            <li><code>https://behaviorschool.com/privacy</code></li>
-          </ul>
-        </li>
-        <li><strong>Category:</strong>
-          <ul>
-            <li>Primary: Education</li>
-            <li>Secondary: Reference</li>
-          </ul>
-        </li>
-        <li><strong>Content Rating:</strong>
-          <ul>
-            <li>4+ (no objectionable content)</li>
-          </ul>
-        </li>
-      </ol>
-      
-      <strong>Before Submitting:</strong>
-      <ul>
-        <li>Test app thoroughly on TestFlight</li>
-        <li>Fix any crashes or major bugs</li>
-        <li>Verify Apple Sign In works (required!)</li>
-        <li>Review App Store Review Guidelines</li>
-      </ul>`,
-      time: '2-3 hours'
-    }
-  ],
-  
-  calaba: [
-    {
-      id: 301,
-      title: '🎯 CalABA Conference Registration',
-      description: 'Register for March 5-7, 2026 conference',
-      priority: 'high',
-      steps: `<strong>Step-by-Step Instructions:</strong>
-      <ol>
-        <li>Go to <a href="https://www.calaba.org/conference" target="_blank">CalABA Conference Page</a></li>
-        <li>Check registration deadlines and pricing</li>
-        <li>Register as:
-          <ul>
-            <li>BCBA Professional (if presenting, check presenter discount)</li>
-            <li>Early bird rate (usually ~$200 less)</li>
-          </ul>
-        </li>
-        <li>Select sessions of interest</li>
-        <li>If presenting, submit proposal (deadline usually Nov/Dec)</li>
-        <li>Book hotel at conference hotel block (save ~$50/night)</li>
-        <li>Add to calendar: March 5-7, 2026</li>
-      </ol>
-      
-      <strong>What to Prepare:</strong>
-      <ul>
-        <li>Presentation materials (if speaking)</li>
-        <li>Business cards</li>
-        <li>Marketing materials for BehaviorSchool.com</li>
-        <li>Demo of study.behaviorschool.com on tablet</li>
-      </ul>`,
-      time: '30 min'
-    },
-    {
-      id: 302,
-      title: '📧 Email Campaign to BAE SIG Members',
-      description: 'Invite behavior analysts in education to presentation/demo',
-      priority: 'medium',
-      steps: `<strong>Campaign Plan:</strong>
-      <ol>
-        <li><strong>Get Email List:</strong>
-          <ul>
-            <li>Contact CalABA BAE SIG coordinator</li>
-            <li>Request member email list (with permission)</li>
-            <li>Alternative: Post in BAE SIG Facebook group</li>
-          </ul>
-        </li>
-        <li><strong>Setup Mailgun (see task #102):</strong>
-          <ul>
-            <li>Domain verified</li>
-            <li>DMARC configured</li>
-            <li>Warmup sending (start with 50/day, increase gradually)</li>
-          </ul>
-        </li>
-        <li><strong>Email Template:</strong>
-          <pre>Subject: See you at CalABA 2026? 🎓
-
-Hi [Name],
-
-I'm Rob Spain, a school BCBA, and I'll be at the CalABA conference in March presenting on [topic].
-
-I wanted to reach out to fellow behavior analysts in education because I've built something you might find useful:
-
-🎯 Behavior Study Tools (study.behaviorschool.com)
-- AI-powered BCBA exam prep
-- 1000+ practice questions
-- Adaptive flashcards
-- Progress tracking
-
-Would love to:
-1. Get your feedback during a quick demo
-2. Offer early access to BAE SIG members
-3. Connect about challenges in school-based ABA
-
-Reply if you're attending and want to meet up!
-
-Best,
-Rob Spain, M.S., BCBA
-School BCBA | Creator of BehaviorSchool.com
-[LinkedIn] [Website]
-
-P.S. Not attending? No worries - check out study.behaviorschool.com anyway!</pre>
-        </li>
-        <li><strong>Send Strategy:</strong>
-          <ul>
-            <li>Week 1: 50 emails/day (test deliverability)</li>
-            <li>Week 2: 100 emails/day</li>
-            <li>Week 3+: 200 emails/day</li>
-            <li>Track open rates, click rates</li>
-          </ul>
-        </li>
-        <li><strong>Follow-up Sequence:</strong>
-          <ul>
-            <li>Day 3: "Quick follow-up about CalABA"</li>
-            <li>Day 7: "Last chance to connect before March"</li>
-          </ul>
-        </li>
-      </ol>
-      
-      <strong>Legal Compliance:</strong>
-      <ul>
-        <li>Include unsubscribe link (Mailgun auto-adds)</li>
-        <li>Physical mailing address (required by CAN-SPAM)</li>
-        <li>Only email people who opted in or are in professional org</li>
-      </ul>`,
-      time: '2 hours setup + ongoing'
-    },
-    {
-      id: 303,
-      title: '🎨 Presentation Materials',
-      description: 'Create slides and handouts for CalABA presentation',
-      priority: 'low',
-      steps: `<strong>Materials Needed:</strong>
-      <ol>
-        <li><strong>Slide Deck (Google Slides or Keynote):</strong>
-          <ul>
-            <li>30-45 slides for 50-minute session</li>
-            <li>10-15 slides for poster presentation</li>
-            <li>BehaviorSchool.com branding</li>
-            <li>QR codes linking to resources</li>
-          </ul>
-        </li>
-        <li><strong>Demo Account:</strong>
-          <ul>
-            <li>Create "demo@behaviorschool.com" account</li>
-            <li>Pre-populate with example data</li>
-            <li>Practice demo flow (5 min version)</li>
-          </ul>
-        </li>
-        <li><strong>Handouts (1-page PDF):</strong>
-          <ul>
-            <li>Key takeaways</li>
-            <li>QR code to study.behaviorschool.com</li>
-            <li>Special discount code for attendees</li>
-            <li>Your contact info</li>
-          </ul>
-        </li>
-        <li><strong>Business Cards:</strong>
-          <ul>
-            <li>Order 500 from Vistaprint/Moo</li>
-            <li>Include QR code</li>
-            <li>BCBA credentials</li>
-          </ul>
-        </li>
-        <li><strong>Backup Plans:</strong>
-          <ul>
-            <li>PDF version of slides on USB drive</li>
-            <li>Offline demo if WiFi fails</li>
-            <li>Printed handouts (50-100 copies)</li>
-          </ul>
-        </li>
-      </ol>
-      
-      <strong>Practice Run:</strong>
-      <ul>
-        <li>Rehearse presentation 3-5 times</li>
-        <li>Time yourself (stay under limit)</li>
-        <li>Prepare for Q&A</li>
-        <li>Test demo on unfamiliar computer</li>
-      </ul>`,
-      time: '4-6 hours'
-    }
-  ],
-  
-  capabilities: [
-    {
-      id: 401,
-      title: '📞 Phone Call Integration',
-      description: 'Enable Neo to make/receive phone calls via Twilio',
-      priority: 'medium',
-      steps: `<strong>Setup Instructions:</strong>
-      <ol>
-        <li>Go to <a href="https://www.twilio.com/try-twilio" target="_blank">Twilio</a></li>
-        <li>Sign up for account (free trial includes $15 credit)</li>
-        <li>Verify your phone number</li>
-        <li>Buy a phone number:
-          <ul>
-            <li>Phone Numbers → Buy a Number</li>
-            <li>Choose local area code (California: 650, 415, etc)</li>
-            <li>Enable Voice & SMS</li>
-            <li>Cost: $1/month per number</li>
-          </ul>
-        </li>
-        <li>Get API credentials:
-          <ul>
-            <li>Account → API keys & tokens</li>
-            <li>Copy Account SID</li>
-            <li>Copy Auth Token</li>
-          </ul>
-        </li>
-        <li>Add to Clawdbot environment:
-          <ul>
-            <li><code>TWILIO_ACCOUNT_SID=ACxxxxx</code></li>
-            <li><code>TWILIO_AUTH_TOKEN=xxxxx</code></li>
-            <li><code>TWILIO_PHONE_NUMBER=+1xxxxxxxxxx</code></li>
-          </ul>
-        </li>
-        <li>Neo capabilities unlocked:
-          <ul>
-            <li>Make outbound calls</li>
-            <li>Receive inbound calls</li>
-            <li>Send/receive SMS</li>
-            <li>Voice transcription</li>
-            <li>Text-to-speech for responses</li>
-          </ul>
-        </li>
-      </ol>
-      
-      <strong>Use Cases:</strong>
-      <ul>
-        <li>Call service providers when chat support unavailable</li>
-        <li>Receive 2FA codes via SMS</li>
-        <li>Automated appointment reminders</li>
-        <li>Voice surveys for conference attendees</li>
-      </ul>
-      
-      <strong>Costs:</strong>
-      <ul>
-        <li>$1/month for phone number</li>
-        <li>$0.0085/minute for calls</li>
-        <li>$0.0079 per SMS sent/received</li>
-        <li>~$15-20/month for moderate use</li>
-      </ul>`,
-      time: '30 min'
-    },
-    {
-      id: 402,
-      title: '🌐 Direct Website Publishing',
-      description: 'Enable Neo to push updates directly to websites via Git/APIs',
-      priority: 'low',
-      steps: `<strong>Setup Instructions:</strong>
-      <ol>
-        <li><strong>GitHub Deploy Keys:</strong>
-          <ul>
-            <li>For each repo (robspain-com, behaviorschool-com, etc)</li>
-            <li>Settings → Deploy keys → Add deploy key</li>
-            <li>Generate: <code>ssh-keygen -t ed25519 -C "neo@clawdbot"</code></li>
-            <li>Add public key to GitHub</li>
-            <li>Store private key in Clawdbot config</li>
-          </ul>
-        </li>
-        <li><strong>Netlify Deploy Hooks:</strong>
-          <ul>
-            <li>Each site → Site settings → Build & deploy</li>
-            <li>Build hooks → Add build hook</li>
-            <li>Name: "Neo Deploy"</li>
-            <li>Copy webhook URL</li>
-            <li>Neo can trigger: <code>curl -X POST https://api.netlify.com/build_hooks/xxxxx</code></li>
-          </ul>
-        </li>
-        <li><strong>Vercel Deploy Tokens:</strong>
-          <ul>
-            <li>Account Settings → Tokens</li>
-            <li>Create token: "Neo Deploy"</li>
-            <li>Scope: limited to specific projects</li>
-            <li>Store in environment: <code>VERCEL_TOKEN=xxxxx</code></li>
-          </ul>
-        </li>
-        <li><strong>Content Management:</strong>
-          <ul>
-            <li>Neo can edit markdown files</li>
-            <li>Commit changes to Git</li>
-            <li>Auto-deploy via hooks</li>
-            <li>All changes tracked in Git history</li>
-          </ul>
-        </li>
-      </ol>
-      
-      <strong>Safety Guardrails:</strong>
-      <ul>
-        <li>Require approval for production deploys</li>
-        <li>Deploy to preview first</li>
-        <li>Automated backup before changes</li>
-        <li>Rollback command if issues</li>
-      </ul>
-      
-      <strong>Examples:</strong>
-      <ul>
-        <li>"Neo, add this blog post to behaviorschool.com"</li>
-        <li>"Neo, update pricing page on robspain.com"</li>
-        <li>"Neo, fix the typo on the homepage"</li>
-      </ul>`,
-      time: '1 hour'
-    }
-  ],
-  
-  progress: [
-    {
-      id: 4,
-      title: '🧠 ACT BSP AI System',
-      description: 'Production-ready - waiting for Gemini API key to test',
-      priority: 'high',
-      steps: `<strong>Current Status:</strong>
-      <ul>
-        <li>✅ Complete TypeScript type system (100+ types)</li>
-        <li>✅ Gemini integration with streaming (900 lines)</li>
-        <li>✅ Example management system (15 ACT examples)</li>
-        <li>✅ Validation & safety guardrails</li>
-        <li>✅ Error handling & retry logic</li>
-        <li>⏳ <strong>BLOCKED:</strong> Need Gemini API key (task #2)</li>
-      </ul>
-      
-      <strong>Next Steps After API Key:</strong>
-      <ol>
-        <li>Test end-to-end BSP generation</li>
-        <li>Verify quality of ACT recommendations</li>
-        <li>Extract 15-20 more examples from Cooper PDFs</li>
-        <li>Fine-tune prompts for consistency</li>
-        <li>Deploy to production</li>
-        <li>Get Neo to test with real scenarios</li>
-      </ol>
-      
-      <strong>Code Location:</strong>
-      <ul>
-        <li>Main integration: <code>repos/kcusd-behavior-team/src/lib/gemini/</code></li>
-        <li>Examples: <code>repos/kcusd-behavior-team/src/lib/act-examples/</code></li>
-        <li>Types: <code>repos/kcusd-behavior-team/src/types/gemini.ts</code></li>
-      </ul>`,
-      time: '80% complete'
-    }
-  ],
-  
-  blocked: [
-    {
-      id: 5,
-      title: '🍎 Apple Sign In Implementation',
-      description: 'Required for App Store approval - need Apple Developer account',
-      priority: 'high',
-      steps: `<strong>⚠️ BLOCKER:</strong> Need Apple Developer account ($99/year) - see Mobile Apps task #201
-      
-      <strong>When Ready - Complete Implementation Guide:</strong>
-      <ol>
-        <li><strong>Create Service ID:</strong>
-          <ul>
-            <li>Go to <a href="https://developer.apple.com/account/resources/identifiers/list/serviceId" target="_blank">Identifiers</a></li>
-            <li>Click + button</li>
-            <li>Select "Services IDs" → Continue</li>
-            <li>Description: "Behavior Study Tools Auth"</li>
-            <li>Identifier: <code>com.behaviorschool.study.auth</code></li>
-            <li>Register</li>
-          </ul>
-        </li>
-        <li><strong>Configure Service ID:</strong>
-          <ul>
-            <li>Enable "Sign in with Apple"</li>
-            <li>Configure → Primary App ID: select your app</li>
-            <li>Domains: <code>study.behaviorschool.com</code></li>
-            <li>Return URLs:
-              <ul>
-                <li><code>https://nazqgumhstlrtebuzery.supabase.co/auth/v1/callback</code></li>
-                <li><code>https://study.behaviorschool.com/auth/callback</code></li>
-              </ul>
-            </li>
-            <li>Save</li>
-          </ul>
-        </li>
-        <li><strong>Create Key:</strong>
-          <ul>
-            <li>Keys → + button</li>
-            <li>Name: "Apple Sign In Key"</li>
-            <li>Enable "Sign in with Apple"</li>
-            <li>Configure → Choose your Primary App ID</li>
-            <li>Register</li>
-            <li>Download .p8 file (SAVE THIS - can't download again!)</li>
-            <li>Note Key ID (10 chars, like AB12CD34EF)</li>
-          </ul>
-        </li>
-        <li><strong>Add to Supabase:</strong>
-          <ul>
-            <li>Supabase Dashboard → Authentication → Providers</li>
-            <li>Find "Apple" → Enable</li>
-            <li>Service ID: <code>com.behaviorschool.study.auth</code></li>
-            <li>Team ID: (10 chars from Apple Developer account)</li>
-            <li>Key ID: (from step 3)</li>
-            <li>Secret Key: paste contents of .p8 file</li>
-            <li>Save</li>
-          </ul>
-        </li>
-        <li><strong>Update Auth Code:</strong>
-          <ul>
-            <li>File: <code>repos/bcbaaistudytool/src/lib/auth.ts</code></li>
-            <li>Add Apple button to sign-in page</li>
-            <li>Code:
-<pre>async function signInWithApple() {
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'apple',
-    options: {
-      redirectTo: 'https://study.behaviorschool.com/auth/callback'
-    }
-  })
-  if (error) console.error(error)
-}</pre>
-            </li>
-          </ul>
-        </li>
-        <li><strong>Test:</strong>
-          <ul>
-            <li>Deploy to production</li>
-            <li>Test on iPhone/iPad</li>
-            <li>Verify user data flows to Supabase</li>
-          </ul>
-        </li>
-      </ol>
-      
-      <strong>Documentation:</strong>
-      <ul>
-        <li>Full guide: <code>repos/bcbaaistudytool/APPLE_AUTH_REQUIRED.md</code></li>
-        <li>Supabase docs: <a href="https://supabase.com/docs/guides/auth/social-login/auth-apple" target="_blank">Apple OAuth</a></li>
-      </ul>`,
-      time: '1 hour (after account approved)'
-    },
-    {
-      id: 6,
-      title: '🔑 Mac Mini SSH Access',
-      description: 'Need physical access to set up GitHub SSH key',
-      priority: 'low',
-      steps: `<strong>⚠️ BLOCKER:</strong> Need to be at location with Mac Mini
-      
-      <strong>When Ready - Setup Instructions:</strong>
-      <ol>
-        <li><strong>Connect to Mac Mini:</strong>
-          <ul>
-            <li>Physically or: <code>ssh rob@[mac-mini-ip]</code></li>
-            <li>Enter password</li>
-          </ul>
-        </li>
-        <li><strong>Generate SSH Key:</strong>
-          <ul>
-            <li><code>ssh-keygen -t ed25519 -C "rob@behaviorschool.com"</code></li>
-            <li>Press Enter 3 times (accept all defaults)</li>
-            <li>Key saved to: <code>~/.ssh/id_ed25519</code></li>
-          </ul>
-        </li>
-        <li><strong>Copy Public Key:</strong>
-          <ul>
-            <li><code>cat ~/.ssh/id_ed25519.pub</code></li>
-            <li>Copy the entire output (starts with <code>ssh-ed25519</code>)</li>
-          </ul>
-        </li>
-        <li><strong>Add to GitHub:</strong>
-          <ul>
-            <li>Go to <a href="https://github.com/settings/keys" target="_blank">GitHub SSH Keys</a></li>
-            <li>Click "New SSH key"</li>
-            <li>Title: "Mac Mini"</li>
-            <li>Paste public key</li>
-            <li>Click "Add SSH key"</li>
-          </ul>
-        </li>
-        <li><strong>Test Connection:</strong>
-          <ul>
-            <li><code>ssh -T git@github.com</code></li>
-            <li>Type "yes" when prompted</li>
-            <li>Should see: "Hi [username]! You've successfully authenticated"</li>
-          </ul>
-        </li>
-        <li><strong>Update Git Remotes:</strong>
-          <ul>
-            <li><code>cd ~/repos/behaviorschool-com</code></li>
-            <li><code>git remote set-url origin git@github.com:robspain/behaviorschool-com.git</code></li>
-            <li>Repeat for all repos</li>
-          </ul>
-        </li>
-        <li><strong>Test Push:</strong>
-          <ul>
-            <li><code>git push</code> - should work without password!</li>
-          </ul>
-        </li>
-      </ol>
-      
-      <strong>Benefits:</strong>
-      <ul>
-        <li>No more typing GitHub password</li>
-        <li>Automated deployments possible</li>
-        <li>More secure than HTTPS</li>
-        <li>Required for some CI/CD tools</li>
-      </ul>`,
-      time: '5 min'
-    }
-  ],
-  
-  done: []
-};
-
-// Website status data
-const websites = [
-  {
-    name: 'study.behaviorschool.com',
-    url: 'https://study.behaviorschool.com',
-    status: 'broken',
-    description: 'BCBA study tool with AI flashcards',
-    nextSteps: [
-      'Fix Supabase auth (task #1)',
-      'Test sign-in flow',
-      'Deploy iOS app to TestFlight'
-    ],
-    blockers: [
-      'Missing Netlify environment variables'
-    ],
-    tech: 'React + Vite + Supabase + Netlify'
-  },
-  {
-    name: 'learning.behaviorschool.com',
-    url: 'https://learning.behaviorschool.com',
-    status: 'broken',
-    description: 'Online course platform',
-    nextSteps: [
-      'Fix Google OAuth redirect (task #3)',
-      'Add course content',
-      'Set up Bunny.net video hosting'
-    ],
-    blockers: [
-      'Google OAuth redirect URI not configured'
-    ],
-    tech: 'Next.js + NextAuth + Vercel'
-  },
-  {
-    name: 'behaviorschool.com',
-    url: 'https://behaviorschool.com',
-    status: 'live',
-    description: 'Main marketing site',
-    nextSteps: [
-      'Add blog posts',
-      'Update testimonials',
-      'Add CalABA conference info'
-    ],
-    blockers: [],
-    tech: '11ty + Netlify'
-  },
-  {
-    name: 'kcusd-behavior-team (ACT BSP)',
-    url: 'https://kcusd-behavior-team.vercel.app',
-    status: 'dev',
-    description: 'AI-powered ACT behavior support plans',
-    nextSteps: [
-      'Add Gemini API key (task #2)',
-      'Test BSP generation end-to-end',
-      'Extract 15-20 more ACT examples'
-    ],
-    blockers: [
-      'Need Gemini API key for testing'
-    ],
-    tech: 'Next.js + Gemini AI + Vercel'
-  },
-  {
-    name: 'robspain.com',
-    url: 'https://robspain.com',
-    status: 'live',
-    description: 'Professional portfolio & admin dashboard',
-    nextSteps: [
-      'Update portfolio with recent projects',
-      'Add speaking engagements',
-      'Link to all other properties'
-    ],
-    blockers: [],
-    tech: '11ty + Netlify'
-  }
-];
-
-// Automation analysis for each task
-const automationAnalysis = [
-  {
-    task: 'Fix Supabase Auth (Netlify Env Vars)',
-    canAutomate: true,
-    blocker: 'Need Netlify auth token',
-    toolNeeded: 'Netlify API token with env var write access',
-    timeSaved: '15 min tonight + 10 min per future deploy',
-    cost: 'Free (just need token)',
-    implementation: 'Neo fetches Supabase keys via API, pushes to Netlify env vars via API'
-  },
-  {
-    task: 'Get Gemini API Key',
-    canAutomate: false,
-    blocker: 'Requires Google account login + 2FA',
-    toolNeeded: 'Browser automation with 2FA handling',
-    timeSaved: 'N/A - manual only',
-    cost: 'Could use 2Captcha ($3/mo) but still needs Google auth',
-    implementation: 'Too complex - manual is faster (5 min)'
-  },
-  {
-    task: 'Fix Google OAuth Redirect',
-    canAutomate: 'partial',
-    blocker: 'Need Google Cloud Console session token OR service account',
-    toolNeeded: 'Google Cloud API with OAuth client write permissions',
-    timeSaved: '5 min tonight + future OAuth configs',
-    cost: 'Free with service account',
-    implementation: 'Neo can use Google Cloud API to add redirect URIs if given service account JSON'
-  },
-  {
-    task: 'Mailgun Setup',
-    canAutomate: 'partial',
-    blocker: '1) Mailgun signup needs verification, 2) DNS access needed',
-    toolNeeded: '1) Mailgun API token, 2) DNS provider API (GoDaddy/Cloudflare)',
-    timeSaved: '20 min tonight + 5 min per future domain',
-    cost: 'Free (need API tokens)',
-    implementation: 'Neo can add DNS records via API, configure Mailgun settings'
-  },
-  {
-    task: 'Email Amy',
-    canAutomate: true,
-    blocker: 'Need context from chat history',
-    toolNeeded: 'Access to Telegram/email history API',
-    timeSaved: '10 min to draft email',
-    cost: 'Free',
-    implementation: 'Neo searches history, drafts email for approval'
-  },
-  {
-    task: 'Send CalABA Email Campaign',
-    canAutomate: true,
-    blocker: 'Need Mailgun configured (task above)',
-    toolNeeded: 'Mailgun API configured + email list CSV',
-    timeSaved: '30 min per campaign',
-    cost: 'Mailgun costs ($0.0008/email)',
-    implementation: 'Neo uses Mailgun API to send personalized emails, track opens/clicks'
-  },
-  {
-    task: 'Bitwarden Setup',
-    canAutomate: false,
-    blocker: 'Requires human to create master password',
-    toolNeeded: 'N/A - security-critical task',
-    timeSaved: 'N/A',
-    cost: 'N/A',
-    implementation: 'Must be manual for security'
-  },
-  {
-    task: 'Bunny.net CDN Setup',
-    canAutomate: true,
-    blocker: 'Need Bunny.net API token',
-    toolNeeded: 'Bunny.net API token',
-    timeSaved: '30 min tonight + 10 min per video upload',
-    cost: 'Bunny.net storage/bandwidth costs',
-    implementation: 'Neo can create libraries, upload videos, generate embed codes via API'
-  },
-  {
-    task: 'Tax Preparation',
-    canAutomate: 'partial',
-    blocker: 'Neo can aggregate data, but filing requires human review',
-    toolNeeded: 'Bank/card APIs (Plaid), receipt scanning',
-    timeSaved: '1-2 hours of data entry',
-    cost: 'Plaid API ($0.30/item) or free with bank integrations',
-    implementation: 'Neo gathers transactions, categorizes expenses, generates spreadsheet'
-  },
-  {
-    task: 'Screenshots from Study Tools',
-    canAutomate: false,
-    blocker: 'Needs authenticated browser session on Mac',
-    toolNeeded: 'Mac remote access + browser automation',
-    timeSaved: 'N/A - too complex',
-    cost: 'N/A',
-    implementation: 'Manual is faster and ensures quality'
-  },
-  {
-    task: 'iOS App Build & TestFlight',
-    canAutomate: 'partial',
-    blocker: 'Needs Xcode on Mac + Apple certs',
-    toolNeeded: 'Mac remote access + Fastlane setup',
-    timeSaved: '45 min per build',
-    cost: 'Free (Fastlane is open source)',
-    implementation: 'Neo runs Fastlane commands to build + upload to TestFlight'
-  },
-  {
-    task: 'App Store Listing',
-    canAutomate: true,
-    blocker: 'Need App Store Connect API token',
-    toolNeeded: 'App Store Connect API key',
-    timeSaved: '1 hour of copy-pasting',
-    cost: 'Free',
-    implementation: 'Neo uses App Store Connect API to update metadata, upload screenshots'
-  },
-  {
-    task: 'Conference Registration',
-    canAutomate: false,
-    blocker: 'Complex form, payment required',
-    toolNeeded: 'Payment processing - too risky',
-    timeSaved: 'N/A',
-    cost: 'N/A',
-    implementation: 'Manual - involves payment'
-  },
-  {
-    task: 'Deploy to Production',
-    canAutomate: true,
-    blocker: 'Need deploy hooks/tokens',
-    toolNeeded: 'Netlify webhooks, Vercel tokens',
-    timeSaved: '5-10 min per deploy',
-    cost: 'Free',
-    implementation: 'Neo triggers webhooks or uses CLI to deploy'
-  }
-];
-
-function saveTasks() {
-  localStorage.setItem('robTasks', JSON.stringify(tasks));
-  updateCounts();
-  updateLastUpdated();
-  renderTasks();
-}
-
-function updateLastUpdated() {
-  const now = new Date().toLocaleString('en-US', { 
-    month: 'short', 
-    day: 'numeric', 
-    hour: 'numeric', 
-    minute: '2-digit',
-    hour12: true 
-  });
-  document.getElementById('last-updated').textContent = now;
-}
-
-function updateCounts() {
-  // Update column counts
-  ['urgent', 'business', 'mobile', 'calaba', 'capabilities', 'progress', 'blocked', 'done'].forEach(column => {
-    const count = tasks[column]?.length || 0;
-    const countEl = document.getElementById(`count-${column}`);
-    if (countEl) countEl.textContent = count;
-    
-    const statEl = document.getElementById(`stat-${column}`);
-    if (statEl) statEl.textContent = count;
-  });
-  
-  // Update section counts
-  const sectionCounts = {
-    'urgent': tasks.urgent?.length || 0,
-    'business': tasks.business?.length || 0,
-    'mobile': tasks.mobile?.length || 0,
-    'calaba': tasks.calaba?.length || 0,
-    'capabilities': tasks.capabilities?.length || 0,
-    'automation': automationAnalysis.length
+  const channelIcons = {
+    email: '📧',
+    youtube: '🎥',
+    linkedin: '💼',
+    twitter: '🐦',
+    blog: '📝'
   };
-  
-  Object.keys(sectionCounts).forEach(section => {
-    const el = document.getElementById(`section-count-${section}`);
-    if (el) el.textContent = sectionCounts[section];
-  });
-  
-  // Automation stat
-  const canAutomate = automationAnalysis.filter(a => a.canAutomate === true).length;
-  document.getElementById('stat-automate').textContent = canAutomate;
-}
 
-function renderTasks() {
-  // Render task columns
-  ['urgent', 'business', 'mobile', 'calaba', 'capabilities', 'progress', 'blocked', 'done'].forEach(column => {
-    const container = document.getElementById(`${column}-tasks`);
-    if (!container || !tasks[column]) return;
-    
-    container.innerHTML = tasks[column].map(task => `
-      <div class="task-card" draggable="true" data-id="${task.id}" data-column="${column}">
-        <div class="task-title">${task.title}</div>
-        <div class="task-description">${task.description}</div>
-        ${task.steps ? `<div class="task-steps">${task.steps}</div>` : ''}
-        <div class="task-footer">
-          <div class="task-meta">
-            <span class="task-time">⏱️ ${task.time}</span>
-            ${task.priority ? `<span class="task-priority priority-${task.priority}">${task.priority}</span>` : ''}
+  const sampleData = {
+    projects: [
+      {
+        id: 'proj-1',
+        name: 'IEP Goal Writer',
+        emoji: '📝',
+        status: 'active',
+        progress: 42,
+        phase: 'Building',
+        blocked_reason: null,
+        prd_path: '/documents/IEP_GOAL_WRITER_PRD.pdf',
+        updated_at: '2026-01-31T20:30:00Z'
+      },
+      {
+        id: 'proj-2',
+        name: 'Learning Platform',
+        emoji: '🎓',
+        status: 'active',
+        progress: 78,
+        phase: 'Polish',
+        blocked_reason: null,
+        prd_path: '/documents/LEARNING_PLATFORM_PRD.pdf',
+        updated_at: '2026-01-31T23:05:00Z'
+      },
+      {
+        id: 'proj-3',
+        name: 'KCUSD Site',
+        emoji: '🏫',
+        status: 'done',
+        progress: 100,
+        phase: 'Complete',
+        blocked_reason: null,
+        prd_path: '/documents/KCUSD_PRD.pdf',
+        updated_at: '2026-01-29T19:20:00Z'
+      },
+      {
+        id: 'proj-4',
+        name: 'Neo iOS App',
+        emoji: '📱',
+        status: 'blocked',
+        progress: 20,
+        phase: 'Setup',
+        blocked_reason: 'Need Apple Developer account approval',
+        prd_path: null,
+        updated_at: '2026-01-31T17:40:00Z'
+      }
+    ],
+    quickWins: [
+      {
+        id: 'qw-1',
+        title: 'Review IEP Writer landing copy',
+        estimate_minutes: 5,
+        type: 'review',
+        preview_url: '/admin/preview/iep-writer',
+        action_url: null,
+        status: 'pending',
+        created_at: '2026-01-31T19:00:00Z'
+      },
+      {
+        id: 'qw-2',
+        title: 'Approve welcome email sequence',
+        estimate_minutes: 10,
+        type: 'approve',
+        preview_url: '/admin/preview/welcome-sequence',
+        action_url: null,
+        status: 'pending',
+        created_at: '2026-01-31T21:00:00Z'
+      },
+      {
+        id: 'qw-3',
+        title: 'Sign up for Twilio account',
+        estimate_minutes: 5,
+        type: 'signup',
+        preview_url: null,
+        action_url: 'https://www.twilio.com/try-twilio',
+        status: 'pending',
+        created_at: '2026-01-31T23:15:00Z'
+      }
+    ],
+    content: [
+      {
+        id: 'c-1',
+        title: '5 Mistakes School BCBAs Make',
+        channel: 'youtube',
+        scheduled_date: '2026-02-04',
+        status: 'review',
+        preview_url: '/admin/preview/youtube-script',
+        publish_url: null
+      },
+      {
+        id: 'c-2',
+        title: 'CalABA Preview - What I\'m Presenting',
+        channel: 'email',
+        scheduled_date: '2026-02-05',
+        status: 'approved',
+        preview_url: '/admin/preview/calaba-email',
+        publish_url: null
+      },
+      {
+        id: 'c-3',
+        title: 'Top 3 Data Collection Fixes',
+        channel: 'linkedin',
+        scheduled_date: '2026-02-07',
+        status: 'drafting',
+        preview_url: '/admin/preview/linkedin-post',
+        publish_url: null
+      },
+      {
+        id: 'c-4',
+        title: 'Behavior Study Tools February Newsletter',
+        channel: 'email',
+        scheduled_date: '2026-02-12',
+        status: 'idea',
+        preview_url: null,
+        publish_url: null
+      }
+    ]
+  };
+
+  const state = {
+    projects: [],
+    quickWins: [],
+    content: [],
+    supabase: null,
+    currentMonth: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+    selectedDate: null
+  };
+
+  const weekdayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+  function formatDate(date) {
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+
+  function formatDateLong(date) {
+    return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  }
+
+  function formatTime(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  }
+
+  function loadSupabaseConfig() {
+    return {
+      url: localStorage.getItem('neoSupabaseUrl'),
+      key: localStorage.getItem('neoSupabaseAnonKey')
+    };
+  }
+
+  function setConnectionStatus(label) {
+    const el = document.getElementById('connection-status');
+    if (el) {
+      el.innerHTML = `Data source: <strong>${label}</strong>`;
+    }
+  }
+
+  async function initSupabase() {
+    const { url, key } = loadSupabaseConfig();
+    if (url && key && window.supabase) {
+      state.supabase = window.supabase.createClient(url, key);
+      setConnectionStatus('Supabase connected');
+      return true;
+    }
+    state.supabase = null;
+    setConnectionStatus('Sample data');
+    return false;
+  }
+
+  async function fetchSupabaseData() {
+    if (!state.supabase) {
+      state.projects = sampleData.projects;
+      state.quickWins = sampleData.quickWins;
+      state.content = sampleData.content;
+      return;
+    }
+
+    const [projectsRes, quickWinsRes, contentRes] = await Promise.all([
+      state.supabase.from('projects').select('*').order('updated_at', { ascending: false }),
+      state.supabase.from('quick_wins').select('*').order('estimate_minutes', { ascending: true }),
+      state.supabase.from('content_calendar').select('*').order('scheduled_date', { ascending: true })
+    ]);
+
+    if (projectsRes.error || quickWinsRes.error || contentRes.error) {
+      console.error('Supabase error', projectsRes.error || quickWinsRes.error || contentRes.error);
+      state.projects = sampleData.projects;
+      state.quickWins = sampleData.quickWins;
+      state.content = sampleData.content;
+      setConnectionStatus('Sample data (Supabase error)');
+      return;
+    }
+
+    state.projects = projectsRes.data || [];
+    state.quickWins = quickWinsRes.data || [];
+    state.content = contentRes.data || [];
+  }
+
+  function renderProjects() {
+    const container = document.getElementById('project-cards');
+    if (!container) return;
+
+    container.innerHTML = state.projects.map(project => {
+      const statusClass = `status-${project.status || 'active'}`;
+      const progressValue = Math.min(Math.max(project.progress || 0, 0), 100);
+      const updatedAt = project.updated_at ? new Date(project.updated_at) : null;
+      return `
+        <article class="project-card" data-project-id="${project.id}">
+          <div class="project-header">
+            <div class="project-name">${project.emoji || '📌'} ${project.name}</div>
+            <span class="neo-status-pill ${statusClass}">${project.status || 'active'}</span>
           </div>
-          <div class="task-actions">
-            ${column !== 'done' ? `<button class="task-btn complete-btn" onclick="markDone(${task.id}, '${column}')">✓ Done</button>` : ''}
-            <button class="task-btn delete-btn" onclick="deleteTask(${task.id}, '${column}')">× Delete</button>
+          <div class="progress-track">
+            <div class="progress-fill" style="width: ${progressValue}%;"></div>
           </div>
+          <div class="progress-row">
+            <span>${project.phase || 'Planning'}</span>
+            <strong>${progressValue}%</strong>
+          </div>
+          <div class="project-details">
+            <div class="project-detail-row">
+              <span class="project-detail-label">Last updated</span>
+              <span>${updatedAt ? formatDateLong(updatedAt) + ' · ' + formatTime(updatedAt) : '—'}</span>
+            </div>
+            <div class="project-detail-row">
+              <span class="project-detail-label">PRD</span>
+              ${project.prd_path ? `<a class="project-link" href="${project.prd_path}">Open PRD</a>` : '<span>Not linked</span>'}
+            </div>
+          </div>
+        </article>
+      `;
+    }).join('');
+
+    container.querySelectorAll('.project-card').forEach(card => {
+      card.addEventListener('click', () => {
+        card.classList.toggle('expanded');
+      });
+    });
+  }
+
+  function renderBlocked() {
+    const list = document.getElementById('blocked-list');
+    if (!list) return;
+
+    const blockedProjects = state.projects.filter(project => project.status === 'blocked' || project.blocked_reason);
+    if (!blockedProjects.length) {
+      list.innerHTML = '<div class="data-status">No blockers right now 🎉</div>';
+      return;
+    }
+
+    list.innerHTML = blockedProjects.map(project => `
+      <div class="blocked-item">
+        <div><strong>${project.emoji || '⏸️'} ${project.name}</strong><br>${project.blocked_reason || 'Waiting on Rob'}</div>
+        <button data-project-id="${project.id}">Unblock</button>
+      </div>
+    `).join('');
+
+    list.querySelectorAll('button').forEach(button => {
+      button.addEventListener('click', event => {
+        event.stopPropagation();
+        const projectId = button.getAttribute('data-project-id');
+        unblockProject(projectId);
+      });
+    });
+  }
+
+  function renderQuickWins() {
+    const container = document.getElementById('quick-wins-list');
+    if (!container) return;
+
+    const pending = state.quickWins.filter(item => item.status !== 'done');
+    pending.sort((a, b) => (a.estimate_minutes || 0) - (b.estimate_minutes || 0));
+
+    container.innerHTML = pending.map(item => {
+      const estimate = item.estimate_minutes ? `${item.estimate_minutes} min` : '—';
+      const showApprove = item.type === 'approve' || item.type === 'review';
+      const previewBtn = item.preview_url ? `<a href="${item.preview_url}" class="primary" target="_blank">Preview</a>` : '';
+      const actionBtn = item.action_url ? `<a href="${item.action_url}" target="_blank">Action</a>` : '';
+      return `
+        <div class="quick-win">
+          <div class="quick-win-header">
+            <div class="quick-win-title">${item.title}</div>
+            <div class="quick-win-estimate">${estimate}</div>
+          </div>
+          <div class="quick-win-actions">
+            ${previewBtn}
+            ${showApprove ? `<button class="primary" data-approve-id="${item.id}">Approve</button>` : ''}
+            ${actionBtn}
+            <button class="done" data-done-id="${item.id}">Done</button>
+          </div>
+          <div class="quick-win-meta">
+            <span>Type: ${item.type || 'action'}</span>
+            <span>Added: ${item.created_at ? formatDate(new Date(item.created_at)) : '—'}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    container.querySelectorAll('[data-done-id]').forEach(btn => {
+      btn.addEventListener('click', () => markQuickWinDone(btn.getAttribute('data-done-id')));
+    });
+
+    container.querySelectorAll('[data-approve-id]').forEach(btn => {
+      btn.addEventListener('click', () => approveQuickWin(btn.getAttribute('data-approve-id')));
+    });
+
+    const doneToday = state.quickWins.filter(item => item.status === 'done' && item.completed_at && isSameDay(new Date(item.completed_at), new Date())).length;
+    const nextUp = pending[0] ? pending[0].title : 'All clear';
+    document.getElementById('quick-wins-done').textContent = doneToday;
+    document.getElementById('quick-wins-next').textContent = nextUp;
+  }
+
+  function renderCalendar() {
+    const monthLabel = document.getElementById('calendar-month');
+    const weekdays = document.getElementById('calendar-weekdays');
+    const daysGrid = document.getElementById('calendar-days');
+    if (!monthLabel || !weekdays || !daysGrid) return;
+
+    const month = state.currentMonth;
+    monthLabel.textContent = month.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+    weekdays.innerHTML = weekdayLabels.map(day => `<div class="calendar-weekday">${day}</div>`).join('');
+    daysGrid.innerHTML = '';
+
+    const firstDay = new Date(month.getFullYear(), month.getMonth(), 1);
+    const lastDay = new Date(month.getFullYear(), month.getMonth() + 1, 0);
+
+    const startOffset = (firstDay.getDay() + 6) % 7;
+    const totalCells = Math.ceil((startOffset + lastDay.getDate()) / 7) * 7;
+
+    const today = new Date();
+
+    for (let i = 0; i < totalCells; i++) {
+      const cellDate = new Date(month.getFullYear(), month.getMonth(), 1 - startOffset + i);
+      const isInactive = cellDate.getMonth() !== month.getMonth();
+      const isToday = isSameDay(cellDate, today);
+      const dateKey = cellDate.toISOString().split('T')[0];
+      const items = state.content.filter(item => item.scheduled_date === dateKey);
+
+      const cell = document.createElement('div');
+      cell.className = `calendar-day${isInactive ? ' inactive' : ''}${isToday ? ' today' : ''}`;
+      cell.dataset.date = dateKey;
+      cell.innerHTML = `
+        <div class="calendar-date">${cellDate.getDate()}</div>
+        <div class="calendar-items">
+          ${items.map(item => `<span class="calendar-item status-${item.status}">${channelIcons[item.channel] || '📌'}</span>`).join('')}
+        </div>
+      `;
+
+      cell.addEventListener('click', () => {
+        state.selectedDate = dateKey;
+        renderDateDetails(dateKey);
+      });
+
+      cell.addEventListener('dragover', event => {
+        event.preventDefault();
+      });
+
+      cell.addEventListener('drop', event => {
+        event.preventDefault();
+        const itemId = event.dataTransfer.getData('text/plain');
+        if (itemId) {
+          rescheduleContent(itemId, dateKey);
+        }
+      });
+
+      daysGrid.appendChild(cell);
+    }
+
+    renderCalendarWarning(month);
+  }
+
+  function renderDateDetails(dateKey) {
+    const title = document.getElementById('calendar-detail-title');
+    const list = document.getElementById('calendar-detail-list');
+    if (!title || !list) return;
+
+    const date = new Date(dateKey + 'T00:00:00');
+    const items = state.content.filter(item => item.scheduled_date === dateKey);
+
+    title.textContent = items.length ? `Scheduled for ${formatDateLong(date)}` : `No content on ${formatDateLong(date)}`;
+
+    if (!items.length) {
+      list.innerHTML = '<div class="data-status">No content scheduled.</div>';
+      return;
+    }
+
+    list.innerHTML = items.map(item => renderContentCard(item)).join('');
+
+    attachContentActions(list);
+  }
+
+  function renderUpcoming() {
+    const list = document.getElementById('upcoming-list');
+    if (!list) return;
+
+    const today = new Date();
+    const upcoming = state.content
+      .filter(item => new Date(item.scheduled_date + 'T00:00:00') >= new Date(today.toDateString()))
+      .sort((a, b) => new Date(a.scheduled_date) - new Date(b.scheduled_date));
+
+    if (!upcoming.length) {
+      list.innerHTML = '<div class="data-status">No upcoming content scheduled.</div>';
+      return;
+    }
+
+    list.innerHTML = upcoming.map(item => `
+      <div class="upcoming-item">
+        <div><strong>${channelIcons[item.channel] || '📌'} ${item.title}</strong></div>
+        <div class="meta">${formatDateLong(new Date(item.scheduled_date + 'T00:00:00'))} · Status: ${item.status}</div>
+        <div class="content-card-actions">
+          ${item.preview_url ? `<a href="${item.preview_url}" target="_blank">Preview</a>` : ''}
+          ${item.status === 'review' ? `<button class="primary" data-approve-content="${item.id}">Approve</button>` : ''}
+          <button data-reschedule="${item.id}">Reschedule</button>
         </div>
       </div>
     `).join('');
-    
-    // Add drag and drop listeners
-    container.querySelectorAll('.task-card').forEach(card => {
-      card.addEventListener('dragstart', handleDragStart);
-      card.addEventListener('dragend', handleDragEnd);
-    });
-  });
-  
-  // Render website status cards
-  renderWebsites();
-  
-  // Render automation analysis
-  renderAutomation();
-  
-  updateCounts();
-  updateLastUpdated();
-}
 
-function renderWebsites() {
-  const container = document.getElementById('website-cards');
-  if (!container) return;
-  
-  container.innerHTML = websites.map(site => `
-    <div class="website-card">
-      <div class="website-header">
-        <div class="website-name">${site.name}</div>
-        <span class="status-badge status-${site.status}">${site.status}</span>
-      </div>
-      <div class="website-url">${site.url}</div>
-      <div class="task-description">${site.description}</div>
-      
-      <div class="website-section">
-        <div class="website-section-title">Tech Stack</div>
-        <div class="website-list">${site.tech}</div>
-      </div>
-      
-      <div class="website-section">
-        <div class="website-section-title">Next Steps</div>
-        <ul class="website-list">
-          ${site.nextSteps.map(step => `<li>${step}</li>`).join('')}
-        </ul>
-      </div>
-      
-      ${site.blockers.length > 0 ? `
-        <div class="website-section">
-          <div class="website-section-title">⚠️ Blockers</div>
-          <ul class="website-list">
-            ${site.blockers.map(blocker => `<li style="color: #e53e3e; font-weight: 600;">${blocker}</li>`).join('')}
-          </ul>
-        </div>
-      ` : ''}
-    </div>
-  `).join('');
-}
+    attachContentActions(list);
+  }
 
-function renderAutomation() {
-  const container = document.getElementById('automation-cards');
-  if (!container) return;
-  
-  container.innerHTML = automationAnalysis.map((item, idx) => {
-    const badgeClass = item.canAutomate === true ? 'can-automate' : 
-                        item.canAutomate === 'partial' ? 'partial-automate' : 'cant-automate';
-    const badgeText = item.canAutomate === true ? '✅ Can Automate' :
-                      item.canAutomate === 'partial' ? '⚠️ Partial' : '❌ Manual Only';
-    
+  function renderCalendarWarning(month) {
+    const warning = document.getElementById('calendar-warning');
+    if (!warning) return;
+
+    const start = new Date(month.getFullYear(), month.getMonth(), 1);
+    const end = new Date(month.getFullYear(), month.getMonth() + 1, 0);
+    let hasEmail = false;
+
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      const dateKey = d.toISOString().split('T')[0];
+      if (state.content.some(item => item.scheduled_date === dateKey && item.channel === 'email')) {
+        hasEmail = true;
+        break;
+      }
+    }
+
+    if (!hasEmail) {
+      warning.textContent = '⚠️ Content gap: No email scheduled this month.';
+      warning.style.display = 'block';
+    } else {
+      warning.style.display = 'none';
+    }
+  }
+
+  function renderContentCard(item) {
     return `
-      <div class="automation-card">
-        <div class="automation-header">
-          <div class="automation-title">${item.task}</div>
-          <span class="automation-badge ${badgeClass}">${badgeText}</span>
+      <div class="content-card" draggable="true" data-content-id="${item.id}">
+        <div class="content-card-header">
+          <span>${channelIcons[item.channel] || '📌'} ${item.title}</span>
+          <span class="calendar-item status-${item.status}">${item.status}</span>
         </div>
-        
-        <div class="automation-grid">
-          ${item.blocker ? `
-            <div class="automation-row">
-              <div class="automation-label">Blocker:</div>
-              <div class="automation-value">${item.blocker}</div>
-            </div>
-          ` : ''}
-          
-          ${item.toolNeeded ? `
-            <div class="automation-row">
-              <div class="automation-label">Tool Needed:</div>
-              <div class="automation-value"><code>${item.toolNeeded}</code></div>
-            </div>
-          ` : ''}
-          
-          <div class="automation-row">
-            <div class="automation-label">Time Saved:</div>
-            <div class="automation-value time-saved">${item.timeSaved}</div>
-          </div>
-          
-          <div class="automation-row">
-            <div class="automation-label">Cost:</div>
-            <div class="automation-value cost">${item.cost}</div>
-          </div>
-          
-          ${item.implementation ? `
-            <div class="automation-row">
-              <div class="automation-label">How:</div>
-              <div class="automation-value">${item.implementation}</div>
-            </div>
-          ` : ''}
+        <div class="content-card-actions">
+          ${item.preview_url ? `<a href="${item.preview_url}" target="_blank">Preview</a>` : ''}
+          ${item.status === 'review' ? `<button class="primary" data-approve-content="${item.id}">Approve</button>` : ''}
+          <button data-reschedule="${item.id}">Reschedule</button>
         </div>
       </div>
     `;
-  }).join('');
-}
+  }
 
-let draggedTask = null;
-let draggedColumn = null;
-
-function handleDragStart(e) {
-  draggedTask = this;
-  draggedColumn = this.dataset.column;
-  this.classList.add('dragging');
-  e.dataTransfer.effectAllowed = 'move';
-}
-
-function handleDragEnd(e) {
-  this.classList.remove('dragging');
-}
-
-// Add drop zones
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.task-list').forEach(list => {
-    list.addEventListener('dragover', e => {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
+  function attachContentActions(container) {
+    container.querySelectorAll('[data-approve-content]').forEach(btn => {
+      btn.addEventListener('click', () => approveContent(btn.getAttribute('data-approve-content')));
     });
-    
-    list.addEventListener('drop', e => {
-      e.preventDefault();
-      const targetColumn = list.id.replace('-tasks', '');
-      const taskId = parseInt(draggedTask.dataset.id);
-      
-      // Find and move task
-      const sourceColumn = draggedColumn;
-      const taskIndex = tasks[sourceColumn].findIndex(t => t.id === taskId);
-      
-      if (taskIndex !== -1) {
-        const task = tasks[sourceColumn].splice(taskIndex, 1)[0];
-        tasks[targetColumn].push(task);
-        saveTasks();
-      }
+
+    container.querySelectorAll('[data-reschedule]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const newDate = prompt('Reschedule to (YYYY-MM-DD):');
+        if (newDate) {
+          rescheduleContent(btn.getAttribute('data-reschedule'), newDate);
+        }
+      });
     });
-  });
-  
-  renderTasks();
-});
 
-function markDone(id, column) {
-  const index = tasks[column].findIndex(t => t.id === id);
-  if (index !== -1) {
-    const task = tasks[column].splice(index, 1)[0];
-    tasks.done.push(task);
-    saveTasks();
+    container.querySelectorAll('[data-content-id]').forEach(card => {
+      card.addEventListener('dragstart', event => {
+        event.dataTransfer.setData('text/plain', card.getAttribute('data-content-id'));
+      });
+    });
   }
-}
 
-function deleteTask(id, column) {
-  if (confirm('Delete this task?')) {
-    const index = tasks[column].findIndex(t => t.id === id);
-    if (index !== -1) {
-      tasks[column].splice(index, 1);
-      saveTasks();
+  function isSameDay(a, b) {
+    return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  }
+
+  async function markQuickWinDone(id) {
+    const item = state.quickWins.find(win => String(win.id) === String(id));
+    if (!item) return;
+
+    item.status = 'done';
+    item.completed_at = new Date().toISOString();
+
+    if (state.supabase) {
+      await state.supabase.from('quick_wins').update({ status: 'done', completed_at: item.completed_at }).eq('id', id);
     }
+
+    renderQuickWins();
   }
-}
 
-function addTask(column) {
-  const title = prompt('Task title:');
-  if (!title) return;
-  
-  const description = prompt('Description:');
-  const time = prompt('Estimated time:');
-  const priority = prompt('Priority (high/medium/low):') || 'medium';
-  
-  const newTask = {
-    id: Date.now(),
-    title,
-    description: description || '',
-    steps: '',
-    time: time || '?',
-    priority
-  };
-  
-  tasks[column].push(newTask);
-  saveTasks();
-}
+  async function approveQuickWin(id) {
+    const item = state.quickWins.find(win => String(win.id) === String(id));
+    if (!item) return;
 
-function toggleSection(sectionId) {
-  const content = document.getElementById(`${sectionId}-content`);
-  const button = content.previousElementSibling;
-  
-  content.classList.toggle('collapsed');
-  button.classList.toggle('collapsed');
-  
-  // Save state
-  const collapsed = content.classList.contains('collapsed');
-  localStorage.setItem(`section-${sectionId}-collapsed`, collapsed);
-}
+    item.status = 'done';
+    item.completed_at = new Date().toISOString();
 
-function exportTasks() {
-  const dataStr = JSON.stringify(tasks, null, 2);
-  const dataBlob = new Blob([dataStr], { type: 'application/json' });
-  const url = URL.createObjectURL(dataBlob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `rob-tasks-${new Date().toISOString().split('T')[0]}.json`;
-  link.click();
-}
-
-function syncToNeo() {
-  // Create sync file format for Neo
-  const syncData = {
-    lastUpdated: new Date().toISOString(),
-    source: 'web',
-    version: 1,
-    tasks: tasks
-  };
-  
-  const dataStr = JSON.stringify(syncData, null, 2);
-  const dataBlob = new Blob([dataStr], { type: 'application/json' });
-  const url = URL.createObjectURL(dataBlob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = 'task-sync.json';
-  link.click();
-  
-  // Show instructions
-  alert('✅ Downloaded task-sync.json!\n\nSave to: /home/rob/clawd/task-sync.json\n\nThen run: /home/rob/clawd/scripts/sync-tasks.sh\n\nOr Neo will auto-sync on next heartbeat!');
-}
-
-function clearDone() {
-  if (confirm('Clear all completed tasks?')) {
-    tasks.done = [];
-    saveTasks();
-  }
-}
-
-// Restore collapsed state
-document.addEventListener('DOMContentLoaded', () => {
-  ['business', 'websites', 'mobile', 'calaba', 'capabilities'].forEach(sectionId => {
-    const collapsed = localStorage.getItem(`section-${sectionId}-collapsed`) === 'true';
-    if (collapsed) {
-      const content = document.getElementById(`${sectionId}-content`);
-      const button = content.previousElementSibling;
-      content.classList.add('collapsed');
-      button.classList.add('collapsed');
+    if (state.supabase) {
+      await state.supabase.from('quick_wins').update({ status: 'done', completed_at: item.completed_at }).eq('id', id);
     }
+
+    renderQuickWins();
+  }
+
+  async function unblockProject(id) {
+    const project = state.projects.find(proj => String(proj.id) === String(id));
+    if (!project) return;
+
+    project.status = 'active';
+    project.blocked_reason = null;
+
+    if (state.supabase) {
+      await state.supabase.from('projects').update({ status: 'active', blocked_reason: null }).eq('id', id);
+    }
+
+    renderProjects();
+    renderBlocked();
+  }
+
+  async function approveContent(id) {
+    const item = state.content.find(content => String(content.id) === String(id));
+    if (!item) return;
+
+    item.status = 'approved';
+    if (state.supabase) {
+      await state.supabase.from('content_calendar').update({ status: 'approved' }).eq('id', id);
+    }
+
+    refreshCalendarViews();
+  }
+
+  async function rescheduleContent(id, dateKey) {
+    const item = state.content.find(content => String(content.id) === String(id));
+    if (!item) return;
+
+    item.scheduled_date = dateKey;
+
+    if (state.supabase) {
+      await state.supabase.from('content_calendar').update({ scheduled_date: dateKey }).eq('id', id);
+    }
+
+    refreshCalendarViews();
+  }
+
+  function refreshCalendarViews() {
+    renderCalendar();
+    if (state.selectedDate) {
+      renderDateDetails(state.selectedDate);
+    }
+    renderUpcoming();
+  }
+
+  async function addQuickWin() {
+    const title = prompt('Quick win title:');
+    if (!title) return;
+
+    const estimate = parseInt(prompt('Estimate minutes (5, 10, 15):') || '10', 10);
+    const type = prompt('Type (approve/review/signup/decision/action):') || 'action';
+
+    const newWin = {
+      id: state.supabase ? crypto.randomUUID() : `qw-${Date.now()}`,
+      title,
+      estimate_minutes: estimate,
+      type,
+      status: 'pending',
+      created_at: new Date().toISOString()
+    };
+
+    state.quickWins.push(newWin);
+
+    if (state.supabase) {
+      await state.supabase.from('quick_wins').insert([
+        {
+          id: newWin.id,
+          title: newWin.title,
+          estimate_minutes: newWin.estimate_minutes,
+          type: newWin.type,
+          status: newWin.status,
+          created_at: newWin.created_at
+        }
+      ]);
+    }
+
+    renderQuickWins();
+  }
+
+  async function initializeDashboard() {
+    await initSupabase();
+    await fetchSupabaseData();
+
+    renderProjects();
+    renderBlocked();
+    renderQuickWins();
+    renderCalendar();
+    renderUpcoming();
+
+    const todayKey = new Date().toISOString().split('T')[0];
+    state.selectedDate = todayKey;
+    renderDateDetails(todayKey);
+  }
+
+  document.getElementById('prev-month').addEventListener('click', () => {
+    state.currentMonth = new Date(state.currentMonth.getFullYear(), state.currentMonth.getMonth() - 1, 1);
+    refreshCalendarViews();
   });
-});
+
+  document.getElementById('next-month').addEventListener('click', () => {
+    state.currentMonth = new Date(state.currentMonth.getFullYear(), state.currentMonth.getMonth() + 1, 1);
+    refreshCalendarViews();
+  });
+
+  document.getElementById('today-month').addEventListener('click', () => {
+    state.currentMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    refreshCalendarViews();
+  });
+
+  document.getElementById('refresh-data').addEventListener('click', async () => {
+    await fetchSupabaseData();
+    renderProjects();
+    renderBlocked();
+    renderQuickWins();
+    refreshCalendarViews();
+  });
+
+  document.getElementById('toggle-connection').addEventListener('click', () => {
+    const panel = document.getElementById('connection-panel');
+    panel.style.display = panel.style.display === 'none' ? 'grid' : 'none';
+  });
+
+  document.getElementById('save-connection').addEventListener('click', async () => {
+    const url = document.getElementById('supabase-url').value.trim();
+    const key = document.getElementById('supabase-key').value.trim();
+    if (!url || !key) {
+      alert('Please enter both the Supabase URL and anon key.');
+      return;
+    }
+    localStorage.setItem('neoSupabaseUrl', url);
+    localStorage.setItem('neoSupabaseAnonKey', key);
+    await initializeDashboard();
+  });
+
+  document.getElementById('clear-connection').addEventListener('click', () => {
+    localStorage.removeItem('neoSupabaseUrl');
+    localStorage.removeItem('neoSupabaseAnonKey');
+    initializeDashboard();
+  });
+
+  document.getElementById('add-quick-win').addEventListener('click', addQuickWin);
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const { url, key } = loadSupabaseConfig();
+    document.getElementById('supabase-url').value = url || '';
+    document.getElementById('supabase-key').value = key || '';
+    initializeDashboard();
+  });
 </script>

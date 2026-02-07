@@ -1,0 +1,288 @@
+{# 
+  Reusable Email Signup Component
+  
+  Usage:
+  {% include "components/EmailSignup.njk" with {
+    source: "homepage",
+    title: "Get Free Resources",
+    description: "Join 500+ school-based BCBAs...",
+    buttonText: "Subscribe",
+    inline: false
+  } %}
+#}
+
+{% set componentId = "email-signup-" + (source | replace("/", "-") | replace(" ", "-")) %}
+{% set inlineClass = "inline" if inline else "" %}
+{% set compactClass = "compact" if compact else "" %}
+
+<div class="email-signup-container {{ inlineClass }} {{ compactClass }}" id="{{ componentId }}">
+  <div class="email-signup-card">
+    {% if not compact %}
+    <div class="email-signup-icon">
+      <i class="fas fa-envelope"></i>
+    </div>
+    {% endif %}
+    
+    <h3 class="email-signup-title">{{ title | default("Get Free BCBA Resources") }}</h3>
+    <p class="email-signup-description">{{ description | default("Join our mailing list for exclusive resources and updates.") }}</p>
+    
+    <form class="email-signup-form" data-source="{{ source | default('unknown') }}">
+      {% if showName %}
+      <input 
+        type="text" 
+        name="name" 
+        placeholder="Your name" 
+        class="email-signup-input"
+        {% if requireName %}required{% endif %}
+      >
+      {% endif %}
+      
+      <div class="email-signup-input-group">
+        <input 
+          type="email" 
+          name="email" 
+          placeholder="Enter your email" 
+          required 
+          class="email-signup-input"
+        >
+        <button type="submit" class="email-signup-button">
+          {{ buttonText | default("Subscribe") }}
+        </button>
+      </div>
+      
+      <div class="email-signup-message" style="display: none;"></div>
+    </form>
+    
+    <p class="email-signup-privacy">We respect your privacy. Unsubscribe anytime.</p>
+  </div>
+</div>
+
+<style>
+.email-signup-container {
+  margin: 2rem 0;
+}
+
+.email-signup-container.inline {
+  margin: 0;
+}
+
+.email-signup-card {
+  background: linear-gradient(135deg, #f6f9fc 0%, #ffffff 100%);
+  border: 2px solid #e0e7ff;
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.email-signup-container.compact .email-signup-card {
+  padding: 1.5rem;
+}
+
+.email-signup-icon {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  font-size: 28px;
+  color: white;
+}
+
+.email-signup-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 0.75rem 0;
+}
+
+.email-signup-container.compact .email-signup-title {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.email-signup-description {
+  font-size: 1rem;
+  color: #64748b;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.6;
+}
+
+.email-signup-container.compact .email-signup-description {
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.email-signup-form {
+  max-width: 500px;
+  margin: 0 auto 1rem;
+}
+
+.email-signup-input-group {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.email-signup-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.875rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.email-signup-input:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.email-signup-button {
+  padding: 0.875rem 1.75rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.email-signup-button:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.email-signup-button:active {
+  transform: translateY(0);
+}
+
+.email-signup-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.email-signup-message {
+  margin-top: 1rem;
+  padding: 0.875rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.email-signup-message.success {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid #6ee7b7;
+}
+
+.email-signup-message.error {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.email-signup-privacy {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .email-signup-input-group {
+    flex-direction: column;
+  }
+  
+  .email-signup-input,
+  .email-signup-button {
+    width: 100%;
+  }
+}
+</style>
+
+<script>
+(function() {
+  const form = document.querySelector('#{{ componentId }} .email-signup-form');
+  if (!form) return;
+  
+  // Check if already signed up
+  const signedUp = localStorage.getItem('robspain_email_signup');
+  if (signedUp) {
+    const container = document.getElementById('{{ componentId }}');
+    const message = container.querySelector('.email-signup-message');
+    message.textContent = "✅ You're already subscribed!";
+    message.className = 'email-signup-message success';
+    message.style.display = 'block';
+    form.querySelector('.email-signup-input-group').style.display = 'none';
+  }
+  
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const button = this.querySelector('.email-signup-button');
+    const message = this.querySelector('.email-signup-message');
+    const emailInput = this.querySelector('input[name="email"]');
+    const nameInput = this.querySelector('input[name="name"]');
+    const source = this.dataset.source;
+    
+    button.disabled = true;
+    button.textContent = 'Subscribing...';
+    message.style.display = 'none';
+    
+    try {
+      const response = await fetch('/.netlify/functions/collect-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: emailInput.value,
+          name: nameInput ? nameInput.value : '',
+          source: source
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok || response.status === 409) {
+        message.textContent = data.message || '✅ Successfully subscribed!';
+        message.className = 'email-signup-message success';
+        message.style.display = 'block';
+        
+        // Store in localStorage to not show form again
+        localStorage.setItem('robspain_email_signup', 'true');
+        localStorage.setItem('robspain_email_signup_source', source);
+        
+        // Hide form after success
+        setTimeout(() => {
+          this.querySelector('.email-signup-input-group').style.display = 'none';
+          {% if nameInput %}
+          nameInput.style.display = 'none';
+          {% endif %}
+        }, 2000);
+        
+        // Reset form
+        this.reset();
+      } else {
+        throw new Error(data.error || 'Subscription failed');
+      }
+    } catch (error) {
+      console.error('Signup error:', error);
+      message.textContent = '❌ ' + (error.message || 'Something went wrong. Please try again.');
+      message.className = 'email-signup-message error';
+      message.style.display = 'block';
+    } finally {
+      button.disabled = false;
+      button.textContent = '{{ buttonText | default("Subscribe") }}';
+    }
+  });
+})();
+</script>

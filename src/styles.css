@@ -1101,3 +1101,18 @@ h2 {
     height: 100%;
     border: 0;
 }
+/* Footer Email Signup */
+.footer-email-signup-wrapper {
+    margin: 0 0 3rem 0;
+    padding: 0 0 3rem 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.footer-email-signup-wrapper .email-signup-container {
+    margin: 0;
+}
+
+.footer-email-signup-wrapper .email-signup-card {
+    background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+    border-color: #bbf7d0;
+}

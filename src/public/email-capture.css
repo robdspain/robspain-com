@@ -1,0 +1,307 @@
+/* Email Capture Styles - Sticky Banner & Exit Intent */
+
+/* === STICKY BANNER === */
+.sticky-email-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  color: white;
+  padding: 1rem;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(100%);
+  transition: transform 0.3s ease-in-out;
+  z-index: 9999;
+}
+
+.sticky-email-banner.visible {
+  transform: translateY(0);
+}
+
+.sticky-banner-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.sticky-banner-text {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sticky-banner-icon {
+  font-size: 1.5rem;
+}
+
+.sticky-banner-message {
+  font-size: 0.95rem;
+}
+
+.sticky-banner-message strong {
+  font-weight: 600;
+}
+
+.sticky-banner-form {
+  display: flex;
+  gap: 0.5rem;
+  flex: 0 1 auto;
+}
+
+.sticky-banner-input {
+  padding: 0.625rem 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  min-width: 240px;
+  transition: all 0.2s;
+}
+
+.sticky-banner-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.sticky-banner-input:focus {
+  outline: none;
+  border-color: #10b981;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.sticky-banner-button {
+  padding: 0.625rem 1.5rem;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.sticky-banner-button:hover {
+  background: #059669;
+  transform: translateY(-2px);
+}
+
+.sticky-banner-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.sticky-banner-close {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: color 0.2s;
+}
+
+.sticky-banner-close:hover {
+  color: white;
+}
+
+/* === EXIT INTENT POPUP === */
+.exit-intent-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 10000;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.exit-intent-overlay.visible {
+  opacity: 1;
+}
+
+.exit-intent-modal {
+  background: white;
+  border-radius: 24px;
+  padding: 3rem 2.5rem;
+  max-width: 480px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  transform: scale(0.9);
+  transition: transform 0.3s ease-in-out;
+}
+
+.exit-intent-overlay.visible .exit-intent-modal {
+  transform: scale(1);
+}
+
+.exit-intent-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #f1f5f9;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 1.75rem;
+  line-height: 1;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.exit-intent-close:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+  transform: rotate(90deg);
+}
+
+.exit-intent-content {
+  text-align: center;
+}
+
+.exit-intent-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.exit-intent-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 1rem 0;
+}
+
+.exit-intent-description {
+  font-size: 1.125rem;
+  color: #64748b;
+  margin: 0 0 2rem 0;
+  line-height: 1.6;
+}
+
+.exit-intent-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.exit-intent-input {
+  padding: 1rem 1.25rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.exit-intent-input:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.exit-intent-button {
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.exit-intent-button:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+}
+
+.exit-intent-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.exit-intent-privacy {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* === MOBILE RESPONSIVE === */
+@media (max-width: 768px) {
+  .sticky-banner-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  
+  .sticky-banner-text {
+    justify-content: center;
+  }
+  
+  .sticky-banner-form {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .sticky-banner-input {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .sticky-banner-button {
+    width: 100%;
+  }
+  
+  .sticky-banner-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+  
+  .exit-intent-modal {
+    padding: 2rem 1.5rem;
+  }
+  
+  .exit-intent-title {
+    font-size: 1.5rem;
+  }
+  
+  .exit-intent-description {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sticky-email-banner {
+    padding: 0.75rem;
+  }
+  
+  .sticky-banner-message {
+    font-size: 0.875rem;
+  }
+  
+  .sticky-banner-icon {
+    font-size: 1.25rem;
+  }
+}

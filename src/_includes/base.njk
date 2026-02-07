@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="/premium-styles.css">
     <link rel="stylesheet" href="/video-funnel.css">
     <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/email-capture.css">
     
     {% if extra_css %}
     <link rel="stylesheet" href="{{ extra_css }}">
@@ -85,6 +86,17 @@
 
     <footer class="footer">
         <div class="container">
+            <!-- Email Signup Section -->
+            <div class="footer-email-signup-wrapper">
+                {% include "components/EmailSignup.njk" with {
+                    source: "footer",
+                    title: "Join 500+ School-Based BCBAs",
+                    description: "Get free resources, tools, and updates delivered to your inbox.",
+                    buttonText: "Subscribe Free",
+                    compact: true
+                } %}
+            </div>
+            
             <div class="footer-content">
                 <div class="footer-section">
                     <h4>Professional Resources</h4>
@@ -181,6 +193,7 @@
     <script src="/premium-interactions.js"></script>
     <script src="/video-funnel.js"></script>
     <script src="/contact-form.js"></script>
+    <script src="/email-capture.js"></script>
     <script>
       (function(){
         var el = document.getElementById('current-year');

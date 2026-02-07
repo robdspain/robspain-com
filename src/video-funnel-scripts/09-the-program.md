@@ -1,8 +1,9 @@
 ---
 title: "Video 09: The 8-Week Transformation Program"
-series: "transformation"
+series: "school-bcba"
 published: true
 step: 9
+videoUrl: ""
 ---
 
 **[Scene: Rob on camera, presenting the offer]**

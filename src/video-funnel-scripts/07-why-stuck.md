@@ -1,8 +1,9 @@
 ---
 title: "Video 07: Why Most BCBAs Stay Stuck"
-series: "transformation"
+series: "school-bcba"
 published: true
 step: 7
+videoUrl: ""
 ---
 
 **[Scene: Rob on camera, empathetic but direct]**

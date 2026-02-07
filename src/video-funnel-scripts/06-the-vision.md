@@ -1,8 +1,9 @@
 ---
 title: "Video 06: What Systems Leadership Looks Like"
-series: "transformation"
+series: "school-bcba"
 published: true
 step: 6
+videoUrl: ""
 ---
 
 **[Scene: Rob on camera, painting a vision]**

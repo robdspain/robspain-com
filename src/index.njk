@@ -142,9 +142,9 @@ description: Rob Spain, School BCBA with {{ experience.display }} years experien
 
 
                     <div class="hero-actions-premium animate-fade-up stagger-4">
-                        <a href="javascript:void(0)" class="btn-primary-premium" style="opacity: 0.8; cursor: default;">
+                        <a href="#free-training" class="btn-primary-premium">
                             <i class="fas fa-play"></i>
-                            Get Free Training <span style="font-size: 0.75rem; margin-left: 0.5rem; opacity: 0.9; background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 4px;">COMING SOON</span>
+                            Get Free Training
                         </a>
                     </div>
 
@@ -645,6 +645,7 @@ description: Rob Spain, School BCBA with {{ experience.display }} years experien
         {
             id: {{ script.data.step }},
             title: "{{ script.data.title }}",
+            videoUrl: "{{ script.data.videoUrl }}",
             content: `{{ script.templateContent | safe | replace('`', '\\`') }}`,
             series: "{{ script.data.series }}"
         }
@@ -654,7 +655,23 @@ description: Rob Spain, School BCBA with {{ experience.display }} years experien
   ];
 </script>
 
-{% if collections.published_scripts | selectattr("data.series", "equalto", "school-bcba") | first %}
+<style>
+.bento-step-num { font-size: 0.75rem; font-weight: 700; color: #10B981; letter-spacing: 0.05em; }
+.bento-title { font-size: 0.9rem; font-weight: 600; color: #e2e8f0; line-height: 1.3; }
+.bento-status { font-size: 0.85rem; color: #64748b; margin-top: auto; }
+.optin-overlay { max-width: 400px; margin: 0 auto; text-align: center; }
+.optin-title { font-size: 1.5rem; font-weight: 700; color: #10B981; margin-bottom: 0.5rem; }
+.optin-form { display: flex; flex-direction: column; gap: 0.75rem; }
+.optin-input { padding: 0.75rem 1rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); color: white; font-size: 1rem; }
+.optin-input::placeholder { color: #64748b; }
+.optin-btn { padding: 0.75rem 1.5rem; border-radius: 12px; border: none; background: #10B981; color: white; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.2s; }
+.optin-btn:hover { background: #059669; transform: translateY(-1px); }
+.video-embed-wrapper { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; }
+.video-embed-wrapper iframe, .video-embed-wrapper video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+@media (max-width: 640px) { .video-bento-grid { grid-template-columns: repeat(2, 1fr) !important; } }
+</style>
+
+{% if collections.published_scripts.length > 0 %}
     <!-- Video Funnel Section (Dynamic) -->
     <section class="video-funnel-section" id="free-training">
         <div class="container">
@@ -694,9 +711,9 @@ description: Rob Spain, School BCBA with {{ experience.display }} years experien
                 </div>
             </div>
 
-            <!-- Bento Grid (Hidden on Mobile/Single View, but used for navigation) -->
-            <div class="video-bento-grid" style="display: none;">
-                <!-- Dynamically populated -->
+            <!-- Bento Grid for Video Selection -->
+            <div class="video-bento-grid">
+                <!-- Dynamically populated by video-funnel.js -->
             </div>
         </div>
     </section>

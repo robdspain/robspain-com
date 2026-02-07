@@ -31,6 +31,7 @@ description: Internal preview for the 10-part Video Funnel series.
         </div>
 
         <div class="active-video-container">
+            <div class="video-player-frame">
             <div class="video-placeholder-overlay">
                 <div class="play-btn-large">
                     <i class="fas fa-play"></i>
@@ -38,10 +39,22 @@ description: Internal preview for the 10-part Video Funnel series.
                 <h3 class="active-video-title">The Reactivity Trap</h3>
                 <p style="color: #94a3b8; margin-top: 1rem;">Click a step below to begin your transformation</p>
             </div>
+            </div>
         </div>
 
         <div class="video-bento-grid">
             <!-- Dynamically populated by video-funnel.js -->
+        </div>
+
+        <div class="video-nav-controls" style="display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;">
+            <div class="video-info-box">
+                <span class="step-label">STEP 01</span>
+                <h3 class="current-step-title">The Breaking Point</h3>
+            </div>
+            <button class="next-video-btn" id="next-video">
+                <span>Next Video</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
         </div>
 
         <div class="resource-drawer animate-fade-up">

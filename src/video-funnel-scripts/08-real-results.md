@@ -1,8 +1,9 @@
 ---
 title: "Video 08: Real Results"
-series: "transformation"
+series: "school-bcba"
 published: true
 step: 8
+videoUrl: ""
 ---
 
 **[Scene: Rob on camera, sharing testimonials/results]**

@@ -1,108 +1,324 @@
 /**
  * Video Funnel Interactive Logic
- * Handles progress tracking, single video switching, and gating states.
+ * Handles video playback, progress tracking, navigation, bento grid, and email gating.
  */
 
 class VideoFunnel {
     constructor() {
-        // Initialize steps from global data or fallback to defaults
-        this.steps = window.videoFunnelData && window.videoFunnelData.length > 0 
-            ? window.videoFunnelData 
-            : [
-                { id: 1, title: "The Reactivity Trap" },
-                { id: 2, title: "The Myth of Individual Support" },
-                { id: 3, title: "University-Validated Shifts" },
-                { id: 4, title: "The 10-Minute Staff Hack" }
-            ];
+        this.steps = window.videoFunnelData && window.videoFunnelData.length > 0
+            ? window.videoFunnelData
+            : [];
+
+        if (!this.steps.length) return;
 
         this.currentIndex = 0;
-        this.unlockedUntil = 3; // Initial free videos (1-3)
-        this.isGated = true; // Gate is active at step 4
-        
+        this.unlockedUntil = 3; // First 3 videos free
+        this.isGated = true;
+        this.watchedSteps = new Set();
+
         this.init();
     }
 
     init() {
-        // Check local storage for previous unlock
-        if (localStorage.getItem('videoFunnelUnlocked') === 'true') {
-            this.unlockedUntil = this.steps.length;
-            this.isGated = false;
+        // Restore state from localStorage
+        const saved = localStorage.getItem('videoFunnelState');
+        if (saved) {
+            try {
+                const state = JSON.parse(saved);
+                if (state.unlocked) {
+                    this.unlockedUntil = this.steps.length;
+                    this.isGated = false;
+                }
+                if (state.currentIndex != null) {
+                    this.currentIndex = Math.min(state.currentIndex, this.steps.length - 1);
+                }
+                if (state.watched) {
+                    this.watchedSteps = new Set(state.watched);
+                }
+            } catch (e) { /* ignore */ }
         }
 
+        this.buildBentoGrid();
         this.renderCurrentStep();
         this.setupEventListeners();
         this.updateProgress();
     }
+
+    saveState() {
+        localStorage.setItem('videoFunnelState', JSON.stringify({
+            unlocked: !this.isGated,
+            currentIndex: this.currentIndex,
+            watched: Array.from(this.watchedSteps)
+        }));
+    }
+
+    // ── Video Embedding ──────────────────────────────────────────────
+
+    parseVideoUrl(url) {
+        if (!url) return null;
+
+        // YouTube
+        let match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})/);
+        if (match) return { type: 'youtube', id: match[1] };
+
+        // Vimeo
+        match = url.match(/vimeo\.com\/(\d+)/);
+        if (match) return { type: 'vimeo', id: match[1] };
+
+        // Direct video URL (R2, S3, etc.)
+        if (url.match(/\.(mp4|webm|m3u8)(\?|$)/i)) return { type: 'direct', url: url };
+
+        // Loom
+        match = url.match(/loom\.com\/share\/([\w]+)/);
+        if (match) return { type: 'loom', id: match[1] };
+
+        return null;
+    }
+
+    createVideoEmbed(videoInfo) {
+        if (!videoInfo) return null;
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'video-embed-wrapper';
+        wrapper.style.cssText = 'position:relative;width:100%;height:100%;';
+
+        switch (videoInfo.type) {
+            case 'youtube':
+                wrapper.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${videoInfo.id}?rel=0&modestbranding=1&autoplay=1"
+                    style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:16px;"
+                    allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
+                    allowfullscreen></iframe>`;
+                break;
+            case 'vimeo':
+                wrapper.innerHTML = `<iframe src="https://player.vimeo.com/video/${videoInfo.id}?autoplay=1&title=0&byline=0&portrait=0"
+                    style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:16px;"
+                    allow="autoplay;fullscreen;picture-in-picture"
+                    allowfullscreen></iframe>`;
+                break;
+            case 'loom':
+                wrapper.innerHTML = `<iframe src="https://www.loom.com/embed/${videoInfo.id}?autoplay=1"
+                    style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:16px;"
+                    allowfullscreen></iframe>`;
+                break;
+            case 'direct':
+                wrapper.innerHTML = `<video controls autoplay playsinline
+                    style="width:100%;height:100%;border-radius:16px;background:#0f172a;"
+                    src="${videoInfo.url}"></video>`;
+                break;
+        }
+        return wrapper;
+    }
+
+    // ── Rendering ────────────────────────────────────────────────────
 
     renderCurrentStep() {
         const step = this.steps[this.currentIndex];
         if (!step) return;
 
         const isLocked = step.id > this.unlockedUntil;
-        const isGateKeeper = isLocked && step.id === 4 && this.isGated;
+        const isGateStep = isLocked && this.isGated;
 
-        // Update titles
+        // Update labels
         const activeTitle = document.querySelector('.active-video-title');
         const currentStepTitle = document.querySelector('.current-step-title');
         const stepLabel = document.querySelector('.step-label');
-        
+
         if (activeTitle) activeTitle.textContent = step.title;
         if (currentStepTitle) currentStepTitle.textContent = step.title;
-        if (stepLabel) stepLabel.textContent = `STEP ${step.id < 10 ? '0' + step.id : step.id}`;
+        if (stepLabel) stepLabel.textContent = `STEP ${String(step.id).padStart(2, '0')}`;
 
-        // Handle Content Display
-        const container = document.querySelector('.video-placeholder-overlay');
-        if (!container) return;
+        // Main content area
+        const playerFrame = document.querySelector('.video-player-frame');
+        if (!playerFrame) return;
 
-        container.innerHTML = '';
+        // Clear previous content
+        playerFrame.innerHTML = '';
 
-        if (isGateKeeper) {
-            container.innerHTML = `
-                <div class="optin-overlay animate-fade-up">
-                    <h3 class="optin-title">Unlock The Full Series</h3>
-                    <p style="margin-bottom: 1.5rem; color: #cbd5e1;">Enter your email to unlock the "10-Minute Staff Reset Script" and the remaining videos.</p>
-                    <form class="optin-form" id="funnel-optin-form">
-                        <input type="email" class="optin-input" placeholder="Your Best Email Address" required>
-                        <button type="submit" class="optin-btn">Unlock Now <i class="fas fa-unlock"></i></button>
-                    </form>
+        if (isGateStep) {
+            // Email gate overlay
+            playerFrame.innerHTML = `
+                <div class="video-placeholder-overlay">
+                    <div class="optin-overlay animate-fade-up">
+                        <h3 class="optin-title">🔓 Unlock The Full Series</h3>
+                        <p style="margin-bottom: 1.5rem; color: #cbd5e1;">Enter your email to unlock the remaining videos and bonus resources.</p>
+                        <form class="optin-form" id="funnel-optin-form">
+                            <input type="email" class="optin-input" placeholder="Your Best Email Address" required>
+                            <button type="submit" class="optin-btn">Unlock Now <i class="fas fa-unlock"></i></button>
+                        </form>
+                    </div>
                 </div>
             `;
-
             document.getElementById('funnel-optin-form').addEventListener('submit', (e) => {
                 e.preventDefault();
                 const email = e.target.querySelector('input').value;
-                if(email) this.handleOptIn(email);
+                if (email) this.handleOptIn(email);
             });
         } else {
-            container.innerHTML = `
-                <div class="play-btn-large">
-                    <i class="fas fa-play"></i>
-                </div>
-                <h3 class="active-video-title">${step.title}</h3>
-                <p style="color: #94a3b8; margin-top: 1rem;">Click to Play Video</p>
-            `;
+            const videoInfo = this.parseVideoUrl(step.videoUrl);
+
+            if (videoInfo) {
+                // Real video — show play button, embed on click
+                const overlay = document.createElement('div');
+                overlay.className = 'video-placeholder-overlay';
+                overlay.innerHTML = `
+                    <div class="play-btn-large"><i class="fas fa-play"></i></div>
+                    <h3 class="active-video-title">${step.title}</h3>
+                    <p style="color: #94a3b8; margin-top: 1rem;">Click to Play Video</p>
+                `;
+                overlay.style.cursor = 'pointer';
+                playerFrame.appendChild(overlay);
+
+                overlay.addEventListener('click', () => {
+                    playerFrame.innerHTML = '';
+                    const embed = this.createVideoEmbed(videoInfo);
+                    if (embed) {
+                        playerFrame.appendChild(embed);
+                        this.markWatched(step.id);
+                    }
+                });
+            } else {
+                // No video URL yet — show script content with notice
+                const overlay = document.createElement('div');
+                overlay.className = 'video-placeholder-overlay';
+                overlay.innerHTML = `
+                    <div class="play-btn-large" style="opacity: 0.5;"><i class="fas fa-file-alt"></i></div>
+                    <h3 class="active-video-title">${step.title}</h3>
+                    <p style="color: #94a3b8; margin-top: 1rem;">Video coming soon — read the script preview below</p>
+                `;
+                overlay.style.cursor = 'pointer';
+                playerFrame.appendChild(overlay);
+
+                overlay.addEventListener('click', () => {
+                    playerFrame.innerHTML = `
+                        <div class="script-content-view" style="text-align:left;padding:2rem;overflow-y:auto;max-height:100%;width:100%;background:#0f172a;">
+                            <div style="max-width:650px;margin:0 auto;color:#e2e8f0;line-height:1.8;">
+                                <div style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:12px;padding:1rem;margin-bottom:2rem;font-size:0.9rem;color:#10B981;">
+                                    📝 Script Preview — Video recording in progress
+                                </div>
+                                ${step.content || '<p>No content available yet.</p>'}
+                            </div>
+                        </div>
+                    `;
+                    this.markWatched(step.id);
+                });
+            }
         }
 
-        // Update Next Button State
-        const nextBtn = document.getElementById('next-video');
-        if (nextBtn) {
-            if (this.currentIndex >= this.steps.length - 1) {
-                nextBtn.innerHTML = '<span>Finish Series</span> <i class="fas fa-check"></i>';
-            } else {
-                nextBtn.innerHTML = '<span>Next Video</span> <i class="fas fa-arrow-right"></i>';
-            }
-            
-            // Disable if next is locked and we haven't unlocked yet
-            const nextStep = this.steps[this.currentIndex + 1];
-            if (nextStep && nextStep.id > this.unlockedUntil && !(nextStep.id === 4 && this.isGated)) {
-                nextBtn.style.opacity = '0.5';
-                nextBtn.style.pointerEvents = 'none';
-            } else {
-                nextBtn.style.opacity = '1';
-                nextBtn.style.pointerEvents = 'auto';
-            }
-        }
+        // Update next button
+        this.updateNextButton();
+
+        // Update bento grid active state
+        this.updateBentoGrid();
+
+        this.saveState();
     }
+
+    markWatched(stepId) {
+        this.watchedSteps.add(stepId);
+        this.updateProgress();
+        this.updateBentoGrid();
+        this.saveState();
+    }
+
+    updateNextButton() {
+        const nextBtn = document.getElementById('next-video');
+        if (!nextBtn) return;
+
+        if (this.currentIndex >= this.steps.length - 1) {
+            nextBtn.innerHTML = '<span>Finish Series</span> <i class="fas fa-check"></i>';
+        } else {
+            nextBtn.innerHTML = '<span>Next Video</span> <i class="fas fa-arrow-right"></i>';
+        }
+
+        // Check if next step is accessible
+        const nextStep = this.steps[this.currentIndex + 1];
+        const nextLocked = nextStep && nextStep.id > this.unlockedUntil && this.isGated;
+        nextBtn.style.opacity = nextLocked ? '0.5' : '1';
+        nextBtn.style.pointerEvents = nextLocked ? 'none' : 'auto';
+    }
+
+    // ── Bento Grid ───────────────────────────────────────────────────
+
+    buildBentoGrid() {
+        const grid = document.querySelector('.video-bento-grid');
+        if (!grid) return;
+
+        grid.innerHTML = '';
+        grid.style.display = 'grid';
+        grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(180px, 1fr))';
+        grid.style.gap = '1rem';
+        grid.style.marginTop = '2rem';
+
+        this.steps.forEach((step, index) => {
+            const card = document.createElement('div');
+            card.className = 'bento-card';
+            card.dataset.stepIndex = index;
+
+            const isLocked = step.id > this.unlockedUntil && this.isGated;
+            const hasVideo = !!step.videoUrl;
+
+            card.innerHTML = `
+                <div class="bento-step-num">${String(step.id).padStart(2, '0')}</div>
+                <div class="bento-title">${step.title.replace(/^Video \d+:\s*/, '')}</div>
+                <div class="bento-status">
+                    ${isLocked ? '<i class="fas fa-lock"></i>' : hasVideo ? '<i class="fas fa-play-circle"></i>' : '<i class="fas fa-file-alt"></i>'}
+                </div>
+            `;
+
+            card.style.cssText = `
+                background: rgba(15,23,42,0.6);
+                border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 16px;
+                padding: 1.25rem;
+                cursor: ${isLocked ? 'not-allowed' : 'pointer'};
+                opacity: ${isLocked ? '0.4' : '1'};
+                transition: all 0.2s ease;
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            `;
+
+            if (!isLocked) {
+                card.addEventListener('click', () => {
+                    this.currentIndex = index;
+                    this.renderCurrentStep();
+                    document.getElementById('free-training')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+                card.addEventListener('mouseenter', () => {
+                    card.style.borderColor = '#10B981';
+                    card.style.transform = 'translateY(-2px)';
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.borderColor = 'rgba(255,255,255,0.08)';
+                    card.style.transform = 'none';
+                });
+            }
+
+            grid.appendChild(card);
+        });
+    }
+
+    updateBentoGrid() {
+        const cards = document.querySelectorAll('.bento-card');
+        cards.forEach((card) => {
+            const idx = parseInt(card.dataset.stepIndex, 10);
+            const step = this.steps[idx];
+            if (!step) return;
+
+            const isActive = idx === this.currentIndex;
+            const isWatched = this.watchedSteps.has(step.id);
+
+            card.style.borderColor = isActive ? '#10B981' : 'rgba(255,255,255,0.08)';
+            card.style.background = isActive ? 'rgba(16,185,129,0.15)' : 'rgba(15,23,42,0.6)';
+
+            const statusEl = card.querySelector('.bento-status');
+            if (statusEl && isWatched && !isActive) {
+                statusEl.innerHTML = '<i class="fas fa-check-circle" style="color:#10B981;"></i>';
+            }
+        });
+    }
+
+    // ── Event Listeners ──────────────────────────────────────────────
 
     setupEventListeners() {
         const nextBtn = document.getElementById('next-video');
@@ -111,61 +327,66 @@ class VideoFunnel {
                 if (this.currentIndex < this.steps.length - 1) {
                     this.currentIndex++;
                     this.renderCurrentStep();
-                    window.scrollTo({
-                        top: document.getElementById('free-training').offsetTop - 100,
-                        behavior: 'smooth'
-                    });
+                    document.getElementById('free-training')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 } else {
-                    // Final CTA or restart
-                    alert("Congratulations on completing the series!");
+                    // Series complete
+                    const playerFrame = document.querySelector('.video-player-frame');
+                    if (playerFrame) {
+                        playerFrame.innerHTML = `
+                            <div class="video-placeholder-overlay">
+                                <div style="text-align:center;">
+                                    <div style="font-size:3rem;margin-bottom:1rem;">🎉</div>
+                                    <h3 style="color:#10B981;font-size:1.5rem;margin-bottom:1rem;">Series Complete!</h3>
+                                    <p style="color:#cbd5e1;margin-bottom:2rem;">You've completed the entire training series.</p>
+                                    <a href="#contact" class="optin-btn" style="display:inline-block;text-decoration:none;">
+                                        Get Started with Rob <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        `;
+                    }
                 }
             });
         }
-
-        // Allow clicking the placeholder to "play"
-        const container = document.querySelector('.video-placeholder-overlay');
-        if (container) {
-            container.addEventListener('click', (e) => {
-                if (e.target.closest('.optin-overlay')) return;
-                
-                const step = this.steps[this.currentIndex];
-                if (!step) return;
-
-                // Show the script content as if it were the video
-                container.innerHTML = `
-                    <div class="script-content-view animate-fade-up" style="text-align: left; padding: 2rem; overflow-y: auto; max-height: 100%; width: 100%; background: #0f172a;">
-                        <div style="max-width: 600px; margin: 0 auto;">
-                            ${step.content || '<p>No script content available for this step.</p>'}
-                        </div>
-                    </div>
-                `;
-                container.style.cursor = 'default';
-                container.style.background = '#0f172a';
-            });
-        }
     }
+
+    // ── Email Gate ────────────────────────────────────────────────────
 
     handleOptIn(email) {
-        console.log("Opt-in captured:", email);
-        localStorage.setItem('videoFunnelUnlocked', 'true');
-        this.unlockRest();
+        console.log('Video funnel opt-in:', email);
+        // TODO: Send to email service (Mailchimp, ConvertKit, etc.)
+        // For now, just unlock locally
+        localStorage.setItem('videoFunnelState', JSON.stringify({
+            unlocked: true,
+            email: email,
+            currentIndex: this.currentIndex,
+            watched: Array.from(this.watchedSteps)
+        }));
+        this.unlockAll();
     }
+
+    unlockAll() {
+        this.unlockedUntil = this.steps.length;
+        this.isGated = false;
+        this.buildBentoGrid();
+        this.renderCurrentStep();
+        this.updateProgress();
+    }
+
+    // ── Progress ─────────────────────────────────────────────────────
 
     updateProgress() {
         const progressFill = document.querySelector('.progress-fill');
         const progressText = document.querySelector('.progress-percentage');
         if (!progressFill) return;
 
-        const percentage = (this.unlockedUntil / this.steps.length) * 100;
-        progressFill.style.width = `${percentage}%`;
-        if (progressText) progressText.textContent = `${Math.round(percentage)}% UNLOCKED`;
-    }
+        const watchedCount = this.watchedSteps.size;
+        const total = this.steps.length;
+        const percentage = total > 0 ? Math.round((watchedCount / total) * 100) : 0;
 
-    unlockRest() {
-        this.unlockedUntil = this.steps.length;
-        this.isGated = false;
-        this.renderCurrentStep();
-        this.updateProgress();
+        progressFill.style.width = `${percentage}%`;
+        progressFill.style.transition = 'width 0.5s ease';
+        if (progressText) progressText.textContent = `${percentage}% COMPLETE`;
     }
 }
 

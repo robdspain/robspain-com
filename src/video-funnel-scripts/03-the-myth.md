@@ -1,8 +1,9 @@
 ---
 title: "Video 03: The Myth That Kept Me Stuck"
-series: "transformation"
+series: "school-bcba"
 published: true
 step: 3
+videoUrl: ""
 ---
 
 **[Scene: Rob on camera, conversational tone]**

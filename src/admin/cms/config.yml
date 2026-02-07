@@ -11,6 +11,28 @@ media_folder: "src/public/images/uploads"
 public_folder: "/public/images/uploads"
 
 collections:
+  - name: "calaba_slides"
+    label: "CALABA 2026 Slides"
+    files:
+      - label: "Slide Deck"
+        name: "calaba_2026"
+        file: "src/public/data/calaba-2026-slides.json"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Subtitle", name: "subtitle", widget: "string" }
+          - { label: "Date", name: "date", widget: "string" }
+          - label: "Slides"
+            name: "slides"
+            widget: "list"
+            fields:
+              - { label: "Type", name: "type", widget: "select", options: ["title", "section", "content"] }
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+              - { label: "Byline", name: "byline", widget: "string", required: false }
+              - { label: "Footer", name: "footer", widget: "string", required: false }
+              - { label: "Bullets", name: "bullets", widget: "list", required: false }
+              - { label: "Note", name: "note", widget: "string", required: false }
+
   - name: "blog"
     label: "Blog"
     folder: "src/posts"

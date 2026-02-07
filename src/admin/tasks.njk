@@ -1,655 +1,1039 @@
 ---
 layout: base.njk
-title: Rob's Task List — Do This Now
+title: Rob's Priority Task List - ADHD-Optimized
 permalink: /admin/tasks/
 ---
 
 <style>
   :root {
-    --red: #DC2626;
-    --red-dark: #991B1B;
-    --yellow: #F59E0B;
-    --yellow-light: #FEF3C7;
-    --green: #10B981;
-    --green-light: #D1FAE5;
-    --gray: #6B7280;
-    --gray-light: #F3F4F6;
-    --text: #1F2937;
-    --bg: #F9FAFB;
+    --red-urgent: #dc2626;
+    --orange-important: #ea580c;
+    --yellow-money: #ca8a04;
+    --green-later: #16a34a;
+    --gray-nice: #64748b;
+    --bg-slate: #f8fafc;
+    --border-light: #e2e8f0;
+    --text-dark: #1f2937;
+    --text-muted: #6b7280;
   }
 
-  * { box-sizing: border-box; }
-
   .tasks-shell {
-    background: var(--bg);
+    background: linear-gradient(135deg, #f8fafc 0%, #fef2f2 100%);
     min-height: 100vh;
-    padding: 1.5rem;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    padding: 1.5rem 1rem 4rem;
   }
 
   .tasks-container {
-    max-width: 800px;
+    max-width: 1100px;
     margin: 0 auto;
   }
 
-  /* Top motivational counter */
-  .motivation-bar {
+  /* CRITICAL BANNER */
+  .critical-banner {
+    background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+    color: #ffffff;
+    border-radius: 20px;
+    padding: 2rem;
     text-align: center;
-    padding: 1rem;
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 1rem;
-  }
-
-  /* Section wrapper */
-  .task-section {
+    box-shadow: 0 10px 25px rgba(220, 38, 38, 0.4);
     margin-bottom: 2rem;
-    border-radius: 16px;
-    overflow: hidden;
+    animation: pulse 2s ease-in-out infinite;
   }
 
-  .section-banner {
-    padding: 1.5rem 2rem;
-    font-weight: 800;
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
   }
 
-  .section-banner h2 {
-    margin: 0 0 0.25rem 0;
-    font-size: 1.6rem;
+  .critical-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
   }
 
-  .section-banner p {
-    margin: 0;
-    font-size: 1rem;
-    opacity: 0.9;
-  }
-
-  /* RED section */
-  .section-red .section-banner {
-    background: var(--red);
-    color: #fff;
-    font-size: 1.1rem;
-  }
-  .section-red .section-banner h2 { font-size: 1.8rem; }
-
-  /* YELLOW section */
-  .section-yellow .section-banner {
-    background: var(--yellow);
-    color: #000;
-  }
-
-  /* GREEN section */
-  .section-green .section-banner {
-    background: var(--green);
-    color: #fff;
-  }
-
-  /* GRAY section */
-  .section-gray .section-banner {
-    background: var(--gray);
-    color: #fff;
-  }
-
-  .section-body {
-    background: #fff;
-    padding: 1rem;
-  }
-
-  /* Mini progress bar per section */
-  .mini-progress {
-    height: 8px;
-    background: #E5E7EB;
-    border-radius: 999px;
-    overflow: hidden;
-    margin: 0.75rem 0;
-  }
-  .mini-progress-fill {
-    height: 100%;
-    border-radius: 999px;
-    transition: width 0.3s ease;
-  }
-  .section-red .mini-progress-fill { background: var(--red); }
-  .section-yellow .mini-progress-fill { background: var(--yellow); }
-  .section-green .mini-progress-fill { background: var(--green); }
-  .section-gray .mini-progress-fill { background: var(--gray); }
-
-  .mini-progress-label {
-    font-size: 0.85rem;
-    color: var(--gray);
+  .critical-subtitle {
+    font-size: 1.3rem;
     font-weight: 600;
+    opacity: 0.95;
+  }
+
+  /* HEADER */
+  .tasks-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .tasks-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-dark);
     margin-bottom: 0.25rem;
   }
 
-  /* Task item */
-  .task-item {
+  .tasks-subtitle {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  /* PROGRESS BAR */
+  .progress-bar-container {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+  }
+
+  .progress-stats {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--red-urgent);
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+
+  .progress-bar {
+    height: 20px;
+    background: var(--border-light);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--red-urgent) 0%, var(--orange-important) 100%);
+    border-radius: 999px;
+    transition: width 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.8rem;
+  }
+
+  /* SECTION HEADERS */
+  .section-header {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin: 2rem 0 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section-header.urgent { color: var(--red-urgent); }
+  .section-header.money { color: var(--orange-important); }
+  .section-header.later { color: var(--green-later); }
+  .section-header.nice { color: var(--gray-nice); }
+
+  .section-subtitle {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+
+  /* TASK CARDS */
+  .tasks-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .task-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    border-left: 6px solid var(--border-light);
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .task-card.urgent { border-left-color: var(--red-urgent); }
+  .task-card.money { border-left-color: var(--orange-important); }
+  .task-card.later { border-left-color: var(--green-later); }
+  .task-card.nice { border-left-color: var(--gray-nice); }
+
+  .task-card:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
+
+  .task-card.completed {
+    opacity: 0.6;
+    border-left-color: #22c55e;
+    background: #f0fdf4;
+  }
+
+  .task-card.in-progress {
+    border-left-color: #3b82f6;
+    background: #eff6ff;
+  }
+
+  .task-header {
     display: flex;
     align-items: flex-start;
-    gap: 0.75rem;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid #F3F4F6;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
   }
-  .task-item:last-child { border-bottom: none; }
 
-  .task-item.done { opacity: 0.5; }
-  .task-item.done .task-name { text-decoration: line-through; }
-
-  .task-check {
-    width: 28px;
-    height: 28px;
-    min-width: 28px;
-    border: 3px solid #D1D5DB;
-    border-radius: 8px;
+  .task-checkbox {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border: 3px solid var(--border-light);
+    border-radius: 10px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1rem;
-    background: #fff;
-    transition: all 0.15s;
-    margin-top: 2px;
-  }
-  .task-check:hover { border-color: var(--green); }
-  .task-item.done .task-check {
-    background: var(--green);
-    border-color: var(--green);
-    color: #fff;
+    font-size: 1.4rem;
+    transition: all 0.2s ease;
+    background: #ffffff;
   }
 
-  .task-content { flex: 1; }
+  .task-card.completed .task-checkbox {
+    background: #22c55e;
+    border-color: #22c55e;
+    color: #ffffff;
+  }
 
-  .task-name {
-    font-size: 1.05rem;
+  .task-card.in-progress .task-checkbox {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: #ffffff;
+  }
+
+  .task-info {
+    flex: 1;
+  }
+
+  .task-title {
+    font-size: 1.15rem;
     font-weight: 700;
-    color: var(--text);
-    margin-bottom: 0.15rem;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+
+  .task-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .task-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .badge-robspain {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  .badge-behaviorschool {
+    background: #e0e7ff;
+    color: #4338ca;
+  }
+
+  .badge-ios {
+    background: #fce7f3;
+    color: #be185d;
+  }
+
+  .badge-both {
+    background: #fef3c7;
+    color: #92400e;
   }
 
   .task-time {
-    font-size: 0.8rem;
-    color: var(--gray);
-    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    background: #f0fdf4;
+    color: #166534;
+    font-size: 0.75rem;
+    font-weight: 700;
   }
 
-  /* Collapsible details */
-  .task-details {
-    display: none;
-    margin-top: 0.5rem;
-    padding: 0.75rem;
-    background: var(--gray-light);
-    border-radius: 8px;
-    font-size: 0.9rem;
+  .task-deadline {
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    background: #fee2e2;
+    color: #991b1b;
+    text-transform: uppercase;
+    animation: blink 1.5s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  .task-priority {
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  /* INSTRUCTIONS */
+  .task-instructions {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px solid var(--border-light);
+  }
+
+  .task-card.expanded .task-instructions {
+    max-height: 2000px;
+  }
+
+  .task-instructions h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 0.75rem;
+  }
+
+  .task-instructions ol,
+  .task-instructions ul {
+    margin-left: 1.5rem;
+    color: var(--text-dark);
+  }
+
+  .task-instructions li {
+    margin-bottom: 0.5rem;
     line-height: 1.6;
-    color: #374151;
   }
-  .task-details.open { display: block; }
 
-  .task-details ol {
-    margin: 0;
-    padding-left: 1.25rem;
-  }
-  .task-details li { margin-bottom: 0.35rem; }
-  .task-details code {
-    background: #E5E7EB;
-    padding: 0.15rem 0.4rem;
+  .task-instructions code {
+    background: #f1f5f9;
+    padding: 0.2rem 0.5rem;
     border-radius: 4px;
     font-size: 0.85rem;
-    color: var(--red-dark);
+    color: #dc2626;
+    font-family: 'Courier New', monospace;
   }
-  .task-details a {
-    color: #2563EB;
-    font-weight: 600;
-    text-decoration: none;
-  }
-  .task-details a:hover { text-decoration: underline; }
 
-  .details-toggle {
-    background: none;
+  .task-instructions a {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .task-instructions a:hover {
+    text-decoration: underline;
+  }
+
+  .expand-toggle {
+    margin-top: 0.75rem;
+    padding: 0.5rem 1rem;
+    background: var(--bg-slate);
     border: none;
-    color: #2563EB;
+    border-radius: 8px;
     font-size: 0.85rem;
     font-weight: 600;
+    color: var(--text-dark);
     cursor: pointer;
-    padding: 0;
-    margin-top: 0.25rem;
+    width: 100%;
+    transition: all 0.2s ease;
   }
-  .details-toggle:hover { text-decoration: underline; }
 
-  @media (max-width: 600px) {
-    .section-banner h2 { font-size: 1.3rem; }
-    .tasks-shell { padding: 0.75rem; }
+  .expand-toggle:hover {
+    background: var(--border-light);
+  }
+
+  .status-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .status-btn {
+    flex: 1;
+    padding: 0.6rem 1rem;
+    border: 2px solid var(--border-light);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #ffffff;
+  }
+
+  .status-btn.not-started {
+    border-color: var(--border-light);
+    color: var(--text-muted);
+  }
+
+  .status-btn.in-progress {
+    border-color: #3b82f6;
+    background: #3b82f6;
+    color: #ffffff;
+  }
+
+  .status-btn.done {
+    border-color: #22c55e;
+    background: #22c55e;
+    color: #ffffff;
+  }
+
+  .status-btn:hover {
+    opacity: 0.85;
+  }
+
+  /* QUICK TIP BOX */
+  .tip-box {
+    background: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+  }
+
+  .tip-box strong {
+    color: #92400e;
+  }
+
+  @media (max-width: 768px) {
+    .critical-title {
+      font-size: 1.8rem;
+    }
+
+    .critical-subtitle {
+      font-size: 1rem;
+    }
+
+    .tasks-title {
+      font-size: 1.6rem;
+    }
+
+    .section-header {
+      font-size: 1.3rem;
+    }
+
+    .task-meta {
+      flex-direction: column;
+      align-items: flex-start;
+    }
   }
 </style>
 
 <div class="tasks-shell">
   <div class="tasks-container">
+    <!-- CRITICAL BANNER -->
+    <div class="critical-banner">
+      <div class="critical-title">🔴 CALABA PRESENTATIONS DUE MONDAY</div>
+      <div class="critical-subtitle">START HERE! Conference is March 7-8. Review your presentations NOW.</div>
+    </div>
 
-    <!-- Motivation Counter -->
-    <div class="motivation-bar" id="motivation">🎯 Loading...</div>
+    <!-- Header -->
+    <header class="tasks-header">
+      <h1 class="tasks-title">Rob's Priority Task List</h1>
+      <p class="tasks-subtitle">ADHD-optimized: Deadlines first, then money, then everything else</p>
+    </header>
 
-    <!-- 🔴 SECTION 1: DUE MONDAY -->
-    <div class="task-section section-red" data-section="red">
-      <div class="section-banner">
-        <h2>🔴 YOUR PRESENTATIONS ARE DUE MONDAY — START HERE</h2>
-        <p>⏱️ ~1 hour to be presentation-ready</p>
+    <!-- Progress Bar -->
+    <div class="progress-bar-container">
+      <div class="progress-stats">
+        <div class="stat-item">
+          <div class="stat-value" id="total-tasks">21</div>
+          <div class="stat-label">Total Tasks</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="completed-tasks">0</div>
+          <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="in-progress-tasks">0</div>
+          <div class="stat-label">In Progress</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="remaining-tasks">21</div>
+          <div class="stat-label">Remaining</div>
+        </div>
       </div>
-      <div class="section-body">
-        <div class="mini-progress-label"><span class="section-progress-text">0 of 3 done</span></div>
-        <div class="mini-progress"><div class="mini-progress-fill" style="width:0%"></div></div>
-
-        <div class="task-item" data-id="r1">
-          <div class="task-check" onclick="toggle('r1')"></div>
-          <div class="task-content">
-            <div class="task-name">1️⃣ Review PBIS Presentation</div>
-            <div class="task-time">⏱️ 20 min · behaviorschool.com</div>
-            <button class="details-toggle" onclick="toggleDetails(this)">▶ Show steps</button>
-            <div class="task-details">
-              <ol>
-                <li>Go to <a href="https://behaviorschool.com/admin/presentations" target="_blank">behaviorschool.com/admin/presentations</a></li>
-                <li>Click <strong>"Library"</strong> tab</li>
-                <li>Find <strong>"BCBAs in PBIS"</strong></li>
-                <li>Click <strong>"Present"</strong> → preview fullscreen</li>
-                <li>Check content accuracy. Fix anything in the editor.</li>
-                <li>Click <strong>"Download"</strong> → export PPTX backup to your laptop</li>
-              </ol>
-            </div>
-          </div>
-        </div>
-
-        <div class="task-item" data-id="r2">
-          <div class="task-check" onclick="toggle('r2')"></div>
-          <div class="task-content">
-            <div class="task-name">2️⃣ Review CALABA Presentation</div>
-            <div class="task-time">⏱️ 20 min · behaviorschool.com</div>
-            <button class="details-toggle" onclick="toggleDetails(this)">▶ Show steps</button>
-            <div class="task-details">
-              <ol>
-                <li>Go to <a href="https://behaviorschool.com/admin/presentations" target="_blank">behaviorschool.com/admin/presentations</a> → <strong>Library</strong></li>
-                <li>Find <strong>"Beyond Observable Behavior"</strong></li>
-                <li>This covers all 4 symposium papers (yours, Cristal's, Megan's, + 4th)</li>
-                <li>Verify the content for each paper section is accurate</li>
-                <li>Click <strong>"Download"</strong> → export PPTX backup</li>
-              </ol>
-            </div>
-          </div>
-        </div>
-
-        <div class="task-item" data-id="r3">
-          <div class="task-check" onclick="toggle('r3')"></div>
-          <div class="task-content">
-            <div class="task-name">3️⃣ Practice Run-Through</div>
-            <div class="task-time">⏱️ 30 min</div>
-            <button class="details-toggle" onclick="toggleDetails(this)">▶ Show steps</button>
-            <div class="task-details">
-              <ol>
-                <li>Even one quick practice helps enormously</li>
-                <li>Press <strong>F</strong> for fullscreen presenter mode</li>
-                <li>Use <strong>arrow keys</strong> to navigate slides</li>
-                <li>Talk through your key points out loud</li>
-              </ol>
-            </div>
-          </div>
-        </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width: 0%;">0%</div>
       </div>
     </div>
 
-    <!-- 🟡 SECTION 2: MAKES MONEY -->
-    <div class="task-section section-yellow" data-section="yellow">
-      <div class="section-banner">
-        <h2>🟡 MAKES MONEY — Get the App in the App Store</h2>
-        <p>Do these in order. Each one takes 2–15 minutes.</p>
+    <!-- 🔴 DUE MONDAY — CALABA -->
+    <section id="urgent-section">
+      <h2 class="section-header urgent">🔴 DUE MONDAY — CALABA Presentations</h2>
+      <p class="section-subtitle">Conference March 7-8. Review and practice these NOW.</p>
+      <div class="tasks-grid" id="urgent-grid"></div>
+    </section>
+
+    <!-- 🟡 MAKES MONEY — App Store Launch -->
+    <section id="money-section">
+      <h2 class="section-header money">🟡 MAKES MONEY — App Store Launch</h2>
+      <p class="section-subtitle">Do these IN ORDER. Each one unlocks the next.</p>
+      <div class="tip-box">
+        <strong>💡 ADHD Tip:</strong> These are sequenced perfectly. Start with #1, finish it, move to #2. No decisions needed.
       </div>
-      <div class="section-body">
-        <div class="mini-progress-label"><span class="section-progress-text">0 of 9 done</span></div>
-        <div class="mini-progress"><div class="mini-progress-fill" style="width:0%"></div></div>
+      <div class="tasks-grid" id="money-grid"></div>
+    </section>
 
-        <div class="task-item" data-id="y1">
-          <div class="task-check" onclick="toggle('y1')"></div>
-          <div class="task-content">
-            <div class="task-name">1️⃣ Get Google AI API Key</div>
-            <div class="task-time">⏱️ 2 min</div>
-            <button class="details-toggle" onclick="toggleDetails(this)">▶ Show steps</button>
-            <div class="task-details">
-              <ol>
-                <li>Go to <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a></li>
-                <li>Click <strong>"Create API Key"</strong></li>
-                <li>Copy it. Send it to me.</li>
-              </ol>
-            </div>
-          </div>
-        </div>
+    <!-- 🟢 MAKES MONEY LATER — Content & Marketing -->
+    <section id="later-section">
+      <h2 class="section-header later">🟢 MAKES MONEY LATER — Content & Marketing</h2>
+      <p class="section-subtitle">Not urgent, but high impact. Do when you have creative energy.</p>
+      <div class="tasks-grid" id="later-grid"></div>
+    </section>
 
-        <div class="task-item" data-id="y2">
-          <div class="task-check" onclick="toggle('y2')"></div>
-          <div class="task-content">
-            <div class="task-name">2️⃣ Get Groq API Key</div>
-            <div class="task-time">⏱️ 2 min</div>
-            <button class="details-toggle" onclick="toggleDetails(this)">▶ Show steps</button>
-            <div class="task-details">
-              <ol>
-                <li>Go to <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a></li>
-                <li>Click <strong>"Create API Key"</strong></li>
-                <li>Copy it. Send it to me.</li>
-              </ol>
-            </div>
-          </div>
-        </div>
-
-        <div class="task-item" data-id="y3">
-          <div class="task-check" onclick="toggle('y3')"></div>
-          <div class="task-content">
-            <div class="task-name">3️⃣ Get DeepSeek API Key</div>
-            <div class="task-time">⏱️ 3 min</div>
-            <button class="details-toggle" onclick="toggleDetails(this)">▶ Show steps</button>
-            <div class="task-details">
-              <ol>
-                <li>Go to <a href="https://platform.deepseek.com/api_keys" target="_blank">platform.deepseek.com/api_keys</a></li>
-                <li>Click <strong>"Create new API key"</strong></li>
-                <li>Copy it. Send it to me.</li>
-              </ol>
-            </div>
-          </div>
-        </div>
-
-        <div class="task-item" data-id="y4">
-          <div class="task-check" onclick="toggle('y4')"></div>
-          <div class="task-content">
-            <div class="task-name">4️⃣ Get Apple Team ID</div>
-            <div class="task-time">⏱️ 2 min</div>
-            <button class="details-toggle" onclick="toggleDetails(this)">▶ Show steps</button>
-            <div class="task-details">
-              <ol>
-                <li>Go to <a href="https://developer.apple.com/account/#/membership" target="_blank">developer.apple.com/account/#/membership</a></li>
-                <li>Copy the 10-character <strong>"Team ID"</strong></li>
-                <li>Send it to me.</li>
-              </ol>
-            </div>
-          </div>
-        </div>
-
-        <div class="task-item" data-id="y5">
-          <div class="task-check" onclick="toggle('y5')"></div>
-          <div class="task-content">
-            <div class="task-name">5️⃣ Install Fastlane</div>
-            <div class="task-time">⏱️ 5 min</div>
-            <button class="details-toggle" onclick="toggleDetails(this)">▶ Show steps</button>
-            <div class="task-details">
-              <ol>
-                <li>Open <strong>Terminal</strong></li>
-                <li>Run: <code>sudo gem install cocoapods && sudo gem install fastlane</code></li>
-                <li>Done! ✅</li>
-              </ol>
-            </div>
-          </div>
-        </div>
-
-        <div class="task-item" data-id="y6">
-          <div class="task-check" onclick="toggle('y6')"></div>
-          <div class="task-content">
-            <div class="task-name">6️⃣ Apple Sign-In Setup</div>
-            <div class="task-time">⏱️ 15 min</div>
-            <button class="details-toggle" onclick="toggleDetails(this)">▶ Show steps</button>
-            <div class="task-details">
-              <ol>
-                <li>Go to <a href="https://developer.apple.com/account/resources/identifiers/list/serviceId" target="_blank">Service IDs page</a></li>
-                <li>Click <strong>+</strong> → Create new Service ID</li>
-                <li>Description: <code>Behavior Study Tools Sign In</code></li>
-                <li>Identifier: <code>com.behaviorschool.studytools.signin</code></li>
-                <li>Check <strong>"Sign In with Apple"</strong> → Configure</li>
-                <li>Add domain: <code>study.behaviorschool.com</code></li>
-                <li>Add return URL: <code>https://study.behaviorschool.com/auth/callback</code></li>
-                <li>Save</li>
-                <li>Now go to <a href="https://developer.apple.com/account/resources/authkeys/list" target="_blank">Keys page</a></li>
-                <li>Click <strong>+</strong> → Name: <code>Behavior Study Tools Auth</code></li>
-                <li>Check <strong>"Sign In with Apple"</strong> → Configure → select your App ID</li>
-                <li>Register → <strong>Download the .p8 file</strong></li>
-                <li>Send me: Team ID, Service ID, Key ID, and the .p8 file</li>
-              </ol>
-            </div>
-          </div>
-        </div>
-
-        <div class="task-item" data-id="y7">
-          <div class="task-check" onclick="toggle('y7')"></div>
-          <div class="task-content">
-            <div class="task-name">7️⃣ Create iOS Certificates Repo</div>
-            <div class="task-time">⏱️ 5 min</div>
-            <button class="details-toggle" onclick="toggleDetails(this)">▶ Show steps</button>
-            <div class="task-details">
-              <ol>
-                <li>Go to <a href="https://github.com/new" target="_blank">github.com/new</a></li>
-                <li>Name: <code>ios-certificates</code></li>
-                <li>Make it <strong>Private</strong>. No README.</li>
-                <li>Create it.</li>
-                <li>Copy the SSH URL → send it to me.</li>
-              </ol>
-            </div>
-          </div>
-        </div>
-
-        <div class="task-item" data-id="y8">
-          <div class="task-check" onclick="toggle('y8')"></div>
-          <div class="task-content">
-            <div class="task-name">8️⃣ Run Supabase Migrations</div>
-            <div class="task-time">⏱️ 10 min</div>
-            <button class="details-toggle" onclick="toggleDetails(this)">▶ Show steps</button>
-            <div class="task-details">
-              <ol>
-                <li>Open <strong>Terminal</strong></li>
-                <li>Run: <code>cd "/Users/Neo/Desktop/Neo Code/bcbaaistudytool" && npx supabase db push</code></li>
-                <li>If it asks for confirmation, type <strong>Y</strong></li>
-                <li>Errors? Screenshot them → send to me.</li>
-              </ol>
-            </div>
-          </div>
-        </div>
-
-        <div class="task-item" data-id="y9">
-          <div class="task-check" onclick="toggle('y9')"></div>
-          <div class="task-content">
-            <div class="task-name">9️⃣ Test iOS Build</div>
-            <div class="task-time">⏱️ 15 min</div>
-            <button class="details-toggle" onclick="toggleDetails(this)">▶ Show steps</button>
-            <div class="task-details">
-              <ol>
-                <li>Open <strong>Terminal</strong></li>
-                <li>Run: <code>cd "/Users/Neo/Desktop/Neo Code/bcbaaistudytool" && npm run ios:beta</code></li>
-                <li>Test on your phone via TestFlight</li>
-              </ol>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 🟢 SECTION 3: MAKES MONEY LATER -->
-    <div class="task-section section-green" data-section="green">
-      <div class="section-banner">
-        <h2>🟢 MAKES MONEY LATER — Content & Marketing</h2>
-        <p>Record when you have energy. Review when you don't.</p>
-      </div>
-      <div class="section-body">
-        <div class="mini-progress-label"><span class="section-progress-text">0 of 8 done</span></div>
-        <div class="mini-progress"><div class="mini-progress-fill" style="width:0%"></div></div>
-
-        <div class="task-item" data-id="g1">
-          <div class="task-check" onclick="toggle('g1')"></div>
-          <div class="task-content">
-            <div class="task-name">🎥 Record: "5 Ethics Questions"</div>
-            <div class="task-time">⏱️ 30 min · Script at video-scripts/01-ethics-traps.md</div>
-          </div>
-        </div>
-
-        <div class="task-item" data-id="g2">
-          <div class="task-check" onclick="toggle('g2')"></div>
-          <div class="task-content">
-            <div class="task-name">🎥 Record: "Reinforcement vs Punishment"</div>
-            <div class="task-time">⏱️ 30 min</div>
-          </div>
-        </div>
-
-        <div class="task-item" data-id="g3">
-          <div class="task-check" onclick="toggle('g3')"></div>
-          <div class="task-content">
-            <div class="task-name">🎥 Record: "Experimental Design"</div>
-            <div class="task-time">⏱️ 30 min</div>
-          </div>
-        </div>
-
-        <div class="task-item" data-id="g4">
-          <div class="task-check" onclick="toggle('g4')"></div>
-          <div class="task-content">
-            <div class="task-name">🎥 Record: "FBA to BIP"</div>
-            <div class="task-time">⏱️ 30 min</div>
-          </div>
-        </div>
-
-        <div class="task-item" data-id="g5">
-          <div class="task-check" onclick="toggle('g5')"></div>
-          <div class="task-content">
-            <div class="task-name">🎥 Record: "How to Pass the BCBA Exam"</div>
-            <div class="task-time">⏱️ 30 min</div>
-          </div>
-        </div>
-
-        <div class="task-item" data-id="g6">
-          <div class="task-check" onclick="toggle('g6')"></div>
-          <div class="task-content">
-            <div class="task-name">📅 Review Marketing Calendar</div>
-            <div class="task-time">⏱️ 15 min · <a href="https://behaviorschool.com/admin/content-calendar" target="_blank">behaviorschool.com/admin/content-calendar</a></div>
-          </div>
-        </div>
-
-        <div class="task-item" data-id="g7">
-          <div class="task-check" onclick="toggle('g7')"></div>
-          <div class="task-content">
-            <div class="task-name">📋 Review Transformation Program Marketing</div>
-            <div class="task-time">⏱️ 20 min</div>
-          </div>
-        </div>
-
-        <div class="task-item" data-id="g8">
-          <div class="task-check" onclick="toggle('g8')"></div>
-          <div class="task-content">
-            <div class="task-name">💬 Collect Testimonials</div>
-            <div class="task-time">⏱️ 15 min · Ask 3–5 people who've used your tools</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ⚪ SECTION 4: HOUSEKEEPING -->
-    <div class="task-section section-gray" data-section="gray">
-      <div class="section-banner">
-        <h2>⚪ HOUSEKEEPING — Do When Bored</h2>
-        <p>Low priority. Good for low-energy moments.</p>
-      </div>
-      <div class="section-body">
-        <div class="mini-progress-label"><span class="section-progress-text">0 of 4 done</span></div>
-        <div class="mini-progress"><div class="mini-progress-fill" style="width:0%"></div></div>
-
-        <div class="task-item" data-id="h1">
-          <div class="task-check" onclick="toggle('h1')"></div>
-          <div class="task-content">
-            <div class="task-name">🔧 Set R2 Environment Variables</div>
-            <div class="task-time">⏱️ 5 min · Copy from learning platform Netlify env to behaviorschool.com</div>
-          </div>
-        </div>
-
-        <div class="task-item" data-id="h2">
-          <div class="task-check" onclick="toggle('h2')"></div>
-          <div class="task-content">
-            <div class="task-name">📤 Push Git Commits</div>
-            <div class="task-time">⏱️ 5 min</div>
-          </div>
-        </div>
-
-        <div class="task-item" data-id="h3">
-          <div class="task-check" onclick="toggle('h3')"></div>
-          <div class="task-content">
-            <div class="task-name">🐛 Tell me about email auth bug</div>
-            <div class="task-time">⏱️ 5 min · Just describe what happens → send to me</div>
-          </div>
-        </div>
-
-        <div class="task-item" data-id="h4">
-          <div class="task-check" onclick="toggle('h4')"></div>
-          <div class="task-content">
-            <div class="task-name">🎬 Record Training Videos for robspain.com</div>
-            <div class="task-time">⏱️ 2 hrs</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    <!-- ⚪ NICE TO HAVE -->
+    <section id="nice-section">
+      <h2 class="section-header nice">⚪ NICE TO HAVE</h2>
+      <p class="section-subtitle">Do these when everything else is done. Low stress.</p>
+      <div class="tasks-grid" id="nice-grid"></div>
+    </section>
   </div>
 </div>
 
 <script>
-  // localStorage key (fresh start — new structure)
-  const STORAGE_KEY = 'robTasksV2';
+  const tasks = [
+    // 🔴 URGENT — DUE MONDAY
+    {
+      id: 1,
+      category: 'urgent',
+      title: 'Review PBIS Presentation: "BCBAs in PBIS"',
+      platform: 'behaviorschool.com',
+      time: '20 min',
+      deadline: 'DUE MONDAY',
+      priority: true,
+      status: 'not-started',
+      instructions: [
+        'Go to <a href="https://behaviorschool.com/admin/presentations" target="_blank">behaviorschool.com/admin/presentations</a>',
+        'Find "BCBAs in PBIS" in the Library',
+        'Click "Present" to preview full presentation',
+        'Check content accuracy — make edits if needed',
+        'Click "Download" to export PPTX backup',
+        'Do a quick practice run-through (even once helps muscle memory)'
+      ]
+    },
+    {
+      id: 2,
+      category: 'urgent',
+      title: 'Review CALABA Symposium: "Beyond Observable Behavior"',
+      platform: 'behaviorschool.com',
+      time: '25 min',
+      deadline: 'DUE MONDAY',
+      priority: true,
+      status: 'not-started',
+      instructions: [
+        'Go to <a href="https://behaviorschool.com/admin/presentations" target="_blank">behaviorschool.com/admin/presentations</a>',
+        'Find "Beyond Observable Behavior" in Library',
+        'This is a 4-paper symposium: you, Cristal Lopez, Megan Caluza, + 1 more',
+        'Click "Present" to preview',
+        'Verify all content is accurate',
+        'Export PPTX backup',
+        'Practice your section (5-10 min talk track)'
+      ]
+    },
 
-  function loadState() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
-  }
+    // 🟡 MAKES MONEY — App Store Launch (in order)
+    {
+      id: 3,
+      category: 'money',
+      title: '1️⃣ Get Google AI API Key',
+      platform: 'behaviorschool.com',
+      time: '2 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Go to <a href="https://aistudio.google.com/apikey" target="_blank">https://aistudio.google.com/apikey</a>',
+        'Sign in with your Google account',
+        'Click "Create API Key"',
+        'Copy the key',
+        'Send it to me'
+      ]
+    },
+    {
+      id: 4,
+      category: 'money',
+      title: '2️⃣ Get Groq API Key',
+      platform: 'behaviorschool.com',
+      time: '2 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Go to <a href="https://console.groq.com/keys" target="_blank">https://console.groq.com/keys</a>',
+        'Sign up / sign in (free account)',
+        'Click "Create API Key"',
+        'Copy the key',
+        'Send it to me'
+      ]
+    },
+    {
+      id: 5,
+      category: 'money',
+      title: '3️⃣ Get DeepSeek API Key',
+      platform: 'behaviorschool.com',
+      time: '3 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Go to <a href="https://platform.deepseek.com/api_keys" target="_blank">https://platform.deepseek.com/api_keys</a>',
+        'Sign up / sign in',
+        'Click "Create new API key"',
+        'Copy the key',
+        'Send it to me'
+      ]
+    },
+    {
+      id: 6,
+      category: 'money',
+      title: '4️⃣ Get Apple Team ID',
+      platform: 'iOS App',
+      time: '2 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Go to <a href="https://developer.apple.com/account/#/membership" target="_blank">https://developer.apple.com/account/#/membership</a>',
+        'Sign in with your Apple Developer account',
+        'Copy the 10-character "Team ID"',
+        'Send it to me'
+      ]
+    },
+    {
+      id: 7,
+      category: 'money',
+      title: '5️⃣ Install Fastlane & CocoaPods',
+      platform: 'iOS App',
+      time: '5 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Open Terminal',
+        'Run: <code>sudo gem install cocoapods</code>',
+        'Run: <code>sudo gem install fastlane</code>',
+        'Done! (These are needed for iOS builds)'
+      ]
+    },
+    {
+      id: 8,
+      category: 'money',
+      title: '6️⃣ Apple Sign-In Setup',
+      platform: 'iOS App',
+      time: '15 min',
+      priority: true,
+      status: 'not-started',
+      instructions: [
+        'Go to <a href="https://developer.apple.com/account/resources/identifiers/list/serviceId" target="_blank">developer.apple.com Service IDs</a>',
+        'Click + to create new Service ID',
+        'Description: "Behavior Study Tools Sign In"',
+        'Identifier: "com.behaviorschool.studytools.signin"',
+        'Enable "Sign In with Apple" → Configure',
+        'Add domain: study.behaviorschool.com',
+        'Add return URL: https://study.behaviorschool.com/auth/callback',
+        'Save',
+        'Go to <a href="https://developer.apple.com/account/resources/authkeys/list" target="_blank">Keys</a>',
+        'Click + for new key',
+        'Name: "Behavior Study Tools Auth"',
+        'Enable "Sign In with Apple" → Configure',
+        'Select your App ID → Register → Download .p8 file',
+        'Send me: Team ID, Service ID, Key ID, and .p8 file'
+      ]
+    },
+    {
+      id: 9,
+      category: 'money',
+      title: '7️⃣ Create iOS Certificates Repo',
+      platform: 'iOS App',
+      time: '5 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Go to <a href="https://github.com/new" target="_blank">https://github.com/new</a>',
+        'Name: "ios-certificates"',
+        '⚠️ Make it PRIVATE (important!)',
+        'Create (empty, no README)',
+        'Copy the SSH URL: <code>git@github.com:YOUR_USERNAME/ios-certificates.git</code>',
+        'Send it to me'
+      ]
+    },
+    {
+      id: 10,
+      category: 'money',
+      title: '8️⃣ Run Supabase Migrations',
+      platform: 'behaviorschool.com',
+      time: '10 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Open Terminal',
+        '<code>cd "/Users/Neo/Desktop/Neo Code/bcbaaistudytool"</code>',
+        'Run: <code>npx supabase db push</code>',
+        'This creates AI tutor usage table, mock exam results, AI usage log',
+        'Type Y if it asks for confirmation',
+        'Screenshot any errors and send to me'
+      ]
+    },
+    {
+      id: 11,
+      category: 'money',
+      title: '9️⃣ Test iOS App Build',
+      platform: 'iOS App',
+      time: '30 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        '⚠️ Only do this AFTER completing tasks 4-9 above',
+        'Open Terminal',
+        '<code>cd "/Users/Neo/Desktop/Neo Code/bcbaaistudytool"</code>',
+        'Run: <code>npm run ios:build</code>',
+        'If it succeeds: <code>npm run ios:beta</code> (uploads to TestFlight)',
+        'Test on your phone via TestFlight app'
+      ]
+    },
 
-  function saveState(state) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }
+    // 🟢 MAKES MONEY LATER — Content & Marketing
+    {
+      id: 12,
+      category: 'later',
+      title: 'Record Video #1: "5 Ethics Questions That Trip Everyone Up"',
+      platform: 'behaviorschool.com',
+      time: '30 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Script ready at: <code>/Users/Neo/clawd/video-scripts/01-ethics-traps.md</code>',
+        'Or view at behaviorschool.com/admin/videos',
+        'Record on phone or webcam (vertical = social, horizontal = YouTube)',
+        'Upload to behaviorschool.com/admin/videos',
+        'I\'ll cut it into short clips automatically'
+      ]
+    },
+    {
+      id: 13,
+      category: 'later',
+      title: 'Record Video #2: "Reinforcement vs Punishment"',
+      platform: 'behaviorschool.com',
+      time: '30 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Script: <code>/Users/Neo/clawd/video-scripts/02-reinforcement-vs-punishment.md</code>',
+        'Same recording process as Video #1',
+        'Upload to behaviorschool.com/admin/videos'
+      ]
+    },
+    {
+      id: 14,
+      category: 'later',
+      title: 'Record Video #3: "Experimental Design Made Simple"',
+      platform: 'behaviorschool.com',
+      time: '30 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Script: <code>/Users/Neo/clawd/video-scripts/03-experimental-design.md</code>',
+        'Record and upload to behaviorschool.com/admin/videos'
+      ]
+    },
+    {
+      id: 15,
+      category: 'later',
+      title: 'Record Video #4: "FBA to BIP in 10 Minutes"',
+      platform: 'behaviorschool.com',
+      time: '30 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Script: <code>/Users/Neo/clawd/video-scripts/04-fba-to-bip.md</code>',
+        'Record and upload'
+      ]
+    },
+    {
+      id: 16,
+      category: 'later',
+      title: 'Record Video #5: "How to Actually Pass the BCBA Exam"',
+      platform: 'behaviorschool.com',
+      time: '30 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Script: <code>/Users/Neo/clawd/video-scripts/05-study-strategy.md</code>',
+        'Record and upload'
+      ]
+    },
+    {
+      id: 17,
+      category: 'later',
+      title: 'Review Marketing Calendar',
+      platform: 'behaviorschool.com',
+      time: '15 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Go to behaviorschool.com/admin/content-calendar',
+        'Review 13 draft posts (pre-scheduled)',
+        'Approve, edit, or reschedule as needed'
+      ]
+    },
+    {
+      id: 18,
+      category: 'later',
+      title: 'Review Transformation Program Marketing',
+      platform: 'behaviorschool.com',
+      time: '20 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Open: <code>/Users/Neo/clawd/transformation-program-marketing.md</code>',
+        '12 emails, 18+ social posts, 6 blog topics, 3 lead magnets',
+        'Review and approve before I send anything'
+      ]
+    },
+    {
+      id: 19,
+      category: 'later',
+      title: 'Add Testimonials',
+      platform: 'behaviorschool.com',
+      time: '15 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Think of 3-5 people who\'ve used your tools or training',
+        'Get permission for quotes',
+        'Send me: name, role, quote',
+        'I\'ll add them to both sites'
+      ]
+    },
+    {
+      id: 20,
+      category: 'later',
+      title: 'Record Training Videos for robspain.com',
+      platform: 'robspain.com',
+      time: '2 hrs',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Video funnel ready for "Crisis Manager to Systems Leader" 10-part series',
+        'Each video 5-10 minutes',
+        'Record at your own pace',
+        'Upload to admin panel when ready'
+      ]
+    },
 
-  function toggle(id) {
-    const state = loadState();
-    state[id] = !state[id];
-    saveState(state);
-    render();
-  }
+    // ⚪ NICE TO HAVE
+    {
+      id: 21,
+      category: 'nice',
+      title: 'Tell Me About Email Auth Bug',
+      platform: 'behaviorschool.com',
+      time: '5 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'What happens when users try to log in with email on study.behaviorschool.com?',
+        'Not receiving emails? Redirect loop? Error message?',
+        'Screenshot if possible',
+        'Message me the details and I\'ll fix it'
+      ]
+    },
+    {
+      id: 22,
+      category: 'nice',
+      title: 'Set R2 Environment Variables',
+      platform: 'behaviorschool.com',
+      time: '5 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Learning platform already has Cloudflare R2 configured',
+        'Netlify dashboard for behaviorschool.com → Site Settings → Environment Variables',
+        'Copy these from learning platform:',
+        '• <code>CF_R2_ACCESS_KEY_ID</code>',
+        '• <code>CF_R2_SECRET_ACCESS_KEY</code>',
+        '• <code>CF_R2_BUCKET_NAME</code>',
+        '• <code>CF_R2_PUBLIC_BASE_URL</code>',
+        '• <code>CF_R2_ACCOUNT_ID</code>'
+      ]
+    },
+    {
+      id: 23,
+      category: 'nice',
+      title: 'Push Git Commits',
+      platform: 'behaviorschool.com',
+      time: '5 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Open Terminal',
+        '<code>cd "/Users/Neo/Desktop/Neo Code/behaviorschool-com-and-marketing"</code>',
+        'Run: <code>git push origin main</code>',
+        'Also: <code>cd "/Users/Neo/Desktop/Neo Code/bcbaaistudytool" && git push origin main</code>'
+      ]
+    }
+  ];
 
-  function toggleDetails(btn) {
-    const details = btn.nextElementSibling;
-    const open = details.classList.toggle('open');
-    btn.textContent = open ? '▼ Hide steps' : '▶ Show steps';
-  }
-
-  function render() {
-    const state = loadState();
-    const allItems = document.querySelectorAll('.task-item');
-    let totalDone = 0;
-    const total = allItems.length;
-
-    allItems.forEach(item => {
-      const id = item.dataset.id;
-      if (state[id]) {
-        item.classList.add('done');
-        item.querySelector('.task-check').textContent = '✅';
-      } else {
-        item.classList.remove('done');
-        item.querySelector('.task-check').textContent = '';
-      }
-    });
-
-    // Per-section progress
-    document.querySelectorAll('.task-section').forEach(section => {
-      const items = section.querySelectorAll('.task-item');
-      const done = [...items].filter(i => state[i.dataset.id]).length;
-      const sTotal = items.length;
-      totalDone += done;
-      const pct = sTotal ? Math.round((done / sTotal) * 100) : 0;
-      const fill = section.querySelector('.mini-progress-fill');
-      const label = section.querySelector('.section-progress-text');
-      if (fill) fill.style.width = pct + '%';
-      if (label) label.textContent = `${done} of ${sTotal} done`;
-    });
-
-    // Motivation
-    const el = document.getElementById('motivation');
-    if (totalDone === 0) {
-      el.textContent = `🎯 ${total} tasks to go. Start with the red section!`;
-    } else if (totalDone === total) {
-      el.textContent = `🎉 ALL ${total} TASKS DONE! You're a legend! 🏆`;
-    } else {
-      el.textContent = `🎉 ${totalDone} of ${total} tasks done! Keep going! 💪`;
+  // Load task states from localStorage
+  function loadTaskStates() {
+    const saved = localStorage.getItem('robTaskStates');
+    if (saved) {
+      const states = JSON.parse(saved);
+      tasks.forEach(task => {
+        if (states[task.id]) {
+          task.status = states[task.id];
+        }
+      });
     }
   }
 
-  document.addEventListener('DOMContentLoaded', render);
+  // Save task states
+  function saveTaskStates() {
+    const states = {};
+    tasks.forEach(task => {
+      states[task.id] = task.status;
+    });
+    localStorage.setItem('robTaskStates', JSON.stringify(states));
+  }
+
+  // Update progress
+  function updateProgress() {
+    const total = tasks.length;
+    const completed = tasks.filter(t => t.status === 'done').length;
+    const inProgress = tasks.filter(t => t.status === 'in-progress').length;
+    const remaining = total - completed;
+    const percentage = Math.round((completed / total) * 100);
+
+    document.getElementById('total-tasks').textContent = total;
+    document.getElementById('completed-tasks').textContent = completed;
+    document.getElementById('in-progress-tasks').textContent = inProgress;
+    document.getElementById('remaining-tasks').textContent = remaining;
+    document.getElementById('progress-fill').style.width = percentage + '%';
+    document.getElementById('progress-fill').textContent = percentage + '%';
+  }
+
+  // Render task card
+  function renderTask(task) {
+    const platformClass = task.platform.includes('robspain') ? 'badge-robspain' : 
+                         task.platform.includes('behaviorschool') ? 'badge-behaviorschool' : 
+                         task.platform.includes('iOS') ? 'badge-ios' : 'badge-both';
+
+    const checkboxIcon = task.status === 'done' ? '✅' : task.status === 'in-progress' ? '🔄' : '';
+
+    const card = document.createElement('div');
+    card.className = `task-card ${task.category} ${task.status}`;
+    card.dataset.taskId = task.id;
+
+    card.innerHTML = `
+      <div class="task-header">
+        <div class="task-checkbox">${checkboxIcon}</div>
+        <div class="task-info">
+          <div class="task-title">${task.title}</div>
+          <div class="task-meta">
+            <span class="task-badge ${platformClass}">${task.platform}</span>
+            <span class="task-time">⏱️ ${task.time}</span>
+            ${task.deadline ? `<span class="task-deadline">${task.deadline}</span>` : ''}
+            ${task.priority ? '<span class="task-priority">⚡ High Priority</span>' : ''}
+          </div>
+        </div>
+      </div>
+      <div class="task-instructions">
+        <h4>Step-by-step:</h4>
+        <ol>
+          ${task.instructions.map(step => `<li>${step}</li>`).join('')}
+        </ol>
+        <div class="status-buttons">
+          <button class="status-btn not-started" data-status="not-started">⬜ Not Started</button>
+          <button class="status-btn in-progress" data-status="in-progress">🔄 In Progress</button>
+          <button class="status-btn done" data-status="done">✅ Done</button>
+        </div>
+      </div>
+      <button class="expand-toggle">👉 Show Instructions</button>
+    `;
+
+    // Toggle expand
+    const toggleBtn = card.querySelector('.expand-toggle');
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      card.classList.toggle('expanded');
+      toggleBtn.textContent = card.classList.contains('expanded') ? '🔼 Hide' : '👉 Show Instructions';
+    });
+
+    // Status buttons
+    card.querySelectorAll('.status-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        task.status = btn.dataset.status;
+        saveTaskStates();
+        updateProgress();
+        renderAllTasks();
+      });
+    });
+
+    return card;
+  }
+
+  // Render all tasks by category
+  function renderAllTasks() {
+    const grids = {
+      'urgent': document.getElementById('urgent-grid'),
+      'money': document.getElementById('money-grid'),
+      'later': document.getElementById('later-grid'),
+      'nice': document.getElementById('nice-grid')
+    };
+
+    Object.values(grids).forEach(grid => {
+      if (grid) grid.innerHTML = '';
+    });
+
+    tasks.forEach(task => {
+      const grid = grids[task.category];
+      if (grid) {
+        grid.appendChild(renderTask(task));
+      }
+    });
+  }
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    loadTaskStates();
+    updateProgress();
+    renderAllTasks();
+  });
 </script>

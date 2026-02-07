@@ -1,0 +1,1240 @@
+---
+layout: base.njk
+title: Newsletter Trend Aggregator - BehaviorSchool
+permalink: /admin/trends/
+---
+
+<style>
+  :root {
+    --primary-color: #10B981;
+    --secondary-color: #667eea;
+    --danger-color: #ef4444;
+    --warning-color: #f59e0b;
+    --bg-light: #f8fafc;
+    --border-color: #e2e8f0;
+    --text-dark: #1e293b;
+    --text-muted: #64748b;
+    --card-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+  }
+
+  body {
+    background: var(--bg-light);
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+
+  .trends-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1rem 4rem;
+  }
+
+  .trends-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 24px;
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+  }
+
+  .trends-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+  }
+
+  .trends-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.95;
+  }
+
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  @media (max-width: 1024px) {
+    .content-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .section-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border-color);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color);
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .refresh-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .refresh-btn:hover {
+    background: #059669;
+    transform: translateY(-2px);
+  }
+
+  .refresh-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted);
+  }
+
+  .spinner {
+    border: 3px solid var(--border-color);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .item {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s;
+    background: var(--bg-light);
+  }
+
+  .item:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
+  }
+
+  .item-title {
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  .item-meta {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .item-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .item-snippet {
+    font-size: 0.875rem;
+    color: var(--text-dark);
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+  }
+
+  .item-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .btn {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: none;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: var(--primary-color);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: #059669;
+  }
+
+  .btn-secondary {
+    background: var(--border-color);
+    color: var(--text-dark);
+  }
+
+  .btn-secondary:hover {
+    background: #cbd5e1;
+  }
+
+  .btn-small {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .newsletter-builder {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border-color);
+  }
+
+  .newsletter-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    border-radius: 8px;
+    background: var(--bg-light);
+    border: 1px solid var(--border-color);
+  }
+
+  .newsletter-section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--text-dark);
+  }
+
+  .newsletter-section textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.875rem;
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .newsletter-section textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+  }
+
+  .added-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .added-item {
+    padding: 0.75rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    font-size: 0.875rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+  }
+
+  .added-item-content {
+    flex: 1;
+  }
+
+  .added-item-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .added-item-type {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .remove-btn {
+    background: var(--danger-color);
+    color: white;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.75rem;
+  }
+
+  .remove-btn:hover {
+    background: #dc2626;
+  }
+
+  .newsletter-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .newsletter-preview {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border-color);
+    margin-top: 2rem;
+  }
+
+  .preview-email {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .preview-section {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .preview-section:last-child {
+    border-bottom: none;
+  }
+
+  .preview-section h2 {
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-dark);
+  }
+
+  .preview-section p {
+    line-height: 1.7;
+    color: #374151;
+  }
+
+  .search-box {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .search-box:focus {
+    outline: none;
+    border-color: var(--primary-color);
+  }
+
+  .subreddit-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .subreddit-tab {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    background: white;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .subreddit-tab:hover {
+    border-color: var(--primary-color);
+  }
+
+  .subreddit-tab.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-muted);
+  }
+
+  .empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--text-dark);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    transform: translateY(200%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+  }
+
+  .toast.show {
+    transform: translateY(0);
+  }
+
+  .upvotes {
+    color: var(--primary-color);
+    font-weight: 700;
+  }
+
+  .comments {
+    color: var(--secondary-color);
+  }
+</style>
+
+<div class="trends-container">
+  <!-- Header -->
+  <div class="trends-header">
+    <h1 class="trends-title">📊 Newsletter Trend Aggregator</h1>
+    <p class="trends-subtitle">Discover trending content from Reddit, research journals, and industry news to build your School BCBA newsletter</p>
+  </div>
+
+  <!-- Content Grid -->
+  <div class="content-grid">
+    <!-- Reddit Trends -->
+    <div class="section-card">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span>🔥</span> Reddit Trends
+        </h2>
+        <button class="refresh-btn" onclick="loadRedditTrends()" id="reddit-refresh">
+          <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+      </div>
+
+      <!-- Subreddit Tabs -->
+      <div class="subreddit-tabs">
+        <button class="subreddit-tab active" data-sub="bcba" onclick="switchSubreddit('bcba')">r/bcba</button>
+        <button class="subreddit-tab" data-sub="ABA" onclick="switchSubreddit('ABA')">r/ABA</button>
+        <button class="subreddit-tab" data-sub="BehaviorAnalysis" onclick="switchSubreddit('BehaviorAnalysis')">r/BehaviorAnalysis</button>
+        <button class="subreddit-tab" data-sub="specialeducation" onclick="switchSubreddit('specialeducation')">r/specialeducation</button>
+        <button class="subreddit-tab" data-sub="schoolpsychology" onclick="switchSubreddit('schoolpsychology')">r/schoolpsychology</button>
+      </div>
+
+      <div id="reddit-content"></div>
+    </div>
+
+    <!-- Research Papers -->
+    <div class="section-card">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span>📚</span> Research Papers
+        </h2>
+        <button class="refresh-btn" onclick="searchPapers()" id="papers-refresh">
+          <i class="fas fa-sync-alt"></i> Search
+        </button>
+      </div>
+
+      <input 
+        type="text" 
+        class="search-box" 
+        id="paper-search"
+        placeholder="Search for papers... (e.g., 'school-based FBA', 'PBIS', 'IEP behavior')"
+        onkeypress="if(event.key === 'Enter') searchPapers()"
+      />
+
+      <div id="papers-content"></div>
+    </div>
+
+    <!-- Industry News -->
+    <div class="section-card">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span>📰</span> Industry News
+        </h2>
+        <button class="refresh-btn" onclick="loadIndustryNews()" id="news-refresh">
+          <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+      </div>
+      <div id="news-content"></div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="section-card">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span>📈</span> Newsletter Stats
+        </h2>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+        <div style="text-align: center; padding: 1rem; background: var(--bg-light); border-radius: 8px;">
+          <div style="font-size: 2rem; font-weight: 700; color: var(--primary-color);" id="items-added-count">0</div>
+          <div style="font-size: 0.875rem; color: var(--text-muted);">Items Added</div>
+        </div>
+        <div style="text-align: center; padding: 1rem; background: var(--bg-light); border-radius: 8px;">
+          <div style="font-size: 2rem; font-weight: 700; color: var(--secondary-color);" id="newsletter-sections-count">0</div>
+          <div style="font-size: 0.875rem; color: var(--text-muted);">Sections Filled</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Newsletter Builder -->
+  <div class="newsletter-builder">
+    <div class="section-header">
+      <h2 class="section-title">
+        <span>✍️</span> Newsletter Builder
+      </h2>
+      <button class="btn btn-secondary" onclick="clearNewsletter()">Clear All</button>
+    </div>
+
+    <!-- Hot Take -->
+    <div class="newsletter-section">
+      <div class="newsletter-section-title">🔥 Hot Take</div>
+      <textarea 
+        id="hot-take" 
+        placeholder="Rob's opinion on a trending topic in school-based ABA..."
+        oninput="saveNewsletter()"
+      ></textarea>
+    </div>
+
+    <!-- Research Spotlight -->
+    <div class="newsletter-section">
+      <div class="newsletter-section-title">📊 Research Spotlight</div>
+      <div id="research-spotlight-items" class="added-items"></div>
+      <div id="research-spotlight-empty" class="empty-state" style="padding: 2rem 1rem;">
+        <div class="empty-state-icon">📄</div>
+        <p>Click "Add to Newsletter" on a research paper above</p>
+      </div>
+    </div>
+
+    <!-- Community Buzz -->
+    <div class="newsletter-section">
+      <div class="newsletter-section-title">💬 Community Buzz</div>
+      <div id="community-buzz-items" class="added-items"></div>
+      <div id="community-buzz-empty" class="empty-state" style="padding: 2rem 1rem;">
+        <div class="empty-state-icon">💭</div>
+        <p>Click "Add to Newsletter" on Reddit posts above</p>
+      </div>
+    </div>
+
+    <!-- Tool of the Week -->
+    <div class="newsletter-section">
+      <div class="newsletter-section-title">🛠️ Tool of the Week</div>
+      <textarea 
+        id="tool-of-week" 
+        placeholder="Feature one of BehaviorSchool's tools with a practical tip..."
+        oninput="saveNewsletter()"
+      ></textarea>
+    </div>
+
+    <!-- Upcoming -->
+    <div class="newsletter-section">
+      <div class="newsletter-section-title">📅 Upcoming</div>
+      <div id="upcoming-items" class="added-items"></div>
+      <textarea 
+        id="upcoming-text" 
+        placeholder="Events, deadlines, conferences... (one per line)"
+        oninput="saveNewsletter()"
+      ></textarea>
+    </div>
+
+    <!-- Quick Tip -->
+    <div class="newsletter-section">
+      <div class="newsletter-section-title">🎯 Quick Tip</div>
+      <textarea 
+        id="quick-tip" 
+        placeholder="One actionable tip for school-based BCBAs..."
+        oninput="saveNewsletter()"
+      ></textarea>
+    </div>
+
+    <!-- Actions -->
+    <div class="newsletter-actions">
+      <button class="btn btn-primary" onclick="showPreview()">
+        <i class="fas fa-eye"></i> Preview Newsletter
+      </button>
+      <button class="btn btn-primary" onclick="copyHTML()">
+        <i class="fas fa-code"></i> Copy HTML
+      </button>
+      <button class="btn btn-secondary" onclick="saveDraft()">
+        <i class="fas fa-save"></i> Save Draft
+      </button>
+      <button class="btn btn-secondary" onclick="exportMarkdown()">
+        <i class="fas fa-file-download"></i> Export Markdown
+      </button>
+    </div>
+  </div>
+
+  <!-- Newsletter Preview -->
+  <div class="newsletter-preview" id="newsletter-preview" style="display: none;">
+    <div class="section-header">
+      <h2 class="section-title">
+        <span>👁️</span> Newsletter Preview
+      </h2>
+      <button class="btn btn-secondary" onclick="hidePreview()">Hide Preview</button>
+    </div>
+    <div id="preview-content"></div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // State management
+  let currentSubreddit = 'bcba';
+  let newsletterData = {
+    hotTake: '',
+    researchSpotlight: [],
+    communityBuzz: [],
+    toolOfWeek: '',
+    upcoming: '',
+    quickTip: ''
+  };
+
+  // Load newsletter from localStorage on page load
+  window.addEventListener('DOMContentLoaded', () => {
+    loadNewsletterFromStorage();
+    loadRedditTrends();
+    loadPapers();
+    loadIndustryNews();
+    updateStats();
+  });
+
+  // Save newsletter to localStorage
+  function saveNewsletter() {
+    newsletterData.hotTake = document.getElementById('hot-take').value;
+    newsletterData.toolOfWeek = document.getElementById('tool-of-week').value;
+    newsletterData.upcoming = document.getElementById('upcoming-text').value;
+    newsletterData.quickTip = document.getElementById('quick-tip').value;
+    
+    localStorage.setItem('newsletterDraft', JSON.stringify(newsletterData));
+    updateStats();
+  }
+
+  // Load newsletter from localStorage
+  function loadNewsletterFromStorage() {
+    const saved = localStorage.getItem('newsletterDraft');
+    if (saved) {
+      newsletterData = JSON.parse(saved);
+      document.getElementById('hot-take').value = newsletterData.hotTake || '';
+      document.getElementById('tool-of-week').value = newsletterData.toolOfWeek || '';
+      document.getElementById('upcoming-text').value = newsletterData.upcoming || '';
+      document.getElementById('quick-tip').value = newsletterData.quickTip || '';
+      
+      // Render added items
+      renderAddedItems();
+    }
+  }
+
+  // Reddit API
+  async function loadRedditTrends() {
+    const btn = document.getElementById('reddit-refresh');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+    
+    const container = document.getElementById('reddit-content');
+    container.innerHTML = '<div class="loading"><div class="spinner"></div>Loading Reddit trends...</div>';
+    
+    try {
+      const response = await fetch(`https://www.reddit.com/r/${currentSubreddit}/top/.json?t=week&limit=10`);
+      const data = await response.json();
+      const posts = data.data.children;
+      
+      if (posts.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🤷</div><p>No posts found</p></div>';
+        return;
+      }
+      
+      let html = '';
+      posts.forEach(post => {
+        const p = post.data;
+        html += `
+          <div class="item">
+            <div class="item-title">${escapeHtml(p.title)}</div>
+            <div class="item-meta">
+              <span class="upvotes"><i class="fas fa-arrow-up"></i> ${p.ups}</span>
+              <span class="comments"><i class="fas fa-comment"></i> ${p.num_comments}</span>
+              <span>r/${p.subreddit}</span>
+            </div>
+            <div class="item-actions">
+              <button class="btn btn-primary btn-small" onclick='addToCommunityBuzz(${JSON.stringify({
+                title: p.title,
+                url: "https://reddit.com" + p.permalink,
+                score: p.ups,
+                comments: p.num_comments,
+                subreddit: p.subreddit
+              })})'>Add to Newsletter</button>
+              <a href="https://reddit.com${p.permalink}" target="_blank" class="btn btn-secondary btn-small">
+                View Post <i class="fas fa-external-link-alt"></i>
+              </a>
+            </div>
+          </div>
+        `;
+      });
+      
+      container.innerHTML = html;
+    } catch (error) {
+      container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><p>Error loading Reddit posts. Try again.</p></div>';
+      console.error('Reddit API error:', error);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
+    }
+  }
+
+  function switchSubreddit(sub) {
+    currentSubreddit = sub;
+    document.querySelectorAll('.subreddit-tab').forEach(tab => {
+      tab.classList.remove('active');
+    });
+    document.querySelector(`[data-sub="${sub}"]`).classList.add('active');
+    loadRedditTrends();
+  }
+
+  // Research Papers (pre-populated + search)
+  function loadPapers() {
+    const container = document.getElementById('papers-content');
+    
+    // Pre-populated recent papers
+    const papers = [
+      {
+        title: "Functional Behavior Assessment in School Settings: A Practical Guide",
+        authors: "Smith, J., & Johnson, M.",
+        journal: "Behavior Analysis in Practice",
+        date: "2025",
+        abstract: "This paper provides practical guidance for conducting functional behavior assessments in school settings, including data collection methods and analysis procedures.",
+        url: "https://example.com/paper1"
+      },
+      {
+        title: "Implementation of PBIS in Elementary Schools: A Meta-Analysis",
+        authors: "Davis, K., et al.",
+        journal: "Journal of Applied Behavior Analysis",
+        date: "2024",
+        abstract: "A comprehensive meta-analysis examining the effectiveness of Positive Behavioral Interventions and Supports (PBIS) across 150 elementary schools.",
+        url: "https://example.com/paper2"
+      },
+      {
+        title: "IEP Goal Development for Behavior: Evidence-Based Practices",
+        authors: "Williams, R., & Brown, T.",
+        journal: "Behavior Analysis in Practice",
+        date: "2025",
+        abstract: "Explores evidence-based methods for developing measurable, meaningful IEP goals focused on behavior change in school contexts.",
+        url: "https://example.com/paper3"
+      }
+    ];
+    
+    renderPapers(papers);
+  }
+
+  async function searchPapers() {
+    const query = document.getElementById('paper-search').value;
+    if (!query.trim()) {
+      loadPapers();
+      return;
+    }
+    
+    const btn = document.getElementById('papers-refresh');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+    
+    const container = document.getElementById('papers-content');
+    container.innerHTML = '<div class="loading"><div class="spinner"></div>Searching research papers...</div>';
+    
+    // In a real implementation, this would call Google Scholar API or similar
+    // For now, we'll simulate with timeout
+    setTimeout(() => {
+      const mockResults = [
+        {
+          title: `School-based interventions related to: ${query}`,
+          authors: "Various Authors",
+          journal: "Multiple Journals",
+          date: "2024-2025",
+          abstract: `Research findings related to ${query} in school-based behavior analysis settings. This would be populated from a real academic database.`,
+          url: "#"
+        }
+      ];
+      
+      renderPapers(mockResults);
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-sync-alt"></i> Search';
+    }, 1000);
+  }
+
+  function renderPapers(papers) {
+    const container = document.getElementById('papers-content');
+    
+    let html = '';
+    papers.forEach(paper => {
+      html += `
+        <div class="item">
+          <div class="item-title">${escapeHtml(paper.title)}</div>
+          <div class="item-meta">
+            <span>${escapeHtml(paper.authors)}</span>
+            <span>${escapeHtml(paper.journal)}, ${paper.date}</span>
+          </div>
+          <div class="item-snippet">${escapeHtml(paper.abstract.substring(0, 150))}...</div>
+          <div class="item-actions">
+            <button class="btn btn-primary btn-small" onclick='addToResearchSpotlight(${JSON.stringify(paper)})'>
+              Add to Newsletter
+            </button>
+            <a href="${paper.url}" target="_blank" class="btn btn-secondary btn-small">
+              Read Paper <i class="fas fa-external-link-alt"></i>
+            </a>
+          </div>
+        </div>
+      `;
+    });
+    
+    container.innerHTML = html;
+  }
+
+  // Industry News
+  async function loadIndustryNews() {
+    const btn = document.getElementById('news-refresh');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+    
+    const container = document.getElementById('news-content');
+    container.innerHTML = '<div class="loading"><div class="spinner"></div>Loading industry news...</div>';
+    
+    // Mock news items (in production, this would fetch from news APIs or RSS feeds)
+    const news = [
+      {
+        headline: "BACB Announces Changes to 2027 Certification Requirements",
+        source: "BACB Newsletter",
+        date: "2026-02-01",
+        url: "https://www.bacb.com/newsletters/"
+      },
+      {
+        headline: "New Federal Guidelines for School-Based Behavior Services Released",
+        source: "Department of Education",
+        date: "2026-01-28",
+        url: "#"
+      },
+      {
+        headline: "State Legislation Expands BCBA Coverage in Schools",
+        source: "Education Week",
+        date: "2026-01-25",
+        url: "#"
+      },
+      {
+        headline: "ABAI Conference Highlights: School-Based Innovations",
+        source: "ABAI",
+        date: "2026-01-20",
+        url: "#"
+      }
+    ];
+    
+    let html = '';
+    news.forEach(item => {
+      html += `
+        <div class="item">
+          <div class="item-title">${escapeHtml(item.headline)}</div>
+          <div class="item-meta">
+            <span>${escapeHtml(item.source)}</span>
+            <span>${item.date}</span>
+          </div>
+          <div class="item-actions">
+            <button class="btn btn-primary btn-small" onclick='addToUpcoming(${JSON.stringify(item)})'>
+              Add to Newsletter
+            </button>
+            <a href="${item.url}" target="_blank" class="btn btn-secondary btn-small">
+              Read More <i class="fas fa-external-link-alt"></i>
+            </a>
+          </div>
+        </div>
+      `;
+    });
+    
+    container.innerHTML = html;
+    
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
+  }
+
+  // Add to newsletter functions
+  function addToResearchSpotlight(paper) {
+    // Check if already added
+    if (newsletterData.researchSpotlight.find(p => p.title === paper.title)) {
+      showToast('Paper already added!');
+      return;
+    }
+    
+    newsletterData.researchSpotlight.push(paper);
+    saveNewsletter();
+    renderAddedItems();
+    showToast('Added to Research Spotlight!');
+  }
+
+  function addToCommunityBuzz(post) {
+    if (newsletterData.communityBuzz.find(p => p.title === post.title)) {
+      showToast('Post already added!');
+      return;
+    }
+    
+    newsletterData.communityBuzz.push(post);
+    saveNewsletter();
+    renderAddedItems();
+    showToast('Added to Community Buzz!');
+  }
+
+  function addToUpcoming(news) {
+    const currentText = document.getElementById('upcoming-text').value;
+    const newLine = `• ${news.headline} - ${news.source}`;
+    
+    if (currentText.includes(newLine)) {
+      showToast('Already added!');
+      return;
+    }
+    
+    document.getElementById('upcoming-text').value = currentText + (currentText ? '\n' : '') + newLine;
+    saveNewsletter();
+    showToast('Added to Upcoming!');
+  }
+
+  // Render added items
+  function renderAddedItems() {
+    // Research Spotlight
+    const researchContainer = document.getElementById('research-spotlight-items');
+    const researchEmpty = document.getElementById('research-spotlight-empty');
+    
+    if (newsletterData.researchSpotlight.length === 0) {
+      researchEmpty.style.display = 'block';
+      researchContainer.innerHTML = '';
+    } else {
+      researchEmpty.style.display = 'none';
+      researchContainer.innerHTML = newsletterData.researchSpotlight.map((paper, index) => `
+        <div class="added-item">
+          <div class="added-item-content">
+            <div class="added-item-title">${escapeHtml(paper.title)}</div>
+            <div class="added-item-type">${escapeHtml(paper.authors)} - ${paper.journal}</div>
+          </div>
+          <button class="remove-btn" onclick="removeResearchSpotlight(${index})">Remove</button>
+        </div>
+      `).join('');
+    }
+    
+    // Community Buzz
+    const buzzContainer = document.getElementById('community-buzz-items');
+    const buzzEmpty = document.getElementById('community-buzz-empty');
+    
+    if (newsletterData.communityBuzz.length === 0) {
+      buzzEmpty.style.display = 'block';
+      buzzContainer.innerHTML = '';
+    } else {
+      buzzEmpty.style.display = 'none';
+      buzzContainer.innerHTML = newsletterData.communityBuzz.map((post, index) => `
+        <div class="added-item">
+          <div class="added-item-content">
+            <div class="added-item-title">${escapeHtml(post.title)}</div>
+            <div class="added-item-type">r/${post.subreddit} - ${post.score} upvotes, ${post.comments} comments</div>
+          </div>
+          <button class="remove-btn" onclick="removeCommunityBuzz(${index})">Remove</button>
+        </div>
+      `).join('');
+    }
+    
+    updateStats();
+  }
+
+  // Remove functions
+  function removeResearchSpotlight(index) {
+    newsletterData.researchSpotlight.splice(index, 1);
+    saveNewsletter();
+    renderAddedItems();
+    showToast('Removed from newsletter');
+  }
+
+  function removeCommunityBuzz(index) {
+    newsletterData.communityBuzz.splice(index, 1);
+    saveNewsletter();
+    renderAddedItems();
+    showToast('Removed from newsletter');
+  }
+
+  // Newsletter actions
+  function showPreview() {
+    const preview = document.getElementById('newsletter-preview');
+    const content = document.getElementById('preview-content');
+    
+    let html = generateNewsletterHTML();
+    content.innerHTML = html;
+    preview.style.display = 'block';
+    preview.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function hidePreview() {
+    document.getElementById('newsletter-preview').style.display = 'none';
+  }
+
+  function generateNewsletterHTML() {
+    const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    
+    let html = `
+      <div class="preview-email">
+        <div style="text-align: center; margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 3px solid #10B981;">
+          <h1 style="font-size: 2rem; margin-bottom: 0.5rem; color: #1e293b;">School BCBA Brief</h1>
+          <p style="color: #64748b; font-size: 0.875rem;">${today}</p>
+        </div>
+    `;
+    
+    // Hot Take
+    if (newsletterData.hotTake) {
+      html += `
+        <div class="preview-section">
+          <h2>🔥 Hot Take</h2>
+          <p>${escapeHtml(newsletterData.hotTake).replace(/\n/g, '<br>')}</p>
+        </div>
+      `;
+    }
+    
+    // Research Spotlight
+    if (newsletterData.researchSpotlight.length > 0) {
+      html += '<div class="preview-section"><h2>📊 Research Spotlight</h2>';
+      newsletterData.researchSpotlight.forEach(paper => {
+        html += `
+          <div style="margin-bottom: 1rem; padding: 1rem; background: #f8fafc; border-radius: 8px;">
+            <strong>${escapeHtml(paper.title)}</strong><br>
+            <span style="font-size: 0.875rem; color: #64748b;">${escapeHtml(paper.authors)} - ${paper.journal}, ${paper.date}</span><br>
+            <p style="margin-top: 0.5rem; font-size: 0.875rem;">${escapeHtml(paper.abstract.substring(0, 200))}...</p>
+            <a href="${paper.url}" style="color: #10B981; font-weight: 600;">Read Full Paper →</a>
+          </div>
+        `;
+      });
+      html += '</div>';
+    }
+    
+    // Community Buzz
+    if (newsletterData.communityBuzz.length > 0) {
+      html += '<div class="preview-section"><h2>💬 Community Buzz</h2>';
+      html += '<p>Here\'s what school BCBAs are talking about on Reddit:</p>';
+      newsletterData.communityBuzz.forEach(post => {
+        html += `
+          <div style="margin-bottom: 0.75rem;">
+            <strong>• ${escapeHtml(post.title)}</strong><br>
+            <span style="font-size: 0.875rem; color: #64748b;">
+              ${post.score} upvotes, ${post.comments} comments on r/${post.subreddit}
+            </span>
+            <a href="${post.url}" style="color: #667eea; font-weight: 600; margin-left: 0.5rem;">Join discussion →</a>
+          </div>
+        `;
+      });
+      html += '</div>';
+    }
+    
+    // Tool of the Week
+    if (newsletterData.toolOfWeek) {
+      html += `
+        <div class="preview-section">
+          <h2>🛠️ Tool of the Week</h2>
+          <p>${escapeHtml(newsletterData.toolOfWeek).replace(/\n/g, '<br>')}</p>
+        </div>
+      `;
+    }
+    
+    // Upcoming
+    if (newsletterData.upcoming) {
+      html += `
+        <div class="preview-section">
+          <h2>📅 Upcoming</h2>
+          <p>${escapeHtml(newsletterData.upcoming).replace(/\n/g, '<br>')}</p>
+        </div>
+      `;
+    }
+    
+    // Quick Tip
+    if (newsletterData.quickTip) {
+      html += `
+        <div class="preview-section">
+          <h2>🎯 Quick Tip</h2>
+          <p>${escapeHtml(newsletterData.quickTip).replace(/\n/g, '<br>')}</p>
+        </div>
+      `;
+    }
+    
+    html += `
+        <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e2e8f0;">
+          <p style="color: #64748b; font-size: 0.875rem;">
+            You're receiving this because you signed up for School BCBA Brief at BehaviorSchool.com
+          </p>
+          <div style="margin-top: 1rem;">
+            <a href="#" style="color: #10B981; margin: 0 0.5rem;">Visit BehaviorSchool</a>
+            <a href="#" style="color: #64748b; margin: 0 0.5rem;">Update Preferences</a>
+            <a href="#" style="color: #64748b; margin: 0 0.5rem;">Unsubscribe</a>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    return html;
+  }
+
+  function copyHTML() {
+    const html = generateNewsletterHTML();
+    
+    // Create a temporary textarea to copy from
+    const textarea = document.createElement('textarea');
+    textarea.value = html;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    
+    try {
+      document.execCommand('copy');
+      showToast('Newsletter HTML copied to clipboard!');
+    } catch (err) {
+      showToast('Failed to copy. Please try again.');
+    }
+    
+    document.body.removeChild(textarea);
+  }
+
+  function saveDraft() {
+    saveNewsletter();
+    showToast('Draft saved successfully!');
+  }
+
+  function exportMarkdown() {
+    let md = `# School BCBA Brief\n\n${new Date().toLocaleDateString()}\n\n`;
+    
+    if (newsletterData.hotTake) {
+      md += `## 🔥 Hot Take\n\n${newsletterData.hotTake}\n\n`;
+    }
+    
+    if (newsletterData.researchSpotlight.length > 0) {
+      md += `## 📊 Research Spotlight\n\n`;
+      newsletterData.researchSpotlight.forEach(paper => {
+        md += `**${paper.title}**\n${paper.authors} - ${paper.journal}, ${paper.date}\n\n${paper.abstract}\n\n[Read Full Paper](${paper.url})\n\n`;
+      });
+    }
+    
+    if (newsletterData.communityBuzz.length > 0) {
+      md += `## 💬 Community Buzz\n\n`;
+      newsletterData.communityBuzz.forEach(post => {
+        md += `- **${post.title}** - ${post.score} upvotes, ${post.comments} comments on r/${post.subreddit} [Join discussion](${post.url})\n`;
+      });
+      md += '\n';
+    }
+    
+    if (newsletterData.toolOfWeek) {
+      md += `## 🛠️ Tool of the Week\n\n${newsletterData.toolOfWeek}\n\n`;
+    }
+    
+    if (newsletterData.upcoming) {
+      md += `## 📅 Upcoming\n\n${newsletterData.upcoming}\n\n`;
+    }
+    
+    if (newsletterData.quickTip) {
+      md += `## 🎯 Quick Tip\n\n${newsletterData.quickTip}\n\n`;
+    }
+    
+    // Download markdown file
+    const blob = new Blob([md], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `newsletter-${new Date().toISOString().split('T')[0]}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    showToast('Newsletter exported as Markdown!');
+  }
+
+  function clearNewsletter() {
+    if (!confirm('Are you sure you want to clear the entire newsletter draft?')) {
+      return;
+    }
+    
+    newsletterData = {
+      hotTake: '',
+      researchSpotlight: [],
+      communityBuzz: [],
+      toolOfWeek: '',
+      upcoming: '',
+      quickTip: ''
+    };
+    
+    document.getElementById('hot-take').value = '';
+    document.getElementById('tool-of-week').value = '';
+    document.getElementById('upcoming-text').value = '';
+    document.getElementById('quick-tip').value = '';
+    
+    localStorage.removeItem('newsletterDraft');
+    renderAddedItems();
+    showToast('Newsletter cleared!');
+  }
+
+  // Update stats
+  function updateStats() {
+    const itemsAdded = newsletterData.researchSpotlight.length + newsletterData.communityBuzz.length;
+    document.getElementById('items-added-count').textContent = itemsAdded;
+    
+    let sectionsFilled = 0;
+    if (newsletterData.hotTake) sectionsFilled++;
+    if (newsletterData.researchSpotlight.length > 0) sectionsFilled++;
+    if (newsletterData.communityBuzz.length > 0) sectionsFilled++;
+    if (newsletterData.toolOfWeek) sectionsFilled++;
+    if (newsletterData.upcoming) sectionsFilled++;
+    if (newsletterData.quickTip) sectionsFilled++;
+    
+    document.getElementById('newsletter-sections-count').textContent = sectionsFilled;
+  }
+
+  // Toast notification
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 3000);
+  }
+
+  // Utility function
+  function escapeHtml(unsafe) {
+    if (!unsafe) return '';
+    return unsafe
+      .toString()
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+</script>

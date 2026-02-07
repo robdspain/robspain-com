@@ -1,1696 +1,949 @@
 ---
 layout: base.njk
-title: Neo Dashboard v2 - Rob Spain Admin
+title: Rob's Unified Task List - robspain.com & behaviorschool.com
 permalink: /admin/tasks/
 ---
 
 <style>
-  .neo-dashboard {
-    background: var(--background-slate);
-    min-height: 100vh;
-    padding: 2.5rem 1.5rem 4rem;
-    color: var(--text-primary);
+  :root {
+    --primary-green: #10b981;
+    --primary-blue: #3b82f6;
+    --primary-purple: #8b5cf6;
+    --primary-orange: #f97316;
+    --bg-slate: #f8fafc;
+    --border-light: #e2e8f0;
+    --text-dark: #1f2937;
+    --text-muted: #6b7280;
   }
 
-  .neo-shell {
-    max-width: 1400px;
+  .tasks-shell {
+    background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+    min-height: 100vh;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .tasks-container {
+    max-width: 1200px;
     margin: 0 auto;
   }
 
-  .neo-header {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    margin-bottom: 2.5rem;
+  .tasks-header {
+    text-align: center;
+    margin-bottom: 2rem;
   }
 
-  .neo-title {
-    font-size: 2.25rem;
+  .tasks-title {
+    font-size: 2.5rem;
     font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
     letter-spacing: -0.02em;
   }
 
-  .neo-subtitle {
-    color: var(--text-secondary);
-    margin-top: 0.25rem;
+  .tasks-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
   }
 
-  .neo-actions {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-  }
-
-  .neo-btn {
-    border: none;
-    border-radius: 999px;
-    padding: 0.65rem 1.3rem;
-    font-weight: 600;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .neo-btn-primary {
-    background: var(--gradient-emerald);
-    color: #ffffff;
-    box-shadow: var(--shadow-md);
-  }
-
-  .neo-btn-secondary {
+  .progress-bar-container {
     background: #ffffff;
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
   }
 
-  .neo-btn-ghost {
-    background: transparent;
-    color: var(--text-secondary);
-    border: 1px dashed var(--border-color);
+  .progress-stats {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
   }
 
-  .neo-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
+  .stat-item {
+    text-align: center;
   }
 
-  .neo-status-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.75rem;
-    font-weight: 700;
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary-green);
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    padding: 0.35rem 0.7rem;
-    border-radius: 999px;
+    letter-spacing: 0.05em;
+    font-weight: 600;
   }
 
-  .status-active { background: #dcfce7; color: #166534; }
-  .status-blocked { background: #fef3c7; color: #92400e; }
-  .status-done { background: #e0f2fe; color: #075985; }
-  .status-paused { background: #e2e8f0; color: #475569; }
-
-  .neo-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .panel {
-    background: #ffffff;
-    border-radius: 24px;
-    padding: 1.75rem;
-    box-shadow: var(--shadow-md);
-    border: 1px solid rgba(15, 23, 42, 0.06);
-  }
-
-  .panel-header {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .panel-title {
-    font-size: 1.3rem;
-    font-weight: 700;
-  }
-
-  .panel-subtitle {
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-  }
-
-  .dashboard-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-
-  .project-cards {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .project-card {
-    border-radius: 18px;
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    padding: 1.2rem;
-    background: #f8fafc;
-    display: flex;
-    flex-direction: column;
-    gap: 0.9rem;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .project-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-  }
-
-  .project-card.expanded {
-    background: #ffffff;
-  }
-
-  .project-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .project-name {
-    font-size: 1.05rem;
-    font-weight: 700;
-    display: flex;
-    gap: 0.6rem;
-    align-items: center;
-  }
-
-  .project-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    align-items: center;
-  }
-
-  .progress-track {
-    background: #e2e8f0;
+  .progress-bar {
+    height: 24px;
+    background: var(--border-light);
     border-radius: 999px;
     overflow: hidden;
-    height: 10px;
+    position: relative;
   }
 
   .progress-fill {
     height: 100%;
+    background: linear-gradient(90deg, var(--primary-green) 0%, var(--primary-blue) 100%);
     border-radius: 999px;
-    background: var(--gradient-emerald);
-  }
-
-  .progress-row {
+    transition: width 0.3s ease;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-  }
-
-  .project-details {
-    display: none;
-    border-top: 1px solid var(--border-color);
-    padding-top: 0.9rem;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    gap: 0.65rem;
-  }
-
-  .project-card.expanded .project-details {
-    display: grid;
-  }
-
-  .project-detail-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-  }
-
-  .project-detail-label {
-    font-weight: 600;
-    color: var(--text-primary);
-  }
-
-  .project-link {
-    color: var(--secondary-color);
-    text-decoration: none;
-    font-weight: 600;
-  }
-
-  .blocked-section {
-    margin-top: 1.5rem;
-    background: #fff7ed;
-    border-radius: 16px;
-    padding: 1.25rem;
-    border: 1px solid #fed7aa;
-  }
-
-  .blocked-list {
-    display: grid;
-    gap: 0.75rem;
-    margin-top: 0.75rem;
-  }
-
-  .blocked-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 0.75rem 1rem;
-    border: 1px solid #fed7aa;
-  }
-
-  .blocked-item button {
-    border: none;
-    background: #f97316;
+    justify-content: center;
     color: #ffffff;
-    font-weight: 600;
-    padding: 0.4rem 0.8rem;
-    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+
+  .quick-wins-banner {
+    background: linear-gradient(135deg, var(--primary-green) 0%, #059669 100%);
+    color: #ffffff;
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+    margin-bottom: 2rem;
+  }
+
+  .banner-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+  }
+
+  .banner-subtitle {
+    font-size: 1.2rem;
+    opacity: 0.95;
+  }
+
+  .section-header {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 2rem 0 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section-subtitle {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .tasks-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .task-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border: 2px solid var(--border-light);
+    transition: all 0.2s ease;
     cursor: pointer;
   }
 
-  .quick-wins-list {
-    display: grid;
-    gap: 0.9rem;
+  .task-card:hover {
+    border-color: var(--primary-blue);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
   }
 
-  .quick-win {
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    border-radius: 16px;
-    padding: 1rem 1.2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    background: #f8fafc;
+  .task-card.completed {
+    opacity: 0.7;
+    border-color: var(--primary-green);
+    background: #f0fdf4;
   }
 
-  .quick-win-header {
+  .task-card.in-progress {
+    border-color: var(--primary-blue);
+    background: #eff6ff;
+  }
+
+  .task-header {
     display: flex;
     align-items: flex-start;
-    justify-content: space-between;
     gap: 1rem;
+    margin-bottom: 1rem;
   }
 
-  .quick-win-title {
-    font-weight: 700;
-    font-size: 1rem;
-  }
-
-  .quick-win-estimate {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: #0f766e;
-    background: #ccfbf1;
-    padding: 0.2rem 0.6rem;
-    border-radius: 999px;
-  }
-
-  .quick-win-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .quick-win-actions button,
-  .quick-win-actions a {
-    text-decoration: none;
-    border: none;
-    background: #e2e8f0;
-    color: #1f2937;
-    padding: 0.45rem 0.8rem;
-    border-radius: 10px;
-    font-size: 0.85rem;
-    font-weight: 600;
+  .task-checkbox {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    border: 3px solid var(--border-light);
+    border-radius: 8px;
     cursor: pointer;
-  }
-
-  .quick-win-actions .primary {
-    background: #10b981;
-    color: #ffffff;
-  }
-
-  .quick-win-actions .done {
-    background: #0f172a;
-    color: #ffffff;
-  }
-
-  .quick-win-meta {
     display: flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-  }
-
-  .quick-wins-footer {
-    margin-top: 1rem;
-    display: flex;
-    justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-
-  .calendar-shell {
-    display: grid;
-    gap: 1.5rem;
-  }
-
-  .calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
-  .calendar-nav {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-  }
-
-  .calendar-nav button {
-    border: 1px solid var(--border-color);
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all 0.2s ease;
     background: #ffffff;
-    padding: 0.4rem 0.7rem;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: 600;
   }
 
-  .calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
+  .task-card.completed .task-checkbox {
+    background: var(--primary-green);
+    border-color: var(--primary-green);
+    color: #ffffff;
+  }
+
+  .task-card.in-progress .task-checkbox {
+    background: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: #ffffff;
+  }
+
+  .task-info {
+    flex: 1;
+  }
+
+  .task-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+  }
+
+  .task-meta {
+    display: flex;
+    flex-wrap: wrap;
     gap: 0.5rem;
+    align-items: center;
   }
 
-  .calendar-weekday {
+  .task-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
     font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--text-light);
-    text-align: center;
+    letter-spacing: 0.05em;
   }
 
-  .calendar-day {
-    background: #f8fafc;
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    border-radius: 12px;
-    min-height: 90px;
-    padding: 0.5rem;
-    display: flex;
-    flex-direction: column;
+  .badge-robspain {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  .badge-behaviorschool {
+    background: #e0e7ff;
+    color: #4338ca;
+  }
+
+  .badge-ios {
+    background: #fce7f3;
+    color: #be185d;
+  }
+
+  .badge-both {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .task-time {
+    display: inline-flex;
+    align-items: center;
     gap: 0.35rem;
-    cursor: pointer;
-    position: relative;
-  }
-
-  .calendar-day.inactive {
-    opacity: 0.4;
-  }
-
-  .calendar-day.today {
-    border-color: #10b981;
-    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
-  }
-
-  .calendar-date {
-    font-weight: 700;
-    font-size: 0.85rem;
-  }
-
-  .calendar-items {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.2rem;
-  }
-
-  .calendar-item {
-    font-size: 0.75rem;
-    background: #e2e8f0;
-    padding: 0.15rem 0.45rem;
+    padding: 0.35rem 0.75rem;
     border-radius: 999px;
+    background: #f0fdf4;
+    color: #166534;
+    font-size: 0.8rem;
+    font-weight: 700;
   }
 
-  .calendar-item.status-review { background: #fef3c7; color: #92400e; }
-  .calendar-item.status-approved { background: #dcfce7; color: #166534; }
-  .calendar-item.status-drafting { background: #e0e7ff; color: #3730a3; }
-  .calendar-item.status-idea { background: #f1f5f9; color: #475569; }
-  .calendar-item.status-published { background: #cffafe; color: #0e7490; }
-
-  .calendar-detail {
-    background: #f8fafc;
-    border-radius: 16px;
-    padding: 1.25rem;
-    border: 1px solid rgba(15, 23, 42, 0.08);
+  .task-priority {
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: #fee2e2;
+    color: #991b1b;
   }
 
-  .calendar-detail h4 {
+  .task-instructions {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px solid var(--border-light);
+  }
+
+  .task-card.expanded .task-instructions {
+    max-height: 2000px;
+  }
+
+  .task-instructions h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-dark);
     margin-bottom: 0.75rem;
   }
 
-  .calendar-detail-list {
-    display: grid;
-    gap: 0.75rem;
+  .task-instructions ol {
+    margin-left: 1.5rem;
+    color: var(--text-muted);
   }
 
-  .content-card {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 0.75rem 1rem;
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
+  .task-instructions li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
   }
 
-  .content-card-header {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    align-items: center;
+  .task-instructions code {
+    background: #f1f5f9;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: #dc2626;
+    font-family: 'Courier New', monospace;
+  }
+
+  .task-instructions a {
+    color: var(--primary-blue);
+    text-decoration: none;
     font-weight: 600;
   }
 
-  .content-card-actions {
-    display: flex;
-    gap: 0.4rem;
-    flex-wrap: wrap;
+  .task-instructions a:hover {
+    text-decoration: underline;
   }
 
-  .content-card-actions button,
-  .content-card-actions a {
+  .expand-toggle {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background: var(--bg-slate);
     border: none;
-    background: #e2e8f0;
-    color: #1f2937;
-    padding: 0.35rem 0.7rem;
-    border-radius: 10px;
-    font-size: 0.8rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s ease;
+  }
+
+  .expand-toggle:hover {
+    background: var(--border-light);
+  }
+
+  .status-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .status-btn {
+    flex: 1;
+    padding: 0.6rem 1rem;
+    border: 2px solid var(--border-light);
+    border-radius: 8px;
+    font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
-    text-decoration: none;
+    transition: all 0.2s ease;
+    background: #ffffff;
   }
 
-  .content-card-actions .primary {
-    background: #10b981;
+  .status-btn.not-started {
+    border-color: var(--border-light);
+    color: var(--text-muted);
+  }
+
+  .status-btn.in-progress {
+    border-color: var(--primary-blue);
+    background: var(--primary-blue);
     color: #ffffff;
   }
 
-  .upcoming-list {
-    display: grid;
-    gap: 0.8rem;
+  .status-btn.done {
+    border-color: var(--primary-green);
+    background: var(--primary-green);
+    color: #ffffff;
   }
 
-  .upcoming-item {
-    border-radius: 14px;
-    background: #ffffff;
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    padding: 0.9rem 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
+  .status-btn:hover {
+    opacity: 0.8;
   }
 
-  .upcoming-item .meta {
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-  }
-
-  .data-status {
-    display: flex;
-    gap: 0.75rem;
-    align-items: center;
-    flex-wrap: wrap;
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-  }
-
-  .data-status strong {
-    color: var(--text-primary);
-  }
-
-  .connect-panel {
-    background: #f8fafc;
-    border: 1px dashed var(--border-color);
-    border-radius: 14px;
-    padding: 1rem;
-    display: grid;
-    gap: 0.75rem;
-  }
-
-  .connect-panel input {
-    padding: 0.55rem 0.75rem;
-    border-radius: 10px;
-    border: 1px solid var(--border-color);
-    font-size: 0.9rem;
-    width: 100%;
-  }
-
-  .calendar-warning {
-    background: #fef2f2;
-    border-radius: 12px;
-    padding: 0.75rem 1rem;
-    border: 1px solid #fecaca;
-    color: #7f1d1d;
-    font-size: 0.85rem;
-    font-weight: 600;
-  }
-
-  @media (min-width: 900px) {
-    .neo-header {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
+  @media (max-width: 768px) {
+    .tasks-title {
+      font-size: 2rem;
     }
 
-    .dashboard-grid {
-      grid-template-columns: 1fr 1.4fr;
+    .banner-title {
+      font-size: 1.5rem;
     }
 
-    .project-cards {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    .section-header {
+      font-size: 1.5rem;
     }
 
-    .calendar-shell {
-      grid-template-columns: 2fr 1fr;
+    .task-meta {
+      flex-direction: column;
+      align-items: flex-start;
     }
   }
 </style>
 
-<div class="neo-dashboard">
-  <div class="neo-shell">
-    <header class="neo-header">
-      <div>
-        <div class="neo-title">Neo Dashboard</div>
-        <div class="neo-subtitle">Visual projects, fast wins, and content planning in one place.</div>
-      </div>
-      <div class="neo-actions">
-        <button class="neo-btn neo-btn-primary" id="add-quick-win">+ Add Quick Win</button>
-        <button class="neo-btn neo-btn-secondary" id="refresh-data">↻ Refresh</button>
-        <button class="neo-btn neo-btn-ghost" id="toggle-connection">Supabase Settings</button>
-      </div>
+<div class="tasks-shell">
+  <div class="tasks-container">
+    <!-- Header -->
+    <header class="tasks-header">
+      <h1 class="tasks-title">🎯 Rob's Unified Task List</h1>
+      <p class="tasks-subtitle">Your ONE place for robspain.com, behaviorschool.com, and iOS App tasks</p>
     </header>
 
-    <div class="panel connect-panel" id="connection-panel" style="display:none;">
-      <div class="data-status" id="connection-status">Data source: <strong>Sample data</strong></div>
-      <div>
-        <label for="supabase-url">Supabase URL</label>
-        <input id="supabase-url" type="text" placeholder="https://xxxx.supabase.co" />
+    <!-- Progress Bar -->
+    <div class="progress-bar-container">
+      <div class="progress-stats">
+        <div class="stat-item">
+          <div class="stat-value" id="total-tasks">21</div>
+          <div class="stat-label">Total Tasks</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="completed-tasks">0</div>
+          <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="in-progress-tasks">0</div>
+          <div class="stat-label">In Progress</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="total-time">~8 hrs</div>
+          <div class="stat-label">Total Time</div>
+        </div>
       </div>
-      <div>
-        <label for="supabase-key">Supabase anon key</label>
-        <input id="supabase-key" type="password" placeholder="eyJhbGciOi..." />
-      </div>
-      <div class="neo-actions">
-        <button class="neo-btn neo-btn-primary" id="save-connection">Save & Connect</button>
-        <button class="neo-btn neo-btn-secondary" id="clear-connection">Use Sample Data</button>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width: 0%;">0%</div>
       </div>
     </div>
 
-    <div class="dashboard-grid">
-      <section class="panel" id="quick-wins-section">
-        <div class="panel-header">
-          <div class="panel-title">⚡ Quick Wins (5-15 min)</div>
-          <div class="panel-subtitle">Knock out the fastest wins first. Sorted by time.</div>
-        </div>
-        <div class="quick-wins-list" id="quick-wins-list"></div>
-        <div class="quick-wins-footer">
-          <div class="data-status">Completed today: <strong id="quick-wins-done">0</strong></div>
-          <div class="data-status">Next up: <strong id="quick-wins-next">—</strong></div>
-        </div>
-      </section>
-
-      <section class="panel" id="projects-section">
-        <div class="panel-header">
-          <div class="panel-title">📊 Project Dashboard</div>
-          <div class="panel-subtitle">Tap a card to expand. Progress and status update in real time.</div>
-        </div>
-        <div class="project-cards" id="project-cards"></div>
-        <div class="blocked-section" id="blocked-section">
-          <div class="panel-title">⏸️ Blocked / Waiting on Rob</div>
-          <div class="blocked-list" id="blocked-list"></div>
-        </div>
-      </section>
+    <!-- Quick Wins Banner -->
+    <div class="quick-wins-banner">
+      <div class="banner-title">⚡ START HERE — Quick Wins!</div>
+      <div class="banner-subtitle">Knock out all 5 in just 15 minutes</div>
     </div>
 
-    <section class="panel" id="calendar-section" style="margin-top:1.5rem;">
-      <div class="panel-header">
-        <div class="panel-title">📅 Content Calendar</div>
-        <div class="panel-subtitle">Monthly view with channel icons and quick approvals.</div>
-      </div>
-      <div class="calendar-shell">
-        <div>
-          <div class="calendar-header">
-            <div>
-              <div class="panel-title" id="calendar-month">February 2026</div>
-              <div class="panel-subtitle">📧 Email · 🎥 YouTube · 💼 LinkedIn · 📝 Blog · 🐦 Twitter</div>
-            </div>
-            <div class="calendar-nav">
-              <button id="prev-month">◀</button>
-              <button id="today-month">Today</button>
-              <button id="next-month">▶</button>
-            </div>
-          </div>
-          <div class="calendar-warning" id="calendar-warning" style="display:none;"></div>
-          <div class="calendar-grid" id="calendar-weekdays"></div>
-          <div class="calendar-grid" id="calendar-days"></div>
-        </div>
-        <div class="calendar-detail">
-          <h4 id="calendar-detail-title">Select a date</h4>
-          <div class="calendar-detail-list" id="calendar-detail-list"></div>
-        </div>
-      </div>
-      <div style="margin-top:1.5rem;">
-        <div class="panel-title">📋 Upcoming Content</div>
-        <div class="panel-subtitle">Sorted by schedule date.</div>
-        <div class="upcoming-list" id="upcoming-list"></div>
-      </div>
+    <!-- Quick Wins Section -->
+    <section id="quick-wins-section">
+      <h2 class="section-header">⚡ Quick Wins (2-5 minutes each)</h2>
+      <p class="section-subtitle">Start here! These take almost no time and give you immediate momentum.</p>
+      <div class="tasks-grid" id="quick-wins-grid"></div>
+    </section>
+
+    <!-- Medium Tasks Section -->
+    <section id="medium-tasks-section">
+      <h2 class="section-header">🔧 Medium Tasks (10-30 minutes each)</h2>
+      <p class="section-subtitle">These require a bit more focus but still manageable in one sitting.</p>
+      <div class="tasks-grid" id="medium-tasks-grid"></div>
+    </section>
+
+    <!-- Content Creation Section -->
+    <section id="content-section">
+      <h2 class="section-header">🎬 Content Creation (30-60 minutes each)</h2>
+      <p class="section-subtitle">Recording time! Scripts are ready, just hit record.</p>
+      <div class="tasks-grid" id="content-grid"></div>
+    </section>
+
+    <!-- Review & Approve Section -->
+    <section id="review-section">
+      <h2 class="section-header">📝 Review & Approve</h2>
+      <p class="section-subtitle">Quick reviews — most of the work is already done.</p>
+      <div class="tasks-grid" id="review-grid"></div>
+    </section>
+
+    <!-- Bigger Projects Section -->
+    <section id="projects-section">
+      <h2 class="section-header">🏗️ Bigger Projects (when you have time)</h2>
+      <p class="section-subtitle">Set aside a dedicated block for these.</p>
+      <div class="tasks-grid" id="projects-grid"></div>
     </section>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const channelIcons = {
-    email: '📧',
-    youtube: '🎥',
-    linkedin: '💼',
-    twitter: '🐦',
-    blog: '📝'
-  };
-
-  const sampleData = {
-    projects: [
-      {
-        id: 'proj-1',
-        name: 'IEP Goal Writer',
-        emoji: '📝',
-        status: 'active',
-        progress: 55,
-        phase: '✅ 5 templates added (elopement, aggression, self-regulation, task refusal, social skills)',
-        blocked_reason: null,
-        prd_path: '/documents/IEP_GOAL_WRITER_PRD.pdf',
-        updated_at: '2026-02-07T09:00:00Z'
-      },
-      {
-        id: 'proj-2',
-        name: 'Learning Platform',
-        emoji: '🎓',
-        status: 'active',
-        progress: 90,
-        phase: '✅ Dashboard wired to Convex · CourseCatalog on real data · Free BCBA Practice page built · AI Tutor chat built',
-        blocked_reason: null,
-        prd_path: '/documents/LEARNING_PLATFORM_PRD.pdf',
-        updated_at: '2026-02-07T09:00:00Z'
-      },
-      {
-        id: 'proj-3',
-        name: 'KCUSD Site',
-        emoji: '🏫',
-        status: 'done',
-        progress: 100,
-        phase: 'Complete',
-        blocked_reason: null,
-        prd_path: '/documents/KCUSD_PRD.pdf',
-        updated_at: '2026-01-29T19:20:00Z'
-      },
-      {
-        id: 'proj-4',
-        name: 'Neo iOS App',
-        emoji: '📱',
-        status: 'blocked',
-        progress: 25,
-        phase: 'Setup',
-        blocked_reason: 'Apple Sign-In blocked on credentials; App Store submission pending',
-        prd_path: null,
-        updated_at: '2026-02-07T07:00:00Z'
-      },
-      {
-        id: 'proj-5',
-        name: 'OpenClaw Gateway Stack',
-        emoji: '🦞',
-        status: 'done',
-        progress: 100,
-        phase: 'Complete',
-        blocked_reason: null,
-        prd_path: null,
-        updated_at: '2026-02-07T06:40:00Z'
-      },
-      {
-        id: 'proj-6',
-        name: 'Voice Agent',
-        emoji: '📞',
-        status: 'done',
-        progress: 100,
-        phase: 'Prototype built — trial account active',
-        blocked_reason: null,
-        prd_path: null,
-        updated_at: '2026-02-07T07:00:00Z'
-      },
-      {
-        id: 'proj-7',
-        name: 'iOS Simulator Skill',
-        emoji: '🖥️',
-        status: 'done',
-        progress: 100,
-        phase: 'Complete',
-        blocked_reason: null,
-        prd_path: null,
-        updated_at: '2026-02-07T07:00:00Z'
-      },
-      {
-        id: 'proj-8',
-        name: 'Symposium Slides',
-        emoji: '🎤',
-        status: 'blocked',
-        progress: 60,
-        phase: 'Needs import script run',
-        blocked_reason: 'Import script needs to be run',
-        prd_path: null,
-        updated_at: '2026-02-07T07:00:00Z'
-      },
-      {
-        id: 'proj-9',
-        name: 'Training Videos',
-        emoji: '🎥',
-        status: 'active',
-        progress: 10,
-        phase: '🔲 Waiting on Rob to record',
-        blocked_reason: null,
-        prd_path: null,
-        updated_at: '2026-02-07T09:00:00Z'
-      },
-      {
-        id: 'proj-10',
-        name: 'AI Model Switching & Provider Abstraction',
-        emoji: '🤖',
-        status: 'active',
-        progress: 30,
-        phase: '🔄 Building now — competitive analysis & model research done',
-        blocked_reason: null,
-        prd_path: null,
-        updated_at: '2026-02-07T09:00:00Z'
-      }
-    ],
-    quickWins: [
-      {
-        id: 'qw-4',
-        title: 'Switch default model to Claude Opus 4.6',
-        estimate_minutes: 5,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'done',
-        created_at: '2026-02-07T05:51:00Z',
-        completed_at: '2026-02-07T05:52:00Z'
-      },
-      {
-        id: 'qw-5',
-        title: 'Set Codex as first coding fallback',
-        estimate_minutes: 5,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'done',
-        created_at: '2026-02-07T06:28:00Z',
-        completed_at: '2026-02-07T06:29:00Z'
-      },
-      {
-        id: 'qw-6',
-        title: 'Switch heartbeat to free Gemini Flash model',
-        estimate_minutes: 5,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'done',
-        created_at: '2026-02-07T06:28:00Z',
-        completed_at: '2026-02-07T06:29:00Z'
-      },
-      {
-        id: 'qw-7',
-        title: 'Add MiniMax API key to Gateway',
-        estimate_minutes: 5,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'done',
-        created_at: '2026-02-07T06:33:00Z',
-        completed_at: '2026-02-07T06:34:00Z'
-      },
-      {
-        id: 'qw-8',
-        title: 'Add DeepSeek R1, Maverick, Qwen 3 via OpenRouter',
-        estimate_minutes: 5,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'done',
-        created_at: '2026-02-07T06:35:00Z',
-        completed_at: '2026-02-07T06:36:00Z'
-      },
-      {
-        id: 'qw-9',
-        title: 'Add Grok 2, Grok 3 Mini, Mistral, Cohere via OpenRouter',
-        estimate_minutes: 5,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'done',
-        created_at: '2026-02-07T06:36:00Z',
-        completed_at: '2026-02-07T06:37:00Z'
-      },
-      {
-        id: 'qw-10',
-        title: 'Add direct xAI API key + Grok 3 models',
-        estimate_minutes: 5,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'done',
-        created_at: '2026-02-07T06:37:00Z',
-        completed_at: '2026-02-07T06:38:00Z'
-      },
-      {
-        id: 'qw-11',
-        title: 'Add direct Groq API key + Llama/Mixtral models',
-        estimate_minutes: 5,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'done',
-        created_at: '2026-02-07T06:38:00Z',
-        completed_at: '2026-02-07T06:38:00Z'
-      },
-      {
-        id: 'qw-12',
-        title: 'Build deep 10-model fallback chain across 6 providers',
-        estimate_minutes: 10,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'done',
-        created_at: '2026-02-07T06:39:00Z',
-        completed_at: '2026-02-07T06:40:00Z'
-      },
-      {
-        id: 'qw-13',
-        title: 'Voice calls working (trial account)',
-        estimate_minutes: 5,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'done',
-        created_at: '2026-02-07T07:00:00Z',
-        completed_at: '2026-02-07T07:00:00Z'
-      },
-      {
-        id: 'qw-14',
-        title: 'Video training funnel fixed',
-        estimate_minutes: 10,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'done',
-        created_at: '2026-02-07T07:00:00Z',
-        completed_at: '2026-02-07T07:00:00Z'
-      },
-      {
-        id: 'qw-15',
-        title: 'Marketing calendar drafted',
-        estimate_minutes: 15,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'done',
-        created_at: '2026-02-07T07:00:00Z',
-        completed_at: '2026-02-07T07:00:00Z'
-      },
-      {
-        id: 'qw-20',
-        title: '✅ Dashboard wired to real Convex data',
-        estimate_minutes: 15,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'done',
-        created_at: '2026-02-07T08:00:00Z',
-        completed_at: '2026-02-07T09:00:00Z'
-      },
-      {
-        id: 'qw-21',
-        title: '✅ CourseCatalog using real data',
-        estimate_minutes: 10,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'done',
-        created_at: '2026-02-07T08:00:00Z',
-        completed_at: '2026-02-07T09:00:00Z'
-      },
-      {
-        id: 'qw-22',
-        title: '✅ Free BCBA Practice Questions page built (/free-bcba-practice)',
-        estimate_minutes: 15,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'done',
-        created_at: '2026-02-07T08:00:00Z',
-        completed_at: '2026-02-07T09:00:00Z'
-      },
-      {
-        id: 'qw-23',
-        title: '✅ 5 IEP goal templates added',
-        estimate_minutes: 15,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'done',
-        created_at: '2026-02-07T08:00:00Z',
-        completed_at: '2026-02-07T09:00:00Z'
-      },
-      {
-        id: 'qw-24',
-        title: '✅ AI Tutor "Discuss This Question" feature built',
-        estimate_minutes: 15,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'done',
-        created_at: '2026-02-07T08:00:00Z',
-        completed_at: '2026-02-07T09:00:00Z'
-      },
-      {
-        id: 'qw-25',
-        title: '✅ Competitive analysis completed',
-        estimate_minutes: 10,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'done',
-        created_at: '2026-02-07T08:00:00Z',
-        completed_at: '2026-02-07T09:00:00Z'
-      },
-      {
-        id: 'qw-26',
-        title: '✅ AI model research completed',
-        estimate_minutes: 10,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'done',
-        created_at: '2026-02-07T08:00:00Z',
-        completed_at: '2026-02-07T09:00:00Z'
-      },
-      {
-        id: 'qw-30',
-        title: '🔲 ROB: Get free API keys — Google AI, Groq, DeepSeek',
-        estimate_minutes: 10,
-        type: 'action',
-        preview_url: null,
-        action_url: 'https://aistudio.google.com',
-        status: 'pending',
-        created_at: '2026-02-07T09:00:00Z'
-      },
-      {
-        id: 'qw-31',
-        title: '🔲 ROB: Apple Sign-In setup (Team ID, Service ID, .p8 key)',
-        estimate_minutes: 15,
-        type: 'action',
-        preview_url: null,
-        action_url: 'https://developer.apple.com',
-        status: 'pending',
-        created_at: '2026-02-07T09:00:00Z'
-      },
-      {
-        id: 'qw-32',
-        title: '🔲 ROB: Email auth bug details for study.behaviorschool.com',
-        estimate_minutes: 10,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'pending',
-        created_at: '2026-02-07T09:00:00Z'
-      },
-      {
-        id: 'qw-33',
-        title: '🔲 ROB: Record training videos for robspain.com funnel',
-        estimate_minutes: 15,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'pending',
-        created_at: '2026-02-07T09:00:00Z'
-      },
-      {
-        id: 'qw-34',
-        title: '🔲 ROB: Run Supabase migration for user_ai_tutor_usage table',
-        estimate_minutes: 10,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'pending',
-        created_at: '2026-02-07T09:00:00Z'
-      },
-      {
-        id: 'qw-35',
-        title: '🔲 ROB: Review marketing calendar for Transformation Program',
-        estimate_minutes: 15,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'pending',
-        created_at: '2026-02-07T09:00:00Z'
-      },
-      {
-        id: 'qw-1',
-        title: 'Run Symposium slides import script',
-        estimate_minutes: 10,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'pending',
-        created_at: '2026-02-07T07:00:00Z'
-      },
-      {
-        id: 'qw-2',
-        title: 'Apple Sign-In setup (blocked on credentials)',
-        estimate_minutes: 15,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'pending',
-        created_at: '2026-02-07T07:00:00Z'
-      },
-      {
-        id: 'qw-3',
-        title: 'Email auth fix (blocked on bug report)',
-        estimate_minutes: 10,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'pending',
-        created_at: '2026-02-07T07:00:00Z'
-      },
-      {
-        id: 'qw-16',
-        title: 'Record training videos',
-        estimate_minutes: 15,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'pending',
-        created_at: '2026-02-07T07:00:00Z'
-      },
-      {
-        id: 'qw-17',
-        title: 'App Store submission',
-        estimate_minutes: 15,
-        type: 'action',
-        preview_url: null,
-        action_url: null,
-        status: 'pending',
-        created_at: '2026-02-07T07:00:00Z'
-      }
-    ],
-    content: [
-      {
-        id: 'c-1',
-        title: '5 Mistakes School BCBAs Make',
-        channel: 'youtube',
-        scheduled_date: '2026-02-04',
-        status: 'review',
-        preview_url: '/admin/preview/youtube-script',
-        publish_url: null
-      },
-      {
-        id: 'c-2',
-        title: 'CalABA Preview - What I\'m Presenting',
-        channel: 'email',
-        scheduled_date: '2026-02-05',
-        status: 'approved',
-        preview_url: '/admin/preview/calaba-email',
-        publish_url: null
-      },
-      {
-        id: 'c-3',
-        title: 'Top 3 Data Collection Fixes',
-        channel: 'linkedin',
-        scheduled_date: '2026-02-07',
-        status: 'drafting',
-        preview_url: '/admin/preview/linkedin-post',
-        publish_url: null
-      },
-      {
-        id: 'c-4',
-        title: 'Behavior Study Tools February Newsletter',
-        channel: 'email',
-        scheduled_date: '2026-02-12',
-        status: 'idea',
-        preview_url: null,
-        publish_url: null
-      }
-    ]
-  };
-
-  const state = {
-    projects: [],
-    quickWins: [],
-    content: [],
-    supabase: null,
-    currentMonth: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-    selectedDate: null
-  };
-
-  const weekdayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
-  function formatDate(date) {
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  }
-
-  function formatDateLong(date) {
-    return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-  }
-
-  function formatTime(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-  }
-
-  function loadSupabaseConfig() {
-    return {
-      url: localStorage.getItem('neoSupabaseUrl'),
-      key: localStorage.getItem('neoSupabaseAnonKey')
-    };
-  }
-
-  function setConnectionStatus(label) {
-    const el = document.getElementById('connection-status');
-    if (el) {
-      el.innerHTML = `Data source: <strong>${label}</strong>`;
+  const tasks = [
+    // Quick Wins
+    {
+      id: 1,
+      category: 'quick-wins',
+      title: 'Get Google AI API Key',
+      platform: 'behaviorschool.com',
+      time: '2 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Go to <a href="https://aistudio.google.com/apikey" target="_blank">https://aistudio.google.com/apikey</a>',
+        'Sign in with your Google account',
+        'Click "Create API Key"',
+        'Copy the key',
+        'Send it to me (or paste in the study tools admin panel under Settings → Model Config)'
+      ]
+    },
+    {
+      id: 2,
+      category: 'quick-wins',
+      title: 'Get Groq API Key',
+      platform: 'behaviorschool.com',
+      time: '2 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Go to <a href="https://console.groq.com/keys" target="_blank">https://console.groq.com/keys</a>',
+        'Sign up / sign in (free account)',
+        'Click "Create API Key"',
+        'Copy the key',
+        'Send it to me'
+      ]
+    },
+    {
+      id: 3,
+      category: 'quick-wins',
+      title: 'Get DeepSeek API Key',
+      platform: 'behaviorschool.com',
+      time: '3 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Go to <a href="https://platform.deepseek.com/api_keys" target="_blank">https://platform.deepseek.com/api_keys</a>',
+        'Sign up / sign in',
+        'Click "Create new API key"',
+        'Copy the key',
+        'Send it to me'
+      ]
+    },
+    {
+      id: 4,
+      category: 'quick-wins',
+      title: 'Get Apple Team ID',
+      platform: 'iOS App',
+      time: '2 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Go to <a href="https://developer.apple.com/account/#/membership" target="_blank">https://developer.apple.com/account/#/membership</a>',
+        'Sign in with your Apple Developer account',
+        'Copy the 10-character "Team ID" shown on the page',
+        'Send it to me'
+      ]
+    },
+    {
+      id: 5,
+      category: 'quick-wins',
+      title: 'Install Fastlane & CocoaPods',
+      platform: 'iOS App',
+      time: '5 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Open Terminal',
+        'Run: <code>sudo gem install cocoapods</code>',
+        'Run: <code>sudo gem install fastlane</code>',
+        "That's it!"
+      ]
+    },
+    // Medium Tasks
+    {
+      id: 6,
+      category: 'medium-tasks',
+      title: 'Apple Sign-In Setup',
+      platform: 'iOS App',
+      time: '15 min',
+      priority: true,
+      status: 'not-started',
+      instructions: [
+        'Go to <a href="https://developer.apple.com/account/resources/identifiers/list/serviceId" target="_blank">https://developer.apple.com/account/resources/identifiers/list/serviceId</a>',
+        'Click the + button to create a new Service ID',
+        'Description: "Behavior Study Tools Sign In"',
+        'Identifier: "com.behaviorschool.studytools.signin"',
+        'Check "Sign In with Apple", click Configure',
+        'Add domain: study.behaviorschool.com',
+        'Add return URL: https://study.behaviorschool.com/auth/callback',
+        'Save',
+        'Now go to Keys: <a href="https://developer.apple.com/account/resources/authkeys/list" target="_blank">https://developer.apple.com/account/resources/authkeys/list</a>',
+        'Click + to create a new key',
+        'Name: "Behavior Study Tools Auth"',
+        'Check "Sign In with Apple"',
+        'Click Configure, select your primary App ID',
+        'Click Register, then Download the .p8 file',
+        'Send me: the Team ID, Service ID, Key ID, and the .p8 file'
+      ]
+    },
+    {
+      id: 7,
+      category: 'medium-tasks',
+      title: 'Create iOS Certificates Repo',
+      platform: 'iOS App',
+      time: '5 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Go to <a href="https://github.com/new" target="_blank">https://github.com/new</a>',
+        'Name: "ios-certificates" (make it PRIVATE)',
+        'Create it (empty, no README)',
+        'Copy the SSH URL: git@github.com:YOUR_USERNAME/ios-certificates.git',
+        'Send it to me'
+      ]
+    },
+    {
+      id: 8,
+      category: 'medium-tasks',
+      title: 'Run Supabase Migrations',
+      platform: 'behaviorschool.com',
+      time: '10 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Open Terminal',
+        '<code>cd "/Users/Neo/Desktop/Neo Code/bcbaaistudytool"</code>',
+        'Run: <code>npx supabase db push</code>',
+        'This applies: AI tutor usage table, mock exam results table, AI usage log table',
+        'If it asks for confirmation, type Y',
+        'If there are errors, screenshot them and send to me'
+      ]
+    },
+    {
+      id: 9,
+      category: 'medium-tasks',
+      title: 'Push Git Commits',
+      platform: 'behaviorschool.com',
+      time: '5 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Open Terminal',
+        '<code>cd "/Users/Neo/Desktop/Neo Code/behaviorschool-com-and-marketing"</code>',
+        'Run: <code>git push origin main</code>',
+        'If SSH fails, try: <code>git push https://github.com/YOUR_USERNAME/behaviorschool-com-and-marketing.git main</code>',
+        'Also push the study tools: <code>cd "/Users/Neo/Desktop/Neo Code/bcbaaistudytool" && git push origin main</code>'
+      ]
+    },
+    {
+      id: 10,
+      category: 'medium-tasks',
+      title: 'Set R2 Environment Variables',
+      platform: 'behaviorschool.com',
+      time: '5 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'The learning platform already has Cloudflare R2 configured',
+        'Go to your Netlify dashboard for behaviorschool.com',
+        'Site Settings → Environment Variables',
+        'Add these (copy from the learning platform\'s Netlify env):',
+        '• <code>CF_R2_ACCESS_KEY_ID</code>',
+        '• <code>CF_R2_SECRET_ACCESS_KEY</code>',
+        '• <code>CF_R2_BUCKET_NAME</code>',
+        '• <code>CF_R2_PUBLIC_BASE_URL</code>',
+        '• <code>CF_R2_ACCOUNT_ID</code>'
+      ]
+    },
+    // Content Creation
+    {
+      id: 11,
+      category: 'content',
+      title: 'Record Video #1: "5 Ethics Questions That Trip Everyone Up"',
+      platform: 'behaviorschool.com',
+      time: '30 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Script is at: <code>/Users/Neo/clawd/video-scripts/01-ethics-traps.md</code>',
+        'Or view it in the admin panel: behaviorschool.com/admin/videos',
+        'Record on your phone or webcam (vertical preferred for social, horizontal for YouTube)',
+        'Upload to behaviorschool.com/admin/videos (drag and drop once R2 is configured)',
+        'This becomes both a YouTube video AND gets cut into short clips'
+      ]
+    },
+    {
+      id: 12,
+      category: 'content',
+      title: 'Record Video #2: "Reinforcement vs Punishment"',
+      platform: 'behaviorschool.com',
+      time: '30 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Script: <code>/Users/Neo/clawd/video-scripts/02-reinforcement-vs-punishment.md</code>',
+        'Same process as Video #1',
+        'Record on your phone or webcam',
+        'Upload to behaviorschool.com/admin/videos'
+      ]
+    },
+    {
+      id: 13,
+      category: 'content',
+      title: 'Record Video #3: "Experimental Design Made Simple"',
+      platform: 'behaviorschool.com',
+      time: '30 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Script: <code>/Users/Neo/clawd/video-scripts/03-experimental-design.md</code>',
+        'Same recording process',
+        'Upload to behaviorschool.com/admin/videos'
+      ]
+    },
+    {
+      id: 14,
+      category: 'content',
+      title: 'Record Video #4: "FBA to BIP in 10 Minutes"',
+      platform: 'behaviorschool.com',
+      time: '30 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Script: <code>/Users/Neo/clawd/video-scripts/04-fba-to-bip.md</code>',
+        'Same recording process',
+        'Upload to behaviorschool.com/admin/videos'
+      ]
+    },
+    {
+      id: 15,
+      category: 'content',
+      title: 'Record Video #5: "How to Actually Pass the BCBA Exam"',
+      platform: 'behaviorschool.com',
+      time: '30 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Script: <code>/Users/Neo/clawd/video-scripts/05-study-strategy.md</code>',
+        'Same recording process',
+        'Upload to behaviorschool.com/admin/videos'
+      ]
+    },
+    // Review & Approve
+    {
+      id: 16,
+      category: 'review',
+      title: 'Review Marketing Calendar',
+      platform: 'behaviorschool.com',
+      time: '15 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Go to behaviorschool.com/admin/content-calendar',
+        'Review the 13 draft posts (pre-scheduled with optimal times)',
+        'Approve, edit, or reschedule as needed'
+      ]
+    },
+    {
+      id: 17,
+      category: 'review',
+      title: 'Review Transformation Program Marketing',
+      platform: 'behaviorschool.com',
+      time: '20 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Document at: <code>/Users/Neo/clawd/transformation-program-marketing.md</code>',
+        '12 emails, 18+ social posts, 6 blog topics, 3 lead magnets',
+        'Review and approve before I send anything'
+      ]
+    },
+    {
+      id: 18,
+      category: 'review',
+      title: 'Tell Me About Email Auth Bug',
+      platform: 'behaviorschool.com',
+      time: '5 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'What exactly happens when users try to log in with email on study.behaviorschool.com?',
+        'Not receiving emails? Redirect loop? Error message?',
+        'Screenshot if possible',
+        'Just message me the details and I\'ll fix it'
+      ]
+    },
+    // Bigger Projects
+    {
+      id: 19,
+      category: 'projects',
+      title: 'Test iOS App Build',
+      platform: 'iOS App',
+      time: '30 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'After completing items 4, 5, 6, 7 above',
+        'Open Terminal',
+        '<code>cd "/Users/Neo/Desktop/Neo Code/bcbaaistudytool"</code>',
+        'Run: <code>npm run ios:build</code>',
+        'If it succeeds: <code>npm run ios:beta</code> (uploads to TestFlight)',
+        'Test on your phone via TestFlight'
+      ]
+    },
+    {
+      id: 20,
+      category: 'projects',
+      title: 'Add Testimonials',
+      platform: 'behaviorschool.com',
+      time: '15 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Think of 3-5 people who\'ve used your tools or training',
+        'Get their permission for a quote',
+        'Send me their name, role, and quote',
+        'I\'ll add them to both sites'
+      ]
+    },
+    {
+      id: 21,
+      category: 'projects',
+      title: 'Record Training Videos for robspain.com',
+      platform: 'robspain.com',
+      time: '2 hrs',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'The video funnel on robspain.com is ready for your "Crisis Manager to Systems Leader" 10-part series',
+        'Record at your pace — each video 5-10 minutes',
+        'Upload to admin panel when ready'
+      ]
     }
-  }
+  ];
 
-  async function initSupabase() {
-    const { url, key } = loadSupabaseConfig();
-    if (url && key && window.supabase) {
-      state.supabase = window.supabase.createClient(url, key);
-      setConnectionStatus('Supabase connected');
-      return true;
-    }
-    state.supabase = null;
-    setConnectionStatus('Sample data');
-    return false;
-  }
-
-  async function fetchSupabaseData() {
-    if (!state.supabase) {
-      state.projects = sampleData.projects;
-      state.quickWins = sampleData.quickWins;
-      state.content = sampleData.content;
-      return;
-    }
-
-    const [projectsRes, quickWinsRes, contentRes] = await Promise.all([
-      state.supabase.from('projects').select('*').order('updated_at', { ascending: false }),
-      state.supabase.from('quick_wins').select('*').order('estimate_minutes', { ascending: true }),
-      state.supabase.from('content_calendar').select('*').order('scheduled_date', { ascending: true })
-    ]);
-
-    if (projectsRes.error || quickWinsRes.error || contentRes.error) {
-      console.error('Supabase error', projectsRes.error || quickWinsRes.error || contentRes.error);
-      state.projects = sampleData.projects;
-      state.quickWins = sampleData.quickWins;
-      state.content = sampleData.content;
-      setConnectionStatus('Sample data (Supabase error)');
-      return;
-    }
-
-    state.projects = projectsRes.data || [];
-    state.quickWins = quickWinsRes.data || [];
-    state.content = contentRes.data || [];
-  }
-
-  function renderProjects() {
-    const container = document.getElementById('project-cards');
-    if (!container) return;
-
-    container.innerHTML = state.projects.map(project => {
-      const statusClass = `status-${project.status || 'active'}`;
-      const progressValue = Math.min(Math.max(project.progress || 0, 0), 100);
-      const updatedAt = project.updated_at ? new Date(project.updated_at) : null;
-      return `
-        <article class="project-card" data-project-id="${project.id}">
-          <div class="project-header">
-            <div class="project-name">${project.emoji || '📌'} ${project.name}</div>
-            <span class="neo-status-pill ${statusClass}">${project.status || 'active'}</span>
-          </div>
-          <div class="progress-track">
-            <div class="progress-fill" style="width: ${progressValue}%;"></div>
-          </div>
-          <div class="progress-row">
-            <span>${project.phase || 'Planning'}</span>
-            <strong>${progressValue}%</strong>
-          </div>
-          <div class="project-details">
-            <div class="project-detail-row">
-              <span class="project-detail-label">Last updated</span>
-              <span>${updatedAt ? formatDateLong(updatedAt) + ' · ' + formatTime(updatedAt) : '—'}</span>
-            </div>
-            <div class="project-detail-row">
-              <span class="project-detail-label">PRD</span>
-              ${project.prd_path ? `<a class="project-link" href="${project.prd_path}">Open PRD</a>` : '<span>Not linked</span>'}
-            </div>
-          </div>
-        </article>
-      `;
-    }).join('');
-
-    container.querySelectorAll('.project-card').forEach(card => {
-      card.addEventListener('click', () => {
-        card.classList.toggle('expanded');
-      });
-    });
-  }
-
-  function renderBlocked() {
-    const list = document.getElementById('blocked-list');
-    if (!list) return;
-
-    const blockedProjects = state.projects.filter(project => project.status === 'blocked' || project.blocked_reason);
-    if (!blockedProjects.length) {
-      list.innerHTML = '<div class="data-status">No blockers right now 🎉</div>';
-      return;
-    }
-
-    list.innerHTML = blockedProjects.map(project => `
-      <div class="blocked-item">
-        <div><strong>${project.emoji || '⏸️'} ${project.name}</strong><br>${project.blocked_reason || 'Waiting on Rob'}</div>
-        <button data-project-id="${project.id}">Unblock</button>
-      </div>
-    `).join('');
-
-    list.querySelectorAll('button').forEach(button => {
-      button.addEventListener('click', event => {
-        event.stopPropagation();
-        const projectId = button.getAttribute('data-project-id');
-        unblockProject(projectId);
-      });
-    });
-  }
-
-  function renderQuickWins() {
-    const container = document.getElementById('quick-wins-list');
-    if (!container) return;
-
-    const pending = state.quickWins.filter(item => item.status !== 'done');
-    pending.sort((a, b) => (a.estimate_minutes || 0) - (b.estimate_minutes || 0));
-
-    container.innerHTML = pending.map(item => {
-      const estimate = item.estimate_minutes ? `${item.estimate_minutes} min` : '—';
-      const showApprove = item.type === 'approve' || item.type === 'review';
-      const previewBtn = item.preview_url ? `<a href="${item.preview_url}" class="primary" target="_blank">Preview</a>` : '';
-      const actionBtn = item.action_url ? `<a href="${item.action_url}" target="_blank">Action</a>` : '';
-      return `
-        <div class="quick-win">
-          <div class="quick-win-header">
-            <div class="quick-win-title">${item.title}</div>
-            <div class="quick-win-estimate">${estimate}</div>
-          </div>
-          <div class="quick-win-actions">
-            ${previewBtn}
-            ${showApprove ? `<button class="primary" data-approve-id="${item.id}">Approve</button>` : ''}
-            ${actionBtn}
-            <button class="done" data-done-id="${item.id}">Done</button>
-          </div>
-          <div class="quick-win-meta">
-            <span>Type: ${item.type || 'action'}</span>
-            <span>Added: ${item.created_at ? formatDate(new Date(item.created_at)) : '—'}</span>
-          </div>
-        </div>
-      `;
-    }).join('');
-
-    container.querySelectorAll('[data-done-id]').forEach(btn => {
-      btn.addEventListener('click', () => markQuickWinDone(btn.getAttribute('data-done-id')));
-    });
-
-    container.querySelectorAll('[data-approve-id]').forEach(btn => {
-      btn.addEventListener('click', () => approveQuickWin(btn.getAttribute('data-approve-id')));
-    });
-
-    const doneToday = state.quickWins.filter(item => item.status === 'done' && item.completed_at && isSameDay(new Date(item.completed_at), new Date())).length;
-    const nextUp = pending[0] ? pending[0].title : 'All clear';
-    document.getElementById('quick-wins-done').textContent = doneToday;
-    document.getElementById('quick-wins-next').textContent = nextUp;
-  }
-
-  function renderCalendar() {
-    const monthLabel = document.getElementById('calendar-month');
-    const weekdays = document.getElementById('calendar-weekdays');
-    const daysGrid = document.getElementById('calendar-days');
-    if (!monthLabel || !weekdays || !daysGrid) return;
-
-    const month = state.currentMonth;
-    monthLabel.textContent = month.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-
-    weekdays.innerHTML = weekdayLabels.map(day => `<div class="calendar-weekday">${day}</div>`).join('');
-    daysGrid.innerHTML = '';
-
-    const firstDay = new Date(month.getFullYear(), month.getMonth(), 1);
-    const lastDay = new Date(month.getFullYear(), month.getMonth() + 1, 0);
-
-    const startOffset = (firstDay.getDay() + 6) % 7;
-    const totalCells = Math.ceil((startOffset + lastDay.getDate()) / 7) * 7;
-
-    const today = new Date();
-
-    for (let i = 0; i < totalCells; i++) {
-      const cellDate = new Date(month.getFullYear(), month.getMonth(), 1 - startOffset + i);
-      const isInactive = cellDate.getMonth() !== month.getMonth();
-      const isToday = isSameDay(cellDate, today);
-      const dateKey = cellDate.toISOString().split('T')[0];
-      const items = state.content.filter(item => item.scheduled_date === dateKey);
-
-      const cell = document.createElement('div');
-      cell.className = `calendar-day${isInactive ? ' inactive' : ''}${isToday ? ' today' : ''}`;
-      cell.dataset.date = dateKey;
-      cell.innerHTML = `
-        <div class="calendar-date">${cellDate.getDate()}</div>
-        <div class="calendar-items">
-          ${items.map(item => `<span class="calendar-item status-${item.status}">${channelIcons[item.channel] || '📌'}</span>`).join('')}
-        </div>
-      `;
-
-      cell.addEventListener('click', () => {
-        state.selectedDate = dateKey;
-        renderDateDetails(dateKey);
-      });
-
-      cell.addEventListener('dragover', event => {
-        event.preventDefault();
-      });
-
-      cell.addEventListener('drop', event => {
-        event.preventDefault();
-        const itemId = event.dataTransfer.getData('text/plain');
-        if (itemId) {
-          rescheduleContent(itemId, dateKey);
+  // Load task states from localStorage
+  function loadTaskStates() {
+    const saved = localStorage.getItem('robTaskStates');
+    if (saved) {
+      const states = JSON.parse(saved);
+      tasks.forEach(task => {
+        if (states[task.id]) {
+          task.status = states[task.id];
         }
       });
-
-      daysGrid.appendChild(cell);
     }
-
-    renderCalendarWarning(month);
   }
 
-  function renderDateDetails(dateKey) {
-    const title = document.getElementById('calendar-detail-title');
-    const list = document.getElementById('calendar-detail-list');
-    if (!title || !list) return;
-
-    const date = new Date(dateKey + 'T00:00:00');
-    const items = state.content.filter(item => item.scheduled_date === dateKey);
-
-    title.textContent = items.length ? `Scheduled for ${formatDateLong(date)}` : `No content on ${formatDateLong(date)}`;
-
-    if (!items.length) {
-      list.innerHTML = '<div class="data-status">No content scheduled.</div>';
-      return;
-    }
-
-    list.innerHTML = items.map(item => renderContentCard(item)).join('');
-
-    attachContentActions(list);
+  // Save task states to localStorage
+  function saveTaskStates() {
+    const states = {};
+    tasks.forEach(task => {
+      states[task.id] = task.status;
+    });
+    localStorage.setItem('robTaskStates', JSON.stringify(states));
   }
 
-  function renderUpcoming() {
-    const list = document.getElementById('upcoming-list');
-    if (!list) return;
+  // Update progress stats
+  function updateProgress() {
+    const total = tasks.length;
+    const completed = tasks.filter(t => t.status === 'done').length;
+    const inProgress = tasks.filter(t => t.status === 'in-progress').length;
+    const percentage = Math.round((completed / total) * 100);
 
-    const today = new Date();
-    const upcoming = state.content
-      .filter(item => new Date(item.scheduled_date + 'T00:00:00') >= new Date(today.toDateString()))
-      .sort((a, b) => new Date(a.scheduled_date) - new Date(b.scheduled_date));
+    document.getElementById('total-tasks').textContent = total;
+    document.getElementById('completed-tasks').textContent = completed;
+    document.getElementById('in-progress-tasks').textContent = inProgress;
+    document.getElementById('progress-fill').style.width = percentage + '%';
+    document.getElementById('progress-fill').textContent = percentage + '%';
+  }
 
-    if (!upcoming.length) {
-      list.innerHTML = '<div class="data-status">No upcoming content scheduled.</div>';
-      return;
-    }
+  // Render a single task card
+  function renderTask(task) {
+    const platformClass = task.platform.includes('robspain') ? 'badge-robspain' : 
+                         task.platform.includes('behaviorschool') ? 'badge-behaviorschool' : 
+                         task.platform.includes('iOS') ? 'badge-ios' : 'badge-both';
 
-    list.innerHTML = upcoming.map(item => `
-      <div class="upcoming-item">
-        <div><strong>${channelIcons[item.channel] || '📌'} ${item.title}</strong></div>
-        <div class="meta">${formatDateLong(new Date(item.scheduled_date + 'T00:00:00'))} · Status: ${item.status}</div>
-        <div class="content-card-actions">
-          ${item.preview_url ? `<a href="${item.preview_url}" target="_blank">Preview</a>` : ''}
-          ${item.status === 'review' ? `<button class="primary" data-approve-content="${item.id}">Approve</button>` : ''}
-          <button data-reschedule="${item.id}">Reschedule</button>
+    const checkboxIcon = task.status === 'done' ? '✅' : task.status === 'in-progress' ? '🔄' : '';
+
+    const card = document.createElement('div');
+    card.className = `task-card ${task.status}`;
+    card.dataset.taskId = task.id;
+
+    card.innerHTML = `
+      <div class="task-header">
+        <div class="task-checkbox">${checkboxIcon}</div>
+        <div class="task-info">
+          <div class="task-title">${task.title}</div>
+          <div class="task-meta">
+            <span class="task-badge ${platformClass}">${task.platform}</span>
+            <span class="task-time">⏱️ ${task.time}</span>
+            ${task.priority ? '<span class="task-priority">⚡ Priority</span>' : ''}
+          </div>
         </div>
       </div>
-    `).join('');
-
-    attachContentActions(list);
-  }
-
-  function renderCalendarWarning(month) {
-    const warning = document.getElementById('calendar-warning');
-    if (!warning) return;
-
-    const start = new Date(month.getFullYear(), month.getMonth(), 1);
-    const end = new Date(month.getFullYear(), month.getMonth() + 1, 0);
-    let hasEmail = false;
-
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      const dateKey = d.toISOString().split('T')[0];
-      if (state.content.some(item => item.scheduled_date === dateKey && item.channel === 'email')) {
-        hasEmail = true;
-        break;
-      }
-    }
-
-    if (!hasEmail) {
-      warning.textContent = '⚠️ Content gap: No email scheduled this month.';
-      warning.style.display = 'block';
-    } else {
-      warning.style.display = 'none';
-    }
-  }
-
-  function renderContentCard(item) {
-    return `
-      <div class="content-card" draggable="true" data-content-id="${item.id}">
-        <div class="content-card-header">
-          <span>${channelIcons[item.channel] || '📌'} ${item.title}</span>
-          <span class="calendar-item status-${item.status}">${item.status}</span>
-        </div>
-        <div class="content-card-actions">
-          ${item.preview_url ? `<a href="${item.preview_url}" target="_blank">Preview</a>` : ''}
-          ${item.status === 'review' ? `<button class="primary" data-approve-content="${item.id}">Approve</button>` : ''}
-          <button data-reschedule="${item.id}">Reschedule</button>
+      <div class="task-instructions">
+        <h4>📋 Step-by-Step Instructions:</h4>
+        <ol>
+          ${task.instructions.map(step => `<li>${step}</li>`).join('')}
+        </ol>
+        <div class="status-buttons">
+          <button class="status-btn not-started" data-status="not-started">⬜ Not Started</button>
+          <button class="status-btn in-progress" data-status="in-progress">🔄 In Progress</button>
+          <button class="status-btn done" data-status="done">✅ Done</button>
         </div>
       </div>
+      <button class="expand-toggle">📖 Show Instructions</button>
     `;
-  }
 
-  function attachContentActions(container) {
-    container.querySelectorAll('[data-approve-content]').forEach(btn => {
-      btn.addEventListener('click', () => approveContent(btn.getAttribute('data-approve-content')));
+    // Toggle expand/collapse
+    const toggleBtn = card.querySelector('.expand-toggle');
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      card.classList.toggle('expanded');
+      toggleBtn.textContent = card.classList.contains('expanded') ? '🔼 Hide Instructions' : '📖 Show Instructions';
     });
 
-    container.querySelectorAll('[data-reschedule]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const newDate = prompt('Reschedule to (YYYY-MM-DD):');
-        if (newDate) {
-          rescheduleContent(btn.getAttribute('data-reschedule'), newDate);
-        }
+    // Status buttons
+    card.querySelectorAll('.status-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const status = btn.dataset.status;
+        task.status = status;
+        saveTaskStates();
+        updateProgress();
+        renderAllTasks();
       });
     });
 
-    container.querySelectorAll('[data-content-id]').forEach(card => {
-      card.addEventListener('dragstart', event => {
-        event.dataTransfer.setData('text/plain', card.getAttribute('data-content-id'));
-      });
-    });
+    return card;
   }
 
-  function isSameDay(a, b) {
-    return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
-  }
-
-  async function markQuickWinDone(id) {
-    const item = state.quickWins.find(win => String(win.id) === String(id));
-    if (!item) return;
-
-    item.status = 'done';
-    item.completed_at = new Date().toISOString();
-
-    if (state.supabase) {
-      await state.supabase.from('quick_wins').update({ status: 'done', completed_at: item.completed_at }).eq('id', id);
-    }
-
-    renderQuickWins();
-  }
-
-  async function approveQuickWin(id) {
-    const item = state.quickWins.find(win => String(win.id) === String(id));
-    if (!item) return;
-
-    item.status = 'done';
-    item.completed_at = new Date().toISOString();
-
-    if (state.supabase) {
-      await state.supabase.from('quick_wins').update({ status: 'done', completed_at: item.completed_at }).eq('id', id);
-    }
-
-    renderQuickWins();
-  }
-
-  async function unblockProject(id) {
-    const project = state.projects.find(proj => String(proj.id) === String(id));
-    if (!project) return;
-
-    project.status = 'active';
-    project.blocked_reason = null;
-
-    if (state.supabase) {
-      await state.supabase.from('projects').update({ status: 'active', blocked_reason: null }).eq('id', id);
-    }
-
-    renderProjects();
-    renderBlocked();
-  }
-
-  async function approveContent(id) {
-    const item = state.content.find(content => String(content.id) === String(id));
-    if (!item) return;
-
-    item.status = 'approved';
-    if (state.supabase) {
-      await state.supabase.from('content_calendar').update({ status: 'approved' }).eq('id', id);
-    }
-
-    refreshCalendarViews();
-  }
-
-  async function rescheduleContent(id, dateKey) {
-    const item = state.content.find(content => String(content.id) === String(id));
-    if (!item) return;
-
-    item.scheduled_date = dateKey;
-
-    if (state.supabase) {
-      await state.supabase.from('content_calendar').update({ scheduled_date: dateKey }).eq('id', id);
-    }
-
-    refreshCalendarViews();
-  }
-
-  function refreshCalendarViews() {
-    renderCalendar();
-    if (state.selectedDate) {
-      renderDateDetails(state.selectedDate);
-    }
-    renderUpcoming();
-  }
-
-  async function addQuickWin() {
-    const title = prompt('Quick win title:');
-    if (!title) return;
-
-    const estimate = parseInt(prompt('Estimate minutes (5, 10, 15):') || '10', 10);
-    const type = prompt('Type (approve/review/signup/decision/action):') || 'action';
-
-    const newWin = {
-      id: state.supabase ? crypto.randomUUID() : `qw-${Date.now()}`,
-      title,
-      estimate_minutes: estimate,
-      type,
-      status: 'pending',
-      created_at: new Date().toISOString()
+  // Render all tasks by category
+  function renderAllTasks() {
+    const categories = {
+      'quick-wins': document.getElementById('quick-wins-grid'),
+      'medium-tasks': document.getElementById('medium-tasks-grid'),
+      'content': document.getElementById('content-grid'),
+      'review': document.getElementById('review-grid'),
+      'projects': document.getElementById('projects-grid')
     };
 
-    state.quickWins.push(newWin);
+    Object.values(categories).forEach(grid => {
+      if (grid) grid.innerHTML = '';
+    });
 
-    if (state.supabase) {
-      await state.supabase.from('quick_wins').insert([
-        {
-          id: newWin.id,
-          title: newWin.title,
-          estimate_minutes: newWin.estimate_minutes,
-          type: newWin.type,
-          status: newWin.status,
-          created_at: newWin.created_at
-        }
-      ]);
-    }
-
-    renderQuickWins();
+    tasks.forEach(task => {
+      const grid = categories[task.category];
+      if (grid) {
+        grid.appendChild(renderTask(task));
+      }
+    });
   }
 
-  async function initializeDashboard() {
-    await initSupabase();
-    await fetchSupabaseData();
-
-    renderProjects();
-    renderBlocked();
-    renderQuickWins();
-    renderCalendar();
-    renderUpcoming();
-
-    const todayKey = new Date().toISOString().split('T')[0];
-    state.selectedDate = todayKey;
-    renderDateDetails(todayKey);
-  }
-
-  document.getElementById('prev-month').addEventListener('click', () => {
-    state.currentMonth = new Date(state.currentMonth.getFullYear(), state.currentMonth.getMonth() - 1, 1);
-    refreshCalendarViews();
-  });
-
-  document.getElementById('next-month').addEventListener('click', () => {
-    state.currentMonth = new Date(state.currentMonth.getFullYear(), state.currentMonth.getMonth() + 1, 1);
-    refreshCalendarViews();
-  });
-
-  document.getElementById('today-month').addEventListener('click', () => {
-    state.currentMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-    refreshCalendarViews();
-  });
-
-  document.getElementById('refresh-data').addEventListener('click', async () => {
-    await fetchSupabaseData();
-    renderProjects();
-    renderBlocked();
-    renderQuickWins();
-    refreshCalendarViews();
-  });
-
-  document.getElementById('toggle-connection').addEventListener('click', () => {
-    const panel = document.getElementById('connection-panel');
-    panel.style.display = panel.style.display === 'none' ? 'grid' : 'none';
-  });
-
-  document.getElementById('save-connection').addEventListener('click', async () => {
-    const url = document.getElementById('supabase-url').value.trim();
-    const key = document.getElementById('supabase-key').value.trim();
-    if (!url || !key) {
-      alert('Please enter both the Supabase URL and anon key.');
-      return;
-    }
-    localStorage.setItem('neoSupabaseUrl', url);
-    localStorage.setItem('neoSupabaseAnonKey', key);
-    await initializeDashboard();
-  });
-
-  document.getElementById('clear-connection').addEventListener('click', () => {
-    localStorage.removeItem('neoSupabaseUrl');
-    localStorage.removeItem('neoSupabaseAnonKey');
-    initializeDashboard();
-  });
-
-  document.getElementById('add-quick-win').addEventListener('click', addQuickWin);
-
-  window.addEventListener('DOMContentLoaded', () => {
-    const { url, key } = loadSupabaseConfig();
-    document.getElementById('supabase-url').value = url || '';
-    document.getElementById('supabase-key').value = key || '';
-    initializeDashboard();
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    loadTaskStates();
+    updateProgress();
+    renderAllTasks();
   });
 </script>

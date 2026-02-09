@@ -32,7 +32,7 @@ Every week, we meet live. I teach a new module, answer your questions, and help 
 
 I'm giving you everything I've built over 20+ years. Data collection systems. Training materials. Meeting protocols. Communication templates. Documentation workflows.
 
-These aren't generic resources—they're the exact tools I use and have refined over hundreds of implementations.
+These aren't generic resources—they're the exact tools I use and have refined over many implementations.
 
 **[How it works]**
 

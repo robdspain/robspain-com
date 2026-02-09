@@ -6,35 +6,27 @@ step: 8
 videoUrl: ""
 ---
 
-**[Scene: Rob on camera, sharing testimonials/results]**
+**[Scene: Rob on camera, sharing what the transformation looks like]**
 
-Let me tell you about some real people who've made this transformation.
+Let me tell you what I've seen happen when school BCBAs make this shift.
 
-**[Story 1]**
+**[Composite Example — clearly framed as such]**
 
-Sarah was a BCBA in Texas with a caseload of 52 students across 8 schools. She was working 60-hour weeks and seriously considering leaving the field.
+*Note: These are composite examples based on common patterns I've seen across school BCBAs I've worked with. They don't represent specific individuals.*
 
-Within 8 weeks of implementing the Systems Leadership framework, she reduced her crisis calls by 65%. She got her caseload restructured. She started leaving work by 5 PM most days.
+Imagine a BCBA with a caseload of 50+ students across multiple schools. Working 60-hour weeks. Seriously considering leaving the field.
 
-More importantly? Her students were making *better* progress than before. Because she finally had time to focus on the cases that truly needed her expertise.
+When someone like that implements a Systems Leadership framework — building Tier 2 supports, training general ed teachers to handle common behavior concerns, creating consultation models instead of being the sole responder — the shift is dramatic.
 
-**[Story 2]**
+Crisis calls drop significantly. Caseloads get restructured because admin can finally see data on what's working. The BCBA starts leaving at a reasonable hour — and their students are making *better* progress, because there's finally time to focus on the cases that truly need specialized expertise.
 
-Marcus was the only BCBA in a rural district of 4,000 students. He felt completely alone and overwhelmed.
-
-He built a Tier 2 intervention system that trained general ed teachers to handle most behavior concerns themselves. He created a consultation model that multiplied his impact. Now he mentors two new BCBAs his district was able to hire because admin finally saw the value of behavior support.
-
-**[Story 3]**
-
-Jennifer had been a school BCBA for 12 years and was completely burned out. She'd tried everything—time management apps, self-care routines, even therapy.
-
-What finally worked? Shifting from crisis manager to systems leader. She says it's like she's doing a completely different job now—one she actually loves again.
+Or think about the veteran BCBA — 10, 12 years in — completely burned out. They've tried time management apps, self-care routines, all the individual solutions. What actually works? Shifting from crisis manager to systems leader. It's a fundamentally different job — one they can sustain.
 
 **[Direct to camera]**
 
-These aren't outliers. I've seen this transformation happen over and over again.
+These aren't hypothetical. These are patterns I've seen repeat across districts, across states.
 
-When you stop trying to be everything to everyone—when you start building systems instead of being the system—everything changes.
+When you stop trying to be everything to everyone — when you start building systems instead of being the system — everything changes.
 
 **[Transition]**
 

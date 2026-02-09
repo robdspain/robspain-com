@@ -34,7 +34,7 @@ But then she realized: **Her job wasn't to be the solution. Her job was to build
 
 **[Getting excited]**
 
-Instead of writing behavior plans and hoping teachers would follow them, she trained teachers to understand behavior principles. Instead of responding to every crisis, she built Tier 1 supports that prevented 80% of crises from happening.
+Instead of writing behavior plans and hoping teachers would follow them, she trained teachers to understand behavior principles. Instead of responding to every crisis, she built Tier 1 supports that dramatically reduced the number of crises happening.
 
 Instead of being the bottleneck, she became the multiplier.
 

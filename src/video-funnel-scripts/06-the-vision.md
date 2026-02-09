@@ -14,7 +14,7 @@ It's 4:30 on a Friday afternoon. You're packing up your bag to leave work—on t
 
 Your behavior plans are being implemented. Not perfectly, but consistently—because you trained your teachers and gave them the tools they need.
 
-Your crisis calls have dropped by 60%. Not because you're ignoring problems, but because your Tier 1 systems are catching issues before they escalate.
+Your crisis calls have dropped significantly. Not because you're ignoring problems, but because your Tier 1 systems are catching issues before they escalate.
 
 **[Warming up]**
 

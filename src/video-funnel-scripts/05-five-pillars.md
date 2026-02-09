@@ -16,7 +16,7 @@ I call it the **5-Pillar Framework for Systems Leadership.**
 
 **Pillar One: Prevention Over Reaction**
 
-This is the foundation. Most BCBAs spend 80% of their time in crisis mode. But every crisis is a symptom of a missing system.
+This is the foundation. Most BCBAs spend the vast majority of their time in crisis mode. But every crisis is a symptom of a missing system.
 
 When you shift your focus to Tier 1 and Tier 2 supports—school-wide behavior frameworks, classroom management systems, early intervention protocols—you prevent the crises before they happen.
 

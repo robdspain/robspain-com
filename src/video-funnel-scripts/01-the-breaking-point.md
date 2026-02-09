@@ -16,9 +16,9 @@ And at the end of the day? You haven't touched a single behavior plan. You haven
 
 **[Pause, more reflective tone]**
 
-Here's the thing that nobody tells you in grad school: **70% of school-based BCBAs leave within three years.** Seventy percent.
+Here's the thing that nobody tells you in grad school: **research shows that over 72% of behavior analysts report medium to high levels of burnout** (Plantiveau, Dounavi, & Virués-Ortega, 2018). And school-based BCBAs? We face some of the highest turnover in the field.
 
-And it's not because they don't care. It's not because they're not smart enough or skilled enough. It's because the system is designed to burn them out.
+It's not because we don't care. It's not because we're not smart enough or skilled enough. It's because the system is designed to burn us out.
 
 You're expected to be everywhere at once. You're handed impossible caseloads. You're told to "fix" kids without anyone fixing the systems that keep failing them.
 

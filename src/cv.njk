@@ -10,55 +10,83 @@ extra_css: /cv-styles.css
         <!-- Hero Section -->
         <section class="cv-hero" id="profile">
             <div class="hero-background">
+                <div class="hero-grain"></div>
                 <div class="gradient-orb orb-1"></div>
                 <div class="gradient-orb orb-2"></div>
                 <div class="gradient-orb orb-3"></div>
             </div>
             <div class="hero-content">
                 <div class="profile-section">
-                    <div class="profile-image-container animate-scale-up">
-                        <picture>
-                            <source srcset="/public/images/profile-Rob.webp" type="image/webp">
-                            <img src="/public/images/profile-Rob.png" alt="Rob Spain" class="profile-image">
-                        </picture>
-                    </div>
-                    <div class="profile-info focus-target">
+                    <div class="hero-text-col">
                         <div class="profile-pre-title animate-fade-up">Professional CV</div>
                         <h1 class="profile-name animate-fade-up stagger-1">
-                            <span class="name-line text-display-md">Rob Spain, M.S.</span>
-                            <span class="credentials-line hero-title-gradient">BCBA, IBA</span>
+                            <span class="name-first">Rob</span>
+                            <span class="name-last">Spain<span class="name-degree">, M.S.</span></span>
                         </h1>
-                        <p class="profile-title text-h3 animate-fade-up stagger-2">School Based Behavior Analyst - Transforming Lives Through Compassionate Leadership</p>
-                        
+                        <div class="credentials-row animate-fade-up stagger-2">
+                            <span class="credential-badge badge-bcba">BCBA</span>
+                            <span class="credential-badge badge-iba">IBA</span>
+                            <span class="credential-badge badge-ace">ACE Provider</span>
+                        </div>
+                        <p class="profile-tagline animate-fade-up stagger-2">School-Based Behavior Analyst — Transforming Lives Through Compassionate Leadership</p>
+                        <div class="hero-stats animate-fade-up stagger-3">
+                            <div class="hero-stat">
+                                <span class="hero-stat-number">25+</span>
+                                <span class="hero-stat-label">Years Experience</span>
+                            </div>
+                            <div class="hero-stat-divider"></div>
+                            <div class="hero-stat">
+                                <span class="hero-stat-number">25</span>
+                                <span class="hero-stat-label">Team Members Led</span>
+                            </div>
+                            <div class="hero-stat-divider"></div>
+                            <div class="hero-stat">
+                                <span class="hero-stat-number">130+</span>
+                                <span class="hero-stat-label">Students Yearly</span>
+                            </div>
+                        </div>
                         <div class="expertise-highlights animate-fade-up stagger-3">
                             <div class="expertise-pill">
                                 <i class="fas fa-users-cog"></i>
-                                <span>Leading Behavior Professionals & Training Next-Gen BCBAs</span>
+                                <span>Leading Behavior Professionals</span>
                             </div>
                             <div class="expertise-pill">
                                 <i class="fas fa-university"></i>
                                 <span>University Faculty</span>
                             </div>
                             <div class="expertise-pill">
-                                <i class="fas fa-certificate"></i>
-                                <span>BCBA & IBA</span>
+                                <i class="fas fa-rocket"></i>
+                                <span>Founder, Behavior School</span>
                             </div>
                         </div>
                     </div>
+                    <div class="hero-image-col animate-scale-up">
+                        <div class="profile-image-container">
+                            <div class="profile-image-ring"></div>
+                            <picture>
+                                <source srcset="/public/images/profile-Rob.webp" type="image/webp">
+                                <img src="/public/images/profile-Rob.png" alt="Rob Spain" class="profile-image">
+                            </picture>
+                        </div>
+                    </div>
                 </div>
+            </div>
+            <div class="hero-scroll-indicator animate-fade-up stagger-3">
+                <span>Scroll</span>
+                <div class="scroll-line"></div>
             </div>
         </section>
 
         <!-- Professional Summary -->
         <section class="cv-section summary-section">
             <div class="section-container">
-                <h2 class="section-title">
-                    <i class="fas fa-user-graduate"></i>
-                    Professional Summary
-                </h2>
+                <div class="section-header-block">
+                    <span class="section-label">About</span>
+                    <h2 class="section-title">Professional Summary</h2>
+                </div>
                 <div class="summary-content">
                     <p class="summary-text">
-                        Seasoned Behavior Analyst with over <span class="js-years-exp">{{ experience.years }}</span> years of progressive leadership in educational settings. Distinguished track record as team leader, capacity builder, adjunct faculty member, mentor, and clinical supervisor. Specialized expertise in building trust, fostering empowerment, and facilitating collaboration among multidisciplinary teams to achieve measurable student outcomes. Established <a href="https://behaviorschool.com" target="_blank" style="color: #10B981; text-decoration: none; font-weight: 500;">Behavior School</a> as an innovative solution for professional development, featuring <a href="https://behaviorschool.com/bcba-study-tools" target="_blank" style="color: #10B981; text-decoration: none; font-weight: 500;">evidence-based study resources</a> and <a href="https://study.behaviorschool.com" target="_blank" style="color: #10B981; text-decoration: none; font-weight: 500;">adaptive learning technology</a> that addresses the unique challenges facing school-based behavior analysts.
+                        Seasoned Behavior Analyst with over <span class="js-years-exp">{{ experience.years }}</span> years of progressive leadership in educational settings. Distinguished track record as team leader, capacity builder, adjunct faculty member, mentor, and clinical supervisor. Specialized expertise in building trust, fostering empowerment, and facilitating collaboration among multidisciplinary teams to achieve measurable student outcomes. Established <a href="https://behaviorschool.com" target="_blank">Behavior School</a> as an innovative solution for professional development, featuring <a href="https://behaviorschool.com/bcba-study-tools" target="_blank">evidence-based study resources</a> and <a href="https://study.behaviorschool.com" target="_blank">adaptive learning technology</a> that addresses the unique challenges facing school-based behavior analysts.
                     </p>
                 </div>
             </div>
@@ -67,12 +95,12 @@ extra_css: /cv-styles.css
         <!-- Certifications -->
         <section class="cv-section certifications-section" id="education">
             <div class="section-container">
-                <h2 class="section-title">
-                    <i class="fas fa-certificate"></i>
-                    Professional Certifications
-                </h2>
+                <div class="section-header-block">
+                    <span class="section-label">Credentials</span>
+                    <h2 class="section-title">Professional Certifications</h2>
+                </div>
                 <div class="certifications-grid">
-                    <div class="cert-card bcba-cert">
+                    <div class="cert-card">
                         <div class="cert-icon">
                             <i class="fas fa-award"></i>
                         </div>
@@ -80,10 +108,10 @@ extra_css: /cv-styles.css
                             <h3>Board Certified Behavior Analyst (BCBA)</h3>
                             <p class="cert-date">September 2011 - Present</p>
                             <p class="cert-id">Credential ID: 1-11-9398</p>
-                            <div class="cert-badge">13 Years</div>
+                            <div class="cert-badge">13+ Years</div>
                         </div>
                     </div>
-                    <div class="cert-card iba-cert">
+                    <div class="cert-card">
                         <div class="cert-icon">
                             <i class="fas fa-globe"></i>
                         </div>
@@ -94,7 +122,7 @@ extra_css: /cv-styles.css
                             <div class="cert-badge">Recent</div>
                         </div>
                     </div>
-                    <div class="cert-card ace-cert">
+                    <div class="cert-card">
                         <div class="cert-icon">
                             <i class="fas fa-chalkboard-teacher"></i>
                         </div>
@@ -105,12 +133,12 @@ extra_css: /cv-styles.css
                             <div class="cert-badge">Active</div>
                         </div>
                     </div>
-                    <div class="cert-card pfa-cert">
+                    <div class="cert-card">
                         <div class="cert-icon">
                             <i class="fas fa-tools"></i>
                         </div>
                         <div class="cert-content">
-                            <h3>Practical Functional Assessment and Skill Based Treatment</h3>
+                            <h3>Practical Functional Assessment & Skill Based Treatment</h3>
                             <p class="cert-date">FTF Behavioral Consulting</p>
                             <p class="cert-id">Specialized Credential</p>
                             <div class="cert-badge">Certified</div>
@@ -123,20 +151,24 @@ extra_css: /cv-styles.css
         <!-- Professional Experience -->
         <section class="cv-section experience-section" id="experience">
             <div class="section-container">
-                <h2 class="section-title">
-                    <i class="fas fa-briefcase"></i>
-                    Professional Experience
-                </h2>
+                <div class="section-header-block">
+                    <span class="section-label">Career</span>
+                    <h2 class="section-title">Professional Experience</h2>
+                </div>
                 <div class="timeline">
                     <div class="timeline-item">
                         <div class="timeline-dot"></div>
                         <div class="timeline-content">
                             <div class="experience-card current">
                                 <div class="exp-header">
-                                    <h3>Behavior Intervention Specialist</h3>
-                                    <p class="company">Kings Canyon Unified School District, Reedley, CA</p>
-                                    <p class="duration">2015 - Present</p>
-                                    <span class="current-badge">Current</span>
+                                    <div class="exp-header-left">
+                                        <h3>Behavior Intervention Specialist</h3>
+                                        <p class="company">Kings Canyon Unified School District, Reedley, CA</p>
+                                    </div>
+                                    <div class="exp-header-right">
+                                        <p class="duration">2015 - Present</p>
+                                        <span class="current-badge">Current</span>
+                                    </div>
                                 </div>
                                 <ul class="responsibilities">
                                     <li>Lead a team of 25 staff, addressing referrals district-wide for students with challenging behaviors</li>
@@ -153,10 +185,14 @@ extra_css: /cv-styles.css
                         <div class="timeline-content">
                             <div class="experience-card current">
                                 <div class="exp-header">
-                                    <h3>Adjunct Faculty</h3>
-                                    <p class="company">Fresno Pacific University, Fresno, CA</p>
-                                    <p class="duration">2014 - Present</p>
-                                    <span class="current-badge">Current</span>
+                                    <div class="exp-header-left">
+                                        <h3>Adjunct Faculty</h3>
+                                        <p class="company">Fresno Pacific University, Fresno, CA</p>
+                                    </div>
+                                    <div class="exp-header-right">
+                                        <p class="duration">2014 - Present</p>
+                                        <span class="current-badge">Current</span>
+                                    </div>
                                 </div>
                                 <ul class="responsibilities">
                                     <li>Taught courses on Advanced Procedures for Behavior Change and Support, Behavioral Research Methods in Education, and Ethics for Applied Behavior Analysis</li>
@@ -173,10 +209,14 @@ extra_css: /cv-styles.css
                         <div class="timeline-content">
                             <div class="experience-card current">
                                 <div class="exp-header">
-                                    <h3>Behavioral Consultant</h3>
-                                    <p class="company">Rob Spain Consulting, Fresno, CA</p>
-                                    <p class="duration">2020 - Present</p>
-                                    <span class="founder-badge">Owner</span>
+                                    <div class="exp-header-left">
+                                        <h3>Behavioral Consultant</h3>
+                                        <p class="company">Rob Spain Consulting, Fresno, CA</p>
+                                    </div>
+                                    <div class="exp-header-right">
+                                        <p class="duration">2020 - Present</p>
+                                        <span class="founder-badge">Owner</span>
+                                    </div>
                                 </div>
                                 <ul class="responsibilities">
                                     <li>Collaborate with non-public, charter, and public schools statewide, providing consultation on data collection systems and implementing organization-wide behavior change procedures</li>
@@ -190,12 +230,16 @@ extra_css: /cv-styles.css
                     <div class="timeline-item">
                         <div class="timeline-dot"></div>
                         <div class="timeline-content">
-                            <div class="experience-card">
+                            <div class="experience-card founder">
                                 <div class="exp-header">
-                                    <h3>Founder & CEO</h3>
-                                    <p class="company">Behavior School LLC</p>
-                                    <p class="duration">2020 - Present</p>
-                                    <span class="founder-badge">Founder</span>
+                                    <div class="exp-header-left">
+                                        <h3>Founder & CEO</h3>
+                                        <p class="company">Behavior School LLC</p>
+                                    </div>
+                                    <div class="exp-header-right">
+                                        <p class="duration">2020 - Present</p>
+                                        <span class="founder-badge">Founder</span>
+                                    </div>
                                 </div>
                                 <ul class="responsibilities">
                                     <li>Founded innovative platform serving school-based BCBAs nationwide</li>
@@ -213,9 +257,13 @@ extra_css: /cv-styles.css
                         <div class="timeline-content">
                             <div class="experience-card">
                                 <div class="exp-header">
-                                    <h3>Behavioral Consultant</h3>
-                                    <p class="company">Tulare County Office of Education, Visalia, CA</p>
-                                    <p class="duration">2012 - 2015</p>
+                                    <div class="exp-header-left">
+                                        <h3>Behavioral Consultant</h3>
+                                        <p class="company">Tulare County Office of Education, Visalia, CA</p>
+                                    </div>
+                                    <div class="exp-header-right">
+                                        <p class="duration">2012 - 2015</p>
+                                    </div>
                                 </div>
                                 <ul class="responsibilities">
                                     <li>Supervised in-home behavior services for children with autism and developmental delays, ensuring quality interventions</li>
@@ -232,9 +280,13 @@ extra_css: /cv-styles.css
                         <div class="timeline-content">
                             <div class="experience-card">
                                 <div class="exp-header">
-                                    <h3>Program Consultant</h3>
-                                    <p class="company">Pacific Child & Family Associates, Fresno, CA</p>
-                                    <p class="duration">2011 - 2012</p>
+                                    <div class="exp-header-left">
+                                        <h3>Program Consultant</h3>
+                                        <p class="company">Pacific Child & Family Associates, Fresno, CA</p>
+                                    </div>
+                                    <div class="exp-header-right">
+                                        <p class="duration">2011 - 2012</p>
+                                    </div>
                                 </div>
                                 <ul class="responsibilities">
                                     <li>Conducted behavior training for staff, families, and public school personnel</li>
@@ -250,9 +302,13 @@ extra_css: /cv-styles.css
                         <div class="timeline-content">
                             <div class="experience-card">
                                 <div class="exp-header">
-                                    <h3>Behavior Specialist</h3>
-                                    <p class="company">Achieve Kids, San Jose, CA</p>
-                                    <p class="duration">2009 - 2011</p>
+                                    <div class="exp-header-left">
+                                        <h3>Behavior Specialist</h3>
+                                        <p class="company">Achieve Kids, San Jose, CA</p>
+                                    </div>
+                                    <div class="exp-header-right">
+                                        <p class="duration">2009 - 2011</p>
+                                    </div>
                                 </div>
                                 <ul class="responsibilities">
                                     <li>Completed functional behavior assessments, developed behavior support plans, and implemented behavior change procedures</li>
@@ -268,9 +324,13 @@ extra_css: /cv-styles.css
                         <div class="timeline-content">
                             <div class="experience-card">
                                 <div class="exp-header">
-                                    <h3>Special Education Teacher</h3>
-                                    <p class="company">Achieve Kids, San Jose, CA</p>
-                                    <p class="duration">2007 - 2009</p>
+                                    <div class="exp-header-left">
+                                        <h3>Special Education Teacher</h3>
+                                        <p class="company">Achieve Kids, San Jose, CA</p>
+                                    </div>
+                                    <div class="exp-header-right">
+                                        <p class="duration">2007 - 2009</p>
+                                    </div>
                                 </div>
                                 <ul class="responsibilities">
                                     <li>Taught a self-contained classroom for students with a variety of moderate-severe disabilities and severe problem behaviors</li>
@@ -287,9 +347,13 @@ extra_css: /cv-styles.css
                         <div class="timeline-content">
                             <div class="experience-card">
                                 <div class="exp-header">
-                                    <h3>Special Education Resource Teacher</h3>
-                                    <p class="company">Sunnyvale School District, Sunnyvale, CA</p>
-                                    <p class="duration">2006 - 2007</p>
+                                    <div class="exp-header-left">
+                                        <h3>Special Education Resource Teacher</h3>
+                                        <p class="company">Sunnyvale School District, Sunnyvale, CA</p>
+                                    </div>
+                                    <div class="exp-header-right">
+                                        <p class="duration">2006 - 2007</p>
+                                    </div>
                                 </div>
                                 <ul class="responsibilities">
                                     <li>Offered collaborative, consultative, and direct services to students with learning disabilities and their teachers</li>
@@ -305,9 +369,13 @@ extra_css: /cv-styles.css
                         <div class="timeline-content">
                             <div class="experience-card">
                                 <div class="exp-header">
-                                    <h3>Special Education, Inclusion Support Teacher</h3>
-                                    <p class="company">Ravenswood School District, East Palo Alto, CA</p>
-                                    <p class="duration">2001 - 2006</p>
+                                    <div class="exp-header-left">
+                                        <h3>Special Education, Inclusion Support Teacher</h3>
+                                        <p class="company">Ravenswood School District, East Palo Alto, CA</p>
+                                    </div>
+                                    <div class="exp-header-right">
+                                        <p class="duration">2001 - 2006</p>
+                                    </div>
                                 </div>
                                 <ul class="responsibilities">
                                     <li>Provided academic support to students with mild to severe disabilities in general education classrooms</li>
@@ -322,12 +390,10 @@ extra_css: /cv-styles.css
         </section>
 
         <!-- Education Section -->
-        <section class="cv-section education-section" id="education">
+        <section class="cv-section education-section">
             <div class="section-container">
-                <div class="section-header">
-                    <div class="section-icon">
-                        <i class="fas fa-graduation-cap"></i>
-                    </div>
+                <div class="section-header-block centered">
+                    <span class="section-label">Education</span>
                     <h2 class="section-title">Graduate Education</h2>
                     <p class="section-subtitle">Academic Foundation & Professional Development</p>
                 </div>
@@ -389,20 +455,65 @@ extra_css: /cv-styles.css
             </div>
         </section>
 
+        <!-- Core Competencies -->
+        <section class="cv-section skills-section" id="skills">
+            <div class="section-container">
+                <div class="section-header-block">
+                    <span class="section-label">Expertise</span>
+                    <h2 class="section-title">Core Competencies</h2>
+                </div>
+                <div class="skills-grid">
+                    <div class="skill-category">
+                        <div class="skill-category-icon"><i class="fas fa-brain"></i></div>
+                        <h3>Core Skills</h3>
+                        <ul class="skills-simple-list">
+                            <li>Functional Behavior Assessment and Behavior Intervention Planning</li>
+                            <li>Team Building, Supervision, and Education</li>
+                            <li>Multi-Disciplinary Collaboration</li>
+                            <li>Skill-Based Treatment</li>
+                            <li>Acceptance and Commitment Therapy</li>
+                        </ul>
+                    </div>
+
+                    <div class="skill-category">
+                        <div class="skill-category-icon"><i class="fas fa-users"></i></div>
+                        <h3>Leadership & Training</h3>
+                        <ul class="skills-simple-list">
+                            <li>Team Leadership (25 Staff)</li>
+                            <li>District-Wide Training</li>
+                            <li>Trauma-Informed Practices</li>
+                            <li>Data Systems Development</li>
+                            <li>De-Escalation Training</li>
+                        </ul>
+                    </div>
+
+                    <div class="skill-category">
+                        <div class="skill-category-icon"><i class="fas fa-lightbulb"></i></div>
+                        <h3>Educational Innovation</h3>
+                        <ul class="skills-simple-list">
+                            <li>Curriculum Development</li>
+                            <li>Graduate Course Instruction</li>
+                            <li>BCBA Supervision</li>
+                            <li>Online/In-Person Instruction</li>
+                            <li>Platform Development</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Committee Appointments -->
         <section class="cv-section committees-section">
             <div class="section-container">
-                <div class="section-header-premium animate-fade-up">
-                    <div class="section-badge-premium">Leadership</div>
-                    <h2 class="section-title-premium">
-                        Committees & <span class="text-gradient">Memberships</span>
-                    </h2>
+                <div class="section-header-block">
+                    <span class="section-label">Leadership</span>
+                    <h2 class="section-title">Committees & Memberships</h2>
                 </div>
                 
                 <div class="committees-grid">
-                    <div class="leadership-card card-premium animate-fade-up">
+                    <div class="leadership-card">
                         <div class="card-icon-premium"><i class="fas fa-users"></i></div>
-                        <h3 class="card-title-premium">Current Appointments</h3>
+                        <h3>Current Appointments</h3>
                         <ul class="leadership-list">
                             <li>
                                 <i class="fas fa-check-circle"></i>
@@ -423,9 +534,9 @@ extra_css: /cv-styles.css
                         </ul>
                     </div>
 
-                    <div class="leadership-card card-premium animate-fade-up stagger-1">
+                    <div class="leadership-card">
                         <div class="card-icon-premium"><i class="fas fa-globe"></i></div>
-                        <h3 class="card-title-premium">Professional Memberships</h3>
+                        <h3>Professional Memberships</h3>
                         <ul class="leadership-list">
                             <li>
                                 <i class="fas fa-id-badge"></i>
@@ -445,34 +556,34 @@ extra_css: /cv-styles.css
             </div>
         </section>
 
-        <!-- Presentations Section -->
+        <!-- Presentations Section (consolidated) -->
         <section class="cv-section presentations-section" id="presentations">
             <div class="section-container">
-                <div class="section-header-premium animate-fade-up">
-                    <div class="section-badge-premium">Knowledge Sharing</div>
-                    <h2 class="section-title-premium">
-                        Select <span class="text-gradient">Presentations</span>
-                    </h2>
-                    <p class="section-description-premium">Speaking engagements and professional development workshops delivered at district and regional levels.</p>
+                <div class="section-header-block">
+                    <span class="section-label">Speaking</span>
+                    <h2 class="section-title">Select Presentations</h2>
+                    <p class="section-subtitle">Speaking engagements and professional development workshops delivered at district and regional levels.</p>
                 </div>
 
                 <div class="presentations-grid">
-                    <div class="presentation-card card-premium animate-fade-up">
+                    <div class="presentation-card">
                         <div class="presentation-header">
                             <span class="presentation-date">Oct 2023</span>
                             <h3 class="presentation-title">Supporting Students with Challenging Behaviors</h3>
+                            <p class="presentation-authors">Spain, R., & Padilla, D.</p>
                         </div>
-                        <p class="presentation-venue">Behavior Interventions for Extended Learning Program</p>
+                        <p class="presentation-venue">Kings Canyon USD — Extended Learning Program</p>
                         <div class="presentation-tags">
                             <span class="tag behavior">ABA</span>
                             <span class="tag extended-learning">Extended Learning</span>
                         </div>
                     </div>
 
-                    <div class="presentation-card card-premium animate-fade-up stagger-1">
+                    <div class="presentation-card">
                         <div class="presentation-header">
                             <span class="presentation-date">Oct 2023</span>
                             <h3 class="presentation-title">Problem Solving for Kids</h3>
+                            <p class="presentation-authors">Spain, R., & Lopez, C.</p>
                         </div>
                         <p class="presentation-venue">Kings Canyon Unified School District</p>
                         <div class="presentation-tags">
@@ -480,10 +591,11 @@ extra_css: /cv-styles.css
                         </div>
                     </div>
 
-                    <div class="presentation-card card-premium animate-fade-up stagger-2">
+                    <div class="presentation-card">
                         <div class="presentation-header">
                             <span class="presentation-date">Aug 2023</span>
                             <h3 class="presentation-title">Social Emotional Learning for TK & Kindergarten</h3>
+                            <p class="presentation-authors">Spain, R., & Hustedde, N.</p>
                         </div>
                         <p class="presentation-venue">After School Program Staff Development</p>
                         <div class="presentation-tags">
@@ -492,10 +604,11 @@ extra_css: /cv-styles.css
                         </div>
                     </div>
 
-                    <div class="presentation-card card-premium animate-fade-up stagger-3">
+                    <div class="presentation-card">
                         <div class="presentation-header">
                             <span class="presentation-date">Aug 2023</span>
                             <h3 class="presentation-title">Acceptance and Commitment Therapy (ACT)</h3>
+                            <p class="presentation-authors">Spain, R.</p>
                         </div>
                         <p class="presentation-venue">Training for Mental Health Clinicians & Psychologists</p>
                         <div class="presentation-tags">
@@ -504,205 +617,13 @@ extra_css: /cv-styles.css
                         </div>
                     </div>
 
-                    <div class="presentation-card card-premium animate-fade-up stagger-1">
-                        <div class="presentation-header">
-                            <span class="presentation-date">May 2022</span>
-                            <h3 class="presentation-title">Parent Connect: Essential Behavior Skills</h3>
-                        </div>
-                        <p class="presentation-venue">Kings Canyon Unified School District</p>
-                        <div class="presentation-tags">
-                            <span class="tag parent-training">Parent Training</span>
-                        </div>
-                    </div>
-
-                    <div class="presentation-card card-premium animate-fade-up stagger-2">
-                        <div class="presentation-header">
-                            <span class="presentation-date">Apr 2022</span>
-                            <h3 class="presentation-title">ADHD Strategies for Neurodivergent Individuals</h3>
-                        </div>
-                        <p class="presentation-venue">Professional Consultation Series</p>
-                        <div class="presentation-tags">
-                            <span class="tag adhd">ADHD</span>
-                            <span class="tag neurodivergent">Neurodiversity</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Skills Section -->
-        <section class="cv-section skills-section" id="skills">
-            <div class="section-container">
-                <h2 class="section-title">
-                    <i class="fas fa-cogs"></i>
-                    Core Competencies
-                </h2>
-                <div class="skills-grid">
-                    <div class="skill-category">
-                        <h3>Core Skills</h3>
-                        <ul class="skills-simple-list">
-                            <li>Functional Behavior Assessment and Behavior Intervention Planning</li>
-                            <li>Team Building, Supervision, and Education</li>
-                            <li>Multi-Disciplinary Collaboration</li>
-                            <li>Skill-Based Treatment</li>
-                            <li>Acceptance and Commitment Therapy</li>
-                        </ul>
-                    </div>
-
-                    <div class="skill-category">
-                        <h3>Leadership & Training</h3>
-                        <ul class="skills-simple-list">
-                            <li>Team Leadership (25 Staff)</li>
-                            <li>District-Wide Training</li>
-                            <li>Trauma-Informed Practices</li>
-                            <li>Data Systems Development</li>
-                            <li>De-Escalation Training</li>
-                        </ul>
-                    </div>
-
-                    <div class="skill-category">
-                        <h3>Educational Innovation</h3>
-                        <ul class="skills-simple-list">
-                            <li>Curriculum Development</li>
-                            <li>Graduate Course Instruction</li>
-                            <li>BCBA Supervision</li>
-                            <li>Online/In-Person Instruction</li>
-                            <li>Platform Development</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Presentations Section -->
-        <section class="cv-section presentations-section">
-            <div class="section-container">
-                <h2 class="section-title">
-                    <i class="fas fa-presentation"></i>
-                    Select Presentations
-                </h2>
-                <div class="presentations-grid">
                     <div class="presentation-card">
                         <div class="presentation-header">
-                            <h3 class="presentation-title">Supporting Students with Challenging Behaviors: Behavior Interventions for Extended Learning Program</h3>
-                            <div class="presentation-meta">
-                                <span class="authors">Spain, R., & Padilla, D.</span>
-                                <span class="date">October 21, 2023</span>
-                            </div>
-                        </div>
-                        <div class="presentation-venue">
-                            <i class="fas fa-building"></i>
-                            <span>Kings Canyon Unified School District</span>
-                        </div>
-                        <div class="presentation-tags">
-                            <span class="tag behavior">Behavior Interventions</span>
-                            <span class="tag extended-learning">Extended Learning</span>
-                        </div>
-                    </div>
-
-                    <div class="presentation-card">
-                        <div class="presentation-header">
-                            <h3 class="presentation-title">Problem Solving for Kids</h3>
-                            <div class="presentation-meta">
-                                <span class="authors">Spain, R., & Lopez, C.</span>
-                                <span class="date">October 19, 2023</span>
-                            </div>
-                        </div>
-                        <div class="presentation-venue">
-                            <i class="fas fa-building"></i>
-                            <span>Kings Canyon Unified School District</span>
-                        </div>
-                        <div class="presentation-tags">
-                            <span class="tag problem-solving">Problem Solving</span>
-                            <span class="tag student-support">Student Support</span>
-                        </div>
-                    </div>
-
-                    <div class="presentation-card">
-                        <div class="presentation-header">
-                            <h3 class="presentation-title">Social Emotional Learning for TK and Kindergarten for After School Program Staff</h3>
-                            <div class="presentation-meta">
-                                <span class="authors">Spain, R., & Hustedde, N.</span>
-                                <span class="date">August 30, 2023</span>
-                            </div>
-                        </div>
-                        <div class="presentation-venue">
-                            <i class="fas fa-building"></i>
-                            <span>Kings Canyon Unified School District</span>
-                        </div>
-                        <div class="presentation-tags">
-                            <span class="tag sel">Social Emotional Learning</span>
-                            <span class="tag early-childhood">Early Childhood</span>
-                        </div>
-                    </div>
-
-                    <div class="presentation-card">
-                        <div class="presentation-header">
-                            <h3 class="presentation-title">Acceptance and Commitment Therapy</h3>
-                            <div class="presentation-meta">
-                                <span class="authors">Spain, R.</span>
-                                <span class="date">August 10, 2023</span>
-                            </div>
-                        </div>
-                        <div class="presentation-venue">
-                            <i class="fas fa-building"></i>
-                            <span>Kings Canyon Unified School District</span>
-                            <div class="audience-note">Buyback training for Psychologists, Mental Health Clinicians, Behavior Case Managers</div>
-                        </div>
-                        <div class="presentation-tags">
-                            <span class="tag act">ACT</span>
-                            <span class="tag mental-health">Mental Health</span>
-                        </div>
-                    </div>
-
-                    <div class="presentation-card">
-                        <div class="presentation-header">
-                            <h3 class="presentation-title">Parent Connect: Essential Behavior Skills to Teach at Home</h3>
-                            <div class="presentation-meta">
-                                <span class="authors">Spain, R., & Lopez, C.</span>
-                                <span class="date">May 11, 2022</span>
-                            </div>
-                        </div>
-                        <div class="presentation-venue">
-                            <i class="fas fa-building"></i>
-                            <span>Kings Canyon Unified School District</span>
-                        </div>
-                        <div class="presentation-tags">
-                            <span class="tag parent-training">Parent Training</span>
-                            <span class="tag home-skills">Home Skills</span>
-                        </div>
-                    </div>
-
-                    <div class="presentation-card">
-                        <div class="presentation-header">
-                            <h3 class="presentation-title">ADHD Strategies for Neurodivergent Individuals and Yourself</h3>
-                            <div class="presentation-meta">
-                                <span class="authors">Spain, R., & Lopez, C.</span>
-                                <span class="date">April 11, 2022</span>
-                            </div>
-                        </div>
-                        <div class="presentation-venue">
-                            <i class="fas fa-building"></i>
-                            <span>Kings Canyon Unified School District</span>
-                        </div>
-                        <div class="presentation-tags">
-                            <span class="tag adhd">ADHD</span>
-                            <span class="tag neurodivergent">Neurodivergent</span>
-                        </div>
-                    </div>
-
-                    <div class="presentation-card">
-                        <div class="presentation-header">
+                            <span class="presentation-date">Sep 2022</span>
                             <h3 class="presentation-title">Creating Value-Driven Goals</h3>
-                            <div class="presentation-meta">
-                                <span class="authors">Spain, R., & Lopez, C.</span>
-                                <span class="date">September 20, 2022</span>
-                            </div>
+                            <p class="presentation-authors">Spain, R., & Lopez, C.</p>
                         </div>
-                        <div class="presentation-venue">
-                            <i class="fas fa-building"></i>
-                            <span>Kings Canyon Unified School District Parent Connect</span>
-                        </div>
+                        <p class="presentation-venue">Kings Canyon USD Parent Connect</p>
                         <div class="presentation-tags">
                             <span class="tag goal-setting">Goal Setting</span>
                             <span class="tag values">Values-Based</span>
@@ -711,16 +632,49 @@ extra_css: /cv-styles.css
 
                     <div class="presentation-card">
                         <div class="presentation-header">
+                            <span class="presentation-date">May 2022</span>
+                            <h3 class="presentation-title">Parent Connect: Essential Behavior Skills</h3>
+                            <p class="presentation-authors">Spain, R., & Lopez, C.</p>
+                        </div>
+                        <p class="presentation-venue">Kings Canyon Unified School District</p>
+                        <div class="presentation-tags">
+                            <span class="tag parent-training">Parent Training</span>
+                        </div>
+                    </div>
+
+                    <div class="presentation-card">
+                        <div class="presentation-header">
+                            <span class="presentation-date">Apr 2022</span>
+                            <h3 class="presentation-title">ADHD Strategies for Neurodivergent Individuals</h3>
+                            <p class="presentation-authors">Spain, R., & Lopez, C.</p>
+                        </div>
+                        <p class="presentation-venue">Professional Consultation Series</p>
+                        <div class="presentation-tags">
+                            <span class="tag adhd">ADHD</span>
+                            <span class="tag neurodivergent">Neurodiversity</span>
+                        </div>
+                    </div>
+
+                    <div class="presentation-card">
+                        <div class="presentation-header">
+                            <span class="presentation-date">Nov 2021</span>
+                            <h3 class="presentation-title">De-escalation Strategies and Supports for the Classroom</h3>
+                            <p class="presentation-authors">Spain, R.</p>
+                        </div>
+                        <p class="presentation-venue">KCUSD Special Education Technician Buyback Day</p>
+                        <div class="presentation-tags">
+                            <span class="tag de-escalation">De-escalation</span>
+                            <span class="tag classroom">Classroom</span>
+                        </div>
+                    </div>
+
+                    <div class="presentation-card">
+                        <div class="presentation-header">
+                            <span class="presentation-date">Oct 2021</span>
                             <h3 class="presentation-title">Three Ways to Change Behavior at Home Without Breaking a Sweat</h3>
-                            <div class="presentation-meta">
-                                <span class="authors">Spain, R., & Lopez, C.</span>
-                                <span class="date">October 19, 2021</span>
-                            </div>
+                            <p class="presentation-authors">Spain, R., & Lopez, C.</p>
                         </div>
-                        <div class="presentation-venue">
-                            <i class="fas fa-building"></i>
-                            <span>KCUSD Parent Connect</span>
-                        </div>
+                        <p class="presentation-venue">KCUSD Parent Connect</p>
                         <div class="presentation-tags">
                             <span class="tag behavior-change">Behavior Change</span>
                             <span class="tag parent-support">Parent Support</span>
@@ -729,38 +683,14 @@ extra_css: /cv-styles.css
 
                     <div class="presentation-card">
                         <div class="presentation-header">
-                            <h3 class="presentation-title">De-escalation Strategies and Supports for the Classroom</h3>
-                            <div class="presentation-meta">
-                                <span class="authors">Spain, R.</span>
-                                <span class="date">November 1, 2021</span>
-                            </div>
+                            <span class="presentation-date">Aug 2020</span>
+                            <h3 class="presentation-title">Increasing Positive Family Interactions During Covid-19</h3>
+                            <p class="presentation-authors">Spain, R.</p>
                         </div>
-                        <div class="presentation-venue">
-                            <i class="fas fa-building"></i>
-                            <span>Kings Canyon Unified School District</span>
-                            <div class="audience-note">Special Education Technician Buyback Day</div>
-                        </div>
+                        <p class="presentation-venue">Kings Canyon Unified School District</p>
                         <div class="presentation-tags">
-                            <span class="tag de-escalation">De-escalation</span>
-                            <span class="tag classroom">Classroom Support</span>
-                        </div>
-                    </div>
-
-                    <div class="presentation-card">
-                        <div class="presentation-header">
-                            <h3 class="presentation-title">Increasing Positive Family Interactions: Using Values-Based Behavior Change Procedures During Covid-19</h3>
-                            <div class="presentation-meta">
-                                <span class="authors">Spain, R.</span>
-                                <span class="date">August 17, 2020</span>
-                            </div>
-                        </div>
-                        <div class="presentation-venue">
-                            <i class="fas fa-building"></i>
-                            <span>Kings Canyon Unified School District</span>
-                        </div>
-                        <div class="presentation-tags">
-                            <span class="tag family-therapy">Family Interactions</span>
-                            <span class="tag covid">Covid-19 Response</span>
+                            <span class="tag family-therapy">Family</span>
+                            <span class="tag covid">Covid-19</span>
                         </div>
                     </div>
                 </div>
@@ -770,10 +700,10 @@ extra_css: /cv-styles.css
         <!-- Contact Section -->
         <section class="cv-section contact-section" id="contact">
             <div class="section-container">
-                <h2 class="section-title">
-                    <i class="fas fa-envelope"></i>
-                    Get In Touch
-                </h2>
+                <div class="section-header-block centered">
+                    <span class="section-label">Connect</span>
+                    <h2 class="section-title">Get In Touch</h2>
+                </div>
                 <div class="contact-grid">
                     <div class="contact-card">
                         <i class="fab fa-linkedin"></i>
@@ -783,10 +713,10 @@ extra_css: /cv-styles.css
                     <div class="contact-card">
                         <i class="fas fa-globe"></i>
                         <h3>Professional Resources</h3>
-                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                            <a href="https://behaviorschool.com/bcba-study-tools" target="_blank" style="color: #10B981; text-decoration: none; font-weight: 500;">BCBA Study Tools</a>
-                            <a href="https://study.behaviorschool.com" target="_blank" style="color: #10B981; text-decoration: none; font-weight: 500;">Practice Platform</a>
-                            <a href="https://behaviorschool.com" target="_blank" style="color: #10B981; text-decoration: none; font-weight: 500;">Behavior School</a>
+                        <div class="contact-links-col">
+                            <a href="https://behaviorschool.com/bcba-study-tools" target="_blank">BCBA Study Tools</a>
+                            <a href="https://study.behaviorschool.com" target="_blank">Practice Platform</a>
+                            <a href="https://behaviorschool.com" target="_blank">Behavior School</a>
                         </div>
                     </div>
                     <div class="contact-card">
@@ -802,7 +732,7 @@ extra_css: /cv-styles.css
                     <div class="contact-card">
                         <i class="fas fa-envelope"></i>
                         <h3>Contact Form</h3>
-                        <a href="/index.html#contact" style="color: #10B981; text-decoration: none; font-weight: 500;">Send Message</a>
+                        <a href="/index.html#contact">Send Message</a>
                     </div>
                 </div>
             </div>

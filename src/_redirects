@@ -1,0 +1,7 @@
+# Block admin pages from public access
+/admin/*  https://robspain.com/ 302
+
+# Redirect common 404 pages to appropriate locations
+/about  /#about 302
+/posts/  /blog/ 302
+/contact  /#contact 302

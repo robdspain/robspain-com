@@ -1,0 +1,358 @@
+---
+layout: base.njk
+title: Content Calendar - Rob Spain
+permalink: /admin/content-calendar/
+---
+
+<div id="content-calendar-app">
+  <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+      <div>
+        <h1 style="font-size: 2rem; font-weight: 700; color: #1e293b;">📅 Content Calendar</h1>
+        <p style="color: #64748b;">All content derived from YouTube videos. Nothing posts without your approval.</p>
+      </div>
+      <button onclick="addWeek()" style="background: #10B981; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 1rem;">+ Add Week</button>
+    </div>
+
+    <!-- Stats Bar -->
+    <div id="stats-bar" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;"></div>
+
+    <!-- Add YouTube Video -->
+    <div style="background: #f0fdf4; border: 2px dashed #10B981; border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem;">
+      <h3 style="margin: 0 0 1rem; color: #065f46;">🎬 Add YouTube Video (Source)</h3>
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <input id="yt-url" type="text" placeholder="YouTube URL" style="flex: 1; min-width: 200px; padding: 10px 16px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 1rem;">
+        <input id="yt-title" type="text" placeholder="Video Title" style="flex: 1; min-width: 200px; padding: 10px 16px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 1rem;">
+        <input id="yt-date" type="date" style="padding: 10px 16px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 1rem;">
+        <button onclick="addVideo()" style="background: #059669; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer;">Add Video</button>
+      </div>
+    </div>
+
+    <!-- Filter -->
+    <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+      <button class="filter-btn active" onclick="filterPlatform('all', this)">All</button>
+      <button class="filter-btn" onclick="filterPlatform('youtube', this)">🎬 YouTube</button>
+      <button class="filter-btn" onclick="filterPlatform('blog', this)">📝 Blog</button>
+      <button class="filter-btn" onclick="filterPlatform('linkedin', this)">💼 LinkedIn</button>
+      <button class="filter-btn" onclick="filterPlatform('facebook', this)">📘 Facebook</button>
+      <button class="filter-btn" onclick="filterPlatform('instagram', this)">📸 Instagram</button>
+      <button class="filter-btn" onclick="filterPlatform('shorts', this)">⚡ Shorts</button>
+      <span style="margin-left: auto;">
+        <button class="filter-btn" onclick="filterStatus('pending')" style="background: #fef3c7; color: #92400e;">⏳ Pending</button>
+        <button class="filter-btn" onclick="filterStatus('approved')" style="background: #d1fae5; color: #065f46;">✅ Approved</button>
+        <button class="filter-btn" onclick="filterStatus('posted')" style="background: #dbeafe; color: #1e40af;">🚀 Posted</button>
+      </span>
+    </div>
+
+    <!-- Calendar Grid -->
+    <div id="calendar-grid"></div>
+
+    <!-- Export -->
+    <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+      <button onclick="exportCalendar()" style="background: #6366f1; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer;">📋 Export to Clipboard</button>
+      <button onclick="clearAll()" style="background: #ef4444; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer;">🗑️ Clear All</button>
+    </div>
+  </div>
+</div>
+
+<style>
+#content-calendar-app { padding-top: 6rem; background: #f8fafc; min-height: 100vh; }
+
+.filter-btn {
+  background: #e2e8f0; color: #475569; border: none; padding: 8px 16px;
+  border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 0.875rem;
+  transition: all 0.2s;
+}
+.filter-btn:hover { background: #cbd5e1; }
+.filter-btn.active { background: #1e293b; color: white; }
+
+.week-card {
+  background: white; border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem;
+  border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.week-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 2px solid #f1f5f9;
+}
+.week-title { font-size: 1.25rem; font-weight: 700; color: #1e293b; }
+
+.post-row {
+  display: grid; grid-template-columns: 40px 100px 1fr 120px 100px 80px;
+  gap: 0.75rem; align-items: center; padding: 0.75rem 0;
+  border-bottom: 1px solid #f1f5f9; transition: background 0.2s;
+}
+.post-row:hover { background: #f8fafc; border-radius: 8px; }
+.post-row:last-child { border-bottom: none; }
+
+.post-row.approved { background: #f0fdf4; border-radius: 8px; }
+.post-row.posted { background: #eff6ff; border-radius: 8px; opacity: 0.7; }
+
+.platform-badge {
+  font-size: 0.75rem; font-weight: 600; padding: 4px 10px;
+  border-radius: 6px; text-align: center; white-space: nowrap;
+}
+.platform-youtube { background: #fee2e2; color: #991b1b; }
+.platform-blog { background: #fef3c7; color: #92400e; }
+.platform-linkedin { background: #dbeafe; color: #1e40af; }
+.platform-facebook { background: #e0e7ff; color: #3730a3; }
+.platform-instagram { background: #fce7f3; color: #9d174d; }
+.platform-shorts { background: #f3e8ff; color: #6b21a8; }
+
+.status-btn {
+  border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;
+  font-size: 0.75rem; font-weight: 600; transition: all 0.2s;
+}
+
+.approve-checkbox {
+  width: 24px; height: 24px; cursor: pointer; accent-color: #10B981;
+}
+
+.post-title-input {
+  width: 100%; border: 1px solid transparent; background: transparent;
+  padding: 6px 8px; border-radius: 6px; font-size: 0.9rem; color: #1e293b;
+  transition: border-color 0.2s;
+}
+.post-title-input:hover { border-color: #d1d5db; }
+.post-title-input:focus { border-color: #10B981; outline: none; background: white; }
+
+.date-input {
+  border: 1px solid transparent; background: transparent; padding: 4px 8px;
+  border-radius: 6px; font-size: 0.8rem; color: #64748b;
+}
+.date-input:focus { border-color: #10B981; outline: none; background: white; }
+
+.stat-card {
+  background: white; border-radius: 12px; padding: 1rem 1.25rem;
+  border: 1px solid #e2e8f0; text-align: center;
+}
+.stat-number { font-size: 1.75rem; font-weight: 700; color: #1e293b; }
+.stat-label { font-size: 0.75rem; color: #64748b; margin-top: 0.25rem; }
+
+@media (max-width: 768px) {
+  .post-row { grid-template-columns: 30px 80px 1fr 100px; }
+  .post-row > :nth-child(5), .post-row > :nth-child(6) { display: none; }
+  #stats-bar { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+
+<script>
+const STORAGE_KEY = 'robspain_content_calendar';
+const PLATFORMS = [
+  { id: 'youtube', label: '🎬 YouTube', cls: 'platform-youtube' },
+  { id: 'blog', label: '📝 Blog', cls: 'platform-blog' },
+  { id: 'linkedin', label: '💼 LinkedIn', cls: 'platform-linkedin' },
+  { id: 'facebook', label: '📘 Facebook', cls: 'platform-facebook' },
+  { id: 'instagram', label: '📸 Instagram', cls: 'platform-instagram' },
+  { id: 'shorts', label: '⚡ Shorts', cls: 'platform-shorts' }
+];
+
+let calendarData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"weeks":[]}');
+let currentFilter = 'all';
+let statusFilter = null;
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(calendarData));
+  render();
+}
+
+function getMonday(d) {
+  const date = new Date(d);
+  const day = date.getDay();
+  const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+  return new Date(date.setDate(diff));
+}
+
+function formatDate(d) {
+  return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function addVideo() {
+  const url = document.getElementById('yt-url').value.trim();
+  const title = document.getElementById('yt-title').value.trim();
+  const date = document.getElementById('yt-date').value;
+  if (!title) return alert('Enter a video title');
+
+  const monday = getMonday(date || new Date());
+  const weekKey = monday.toISOString().slice(0, 10);
+
+  let week = calendarData.weeks.find(w => w.weekStart === weekKey);
+  if (!week) {
+    week = { weekStart: weekKey, posts: [] };
+    calendarData.weeks.push(week);
+    calendarData.weeks.sort((a, b) => a.weekStart.localeCompare(b.weekStart));
+  }
+
+  const videoId = Date.now().toString(36);
+  const baseDate = new Date(date || new Date());
+
+  PLATFORMS.forEach((p, i) => {
+    const postDate = new Date(baseDate);
+    postDate.setDate(postDate.getDate() + i);
+    week.posts.push({
+      id: videoId + '_' + p.id,
+      sourceVideoId: videoId,
+      sourceUrl: url,
+      sourceTitle: title,
+      platform: p.id,
+      title: p.id === 'youtube' ? title
+        : p.id === 'blog' ? 'Blog: ' + title
+        : p.id === 'shorts' ? 'Short: ' + title
+        : title + ' — ' + p.label.split(' ')[0],
+      date: postDate.toISOString().slice(0, 10),
+      status: 'pending',
+      notes: ''
+    });
+  });
+
+  document.getElementById('yt-url').value = '';
+  document.getElementById('yt-title').value = '';
+  document.getElementById('yt-date').value = '';
+  save();
+}
+
+function addWeek() {
+  const lastWeek = calendarData.weeks.length
+    ? new Date(calendarData.weeks[calendarData.weeks.length - 1].weekStart)
+    : getMonday(new Date());
+  const nextMonday = new Date(lastWeek);
+  nextMonday.setDate(nextMonday.getDate() + 7);
+  const weekKey = nextMonday.toISOString().slice(0, 10);
+
+  if (!calendarData.weeks.find(w => w.weekStart === weekKey)) {
+    calendarData.weeks.push({ weekStart: weekKey, posts: [] });
+    calendarData.weeks.sort((a, b) => a.weekStart.localeCompare(b.weekStart));
+    save();
+  }
+}
+
+function toggleApproval(weekIdx, postIdx) {
+  const post = calendarData.weeks[weekIdx].posts[postIdx];
+  if (post.status === 'pending') post.status = 'approved';
+  else if (post.status === 'approved') post.status = 'posted';
+  else post.status = 'pending';
+  save();
+}
+
+function updateField(weekIdx, postIdx, field, value) {
+  calendarData.weeks[weekIdx].posts[postIdx][field] = value;
+  save();
+}
+
+function deletePost(weekIdx, postIdx) {
+  calendarData.weeks[weekIdx].posts.splice(postIdx, 1);
+  save();
+}
+
+function deleteWeek(weekIdx) {
+  if (confirm('Delete this entire week?')) {
+    calendarData.weeks.splice(weekIdx, 1);
+    save();
+  }
+}
+
+function filterPlatform(platform, btn) {
+  currentFilter = platform;
+  statusFilter = null;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  render();
+}
+
+function filterStatus(status) {
+  statusFilter = statusFilter === status ? null : status;
+  currentFilter = 'all';
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  render();
+}
+
+function render() {
+  const grid = document.getElementById('calendar-grid');
+  const stats = document.getElementById('stats-bar');
+
+  // Stats
+  const allPosts = calendarData.weeks.flatMap(w => w.posts);
+  const pending = allPosts.filter(p => p.status === 'pending').length;
+  const approved = allPosts.filter(p => p.status === 'approved').length;
+  const posted = allPosts.filter(p => p.status === 'posted').length;
+
+  stats.innerHTML = `
+    <div class="stat-card"><div class="stat-number">${allPosts.length}</div><div class="stat-label">Total Posts</div></div>
+    <div class="stat-card"><div class="stat-number" style="color:#f59e0b">${pending}</div><div class="stat-label">⏳ Pending</div></div>
+    <div class="stat-card"><div class="stat-number" style="color:#10B981">${approved}</div><div class="stat-label">✅ Approved</div></div>
+    <div class="stat-card"><div class="stat-number" style="color:#3b82f6">${posted}</div><div class="stat-label">🚀 Posted</div></div>
+  `;
+
+  let html = '';
+  calendarData.weeks.forEach((week, wi) => {
+    const friday = new Date(week.weekStart);
+    friday.setDate(friday.getDate() + 4);
+    const weekLabel = `Week of ${formatDate(week.weekStart)} – ${formatDate(friday)}`;
+
+    let posts = week.posts;
+    if (currentFilter !== 'all') posts = posts.filter(p => p.platform === currentFilter);
+    if (statusFilter) posts = posts.filter(p => p.status === statusFilter);
+    if (posts.length === 0 && (currentFilter !== 'all' || statusFilter)) return;
+
+    html += `<div class="week-card">
+      <div class="week-header">
+        <span class="week-title">${weekLabel}</span>
+        <div>
+          <span style="font-size:0.8rem;color:#64748b;">${week.posts.length} posts</span>
+          <button onclick="deleteWeek(${wi})" style="background:none;border:none;cursor:pointer;font-size:1rem;margin-left:0.5rem;" title="Delete week">🗑️</button>
+        </div>
+      </div>`;
+
+    posts.forEach((post, pi) => {
+      const realIdx = week.posts.indexOf(post);
+      const pInfo = PLATFORMS.find(p => p.id === post.platform) || { label: post.platform, cls: '' };
+      const statusIcon = post.status === 'posted' ? '🚀' : post.status === 'approved' ? '✅' : '⏳';
+      const rowCls = post.status === 'approved' ? 'approved' : post.status === 'posted' ? 'posted' : '';
+
+      html += `<div class="post-row ${rowCls}">
+        <input type="checkbox" class="approve-checkbox"
+          ${post.status !== 'pending' ? 'checked' : ''}
+          onchange="toggleApproval(${wi}, ${realIdx})"
+          title="Click to cycle: Pending → Approved → Posted">
+        <span class="platform-badge ${pInfo.cls}">${pInfo.label}</span>
+        <input class="post-title-input" value="${post.title.replace(/"/g, '&quot;')}"
+          onblur="updateField(${wi}, ${realIdx}, 'title', this.value)">
+        <input class="date-input" type="date" value="${post.date}"
+          onchange="updateField(${wi}, ${realIdx}, 'date', this.value)">
+        <span style="font-size:1.25rem; text-align:center;" title="${post.status}">${statusIcon}</span>
+        <button onclick="deletePost(${wi}, ${realIdx})" style="background:none;border:none;cursor:pointer;font-size:0.9rem;" title="Delete">🗑️</button>
+      </div>`;
+    });
+
+    html += '</div>';
+  });
+
+  if (!html) html = '<div style="text-align:center;padding:3rem;color:#94a3b8;">No content yet. Add a YouTube video above to get started.</div>';
+  grid.innerHTML = html;
+}
+
+function exportCalendar() {
+  let text = 'CONTENT CALENDAR\n================\n\n';
+  calendarData.weeks.forEach(week => {
+    const friday = new Date(week.weekStart);
+    friday.setDate(friday.getDate() + 4);
+    text += `Week of ${formatDate(week.weekStart)} – ${formatDate(friday)}\n`;
+    text += '-'.repeat(40) + '\n';
+    week.posts.forEach(post => {
+      const status = post.status === 'posted' ? '🚀' : post.status === 'approved' ? '✅' : '⏳';
+      const pInfo = PLATFORMS.find(p => p.id === post.platform) || { label: post.platform };
+      text += `${status} [${pInfo.label}] ${post.date} — ${post.title}\n`;
+    });
+    text += '\n';
+  });
+  navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
+}
+
+function clearAll() {
+  if (confirm('Clear ALL calendar data? This cannot be undone.')) {
+    calendarData = { weeks: [] };
+    save();
+  }
+}
+
+render();
+</script>

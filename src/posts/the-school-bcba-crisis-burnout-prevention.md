@@ -12,7 +12,9 @@ tags:
   - systems-thinking
   - behavior-analysis
 ---
-The statistics are alarming: **research shows that over 72% of behavior analysts report medium to high levels of burnout**, and turnover in school-based positions remains one of the highest in the field. As someone who has worked in school systems for over 20 years, I've seen this pattern repeat itself across districts, states, and even countries.
+*AI-assisted draft; reviewed and edited by Rob Spain.*
+
+The statistics are alarming: **research shows that over 72% of behavior analysts report medium to high levels of burnout**, and turnover in school-based positions remains a persistent concern. As someone who has worked in school systems for over 20 years, I've seen this pattern repeat itself across districts, states, and even countries.
 
 But here's what most concerning: **we're treating burnout as an individual problem rather than a systems issue**.
 
@@ -22,7 +24,7 @@ When I started as a school BCBA in 2011, I thought the challenge was mastering b
 
 Consider these realities I've witnessed hundreds of times:
 
-* **Reactive caseloads**: Spending 80% of time crisis management instead of prevention
+* **Reactive caseloads**: Spending most of the day in crisis management instead of prevention
 * **Implementation gaps**: Writing excellent behavior plans that teachers can't or won't implement  
 * **Ethical conflicts**: Pressure from administration to bend compliance standards
 * **Isolation**: Being the only behavior analyst in a district of 5,000 students
@@ -70,7 +72,7 @@ School BCBAs must lead systems, not just serve them:
 
 Research consistently shows that systems-level approaches outperform individual interventions:
 
-* **School-wide PBIS reduces office discipline referrals by 20-60%** (Bradshaw et al., 2010)
+* **School-wide PBIS can reduce office discipline referrals** (Bradshaw et al., 2010)
 * **72% of BCBAs and RBTs report medium to high levels of burnout** (Plantiveau et al., 2018)
 * **Systems-level PBIS implementation improves student outcomes** when sustained with fidelity across tiers (Sugai & Simonsen, 2012)
 

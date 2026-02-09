@@ -71,7 +71,7 @@ School BCBAs must lead systems, not just serve them:
 Research consistently shows that systems-level approaches outperform individual interventions:
 
 * **School-wide PBIS reduces office discipline referrals by 20-60%** (Bradshaw et al., 2010)
-* **72% of BCBAs and RBTs report medium to high levels of burnout** (Plantiveau et al., 2018; Dounavi et al., 2019)
+* **72% of BCBAs and RBTs report medium to high levels of burnout** (Plantiveau et al., 2018)
 * **Systems-level PBIS implementation improves student outcomes** when sustained with fidelity across tiers (Sugai & Simonsen, 2012)
 
 ## The Future of School-Based Behavior Analysis
@@ -104,6 +104,5 @@ Systems change starts with you. This week, I challenge you to:
 **References:**
 
 * Bradshaw, C. P., Mitchell, M. M., & Leaf, P. J. (2010). Examining the effects of schoolwide positive behavioral interventions and supports on student outcomes: Results from a randomized controlled effectiveness trial in elementary schools. *Journal of Positive Behavior Interventions, 12*(3), 133-148. [Link](https://journals.sagepub.com/doi/abs/10.1177/1098300709334798)
-* Dounavi, K., Fennell, B., & Early, E. (2019). High levels of burnout among early-career board-certified behavior analysts with low collegial support in the work environment. *European Journal of Behavior Analysis, 20*(1), 195-207. [Link](https://www.tandfonline.com/doi/full/10.1080/15021149.2018.1438339)
-* Plantiveau, C., Dounavi, K., & Virués-Ortega, J. (2018). High levels of burnout among early-career board-certified behavior analysts with low collegial support in the work environment. *European Journal of Behavior Analysis, 19*(2), 195-207.
+* Plantiveau, C., Dounavi, K., & Virués-Ortega, J. (2018). High levels of burnout among early-career board-certified behavior analysts with low collegial support in the work environment. *European Journal of Behavior Analysis, 19*(2), 195-207. [Link](https://doi.org/10.1080/15021149.2018.1438339)
 * Sugai, G., & Simonsen, B. (2012). Positive behavioral interventions and supports: History, defining features, and misconceptions. Center on PBIS, University of Connecticut. [Link](https://www.pbis.org/resource/positive-behavioral-interventions-and-supports-history-defining-features-and-misconceptions)

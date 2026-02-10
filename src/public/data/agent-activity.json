@@ -1,0 +1,45 @@
+{
+  "lastUpdated": "2026-02-10T23:49:00Z",
+  "agents": {
+    "Neo": { "status": "working", "task": "Managing 20 agents, deploying sites via API", "lastActive": "2026-02-10T23:49:00Z" },
+    "Scout": { "status": "idle", "task": "Last scan: 0 new findings", "lastActive": "2026-02-10T20:00:00Z" },
+    "Writer": { "status": "waiting", "task": "9 drafts awaiting Rob's review", "lastActive": "2026-02-10T18:00:00Z" },
+    "Analyst": { "status": "idle", "task": "Daily report scheduled 8PM", "lastActive": "2026-02-10T04:00:00Z" },
+    "Engineer": { "status": "working", "task": "16-bit Agent HQ upgrade (sub-agent)", "lastActive": "2026-02-10T23:45:00Z" },
+    "Planner": { "status": "idle", "task": "No active task chains", "lastActive": "2026-02-10T12:00:00Z" },
+    "Browser": { "status": "idle", "task": "No active browse tasks", "lastActive": "2026-02-10T12:00:00Z" },
+    "Docs": { "status": "idle", "task": "Weekly report Mon 8AM", "lastActive": "2026-02-10T12:00:00Z" },
+    "SEO": { "status": "working", "task": "AEO/GEO notes created for behaviorschool.com", "lastActive": "2026-02-10T23:20:00Z" },
+    "BAE SIG": { "status": "blocked", "task": "Waiting: PayPal link from Liz, Gmail app password", "lastActive": "2026-02-10T22:00:00Z" },
+    "KCUSD": { "status": "idle", "task": "26-member roster loaded", "lastActive": "2026-02-10T20:00:00Z" },
+    "RobSite": { "status": "deployed", "task": "Live: hero fix, CALABA cards, Agent HQ", "lastActive": "2026-02-10T23:48:00Z" },
+    "BehSch": { "status": "blocked", "task": "Nav fix committed, needs deploy (Netlify SSH broken)", "lastActive": "2026-02-10T23:30:00Z" },
+    "StudyApp": { "status": "deployed", "task": "Manually deployed via API — site live", "lastActive": "2026-02-10T23:36:00Z" },
+    "Pro": { "status": "working", "task": "4 mockup images generated for /pro page", "lastActive": "2026-02-10T23:35:00Z" },
+    "Superv": { "status": "idle", "task": "Phase 1 built, needs Netlify setup", "lastActive": "2026-02-10T12:00:00Z" },
+    "Tools": { "status": "idle", "task": "4 MVP tools built, needs auth integration", "lastActive": "2026-02-10T12:00:00Z" },
+    "Video": { "status": "idle", "task": "No active renders", "lastActive": "2026-02-10T12:00:00Z" },
+    "Learn": { "status": "idle", "task": "Platform exists, needs content", "lastActive": "2026-02-10T12:00:00Z" }
+  },
+  "blocked": [
+    { "item": "Reconnect GitHub in Netlify dashboard", "type": "BLOCKER", "priority": "CRITICAL", "agents": ["BehSch", "RobSite", "StudyApp"] },
+    { "item": "9 writer drafts need review", "type": "APPROVAL", "priority": "HIGH", "agents": ["Writer"] },
+    { "item": "app.behaviorschool.com DNS not set up", "type": "BLOCKER", "priority": "HIGH", "agents": ["Pro"] },
+    { "item": "Gmail app password for BAE SIG email", "type": "BLOCKER", "priority": "MEDIUM", "agents": ["BAE SIG"] },
+    { "item": "PayPal link from Liz Flaherty", "type": "BLOCKER", "priority": "MEDIUM", "agents": ["BAE SIG"] },
+    { "item": "gog auth for Gmail/Calendar access", "type": "BLOCKER", "priority": "MEDIUM", "agents": ["Neo", "Scout"] },
+    { "item": "Ahrefs login credentials", "type": "BLOCKER", "priority": "LOW", "agents": ["SEO"] },
+    { "item": "Social media account logins", "type": "BLOCKER", "priority": "LOW", "agents": ["Writer", "Browser"] }
+  ],
+  "recentActivity": [
+    { "time": "15:48", "agent": "Neo", "action": "Deployed robspain.com with CALABA cards" },
+    { "time": "15:45", "agent": "Neo", "action": "Added 8 repo agents to Agent HQ (20 total)" },
+    { "time": "15:40", "agent": "Engineer", "action": "Sub-agent: 16-bit upgrade in progress" },
+    { "time": "15:36", "agent": "Neo", "action": "Deployed study.behaviorschool.com via API" },
+    { "time": "15:35", "agent": "Engineer", "action": "Sub-agent: Generated 4 /pro mockup images" },
+    { "time": "15:31", "agent": "Neo", "action": "Fixed hero alignment on robspain.com" },
+    { "time": "15:27", "agent": "BehSch", "action": "Fixed nav menu overlap (committed, pending deploy)" },
+    { "time": "15:20", "agent": "SEO", "action": "Created AEO/GEO audit notes for behaviorschool.com" },
+    { "time": "15:13", "agent": "Neo", "action": "Established blog publishing workflow" }
+  ]
+}

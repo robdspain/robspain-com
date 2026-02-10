@@ -581,11 +581,36 @@ function drawAgent(a) {
     ctx.fill();
   }
 
+  // Status indicator dot
+  const real = window.agentActivity && window.agentActivity.agents[a.name];
+  if (real) {
+    const statusColors = {working:'#22c55e',idle:'#6b7280',waiting:'#f59e0b',blocked:'#ef4444',deployed:'#10b981'};
+    const sc = statusColors[real.status] || '#6b7280';
+    ctx.fillStyle = sc;
+    ctx.beginPath();
+    ctx.arc(bx + 10, by - 14, 3, 0, Math.PI * 2);
+    ctx.fill();
+    // Pulse for working
+    if (real.status === 'working') {
+      ctx.globalAlpha = 0.3 + Math.sin(tick * 0.1) * 0.2;
+      ctx.beginPath();
+      ctx.arc(bx + 10, by - 14, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  // Dim idle/blocked agents
+  if (real && (real.status === 'idle')) {
+    ctx.globalAlpha = 0.5;
+  }
+
   // Name tag (pixel font preserved)
   ctx.fillStyle = a.color;
   ctx.font = '6px "Press Start 2P"';
   const nameW = ctx.measureText(a.name).width;
   ctx.fillText(a.name, bx - nameW / 2 + 3, by - 12);
+  ctx.globalAlpha = 1;
 }
 
 // Helper functions for color manipulation
@@ -687,19 +712,34 @@ function moveToward(agent, tx, ty) {
 }
 
 function updateAgents() {
+  const hasRealData = !!window.agentActivity;
   AGENTS.forEach(a => {
     switch (a.state) {
       case 'working':
-        // Occasionally show work bubble
-        if (rand(0, 200) === 0) {
-          a.bubble = pick(WORK_MSGS[a.name]);
-          a.bubbleTimer = 120;
-        }
-        // Random chance to wander
-        if (rand(0, 500) === 0 && !meetingActive) {
-          a.state = 'walking';
-          a.targetX = a.desk.x + rand(-40, 40);
-          a.targetY = a.desk.y + rand(-20, 30);
+        if (hasRealData) {
+          // Show real task, refresh periodically
+          const real = window.agentActivity.agents[a.name];
+          if (real && rand(0, 300) === 0) {
+            a.bubble = real.task;
+            a.bubbleTimer = 200;
+          }
+          // No random wandering with real data — only walk if idle
+          if (real && real.status === 'idle' && rand(0, 800) === 0 && !meetingActive) {
+            a.state = 'walking';
+            a.targetX = a.desk.x + rand(-20, 20);
+            a.targetY = a.desk.y + rand(-10, 15);
+          }
+        } else {
+          // Fallback: simulated messages
+          if (rand(0, 200) === 0) {
+            a.bubble = pick(WORK_MSGS[a.name]);
+            a.bubbleTimer = 120;
+          }
+          if (rand(0, 500) === 0 && !meetingActive) {
+            a.state = 'walking';
+            a.targetX = a.desk.x + rand(-40, 40);
+            a.targetY = a.desk.y + rand(-20, 30);
+          }
         }
         break;
 
@@ -815,9 +855,11 @@ function update() {
   tick++;
   updateAgents();
 
-  // Trigger events
-  if (tick % 600 === 300 && !meetingActive) triggerMeeting();
-  if (tick % 400 === 200 && !waterCoolerChat) triggerWaterCooler();
+  // Trigger events — much less with real data (mostly visual filler off)
+  const meetFreq = window.agentActivity ? 3000 : 600;
+  const waterFreq = window.agentActivity ? 2000 : 400;
+  if (tick % meetFreq === 300 && !meetingActive) triggerMeeting();
+  if (tick % waterFreq === 200 && !waterCoolerChat) triggerWaterCooler();
 
   // Meeting timer
   if (meetingActive) {
@@ -864,7 +906,13 @@ function gameLoop() {
 // --- STATUS BAR ---
 function updateStatus() {
   statusBar.innerHTML = AGENTS.map(a => {
-    const stateLabel = {working:'💻',walking:'🚶',toMeeting:'🏃',inMeeting:'🗣️',toWater:'🚶',atWater:'☕',toDesk:'🏃'}[a.state] || '?';
+    const real = window.agentActivity && window.agentActivity.agents[a.name];
+    let stateLabel;
+    if (real) {
+      stateLabel = {working:'🟢',idle:'⚪',waiting:'🟡',blocked:'🔴',deployed:'✅'}[real.status] || '❓';
+    } else {
+      stateLabel = {working:'💻',walking:'🚶',toMeeting:'🏃',inMeeting:'🗣️',toWater:'🚶',atWater:'☕',toDesk:'🏃'}[a.state] || '?';
+    }
     return `<div class="agent-badge" data-agent="${a.name}"><span class="dot" style="background:${a.color}"></span>${a.icon} ${a.name} ${stateLabel}</div>`;
   }).join('');
 }
@@ -901,9 +949,9 @@ fetch('/public/data/agent-activity.json')
 addLog('<span class="action">🏢 Agent HQ online. ' + AGENTS.length + ' agents reporting for duty.</span>');
 addLog('<span class="name">Neo</span> <span class="action">Good morning team. Let\'s ship.</span>');
 
-// Stagger initial meetings
-setTimeout(() => triggerMeeting(), 5000);
-setTimeout(() => triggerWaterCooler(), 8000);
+// Stagger initial meetings — less frequent when real data loaded
+setTimeout(() => { if (!window.agentActivity) triggerMeeting(); }, 5000);
+setTimeout(() => { if (!window.agentActivity) triggerWaterCooler(); }, 8000);
 
 gameLoop();
 </script>

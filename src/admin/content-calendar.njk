@@ -50,6 +50,11 @@ permalink: /admin/content-calendar/
     <!-- Export -->
     <div style="margin-top: 2rem; display: flex; gap: 1rem;">
       <button onclick="exportCalendar()" style="background: #6366f1; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer;">📋 Export to Clipboard</button>
+      <button onclick="exportJSON()" style="background: #8b5cf6; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer;">💾 Export JSON</button>
+      <label style="background: #0ea5e9; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer; display: inline-block;">
+        📥 Import JSON
+        <input type="file" accept=".json" onchange="importJSON(event)" style="display:none;">
+      </label>
       <button onclick="clearAll()" style="background: #ef4444; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer;">🗑️ Clear All</button>
     </div>
   </div>
@@ -238,6 +243,16 @@ function updateField(weekIdx, postIdx, field, value) {
   save();
 }
 
+function addContent(weekIdx, postIdx) {
+  calendarData.weeks[weekIdx].posts[postIdx].content = '';
+  save();
+  // After render, open the textarea
+  setTimeout(() => {
+    const el = document.getElementById(`content-${weekIdx}-${postIdx}`);
+    if (el) { el.style.display = 'block'; el.querySelector('textarea')?.focus(); }
+  }, 50);
+}
+
 function deletePost(weekIdx, postIdx) {
   calendarData.weeks[weekIdx].posts.splice(postIdx, 1);
   save();
@@ -308,14 +323,24 @@ function render() {
       const statusIcon = post.status === 'posted' ? '🚀' : post.status === 'approved' ? '✅' : '⏳';
       const rowCls = post.status === 'approved' ? 'approved' : post.status === 'posted' ? 'posted' : '';
 
+      const hasContent = post.content && post.content.trim();
+      const contentId = `content-${wi}-${realIdx}`;
       html += `<div class="post-row ${rowCls}">
         <input type="checkbox" class="approve-checkbox"
           ${post.status !== 'pending' ? 'checked' : ''}
           onchange="toggleApproval(${wi}, ${realIdx})"
           title="Click to cycle: Pending → Approved → Posted">
         <span class="platform-badge ${pInfo.cls}">${pInfo.label}</span>
-        <input class="post-title-input" value="${post.title.replace(/"/g, '&quot;')}"
-          onblur="updateField(${wi}, ${realIdx}, 'title', this.value)">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <input class="post-title-input" value="${post.title.replace(/"/g, '&quot;')}"
+              onblur="updateField(${wi}, ${realIdx}, 'title', this.value)">
+            ${hasContent ? `<button onclick="document.getElementById('${contentId}').style.display = document.getElementById('${contentId}').style.display === 'none' ? 'block' : 'none'" style="background:#e0e7ff;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:0.7rem;color:#4338ca;white-space:nowrap;" title="View/edit content">📄 View</button>` : `<button onclick="addContent(${wi}, ${realIdx})" style="background:#f1f5f9;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:0.7rem;color:#64748b;white-space:nowrap;" title="Add content">+ Content</button>`}
+          </div>
+          <div id="${contentId}" style="display:none;">
+            <textarea style="width:100%;min-height:120px;border:1px solid #d1d5db;border-radius:8px;padding:8px;font-size:0.85rem;font-family:inherit;resize:vertical;" onblur="updateField(${wi}, ${realIdx}, 'content', this.value)">${(post.content || '').replace(/</g, '&lt;')}</textarea>
+          </div>
+        </div>
         <input class="date-input" type="date" value="${post.date}"
           onchange="updateField(${wi}, ${realIdx}, 'date', this.value)">
         <span style="font-size:1.25rem; text-align:center;" title="${post.status}">${statusIcon}</span>
@@ -345,6 +370,51 @@ function exportCalendar() {
     text += '\n';
   });
   navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
+}
+
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(calendarData, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'content-calendar.json'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.weeks) throw new Error('Invalid format');
+      const mode = confirm('MERGE with existing calendar?\n\nOK = Merge (add new posts)\nCancel = Replace everything');
+      if (mode) {
+        // Merge mode
+        data.weeks.forEach(importWeek => {
+          let existing = calendarData.weeks.find(w => w.weekStart === importWeek.weekStart);
+          if (!existing) {
+            calendarData.weeks.push(importWeek);
+          } else {
+            importWeek.posts.forEach(post => {
+              if (!existing.posts.find(p => p.id === post.id)) {
+                existing.posts.push(post);
+              }
+            });
+          }
+        });
+        calendarData.weeks.sort((a, b) => a.weekStart.localeCompare(b.weekStart));
+      } else {
+        calendarData = data;
+      }
+      save();
+      alert('Imported ' + data.weeks.reduce((sum, w) => sum + w.posts.length, 0) + ' posts!');
+    } catch(err) {
+      alert('Import failed: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
 }
 
 function clearAll() {

@@ -4,6 +4,20 @@ title: Rob's Priority Task List - ADHD-Optimized
 permalink: /admin/tasks/
 ---
 
+<!-- PWA Support -->
+<link rel="manifest" href="/public/manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tasks">
+<link rel="apple-touch-icon" href="/public/images/task-icon-192.png">
+<meta name="theme-color" content="#047857">
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/public/sw.js').catch(() => {});
+}
+</script>
+
 <style>
   :root {
     --red-urgent: #dc2626;
@@ -437,25 +451,82 @@ permalink: /admin/tasks/
   }
 
   @media (max-width: 768px) {
+    .tasks-shell {
+      padding: 0.75rem 0.5rem 3rem;
+    }
+
+    .critical-banner {
+      padding: 1rem;
+      border-radius: 0.75rem;
+    }
+
     .critical-title {
-      font-size: 1.8rem;
+      font-size: 1.4rem;
     }
 
     .critical-subtitle {
-      font-size: 1rem;
+      font-size: 0.9rem;
     }
 
     .tasks-title {
-      font-size: 1.6rem;
+      font-size: 1.4rem;
+    }
+
+    .tasks-subtitle {
+      font-size: 0.85rem;
     }
 
     .section-header {
-      font-size: 1.3rem;
+      font-size: 1.1rem;
+      padding: 0.6rem 0.8rem;
+    }
+
+    .task-item {
+      padding: 0.6rem 0.8rem;
     }
 
     .task-meta {
       flex-direction: column;
       align-items: flex-start;
+      gap: 0.25rem;
+    }
+
+    .task-meta .badge,
+    .task-meta .tag {
+      font-size: 0.7rem;
+      padding: 0.15rem 0.4rem;
+    }
+
+    .task-title {
+      font-size: 0.95rem;
+    }
+
+    .task-description {
+      font-size: 0.8rem;
+    }
+
+    .progress-bar-container {
+      padding: 0.75rem;
+    }
+
+    .tip-box {
+      padding: 0.75rem;
+      font-size: 0.85rem;
+    }
+
+    /* PWA install banner */
+    .pwa-install-banner {
+      display: block;
+    }
+  }
+
+  /* PWA standalone mode adjustments */
+  @media (display-mode: standalone) {
+    .tasks-shell {
+      padding-top: env(safe-area-inset-top, 1rem);
+      padding-bottom: env(safe-area-inset-bottom, 2rem);
+      padding-left: env(safe-area-inset-left, 0.5rem);
+      padding-right: env(safe-area-inset-right, 0.5rem);
     }
   }
 </style>

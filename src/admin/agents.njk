@@ -1,0 +1,508 @@
+---
+layout: false
+permalink: /admin/agents/index.html
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neo's Office — Agent HQ</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f0f1a; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; font-family: 'Press Start 2P', monospace; }
+  h1 { color: #10b981; font-size: 14px; margin: 16px 0 8px; letter-spacing: 2px; }
+  #game { border: 4px solid #1e3a34; image-rendering: pixelated; cursor: crosshair; }
+  #log { width: 640px; max-height: 140px; overflow-y: auto; background: #1a1a2e; border: 2px solid #1e3a34; color: #94a3b8; font-size: 8px; padding: 8px; margin-top: 8px; line-height: 1.6; }
+  #log .time { color: #047857; } #log .name { color: #e3b23c; } #log .action { color: #cbd5e1; }
+  #status { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; justify-content: center; }
+  .agent-badge { background: #1a1a2e; border: 1px solid #334155; padding: 4px 8px; font-size: 7px; color: #94a3b8; display: flex; align-items: center; gap: 6px; }
+  .agent-badge .dot { width: 6px; height: 6px; border-radius: 50%; }
+  a.back { color: #475569; font-size: 8px; text-decoration: none; margin-top: 12px; }
+  a.back:hover { color: #10b981; }
+</style>
+</head>
+<body>
+<h1>⚔️ NEO'S OFFICE — AGENT HQ ⚔️</h1>
+<canvas id="game" width="640" height="480"></canvas>
+<div id="status"></div>
+<div id="log"></div>
+<a class="back" href="/admin/">← Back to Admin</a>
+
+<script>
+const C = document.getElementById('game');
+const ctx = C.getContext('2d');
+const log = document.getElementById('log');
+const statusBar = document.getElementById('status');
+
+// --- COLORS (NES palette) ---
+const PAL = {
+  floor: '#2a2a3e', wall: '#1e3a34', carpet: '#1a2332', desk: '#5c4033',
+  chair: '#3d2b1f', monitor: '#0f172a', monitorGlow: '#10b981',
+  water: '#0ea5e9', waterBase: '#475569', plant: '#059669',
+  confTable: '#4a3728', whiteboard: '#e2e8f0', doorFrame: '#8b7355'
+};
+
+// --- AGENTS ---
+const AGENTS = [
+  { name: 'Neo', role: 'Chief of Staff', color: '#10b981', accent: '#059669', icon: '🕶️', x: 320, y: 160, state: 'working', desk: {x:296,y:140}, speed: 1.2 },
+  { name: 'Scout', role: 'Research', color: '#f59e0b', accent: '#d97706', icon: '🔍', x: 120, y: 120, state: 'working', desk: {x:100,y:100}, speed: 0.9 },
+  { name: 'Writer', role: 'Content', color: '#8b5cf6', accent: '#7c3aed', icon: '✍️', x: 120, y: 200, state: 'working', desk: {x:100,y:180}, speed: 0.8 },
+  { name: 'Analyst', role: 'Analytics', color: '#ec4899', accent: '#db2777', icon: '📊', x: 200, y: 120, state: 'working', desk: {x:200,y:100}, speed: 0.7 },
+  { name: 'Engineer', role: 'Developer', color: '#06b6d4', accent: '#0891b2', icon: '⚙️', x: 200, y: 200, state: 'working', desk: {x:200,y:180}, speed: 1.0 },
+  { name: 'Planner', role: 'Task Chains', color: '#f97316', accent: '#ea580c', icon: '📋', x: 520, y: 120, state: 'working', desk: {x:500,y:100}, speed: 0.85 },
+  { name: 'Browser', role: 'Web Agent', color: '#14b8a6', accent: '#0d9488', icon: '🌐', x: 520, y: 200, state: 'working', desk: {x:500,y:180}, speed: 0.95 },
+  { name: 'Docs', role: 'Documents', color: '#a855f7', accent: '#9333ea', icon: '📄', x: 420, y: 200, state: 'working', desk: {x:400,y:180}, speed: 0.75 },
+];
+
+// --- OFFICE LAYOUT ---
+const ROOMS = {
+  mainOffice: { x: 60, y: 70, w: 520, h: 180 },
+  confRoom: { x: 180, y: 290, w: 200, h: 130 },
+  waterCooler: { x: 450, y: 310, w: 50, h: 50 },
+  neoOffice: { x: 280, y: 70, w: 120, h: 80 }
+};
+
+const CONF_TABLE = { x: 230, y: 320, w: 100, h: 60 };
+const WATER_POS = { x: 470, y: 325 };
+const WHITEBOARD = { x: 200, y: 292, w: 160, h: 8 };
+
+// --- MESSAGES ---
+const WORK_MSGS = {
+  Neo: ["Reviewing agent reports...", "Prioritizing tasks...", "Checking heartbeat...", "Deploying updates...", "Reading Rob's messages..."],
+  Scout: ["Scanning r/bcba...", "Found a new lead!", "Competitor update...", "Checking Reddit...", "New finding: relevance 8!"],
+  Writer: ["Drafting blog post...", "Writing email copy...", "Editing for citations...", "Social post ready!", "Checking tone..."],
+  Analyst: ["Running daily report...", "Calculating MRR...", "Tracking engagement...", "Building dashboard...", "Crunching numbers..."],
+  Engineer: ["Building feature...", "Fixing bug...", "npm install...", "Pushing to GitHub...", "Code review done!"],
+  Planner: ["Decomposing task...", "Step 3 of 7 done!", "Verifying output...", "Checkpoint saved.", "Chaining next step..."],
+  Browser: ["Scraping competitor...", "Health check: all ✅", "Taking screenshot...", "Navigating LinkedIn...", "Extracting data..."],
+  Docs: ["Generating PDF...", "Formatting Excel...", "Brand colors applied.", "Report: 3 pages.", "Table styled! ✅"]
+};
+
+const MEETING_TOPICS = [
+  "Content strategy sync", "Competitor deep dive", "Weekly priorities",
+  "Revenue review", "New feature planning", "SEO audit results",
+  "Blog post review", "Toolchest roadmap", "LinkedIn strategy"
+];
+
+const WATER_COOLER_CHAT = [
+  ["Did you see that Reddit post?", "Yeah, relevance 9!"],
+  ["Rob wants LinkedIn access.", "Browser agent ready!"],
+  ["Mock scores content?", "Draft almost done!"],
+  ["New competitor found.", "I'll benchmark them."],
+  ["Email campaigns ready?", "9 templates done!"],
+  ["Planner crushed it.", "9 min flat!"],
+];
+
+// --- STATE ---
+let tick = 0;
+let meetingActive = false;
+let meetingTopic = '';
+let meetingAgents = [];
+let meetingTimer = 0;
+let waterCoolerChat = null;
+let waterCoolerTimer = 0;
+let particles = [];
+
+function addLog(msg) {
+  const t = new Date().toLocaleTimeString('en-US', {hour12:false, hour:'2-digit', minute:'2-digit'});
+  log.innerHTML += `<span class="time">[${t}]</span> ${msg}<br>`;
+  log.scrollTop = log.scrollHeight;
+}
+
+function rand(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+function pick(arr) { return arr[rand(0, arr.length - 1)]; }
+function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+
+// --- DRAWING ---
+function drawPixelRect(x, y, w, h, color) {
+  ctx.fillStyle = color;
+  ctx.fillRect(Math.floor(x), Math.floor(y), w, h);
+}
+
+function drawOffice() {
+  // Floor
+  ctx.fillStyle = '#16162a';
+  ctx.fillRect(0, 0, 640, 480);
+
+  // Main office floor
+  drawPixelRect(ROOMS.mainOffice.x, ROOMS.mainOffice.y, ROOMS.mainOffice.w, ROOMS.mainOffice.h, PAL.floor);
+
+  // Neo's office (slightly different shade)
+  drawPixelRect(ROOMS.neoOffice.x, ROOMS.neoOffice.y, ROOMS.neoOffice.w, ROOMS.neoOffice.h, '#2e2e48');
+  // Neo's office border
+  ctx.strokeStyle = PAL.wall;
+  ctx.lineWidth = 3;
+  ctx.strokeRect(ROOMS.neoOffice.x, ROOMS.neoOffice.y, ROOMS.neoOffice.w, ROOMS.neoOffice.h);
+
+  // Conference room
+  drawPixelRect(ROOMS.confRoom.x, ROOMS.confRoom.y, ROOMS.confRoom.w, ROOMS.confRoom.h, '#252540');
+  ctx.strokeStyle = PAL.wall;
+  ctx.strokeRect(ROOMS.confRoom.x, ROOMS.confRoom.y, ROOMS.confRoom.w, ROOMS.confRoom.h);
+
+  // Hallway connecting main to conf room
+  drawPixelRect(260, 250, 100, 42, PAL.floor);
+
+  // Water cooler area
+  drawPixelRect(ROOMS.waterCooler.x - 10, ROOMS.waterCooler.y - 10, 70, 70, '#222238');
+
+  // Walls
+  ctx.strokeStyle = PAL.wall;
+  ctx.lineWidth = 4;
+  ctx.strokeRect(ROOMS.mainOffice.x, ROOMS.mainOffice.y, ROOMS.mainOffice.w, ROOMS.mainOffice.h);
+
+  // Hallway to water cooler
+  drawPixelRect(440, 250, 80, 70, PAL.floor);
+
+  // --- FURNITURE ---
+
+  // Desks (each agent gets a desk)
+  AGENTS.forEach(a => {
+    if (a.name === 'Neo') {
+      // Neo gets a bigger desk
+      drawPixelRect(a.desk.x - 4, a.desk.y - 4, 48, 32, PAL.desk);
+      drawPixelRect(a.desk.x + 8, a.desk.y, 20, 12, PAL.monitor);
+      drawPixelRect(a.desk.x + 10, a.desk.y + 2, 16, 8, PAL.monitorGlow);
+    } else {
+      drawPixelRect(a.desk.x - 2, a.desk.y - 2, 36, 24, PAL.desk);
+      drawPixelRect(a.desk.x + 6, a.desk.y + 2, 14, 10, PAL.monitor);
+      // Screen glow
+      drawPixelRect(a.desk.x + 8, a.desk.y + 4, 10, 6, a.color);
+    }
+  });
+
+  // Conference table
+  drawPixelRect(CONF_TABLE.x, CONF_TABLE.y, CONF_TABLE.w, CONF_TABLE.h, PAL.confTable);
+  // Chairs around table
+  for (let i = 0; i < 4; i++) {
+    drawPixelRect(CONF_TABLE.x + 10 + i * 22, CONF_TABLE.y - 10, 12, 8, PAL.chair);
+    drawPixelRect(CONF_TABLE.x + 10 + i * 22, CONF_TABLE.y + CONF_TABLE.h + 2, 12, 8, PAL.chair);
+  }
+
+  // Whiteboard
+  drawPixelRect(WHITEBOARD.x, WHITEBOARD.y, WHITEBOARD.w, WHITEBOARD.h, PAL.whiteboard);
+  ctx.fillStyle = '#059669';
+  ctx.font = '6px monospace';
+  ctx.fillText(meetingActive ? meetingTopic : 'AGENT HQ', WHITEBOARD.x + 4, WHITEBOARD.y + 6);
+
+  // Water cooler
+  drawPixelRect(WATER_POS.x - 8, WATER_POS.y - 8, 16, 24, PAL.waterBase);
+  drawPixelRect(WATER_POS.x - 5, WATER_POS.y - 14, 10, 10, PAL.water);
+  // Bubbles
+  if (tick % 30 < 15) {
+    drawPixelRect(WATER_POS.x - 2, WATER_POS.y - 18, 3, 3, '#7dd3fc');
+  }
+
+  // Plants
+  [[70, 80], [570, 80], [70, 240], [570, 240]].forEach(([px, py]) => {
+    drawPixelRect(px, py + 4, 8, 8, '#5c4033');
+    drawPixelRect(px - 2, py, 12, 6, PAL.plant);
+    drawPixelRect(px + 1, py - 4, 6, 6, '#34d399');
+  });
+
+  // Labels
+  ctx.fillStyle = '#475569';
+  ctx.font = '7px "Press Start 2P"';
+  ctx.fillText('MAIN OFFICE', 240, 265);
+  ctx.fillText('CONF ROOM', 235, 430);
+  ctx.fillText('☕', 465, 380);
+
+  // Neo's office label
+  ctx.fillStyle = '#10b981';
+  ctx.fillText("NEO", 325, 85);
+}
+
+function drawAgent(a) {
+  const bx = Math.floor(a.x);
+  const by = Math.floor(a.y);
+
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.fillRect(bx - 5, by + 10, 14, 4);
+
+  // Body
+  ctx.fillStyle = a.color;
+  ctx.fillRect(bx - 4, by - 2, 12, 14);
+
+  // Head
+  ctx.fillStyle = a.accent;
+  ctx.fillRect(bx - 3, by - 8, 10, 8);
+
+  // Eyes
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(bx - 1, by - 6, 3, 3);
+  ctx.fillRect(bx + 3, by - 6, 3, 3);
+  ctx.fillStyle = '#000';
+  ctx.fillRect(bx, by - 5, 2, 2);
+  ctx.fillRect(bx + 4, by - 5, 2, 2);
+
+  // Walking animation
+  if (a.state === 'walking' || a.state === 'toMeeting' || a.state === 'toWater' || a.state === 'toDesk') {
+    const legOffset = Math.sin(tick * 0.3) * 3;
+    ctx.fillStyle = a.accent;
+    ctx.fillRect(bx - 2, by + 12, 4, 4 + legOffset);
+    ctx.fillRect(bx + 3, by + 12, 4, 4 - legOffset);
+  } else {
+    ctx.fillStyle = a.accent;
+    ctx.fillRect(bx - 2, by + 12, 4, 4);
+    ctx.fillRect(bx + 3, by + 12, 4, 4);
+  }
+
+  // Name tag
+  ctx.fillStyle = a.color;
+  ctx.font = '6px "Press Start 2P"';
+  const nameW = ctx.measureText(a.name).width;
+  ctx.fillText(a.name, bx - nameW / 2 + 3, by - 12);
+}
+
+function drawBubble(x, y, text, color) {
+  ctx.font = '6px "Press Start 2P"';
+  const w = Math.min(ctx.measureText(text).width + 12, 160);
+  const bx = x - w / 2;
+  const by = y - 28;
+
+  ctx.fillStyle = 'rgba(15,23,42,0.9)';
+  ctx.fillRect(bx, by, w, 16);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1;
+  ctx.strokeRect(bx, by, w, 16);
+
+  // Tail
+  ctx.fillStyle = 'rgba(15,23,42,0.9)';
+  ctx.fillRect(x - 3, by + 16, 6, 4);
+
+  ctx.fillStyle = color;
+  const displayText = text.length > 26 ? text.substring(0, 24) + '..' : text;
+  ctx.fillText(displayText, bx + 6, by + 11);
+}
+
+function drawParticles() {
+  particles = particles.filter(p => p.life > 0);
+  particles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.life--;
+    ctx.globalAlpha = p.life / p.maxLife;
+    ctx.fillStyle = p.color;
+    ctx.fillRect(p.x, p.y, 2, 2);
+  });
+  ctx.globalAlpha = 1;
+}
+
+function spawnParticles(x, y, color, count) {
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x, y, vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2,
+      life: rand(15, 30), maxLife: 30, color
+    });
+  }
+}
+
+// --- AI BEHAVIOR ---
+function moveToward(agent, tx, ty) {
+  const dx = tx - agent.x;
+  const dy = ty - agent.y;
+  const d = Math.hypot(dx, dy);
+  if (d < 3) return true;
+  agent.x += (dx / d) * agent.speed;
+  agent.y += (dy / d) * agent.speed;
+  return false;
+}
+
+function updateAgents() {
+  AGENTS.forEach(a => {
+    switch (a.state) {
+      case 'working':
+        // Occasionally show work bubble
+        if (rand(0, 200) === 0) {
+          a.bubble = pick(WORK_MSGS[a.name]);
+          a.bubbleTimer = 120;
+        }
+        // Random chance to wander
+        if (rand(0, 500) === 0 && !meetingActive) {
+          a.state = 'walking';
+          a.targetX = a.desk.x + rand(-40, 40);
+          a.targetY = a.desk.y + rand(-20, 30);
+        }
+        break;
+
+      case 'walking':
+        if (moveToward(a, a.targetX, a.targetY)) {
+          a.state = 'toDesk';
+        }
+        break;
+
+      case 'toDesk':
+        if (moveToward(a, a.desk.x + 12, a.desk.y + 20)) {
+          a.state = 'working';
+          spawnParticles(a.x, a.y, a.color, 5);
+        }
+        break;
+
+      case 'toMeeting':
+        {
+          const idx = meetingAgents.indexOf(a);
+          const seat = getMeetingSeat(idx);
+          if (moveToward(a, seat.x, seat.y)) {
+            a.state = 'inMeeting';
+          }
+        }
+        break;
+
+      case 'inMeeting':
+        if (rand(0, 60) === 0) {
+          a.bubble = pick([meetingTopic, "Good point!", "I agree.", "Let me check...", "Data says...", "Ship it!"]);
+          a.bubbleTimer = 90;
+        }
+        break;
+
+      case 'toWater':
+        {
+          const wx = WATER_POS.x + rand(-20, 20);
+          const wy = WATER_POS.y + rand(10, 25);
+          if (moveToward(a, wx, wy)) {
+            a.state = 'atWater';
+            a.waterTimer = rand(100, 200);
+          }
+        }
+        break;
+
+      case 'atWater':
+        a.waterTimer--;
+        if (a.waterTimer <= 0) {
+          a.state = 'toDesk';
+        }
+        break;
+    }
+
+    // Bubble timer
+    if (a.bubbleTimer > 0) a.bubbleTimer--;
+    if (a.bubbleTimer === 0) a.bubble = null;
+  });
+}
+
+function getMeetingSeat(idx) {
+  const seats = [
+    { x: CONF_TABLE.x + 15, y: CONF_TABLE.y - 16 },
+    { x: CONF_TABLE.x + 45, y: CONF_TABLE.y - 16 },
+    { x: CONF_TABLE.x + 75, y: CONF_TABLE.y - 16 },
+    { x: CONF_TABLE.x + 15, y: CONF_TABLE.y + CONF_TABLE.h + 8 },
+    { x: CONF_TABLE.x + 45, y: CONF_TABLE.y + CONF_TABLE.h + 8 },
+    { x: CONF_TABLE.x + 75, y: CONF_TABLE.y + CONF_TABLE.h + 8 },
+  ];
+  return seats[idx % seats.length];
+}
+
+function triggerMeeting() {
+  if (meetingActive) return;
+  meetingActive = true;
+  meetingTopic = pick(MEETING_TOPICS);
+  meetingTimer = rand(400, 600);
+  // Pick 3-5 agents for meeting
+  const count = rand(3, 5);
+  const shuffled = [...AGENTS].sort(() => Math.random() - 0.5);
+  meetingAgents = shuffled.slice(0, count);
+  meetingAgents.forEach(a => { a.state = 'toMeeting'; });
+  addLog(`<span class="name">${meetingAgents.map(a=>a.name).join(', ')}</span> <span class="action">→ Meeting: "${meetingTopic}"</span>`);
+  spawnParticles(280, 350, '#e3b23c', 15);
+}
+
+function endMeeting() {
+  meetingActive = false;
+  meetingAgents.forEach(a => { a.state = 'toDesk'; });
+  addLog(`<span class="action">Meeting ended: "${meetingTopic}"</span>`);
+  meetingAgents = [];
+  meetingTopic = '';
+}
+
+function triggerWaterCooler() {
+  if (waterCoolerChat) return;
+  const available = AGENTS.filter(a => a.state === 'working');
+  if (available.length < 2) return;
+  const pair = available.sort(() => Math.random() - 0.5).slice(0, 2);
+  waterCoolerChat = pair;
+  waterCoolerTimer = rand(150, 250);
+  pair.forEach(a => { a.state = 'toWater'; });
+  const chat = pick(WATER_COOLER_CHAT);
+  setTimeout(() => {
+    if (pair[0]) { pair[0].bubble = chat[0]; pair[0].bubbleTimer = 120; }
+  }, 2000);
+  setTimeout(() => {
+    if (pair[1]) { pair[1].bubble = chat[1]; pair[1].bubbleTimer = 120; }
+  }, 3500);
+  addLog(`<span class="name">${pair[0].name}</span> and <span class="name">${pair[1].name}</span> <span class="action">→ Water cooler chat ☕</span>`);
+}
+
+// --- MAIN LOOP ---
+function update() {
+  tick++;
+  updateAgents();
+
+  // Trigger events
+  if (tick % 600 === 300 && !meetingActive) triggerMeeting();
+  if (tick % 400 === 200 && !waterCoolerChat) triggerWaterCooler();
+
+  // Meeting timer
+  if (meetingActive) {
+    meetingTimer--;
+    if (meetingTimer <= 0) endMeeting();
+  }
+
+  // Water cooler timer
+  if (waterCoolerChat) {
+    waterCoolerTimer--;
+    if (waterCoolerTimer <= 0) {
+      waterCoolerChat.forEach(a => { if (a.state === 'atWater') a.state = 'toDesk'; });
+      waterCoolerChat = null;
+    }
+  }
+}
+
+function render() {
+  drawOffice();
+  // Sort agents by Y for depth
+  const sorted = [...AGENTS].sort((a, b) => a.y - b.y);
+  sorted.forEach(a => {
+    drawAgent(a);
+    if (a.bubble && a.bubbleTimer > 0) {
+      drawBubble(a.x + 3, a.y - 10, a.bubble, a.color);
+    }
+  });
+  drawParticles();
+
+  // Meeting indicator
+  if (meetingActive) {
+    ctx.fillStyle = '#e3b23c';
+    ctx.font = '7px "Press Start 2P"';
+    ctx.fillText('📢 MEETING', 245, 288);
+  }
+}
+
+function gameLoop() {
+  update();
+  render();
+  requestAnimationFrame(gameLoop);
+}
+
+// --- STATUS BAR ---
+function updateStatus() {
+  statusBar.innerHTML = AGENTS.map(a => {
+    const stateLabel = {working:'💻',walking:'🚶',toMeeting:'🏃',inMeeting:'🗣️',toWater:'🚶',atWater:'☕',toDesk:'🏃'}[a.state] || '?';
+    return `<div class="agent-badge"><span class="dot" style="background:${a.color}"></span>${a.icon} ${a.name} ${stateLabel}</div>`;
+  }).join('');
+}
+setInterval(updateStatus, 500);
+
+// --- INIT ---
+addLog('<span class="action">🏢 Agent HQ online. 7 agents reporting for duty.</span>');
+addLog('<span class="name">Neo</span> <span class="action">Good morning team. Let\'s ship.</span>');
+
+// Stagger initial meetings
+setTimeout(() => triggerMeeting(), 5000);
+setTimeout(() => triggerWaterCooler(), 8000);
+
+gameLoop();
+</script>
+</body>
+</html>

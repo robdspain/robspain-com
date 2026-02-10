@@ -87,27 +87,49 @@ const statusBar = document.getElementById('status');
 
 // --- BLOCKED ITEMS ---
 const BLOCKED = [
-  { item: "Reconnect GitHub in Netlify", type: "BLOCKER", priority: "CRITICAL" },
-  { item: "9 writer drafts need review", type: "APPROVAL", priority: "HIGH" },
-  { item: "app.behaviorschool.com DNS setup", type: "BLOCKER", priority: "HIGH" },
-  { item: "Gmail app password for BAE SIG", type: "BLOCKER", priority: "MEDIUM" },
-  { item: "PayPal link from Liz Flaherty", type: "BLOCKER", priority: "MEDIUM" },
-  { item: "gog auth for Gmail/Calendar", type: "BLOCKER", priority: "MEDIUM" },
-  { item: "Ahrefs login credentials", type: "BLOCKER", priority: "LOW" },
-  { item: "Social media account logins", type: "BLOCKER", priority: "LOW" },
+  { item: "Reconnect GitHub in Netlify", type: "BLOCKER", priority: "CRITICAL", agents: ["BehaviorSchool", "RobSpain.com", "Study App"], instructions: "Go to app.netlify.com → Team settings → Access & security → Git provider → Reconnect GitHub. This fixes ALL 3 sites at once." },
+  { item: "9 writer drafts need review", type: "APPROVAL", priority: "HIGH", agents: ["Writer"], instructions: "Review blog drafts. Neo will send you preview links on Telegram — read on phone, reply 'approved' or send feedback." },
+  { item: "app.behaviorschool.com DNS setup", type: "BLOCKER", priority: "HIGH", agents: ["Pro"], instructions: "Add CNAME record for app.behaviorschool.com pointing to the Vercel/Netlify deployment. Check your domain registrar (Cloudflare?)." },
+  { item: "Gmail app password for BAE SIG", type: "BLOCKER", priority: "MEDIUM", agents: ["BAE SIG"], instructions: "Go to myaccount.google.com → Security → App passwords for california.bae.sig@gmail.com. Generate an app password. Send it to Neo to set as GMAIL_APP_PASSWORD on Vercel." },
+  { item: "PayPal link from Liz Flaherty", type: "BLOCKER", priority: "MEDIUM", agents: ["BAE SIG"], instructions: "Ask Liz Flaherty for the PayPal QR/link earmarked 'SIG Reception Donation'. Neo will update the raffle site." },
+  { item: "gog auth for Gmail/Calendar", type: "BLOCKER", priority: "MEDIUM", agents: ["Neo", "Scout"], instructions: "When home at Mac mini, run: GOG_KEYRING_BACKEND=file gog auth add robspain@gmail.com --services gmail,calendar,drive,contacts,docs,sheets" },
+  { item: "Ahrefs login credentials", type: "BLOCKER", priority: "LOW", agents: ["SEO"], instructions: "Share Ahrefs login with Neo so the SEO agent can run keyword gap analysis and competitor tracking." },
+  { item: "Social media account logins", type: "BLOCKER", priority: "LOW", agents: ["Writer", "Browser"], instructions: "Share Instagram, LinkedIn, Facebook, YouTube logins so agents can post approved content directly." },
 ];
 
 function renderBlockedPanel() {
   const panel = document.getElementById('blocked-list');
-  panel.innerHTML = BLOCKED.map(item => `
-    <div class="blocked-item">
+  panel.innerHTML = BLOCKED.map((item, i) => `
+    <div class="blocked-item" style="cursor:pointer" onclick="showBlockerDetail(${i})">
       <div class="priority ${item.priority}">⚠ ${item.priority}</div>
       <div class="text">${item.item}</div>
-      <div class="type">${item.type}</div>
+      <div class="type">${item.type} · ${item.agents.join(', ')}</div>
     </div>
   `).join('');
 }
 renderBlockedPanel();
+
+function showBlockerDetail(idx) {
+  const b = BLOCKED[idx];
+  const overlay = document.getElementById('modal-overlay');
+  const title = document.getElementById('modal-title');
+  const info = document.getElementById('modal-info');
+  const input = document.getElementById('modal-input');
+  title.textContent = '⚠️ ' + b.priority + ': ' + b.item;
+  info.innerHTML = '<strong style="color:#f59e0b">Blocked agents:</strong> ' + b.agents.join(', ') + '<br><br><strong style="color:#10b981">What Rob needs to do:</strong><br>' + b.instructions;
+  input.style.display = 'none';
+  document.getElementById('modal-send').style.display = 'none';
+  overlay.classList.add('show');
+}
+
+// Reset modal for agent instructions
+const origCancel = document.getElementById('modal-cancel').onclick;
+document.getElementById('modal-cancel').onclick = () => {
+  document.getElementById('modal-input').style.display = '';
+  document.getElementById('modal-send').style.display = '';
+  document.getElementById('modal-overlay').classList.remove('show');
+  selectedAgent = null;
+};
 
 // --- FULLSCREEN CANVAS ---
 let SCALE = 1;
@@ -154,14 +176,22 @@ C.addEventListener('click', (e) => {
 
 function openAgentModal(agent) {
   selectedAgent = agent;
+  document.getElementById('modal-input').style.display = '';
+  document.getElementById('modal-send').style.display = '';
   modalTitle.textContent = agent.icon + ' ' + agent.name + ' — ' + agent.role;
-  modalInfo.textContent = 'Status: ' + agent.state + ' | Click SEND to give an instruction.';
+  // Show real task if available from activity data
+  const realTask = (window.agentActivity && window.agentActivity.agents && window.agentActivity.agents[agent.name])
+    ? window.agentActivity.agents[agent.name].task
+    : null;
+  const statusEmoji = {working:'🟢',idle:'⚪',waiting:'🟡',blocked:'🔴',deployed:'✅'}[agent.state] || '⚪';
+  modalInfo.innerHTML = '<strong style="color:#10b981">Status:</strong> ' + statusEmoji + ' ' + agent.state +
+    (realTask ? '<br><br><strong style="color:#f59e0b">Current task:</strong> ' + realTask : '') +
+    '<br><br>Type an instruction below and hit SEND:';
   modalInput.value = '';
   modal.classList.add('show');
   modalInput.focus();
 }
 
-document.getElementById('modal-cancel').onclick = () => { modal.classList.remove('show'); selectedAgent = null; };
 document.getElementById('modal-send').onclick = sendInstruction;
 modalInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendInstruction(); if (e.key === 'Escape') { modal.classList.remove('show'); selectedAgent = null; } });
 
@@ -216,14 +246,14 @@ const AGENTS = [
   { name: 'BAE SIG', role: 'CalABA Ops', color: '#fbbf24', accent: '#f59e0b', icon: '🎓', x: 100, y: 195, state: 'working', desk: {x:80,y:175}, speed: 0.7 },
   { name: 'KCUSD', role: 'Schools', color: '#4ade80', accent: '#22c55e', icon: '🏫', x: 180, y: 195, state: 'working', desk: {x:170,y:175}, speed: 0.65 },
   // --- Tier 3: Repo Agents ---
-  { name: 'RobSite', role: 'robspain.com', color: '#34d399', accent: '#10b981', icon: '🌿', x: 100, y: 280, state: 'working', desk: {x:80,y:260}, speed: 0.7 },
-  { name: 'BehSch', role: 'behaviorschool.com', color: '#047857', accent: '#065f46', icon: '📗', x: 180, y: 280, state: 'working', desk: {x:170,y:260}, speed: 0.7 },
-  { name: 'StudyApp', role: 'study.beh...', color: '#fb923c', accent: '#ea580c', icon: '📱', x: 260, y: 280, state: 'working', desk: {x:250,y:260}, speed: 0.75 },
+  { name: 'RobSpain.com', role: 'robspain.com', color: '#34d399', accent: '#10b981', icon: '🌿', x: 100, y: 280, state: 'working', desk: {x:80,y:260}, speed: 0.7 },
+  { name: 'BehaviorSchool', role: 'behaviorschool.com', color: '#047857', accent: '#065f46', icon: '📗', x: 180, y: 280, state: 'working', desk: {x:170,y:260}, speed: 0.7 },
+  { name: 'Study App', role: 'study.beh...', color: '#fb923c', accent: '#ea580c', icon: '📱', x: 260, y: 280, state: 'working', desk: {x:250,y:260}, speed: 0.75 },
   { name: 'Pro', role: 'app.beh...', color: '#a78bfa', accent: '#7c3aed', icon: '💎', x: 340, y: 280, state: 'working', desk: {x:330,y:260}, speed: 0.7 },
-  { name: 'Superv', role: 'supervision', color: '#f472b6', accent: '#db2777', icon: '👥', x: 420, y: 280, state: 'working', desk: {x:410,y:260}, speed: 0.65 },
-  { name: 'Tools', role: 'toolchest', color: '#facc15', accent: '#eab308', icon: '🧰', x: 500, y: 280, state: 'working', desk: {x:490,y:260}, speed: 0.7 },
-  { name: 'Video', role: 'video gen', color: '#f87171', accent: '#ef4444', icon: '🎬', x: 100, y: 345, state: 'working', desk: {x:80,y:325}, speed: 0.8 },
-  { name: 'Learn', role: 'learning', color: '#38bdf8', accent: '#0284c7', icon: '📚', x: 180, y: 345, state: 'working', desk: {x:170,y:325}, speed: 0.65 },
+  { name: 'Supervision', role: 'supervision', color: '#f472b6', accent: '#db2777', icon: '👥', x: 420, y: 280, state: 'working', desk: {x:410,y:260}, speed: 0.65 },
+  { name: 'Toolchest', role: 'toolchest', color: '#facc15', accent: '#eab308', icon: '🧰', x: 500, y: 280, state: 'working', desk: {x:490,y:260}, speed: 0.7 },
+  { name: 'VideoGen', role: 'video gen', color: '#f87171', accent: '#ef4444', icon: '🎬', x: 100, y: 345, state: 'working', desk: {x:80,y:325}, speed: 0.8 },
+  { name: 'Learning', role: 'learning', color: '#38bdf8', accent: '#0284c7', icon: '📚', x: 180, y: 345, state: 'working', desk: {x:170,y:325}, speed: 0.65 },
 ];
 
 // --- OFFICE LAYOUT ---
@@ -254,14 +284,14 @@ const WORK_MSGS = {
   SEO: ["Adding FAQ schema...", "Rewriting headers...", "AEO quick win found!", "Checking snippets...", "GEO authority score ↑"],
   'BAE SIG': ["Checking raffle sales...", "Ticket emailed! ✅", "PayPal revenue: $40", "Certificate ready.", "Updating prizes..."],
   KCUSD: ["Team roster updated.", "FBA referral logged.", "Checking caseloads...", "RBT schedule synced.", "26 team members ✅"],
-  RobSite: ["Building 11ty...", "Hero section fix.", "Admin page updated.", "CV refreshed.", "Deploy to Netlify..."],
-  BehSch: ["Next.js building...", "Nav menu fixed.", "New landing page.", "IEP tool update.", "Checking SEO..."],
-  StudyApp: ["10K questions loaded.", "Mock exam scored.", "AI Tutor response.", "Stripe checkout OK.", "iOS build running..."],
+  'RobSpain.com': ["Building 11ty...", "Hero section fix.", "Admin page updated.", "CV refreshed.", "Deploy to Netlify..."],
+  BehaviorSchool: ["Next.js building...", "Nav menu fixed.", "New landing page.", "IEP tool update.", "Checking SEO..."],
+  'Study App': ["10K questions loaded.", "Mock exam scored.", "AI Tutor response.", "Stripe checkout OK.", "iOS build running..."],
   Pro: ["FBA-to-BIP draft...", "Goal bank query.", "ACT matrix loaded.", "Convex sync ✅", "New user signup!"],
-  Superv: ["Directory updated.", "Hour log saved.", "Compliance check ✅", "Study bridge sync.", "Supervisor matched."],
-  Tools: ["Data collection...", "Graph rendered.", "BIP template ready.", "Definition written.", "Convex function OK."],
-  Video: ["Rendering batch...", "Remotion compose.", "Thumbnail gen.", "Social clip ready!", "Upload to R2..."],
-  Learn: ["Course uploaded.", "Video transcoded.", "R2 bucket sync.", "CEU tracker update.", "Module published."]
+  Supervision: ["Directory updated.", "Hour log saved.", "Compliance check ✅", "Study bridge sync.", "Supervisor matched."],
+  Toolchest: ["Data collection...", "Graph rendered.", "BIP template ready.", "Definition written.", "Convex function OK."],
+  VideoGen: ["Rendering batch...", "Remotion compose.", "Thumbnail gen.", "Social clip ready!", "Upload to R2..."],
+  Learning: ["Course uploaded.", "Video transcoded.", "R2 bucket sync.", "CEU tracker update.", "Module published."]
 };
 
 const MEETING_TOPICS = [
@@ -839,6 +869,33 @@ function updateStatus() {
   }).join('');
 }
 setInterval(updateStatus, 500);
+
+// --- LOAD REAL ACTIVITY DATA ---
+window.agentActivity = null;
+fetch('/public/data/agent-activity.json')
+  .then(r => r.json())
+  .then(data => {
+    window.agentActivity = data;
+    // Update agent states and bubbles with real data
+    AGENTS.forEach(a => {
+      const real = data.agents[a.name];
+      if (real) {
+        a.bubble = real.task;
+        a.bubbleTimer = 600; // Show for a long time
+        if (real.status === 'blocked') a.state = 'working'; // still show them, but bubble shows blocked
+      }
+    });
+    // Log recent activity
+    if (data.recentActivity) {
+      data.recentActivity.slice().reverse().forEach(act => {
+        addLog('<span class="time">[' + act.time + ']</span> <span class="name">' + act.agent + '</span> <span class="action">' + act.action + '</span>');
+      });
+    }
+    addLog('<span class="action">📡 Loaded real agent activity data.</span>');
+  })
+  .catch(() => {
+    addLog('<span class="action">⚠️ Could not load activity data — showing simulation.</span>');
+  });
 
 // --- INIT ---
 addLog('<span class="action">🏢 Agent HQ online. ' + AGENTS.length + ' agents reporting for duty.</span>');

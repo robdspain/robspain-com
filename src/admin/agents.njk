@@ -54,6 +54,9 @@ const AGENTS = [
   { name: 'Planner', role: 'Task Chains', color: '#f97316', accent: '#ea580c', icon: '📋', x: 520, y: 120, state: 'working', desk: {x:500,y:100}, speed: 0.85 },
   { name: 'Browser', role: 'Web Agent', color: '#14b8a6', accent: '#0d9488', icon: '🌐', x: 520, y: 200, state: 'working', desk: {x:500,y:180}, speed: 0.95 },
   { name: 'Docs', role: 'Documents', color: '#a855f7', accent: '#9333ea', icon: '📄', x: 420, y: 200, state: 'working', desk: {x:400,y:180}, speed: 0.75 },
+  { name: 'SEO', role: 'AEO + GEO', color: '#22d3ee', accent: '#06b6d4', icon: '🔎', x: 420, y: 120, state: 'working', desk: {x:400,y:100}, speed: 0.8 },
+  { name: 'BAE SIG', role: 'CalABA Ops', color: '#fbbf24', accent: '#f59e0b', icon: '🎓', x: 320, y: 200, state: 'working', desk: {x:296,y:180}, speed: 0.7 },
+  { name: 'KCUSD', role: 'Schools', color: '#4ade80', accent: '#22c55e', icon: '🏫', x: 440, y: 160, state: 'working', desk: {x:440,y:140}, speed: 0.65 },
 ];
 
 // --- OFFICE LAYOUT ---
@@ -77,7 +80,10 @@ const WORK_MSGS = {
   Engineer: ["Building feature...", "Fixing bug...", "npm install...", "Pushing to GitHub...", "Code review done!"],
   Planner: ["Decomposing task...", "Step 3 of 7 done!", "Verifying output...", "Checkpoint saved.", "Chaining next step..."],
   Browser: ["Scraping competitor...", "Health check: all ✅", "Taking screenshot...", "Navigating LinkedIn...", "Extracting data..."],
-  Docs: ["Generating PDF...", "Formatting Excel...", "Brand colors applied.", "Report: 3 pages.", "Table styled! ✅"]
+  Docs: ["Generating PDF...", "Formatting Excel...", "Brand colors applied.", "Report: 3 pages.", "Table styled! ✅"],
+  SEO: ["Adding FAQ schema...", "Rewriting headers...", "AEO quick win found!", "Checking snippets...", "GEO authority score ↑"],
+  'BAE SIG': ["Checking raffle sales...", "Ticket emailed! ✅", "PayPal revenue: $40", "Certificate ready.", "Updating prizes..."],
+  KCUSD: ["Team roster updated.", "FBA referral logged.", "Checking caseloads...", "RBT schedule synced.", "26 team members ✅"]
 };
 
 const MEETING_TOPICS = [
@@ -495,7 +501,7 @@ function updateStatus() {
 setInterval(updateStatus, 500);
 
 // --- INIT ---
-addLog('<span class="action">🏢 Agent HQ online. 7 agents reporting for duty.</span>');
+addLog('<span class="action">🏢 Agent HQ online. 10 agents reporting for duty.</span>');
 addLog('<span class="name">Neo</span> <span class="action">Good morning team. Let\'s ship.</span>');
 
 // Stagger initial meetings

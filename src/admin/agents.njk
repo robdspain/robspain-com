@@ -13,7 +13,20 @@ permalink: /admin/agents/index.html
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: #0f0f1a; display: flex; flex-direction: column; min-height: 100vh; font-family: 'Press Start 2P', monospace; overflow: hidden; }
   h1 { color: #10b981; font-size: 14px; padding: 8px 16px; letter-spacing: 2px; text-align: center; flex-shrink: 0; }
-  #game { image-rendering: pixelated; cursor: crosshair; flex: 1; display: block; width: 100%; }
+  #main-container { display: flex; flex: 1; overflow: hidden; }
+  #game-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  #game { image-rendering: auto; cursor: crosshair; flex: 1; display: block; width: 100%; }
+  #blocked-panel { width: 280px; background: #1a1a2e; border-left: 3px solid #1e3a34; overflow-y: auto; flex-shrink: 0; }
+  #blocked-panel h2 { color: #f59e0b; font-size: 10px; padding: 12px; border-bottom: 2px solid #334155; text-align: center; }
+  .blocked-item { padding: 10px 12px; border-bottom: 1px solid #334155; transition: background 0.2s; }
+  .blocked-item:hover { background: #0f172a; }
+  .blocked-item .priority { font-size: 6px; font-weight: bold; margin-bottom: 6px; }
+  .blocked-item .text { font-size: 7px; line-height: 1.5; color: #cbd5e1; }
+  .blocked-item .type { font-size: 6px; color: #64748b; margin-top: 4px; }
+  .priority.CRITICAL { color: #ef4444; }
+  .priority.HIGH { color: #f59e0b; }
+  .priority.MEDIUM { color: #3b82f6; }
+  .priority.LOW { color: #6b7280; }
   #bottom { display: flex; flex-shrink: 0; max-height: 30vh; }
   #log { flex: 1; max-height: 30vh; overflow-y: auto; background: #1a1a2e; border: 2px solid #1e3a34; color: #94a3b8; font-size: 8px; padding: 8px; line-height: 1.6; }
   #log .time { color: #047857; } #log .name { color: #e3b23c; } #log .action { color: #cbd5e1; }
@@ -42,9 +55,17 @@ permalink: /admin/agents/index.html
 <body>
 <a class="back" href="/admin/">← Back</a>
 <h1>⚔️ NEO'S OFFICE — AGENT HQ ⚔️</h1>
-<canvas id="game"></canvas>
-<div id="status"></div>
-<div id="bottom"><div id="log"></div></div>
+<div id="main-container">
+  <div id="game-wrapper">
+    <canvas id="game"></canvas>
+    <div id="status"></div>
+    <div id="bottom"><div id="log"></div></div>
+  </div>
+  <div id="blocked-panel">
+    <h2>⚠️ NEEDS ROB</h2>
+    <div id="blocked-list"></div>
+  </div>
+</div>
 
 <div id="modal-overlay">
   <div id="modal">
@@ -64,6 +85,30 @@ const ctx = C.getContext('2d');
 const log = document.getElementById('log');
 const statusBar = document.getElementById('status');
 
+// --- BLOCKED ITEMS ---
+const BLOCKED = [
+  { item: "Reconnect GitHub in Netlify", type: "BLOCKER", priority: "CRITICAL" },
+  { item: "9 writer drafts need review", type: "APPROVAL", priority: "HIGH" },
+  { item: "app.behaviorschool.com DNS setup", type: "BLOCKER", priority: "HIGH" },
+  { item: "Gmail app password for BAE SIG", type: "BLOCKER", priority: "MEDIUM" },
+  { item: "PayPal link from Liz Flaherty", type: "BLOCKER", priority: "MEDIUM" },
+  { item: "gog auth for Gmail/Calendar", type: "BLOCKER", priority: "MEDIUM" },
+  { item: "Ahrefs login credentials", type: "BLOCKER", priority: "LOW" },
+  { item: "Social media account logins", type: "BLOCKER", priority: "LOW" },
+];
+
+function renderBlockedPanel() {
+  const panel = document.getElementById('blocked-list');
+  panel.innerHTML = BLOCKED.map(item => `
+    <div class="blocked-item">
+      <div class="priority ${item.priority}">⚠ ${item.priority}</div>
+      <div class="text">${item.item}</div>
+      <div class="type">${item.type}</div>
+    </div>
+  `).join('');
+}
+renderBlockedPanel();
+
 // --- FULLSCREEN CANVAS ---
 let SCALE = 1;
 let W = 640, H = 480;
@@ -71,16 +116,18 @@ function resizeCanvas() {
   const header = document.querySelector('h1');
   const status = document.getElementById('status');
   const bottom = document.getElementById('bottom');
+  const gameWrapper = document.getElementById('game-wrapper');
   const avail = window.innerHeight - (header ? header.offsetHeight : 30) - (status ? status.offsetHeight : 30) - (bottom ? bottom.offsetHeight : 120) - 10;
   const aspect = 640 / 480;
-  let cw = window.innerWidth;
+  const wrapperWidth = gameWrapper ? gameWrapper.offsetWidth : window.innerWidth - 280;
+  let cw = wrapperWidth;
   let ch = Math.max(avail, 200);
   if (cw / ch > aspect) { cw = ch * aspect; } else { ch = cw / aspect; }
-  C.style.width = window.innerWidth + 'px';
+  C.style.width = wrapperWidth + 'px';
   C.style.height = ch + 'px';
   C.width = 640;
   C.height = 480;
-  SCALE = window.innerWidth / 640;
+  SCALE = wrapperWidth / 640;
 }
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
@@ -252,20 +299,44 @@ function rand(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
 function pick(arr) { return arr[rand(0, arr.length - 1)]; }
 function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
 
-// --- DRAWING ---
+// --- DRAWING (16-BIT STYLE) ---
 function drawPixelRect(x, y, w, h, color) {
   ctx.fillStyle = color;
   ctx.fillRect(Math.floor(x), Math.floor(y), w, h);
 }
 
+function drawGradientRect(x, y, w, h, color1, color2) {
+  const grad = ctx.createLinearGradient(x, y, x, y + h);
+  grad.addColorStop(0, color1);
+  grad.addColorStop(1, color2);
+  ctx.fillStyle = grad;
+  ctx.fillRect(Math.floor(x), Math.floor(y), w, h);
+}
+
+function drawRoundedRect(x, y, w, h, color, shadow = false) {
+  if (shadow) {
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.beginPath();
+    ctx.roundRect(x + 2, y + 2, w, h, 3);
+    ctx.fill();
+  }
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.roundRect(x, y, w, h, 3);
+  ctx.fill();
+}
+
 function drawOffice() {
-  // Floor
-  ctx.fillStyle = '#16162a';
+  // Floor with gradient
+  const floorGrad = ctx.createLinearGradient(0, 0, 0, 480);
+  floorGrad.addColorStop(0, '#18182e');
+  floorGrad.addColorStop(1, '#14142a');
+  ctx.fillStyle = floorGrad;
   ctx.fillRect(0, 0, 640, 480);
 
-  // Draw all rooms
+  // Draw all rooms with gradients
   Object.values(ROOMS).forEach(r => {
-    drawPixelRect(r.x, r.y, r.w, r.h, PAL.floor);
+    drawGradientRect(r.x, r.y, r.w, r.h, '#2c2c42', '#24243a');
     ctx.strokeStyle = PAL.wall;
     ctx.lineWidth = 2;
     ctx.strokeRect(r.x, r.y, r.w, r.h);
@@ -276,14 +347,14 @@ function drawOffice() {
     }
   });
 
-  // Neo's office (highlight)
-  drawPixelRect(ROOMS.neoOffice.x, ROOMS.neoOffice.y, ROOMS.neoOffice.w, ROOMS.neoOffice.h, '#2e2e48');
+  // Neo's office (highlight with gradient)
+  drawGradientRect(ROOMS.neoOffice.x, ROOMS.neoOffice.y, ROOMS.neoOffice.w, ROOMS.neoOffice.h, '#323254', '#2a2a48');
   ctx.strokeStyle = '#10b981';
   ctx.lineWidth = 2;
   ctx.strokeRect(ROOMS.neoOffice.x, ROOMS.neoOffice.y, ROOMS.neoOffice.w, ROOMS.neoOffice.h);
 
-  // Conference room
-  drawPixelRect(ROOMS.confRoom.x, ROOMS.confRoom.y, ROOMS.confRoom.w, ROOMS.confRoom.h, '#252540');
+  // Conference room with gradient
+  drawGradientRect(ROOMS.confRoom.x, ROOMS.confRoom.y, ROOMS.confRoom.w, ROOMS.confRoom.h, '#2a2a48', '#222240');
 
   // Hallways
   drawPixelRect(280, 160, 80, 12, PAL.floor);
@@ -291,50 +362,84 @@ function drawOffice() {
   drawPixelRect(50, 230, 200, 17, PAL.floor);
   drawPixelRect(50, 305, 200, 12, PAL.floor);
 
-  // --- FURNITURE ---
+  // --- FURNITURE (16-bit style with gradients) ---
 
-  // Desks (each agent gets a desk)
+  // Desks (each agent gets a desk with gradient)
   AGENTS.forEach(a => {
     if (a.name === 'Neo') {
-      // Neo gets a bigger desk
-      drawPixelRect(a.desk.x - 4, a.desk.y - 4, 48, 32, PAL.desk);
-      drawPixelRect(a.desk.x + 8, a.desk.y, 20, 12, PAL.monitor);
-      drawPixelRect(a.desk.x + 10, a.desk.y + 2, 16, 8, PAL.monitorGlow);
+      // Neo gets a bigger desk with gradient
+      drawGradientRect(a.desk.x - 4, a.desk.y - 4, 48, 32, '#6e5545', '#5c4033');
+      drawGradientRect(a.desk.x + 8, a.desk.y, 20, 12, '#1a1f2e', PAL.monitor);
+      const glowGrad = ctx.createRadialGradient(a.desk.x + 18, a.desk.y + 6, 2, a.desk.x + 18, a.desk.y + 6, 12);
+      glowGrad.addColorStop(0, a.color);
+      glowGrad.addColorStop(1, 'rgba(15,23,42,0.3)');
+      ctx.fillStyle = glowGrad;
+      ctx.fillRect(a.desk.x + 10, a.desk.y + 2, 16, 8);
     } else {
-      drawPixelRect(a.desk.x - 2, a.desk.y - 2, 36, 24, PAL.desk);
-      drawPixelRect(a.desk.x + 6, a.desk.y + 2, 14, 10, PAL.monitor);
-      // Screen glow
-      drawPixelRect(a.desk.x + 8, a.desk.y + 4, 10, 6, a.color);
+      drawGradientRect(a.desk.x - 2, a.desk.y - 2, 36, 24, '#6e5545', '#5c4033');
+      drawGradientRect(a.desk.x + 6, a.desk.y + 2, 14, 10, '#1a1f2e', PAL.monitor);
+      // Screen glow with radial gradient
+      const glowGrad = ctx.createRadialGradient(a.desk.x + 13, a.desk.y + 7, 2, a.desk.x + 13, a.desk.y + 7, 8);
+      glowGrad.addColorStop(0, a.color);
+      glowGrad.addColorStop(1, 'rgba(15,23,42,0.2)');
+      ctx.fillStyle = glowGrad;
+      ctx.fillRect(a.desk.x + 8, a.desk.y + 4, 10, 6);
     }
   });
 
-  // Conference table
-  drawPixelRect(CONF_TABLE.x, CONF_TABLE.y, CONF_TABLE.w, CONF_TABLE.h, PAL.confTable);
-  // Chairs around table
+  // Conference table with gradient
+  drawGradientRect(CONF_TABLE.x, CONF_TABLE.y, CONF_TABLE.w, CONF_TABLE.h, '#5a4738', '#4a3728');
+  // Chairs around table with gradient
   for (let i = 0; i < 4; i++) {
-    drawPixelRect(CONF_TABLE.x + 10 + i * 22, CONF_TABLE.y - 10, 12, 8, PAL.chair);
-    drawPixelRect(CONF_TABLE.x + 10 + i * 22, CONF_TABLE.y + CONF_TABLE.h + 2, 12, 8, PAL.chair);
+    drawGradientRect(CONF_TABLE.x + 10 + i * 22, CONF_TABLE.y - 10, 12, 8, '#4d3b2f', '#3d2b1f');
+    drawGradientRect(CONF_TABLE.x + 10 + i * 22, CONF_TABLE.y + CONF_TABLE.h + 2, 12, 8, '#4d3b2f', '#3d2b1f');
   }
 
-  // Whiteboard
-  drawPixelRect(WHITEBOARD.x, WHITEBOARD.y, WHITEBOARD.w, WHITEBOARD.h, PAL.whiteboard);
+  // Whiteboard (16-bit style with gradient frame)
+  drawGradientRect(WHITEBOARD.x, WHITEBOARD.y, WHITEBOARD.w, WHITEBOARD.h, '#f0f0f5', PAL.whiteboard);
+  ctx.strokeStyle = '#94a3b8';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(WHITEBOARD.x, WHITEBOARD.y, WHITEBOARD.w, WHITEBOARD.h);
   ctx.fillStyle = '#059669';
   ctx.font = '6px monospace';
   ctx.fillText(meetingActive ? meetingTopic : 'AGENT HQ', WHITEBOARD.x + 4, WHITEBOARD.y + 6);
 
-  // Water cooler
-  drawPixelRect(WATER_POS.x - 8, WATER_POS.y - 8, 16, 24, PAL.waterBase);
-  drawPixelRect(WATER_POS.x - 5, WATER_POS.y - 14, 10, 10, PAL.water);
-  // Bubbles
-  if (tick % 30 < 15) {
-    drawPixelRect(WATER_POS.x - 2, WATER_POS.y - 18, 3, 3, '#7dd3fc');
-  }
+  // Water cooler (16-bit style with gradient)
+  drawGradientRect(WATER_POS.x - 8, WATER_POS.y - 8, 16, 24, '#5a6b7a', PAL.waterBase);
+  const waterGrad = ctx.createLinearGradient(WATER_POS.x - 5, WATER_POS.y - 14, WATER_POS.x + 5, WATER_POS.y - 4);
+  waterGrad.addColorStop(0, '#22d3ee');
+  waterGrad.addColorStop(1, PAL.water);
+  ctx.fillStyle = waterGrad;
+  ctx.beginPath();
+  ctx.roundRect(WATER_POS.x - 5, WATER_POS.y - 14, 10, 10, 2);
+  ctx.fill();
+  
+  // Bubbles (animated with alpha)
+  const bubblePhase = (tick % 60) / 60;
+  ctx.globalAlpha = 0.6 + Math.sin(bubblePhase * Math.PI * 2) * 0.3;
+  ctx.fillStyle = '#7dd3fc';
+  ctx.beginPath();
+  ctx.arc(WATER_POS.x - 1, WATER_POS.y - 16 - bubblePhase * 8, 2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalAlpha = 1;
 
-  // Plants
+  // Plants (16-bit style with gradients)
   [[55, 35], [580, 35], [55, 250], [580, 250], [55, 320]].forEach(([px, py]) => {
-    drawPixelRect(px, py + 4, 8, 8, '#5c4033');
-    drawPixelRect(px - 2, py, 12, 6, PAL.plant);
-    drawPixelRect(px + 1, py - 4, 6, 6, '#34d399');
+    // Pot with gradient
+    drawGradientRect(px, py + 4, 8, 8, '#6e5545', '#5c4033');
+    // Leaves with gradient
+    const leafGrad = ctx.createRadialGradient(px + 4, py + 2, 2, px + 4, py + 2, 8);
+    leafGrad.addColorStop(0, '#10b981');
+    leafGrad.addColorStop(1, PAL.plant);
+    ctx.fillStyle = leafGrad;
+    ctx.beginPath();
+    ctx.arc(px + 4, py + 2, 6, 0, Math.PI * 2);
+    ctx.fill();
+    // Top highlight
+    ctx.fillStyle = '#34d399';
+    ctx.beginPath();
+    ctx.arc(px + 5, py - 1, 3, 0, Math.PI * 2);
+    ctx.fill();
   });
 
   // Labels
@@ -356,43 +461,120 @@ function drawAgent(a) {
   const bx = Math.floor(a.x);
   const by = Math.floor(a.y);
 
-  // Shadow
-  ctx.fillStyle = 'rgba(0,0,0,0.3)';
-  ctx.fillRect(bx - 5, by + 10, 14, 4);
+  // Drop shadow (16-bit style with blur)
+  ctx.save();
+  ctx.shadowColor = 'rgba(0,0,0,0.5)';
+  ctx.shadowBlur = 4;
+  ctx.shadowOffsetX = 2;
+  ctx.shadowOffsetY = 3;
+  ctx.fillStyle = 'rgba(0,0,0,0.2)';
+  ctx.beginPath();
+  ctx.ellipse(bx + 3, by + 13, 8, 3, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
 
-  // Body
-  ctx.fillStyle = a.color;
-  ctx.fillRect(bx - 4, by - 2, 12, 14);
+  // Body with gradient (16-bit smooth shading)
+  const bodyGrad = ctx.createLinearGradient(bx - 4, by - 2, bx + 8, by + 12);
+  bodyGrad.addColorStop(0, a.color);
+  bodyGrad.addColorStop(1, a.accent);
+  ctx.fillStyle = bodyGrad;
+  ctx.beginPath();
+  ctx.roundRect(bx - 4, by - 2, 12, 14, 2);
+  ctx.fill();
 
-  // Head
-  ctx.fillStyle = a.accent;
-  ctx.fillRect(bx - 3, by - 8, 10, 8);
+  // Head (rounded, with gradient for depth)
+  const headGrad = ctx.createRadialGradient(bx + 1, by - 5, 2, bx + 2, by - 4, 7);
+  headGrad.addColorStop(0, lightenColor(a.accent, 20));
+  headGrad.addColorStop(1, a.accent);
+  ctx.fillStyle = headGrad;
+  ctx.beginPath();
+  ctx.arc(bx + 2, by - 4, 6, 0, Math.PI * 2);
+  ctx.fill();
 
-  // Eyes
+  // Eyes (white with highlights)
   ctx.fillStyle = '#fff';
-  ctx.fillRect(bx - 1, by - 6, 3, 3);
-  ctx.fillRect(bx + 3, by - 6, 3, 3);
+  ctx.beginPath();
+  ctx.arc(bx, by - 5, 2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(bx + 5, by - 5, 2, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Pupils
   ctx.fillStyle = '#000';
-  ctx.fillRect(bx, by - 5, 2, 2);
-  ctx.fillRect(bx + 4, by - 5, 2, 2);
+  ctx.beginPath();
+  ctx.arc(bx + 0.5, by - 4.5, 1.2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(bx + 5.5, by - 4.5, 1.2, 0, Math.PI * 2);
+  ctx.fill();
 
-  // Walking animation
+  // Eye highlights (16-bit detail)
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.fillRect(bx - 0.5, by - 6, 1, 1);
+  ctx.fillRect(bx + 4.5, by - 6, 1, 1);
+
+  // Walking animation (smoother with more frames)
   if (a.state === 'walking' || a.state === 'toMeeting' || a.state === 'toWater' || a.state === 'toDesk') {
-    const legOffset = Math.sin(tick * 0.3) * 3;
-    ctx.fillStyle = a.accent;
-    ctx.fillRect(bx - 2, by + 12, 4, 4 + legOffset);
-    ctx.fillRect(bx + 3, by + 12, 4, 4 - legOffset);
+    const legPhase = (tick * 0.15) % (Math.PI * 2);
+    const leftLeg = Math.sin(legPhase) * 4;
+    const rightLeg = Math.sin(legPhase + Math.PI) * 4;
+    
+    // Left leg with gradient
+    const leftGrad = ctx.createLinearGradient(bx - 2, by + 12, bx, by + 16);
+    leftGrad.addColorStop(0, a.accent);
+    leftGrad.addColorStop(1, darkenColor(a.accent, 15));
+    ctx.fillStyle = leftGrad;
+    ctx.beginPath();
+    ctx.roundRect(bx - 2, by + 12, 4, 4 + Math.abs(leftLeg), 1);
+    ctx.fill();
+    
+    // Right leg with gradient
+    const rightGrad = ctx.createLinearGradient(bx + 3, by + 12, bx + 5, by + 16);
+    rightGrad.addColorStop(0, a.accent);
+    rightGrad.addColorStop(1, darkenColor(a.accent, 15));
+    ctx.fillStyle = rightGrad;
+    ctx.beginPath();
+    ctx.roundRect(bx + 3, by + 12, 4, 4 + Math.abs(rightLeg), 1);
+    ctx.fill();
   } else {
-    ctx.fillStyle = a.accent;
-    ctx.fillRect(bx - 2, by + 12, 4, 4);
-    ctx.fillRect(bx + 3, by + 12, 4, 4);
+    // Standing legs with gradient
+    const legGrad = ctx.createLinearGradient(bx - 2, by + 12, bx + 5, by + 16);
+    legGrad.addColorStop(0, a.accent);
+    legGrad.addColorStop(1, darkenColor(a.accent, 15));
+    ctx.fillStyle = legGrad;
+    ctx.beginPath();
+    ctx.roundRect(bx - 2, by + 12, 4, 4, 1);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.roundRect(bx + 3, by + 12, 4, 4, 1);
+    ctx.fill();
   }
 
-  // Name tag
+  // Name tag (pixel font preserved)
   ctx.fillStyle = a.color;
   ctx.font = '6px "Press Start 2P"';
   const nameW = ctx.measureText(a.name).width;
   ctx.fillText(a.name, bx - nameW / 2 + 3, by - 12);
+}
+
+// Helper functions for color manipulation
+function lightenColor(hex, percent) {
+  const num = parseInt(hex.replace('#',''), 16);
+  const amt = Math.round(2.55 * percent);
+  const R = Math.min(255, (num >> 16) + amt);
+  const G = Math.min(255, ((num >> 8) & 0x00FF) + amt);
+  const B = Math.min(255, (num & 0x0000FF) + amt);
+  return '#' + ((R << 16) | (G << 8) | B).toString(16).padStart(6, '0');
+}
+
+function darkenColor(hex, percent) {
+  const num = parseInt(hex.replace('#',''), 16);
+  const amt = Math.round(2.55 * percent);
+  const R = Math.max(0, (num >> 16) - amt);
+  const G = Math.max(0, ((num >> 8) & 0x00FF) - amt);
+  const B = Math.max(0, (num & 0x0000FF) - amt);
+  return '#' + ((R << 16) | (G << 8) | B).toString(16).padStart(6, '0');
 }
 
 function drawBubble(x, y, text, color) {
@@ -421,19 +603,44 @@ function drawParticles() {
   particles.forEach(p => {
     p.x += p.vx;
     p.y += p.vy;
+    p.vy += 0.05; // Gravity
+    p.vx *= 0.98; // Air resistance
     p.life--;
-    ctx.globalAlpha = p.life / p.maxLife;
+    
+    // 16-bit style: smooth alpha blending with glow
+    const alpha = p.life / p.maxLife;
+    ctx.globalAlpha = alpha;
+    
+    // Glow effect
+    const glowGrad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 2);
+    glowGrad.addColorStop(0, p.color);
+    glowGrad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = glowGrad;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size * 2, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Core particle
     ctx.fillStyle = p.color;
-    ctx.fillRect(p.x, p.y, 2, 2);
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fill();
   });
   ctx.globalAlpha = 1;
 }
 
 function spawnParticles(x, y, color, count) {
   for (let i = 0; i < count; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = Math.random() * 2 + 0.5;
     particles.push({
-      x, y, vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2,
-      life: rand(15, 30), maxLife: 30, color
+      x, y, 
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 1,
+      life: rand(20, 40), 
+      maxLife: 40, 
+      color,
+      size: Math.random() * 1.5 + 1
     });
   }
 }

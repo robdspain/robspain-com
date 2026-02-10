@@ -11,30 +11,139 @@ permalink: /admin/agents/index.html
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #0f0f1a; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; font-family: 'Press Start 2P', monospace; }
-  h1 { color: #10b981; font-size: 14px; margin: 16px 0 8px; letter-spacing: 2px; }
-  #game { border: 4px solid #1e3a34; image-rendering: pixelated; cursor: crosshair; }
-  #log { width: 640px; max-height: 140px; overflow-y: auto; background: #1a1a2e; border: 2px solid #1e3a34; color: #94a3b8; font-size: 8px; padding: 8px; margin-top: 8px; line-height: 1.6; }
+  body { background: #0f0f1a; display: flex; flex-direction: column; min-height: 100vh; font-family: 'Press Start 2P', monospace; overflow: hidden; }
+  h1 { color: #10b981; font-size: 14px; padding: 8px 16px; letter-spacing: 2px; text-align: center; flex-shrink: 0; }
+  #game { image-rendering: pixelated; cursor: crosshair; flex: 1; display: block; width: 100%; }
+  #bottom { display: flex; flex-shrink: 0; max-height: 30vh; }
+  #log { flex: 1; max-height: 30vh; overflow-y: auto; background: #1a1a2e; border: 2px solid #1e3a34; color: #94a3b8; font-size: 8px; padding: 8px; line-height: 1.6; }
   #log .time { color: #047857; } #log .name { color: #e3b23c; } #log .action { color: #cbd5e1; }
-  #status { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; justify-content: center; }
-  .agent-badge { background: #1a1a2e; border: 1px solid #334155; padding: 4px 8px; font-size: 7px; color: #94a3b8; display: flex; align-items: center; gap: 6px; }
+  #status { display: flex; gap: 8px; padding: 6px 16px; flex-wrap: wrap; justify-content: center; flex-shrink: 0; background: #1a1a2e; border-top: 2px solid #1e3a34; }
+  .agent-badge { background: #0f172a; border: 1px solid #334155; padding: 4px 8px; font-size: 7px; color: #94a3b8; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: border-color 0.2s; }
+  .agent-badge:hover { border-color: #10b981; color: #e2e8f0; }
   .agent-badge .dot { width: 6px; height: 6px; border-radius: 50%; }
-  a.back { color: #475569; font-size: 8px; text-decoration: none; margin-top: 12px; }
+  a.back { color: #475569; font-size: 8px; text-decoration: none; position: absolute; top: 12px; left: 16px; z-index: 10; }
   a.back:hover { color: #10b981; }
+  /* Modal */
+  #modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50; align-items: center; justify-content: center; }
+  #modal-overlay.show { display: flex; }
+  #modal { background: #1a1a2e; border: 3px solid #10b981; padding: 20px; max-width: 400px; width: 90%; }
+  #modal h2 { color: #10b981; font-size: 12px; margin-bottom: 12px; }
+  #modal p { color: #94a3b8; font-size: 8px; margin-bottom: 8px; line-height: 1.8; }
+  #modal-input { width: 100%; background: #0f172a; border: 2px solid #334155; color: #e2e8f0; font-family: 'Press Start 2P', monospace; font-size: 8px; padding: 8px; margin-top: 8px; outline: none; }
+  #modal-input:focus { border-color: #10b981; }
+  #modal-btns { display: flex; gap: 8px; margin-top: 12px; }
+  #modal-btns button { font-family: 'Press Start 2P', monospace; font-size: 7px; padding: 6px 12px; cursor: pointer; border: 2px solid; background: transparent; }
+  #modal-send { color: #10b981; border-color: #10b981; }
+  #modal-send:hover { background: #10b981; color: #0f172a; }
+  #modal-cancel { color: #94a3b8; border-color: #475569; }
+  #modal-cancel:hover { background: #475569; color: #e2e8f0; }
 </style>
 </head>
 <body>
+<a class="back" href="/admin/">← Back</a>
 <h1>⚔️ NEO'S OFFICE — AGENT HQ ⚔️</h1>
-<canvas id="game" width="640" height="480"></canvas>
+<canvas id="game"></canvas>
 <div id="status"></div>
-<div id="log"></div>
-<a class="back" href="/admin/">← Back to Admin</a>
+<div id="bottom"><div id="log"></div></div>
+
+<div id="modal-overlay">
+  <div id="modal">
+    <h2 id="modal-title">📋 Instruct Agent</h2>
+    <p id="modal-info"></p>
+    <input id="modal-input" type="text" placeholder="Type instruction..." maxlength="200" />
+    <div id="modal-btns">
+      <button id="modal-send">SEND</button>
+      <button id="modal-cancel">CANCEL</button>
+    </div>
+  </div>
+</div>
 
 <script>
 const C = document.getElementById('game');
 const ctx = C.getContext('2d');
 const log = document.getElementById('log');
 const statusBar = document.getElementById('status');
+
+// --- FULLSCREEN CANVAS ---
+let SCALE = 1;
+let W = 640, H = 480;
+function resizeCanvas() {
+  const header = document.querySelector('h1');
+  const status = document.getElementById('status');
+  const bottom = document.getElementById('bottom');
+  const avail = window.innerHeight - (header ? header.offsetHeight : 30) - (status ? status.offsetHeight : 30) - (bottom ? bottom.offsetHeight : 120) - 10;
+  const aspect = 640 / 480;
+  let cw = window.innerWidth;
+  let ch = Math.max(avail, 200);
+  if (cw / ch > aspect) { cw = ch * aspect; } else { ch = cw / aspect; }
+  C.style.width = window.innerWidth + 'px';
+  C.style.height = ch + 'px';
+  C.width = 640;
+  C.height = 480;
+  SCALE = window.innerWidth / 640;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+// --- CLICK TO SELECT AGENT ---
+let selectedAgent = null;
+const modal = document.getElementById('modal-overlay');
+const modalTitle = document.getElementById('modal-title');
+const modalInfo = document.getElementById('modal-info');
+const modalInput = document.getElementById('modal-input');
+
+C.addEventListener('click', (e) => {
+  const rect = C.getBoundingClientRect();
+  const mx = (e.clientX - rect.left) / rect.width * 640;
+  const my = (e.clientY - rect.top) / rect.height * 480;
+  // Find closest agent within 25px
+  let closest = null, closestDist = 25;
+  AGENTS.forEach(a => {
+    const d = Math.hypot(a.x - mx, a.y - my);
+    if (d < closestDist) { closest = a; closestDist = d; }
+  });
+  if (closest) openAgentModal(closest);
+});
+
+function openAgentModal(agent) {
+  selectedAgent = agent;
+  modalTitle.textContent = agent.icon + ' ' + agent.name + ' — ' + agent.role;
+  modalInfo.textContent = 'Status: ' + agent.state + ' | Click SEND to give an instruction.';
+  modalInput.value = '';
+  modal.classList.add('show');
+  modalInput.focus();
+}
+
+document.getElementById('modal-cancel').onclick = () => { modal.classList.remove('show'); selectedAgent = null; };
+document.getElementById('modal-send').onclick = sendInstruction;
+modalInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendInstruction(); if (e.key === 'Escape') { modal.classList.remove('show'); selectedAgent = null; } });
+
+function sendInstruction() {
+  if (!selectedAgent || !modalInput.value.trim()) return;
+  const msg = modalInput.value.trim();
+  addLog('<span class="name">Rob</span> → <span class="name">' + selectedAgent.name + '</span>: <span class="action">"' + msg + '"</span>');
+  selectedAgent.bubble = '📨 ' + msg.substring(0, 20) + (msg.length > 20 ? '...' : '');
+  selectedAgent.bubbleTimer = 200;
+  spawnParticles(selectedAgent.x, selectedAgent.y, selectedAgent.color, 10);
+  // Simulate agent acknowledging
+  setTimeout(() => {
+    if (selectedAgent) {
+      selectedAgent.bubble = pick(['On it!', 'Got it, boss!', 'Starting now...', 'Roger that!', 'Consider it done.']);
+      selectedAgent.bubbleTimer = 150;
+      addLog('<span class="name">' + selectedAgent.name + '</span> <span class="action">acknowledged task.</span>');
+    }
+  }, 2000);
+  modal.classList.remove('show');
+}
+
+// Status bar badges also clickable
+statusBar.addEventListener('click', (e) => {
+  const badge = e.target.closest('.agent-badge');
+  if (!badge) return;
+  const name = badge.dataset.agent;
+  const agent = AGENTS.find(a => a.name === name);
+  if (agent) openAgentModal(agent);
+});
 
 // --- COLORS (NES palette) ---
 const PAL = {
@@ -495,7 +604,7 @@ function gameLoop() {
 function updateStatus() {
   statusBar.innerHTML = AGENTS.map(a => {
     const stateLabel = {working:'💻',walking:'🚶',toMeeting:'🏃',inMeeting:'🗣️',toWater:'🚶',atWater:'☕',toDesk:'🏃'}[a.state] || '?';
-    return `<div class="agent-badge"><span class="dot" style="background:${a.color}"></span>${a.icon} ${a.name} ${stateLabel}</div>`;
+    return `<div class="agent-badge" data-agent="${a.name}"><span class="dot" style="background:${a.color}"></span>${a.icon} ${a.name} ${stateLabel}</div>`;
   }).join('');
 }
 setInterval(updateStatus, 500);

@@ -155,30 +155,44 @@ const PAL = {
 
 // --- AGENTS ---
 const AGENTS = [
-  { name: 'Neo', role: 'Chief of Staff', color: '#10b981', accent: '#059669', icon: '🕶️', x: 320, y: 160, state: 'working', desk: {x:296,y:140}, speed: 1.2 },
-  { name: 'Scout', role: 'Research', color: '#f59e0b', accent: '#d97706', icon: '🔍', x: 120, y: 120, state: 'working', desk: {x:100,y:100}, speed: 0.9 },
-  { name: 'Writer', role: 'Content', color: '#8b5cf6', accent: '#7c3aed', icon: '✍️', x: 120, y: 200, state: 'working', desk: {x:100,y:180}, speed: 0.8 },
-  { name: 'Analyst', role: 'Analytics', color: '#ec4899', accent: '#db2777', icon: '📊', x: 200, y: 120, state: 'working', desk: {x:200,y:100}, speed: 0.7 },
-  { name: 'Engineer', role: 'Developer', color: '#06b6d4', accent: '#0891b2', icon: '⚙️', x: 200, y: 200, state: 'working', desk: {x:200,y:180}, speed: 1.0 },
-  { name: 'Planner', role: 'Task Chains', color: '#f97316', accent: '#ea580c', icon: '📋', x: 520, y: 120, state: 'working', desk: {x:500,y:100}, speed: 0.85 },
-  { name: 'Browser', role: 'Web Agent', color: '#14b8a6', accent: '#0d9488', icon: '🌐', x: 520, y: 200, state: 'working', desk: {x:500,y:180}, speed: 0.95 },
-  { name: 'Docs', role: 'Documents', color: '#a855f7', accent: '#9333ea', icon: '📄', x: 420, y: 200, state: 'working', desk: {x:400,y:180}, speed: 0.75 },
-  { name: 'SEO', role: 'AEO + GEO', color: '#22d3ee', accent: '#06b6d4', icon: '🔎', x: 420, y: 120, state: 'working', desk: {x:400,y:100}, speed: 0.8 },
-  { name: 'BAE SIG', role: 'CalABA Ops', color: '#fbbf24', accent: '#f59e0b', icon: '🎓', x: 320, y: 200, state: 'working', desk: {x:296,y:180}, speed: 0.7 },
-  { name: 'KCUSD', role: 'Schools', color: '#4ade80', accent: '#22c55e', icon: '🏫', x: 440, y: 160, state: 'working', desk: {x:440,y:140}, speed: 0.65 },
+  // --- Tier 1: Core Operations ---
+  { name: 'Neo', role: 'Chief of Staff', color: '#10b981', accent: '#059669', icon: '🕶️', x: 320, y: 80, state: 'working', desk: {x:296,y:60}, speed: 1.2 },
+  { name: 'Scout', role: 'Research', color: '#f59e0b', accent: '#d97706', icon: '🔍', x: 100, y: 60, state: 'working', desk: {x:80,y:40}, speed: 0.9 },
+  { name: 'Writer', role: 'Content', color: '#8b5cf6', accent: '#7c3aed', icon: '✍️', x: 100, y: 120, state: 'working', desk: {x:80,y:100}, speed: 0.8 },
+  { name: 'Analyst', role: 'Analytics', color: '#ec4899', accent: '#db2777', icon: '📊', x: 180, y: 60, state: 'working', desk: {x:170,y:40}, speed: 0.7 },
+  { name: 'Engineer', role: 'Developer', color: '#06b6d4', accent: '#0891b2', icon: '⚙️', x: 180, y: 120, state: 'working', desk: {x:170,y:100}, speed: 1.0 },
+  { name: 'Planner', role: 'Task Chains', color: '#f97316', accent: '#ea580c', icon: '📋', x: 460, y: 60, state: 'working', desk: {x:450,y:40}, speed: 0.85 },
+  { name: 'Browser', role: 'Web Agent', color: '#14b8a6', accent: '#0d9488', icon: '🌐', x: 460, y: 120, state: 'working', desk: {x:450,y:100}, speed: 0.95 },
+  { name: 'Docs', role: 'Documents', color: '#a855f7', accent: '#9333ea', icon: '📄', x: 540, y: 60, state: 'working', desk: {x:530,y:40}, speed: 0.75 },
+  { name: 'SEO', role: 'AEO + GEO', color: '#22d3ee', accent: '#06b6d4', icon: '🔎', x: 540, y: 120, state: 'working', desk: {x:530,y:100}, speed: 0.8 },
+  // --- Tier 2: Org Agents ---
+  { name: 'BAE SIG', role: 'CalABA Ops', color: '#fbbf24', accent: '#f59e0b', icon: '🎓', x: 100, y: 195, state: 'working', desk: {x:80,y:175}, speed: 0.7 },
+  { name: 'KCUSD', role: 'Schools', color: '#4ade80', accent: '#22c55e', icon: '🏫', x: 180, y: 195, state: 'working', desk: {x:170,y:175}, speed: 0.65 },
+  // --- Tier 3: Repo Agents ---
+  { name: 'RobSite', role: 'robspain.com', color: '#34d399', accent: '#10b981', icon: '🌿', x: 100, y: 280, state: 'working', desk: {x:80,y:260}, speed: 0.7 },
+  { name: 'BehSch', role: 'behaviorschool.com', color: '#047857', accent: '#065f46', icon: '📗', x: 180, y: 280, state: 'working', desk: {x:170,y:260}, speed: 0.7 },
+  { name: 'StudyApp', role: 'study.beh...', color: '#fb923c', accent: '#ea580c', icon: '📱', x: 260, y: 280, state: 'working', desk: {x:250,y:260}, speed: 0.75 },
+  { name: 'Pro', role: 'app.beh...', color: '#a78bfa', accent: '#7c3aed', icon: '💎', x: 340, y: 280, state: 'working', desk: {x:330,y:260}, speed: 0.7 },
+  { name: 'Superv', role: 'supervision', color: '#f472b6', accent: '#db2777', icon: '👥', x: 420, y: 280, state: 'working', desk: {x:410,y:260}, speed: 0.65 },
+  { name: 'Tools', role: 'toolchest', color: '#facc15', accent: '#eab308', icon: '🧰', x: 500, y: 280, state: 'working', desk: {x:490,y:260}, speed: 0.7 },
+  { name: 'Video', role: 'video gen', color: '#f87171', accent: '#ef4444', icon: '🎬', x: 100, y: 345, state: 'working', desk: {x:80,y:325}, speed: 0.8 },
+  { name: 'Learn', role: 'learning', color: '#38bdf8', accent: '#0284c7', icon: '📚', x: 180, y: 345, state: 'working', desk: {x:170,y:325}, speed: 0.65 },
 ];
 
 // --- OFFICE LAYOUT ---
 const ROOMS = {
-  mainOffice: { x: 60, y: 70, w: 520, h: 180 },
-  confRoom: { x: 180, y: 290, w: 200, h: 130 },
-  waterCooler: { x: 450, y: 310, w: 50, h: 50 },
-  neoOffice: { x: 280, y: 70, w: 120, h: 80 }
+  coreOps: { x: 50, y: 30, w: 540, h: 130, label: 'CORE OPERATIONS' },
+  orgAgents: { x: 50, y: 170, w: 220, h: 60, label: 'ORG AGENTS' },
+  repoAgents: { x: 50, y: 245, w: 540, h: 60, label: 'REPO AGENTS' },
+  repoAgents2: { x: 50, y: 315, w: 220, h: 55, label: '' },
+  confRoom: { x: 290, y: 170, w: 180, h: 110, label: 'CONF ROOM' },
+  waterCooler: { x: 500, y: 170, w: 60, h: 60, label: '' },
+  neoOffice: { x: 270, y: 30, w: 120, h: 65, label: '' }
 };
 
-const CONF_TABLE = { x: 230, y: 320, w: 100, h: 60 };
-const WATER_POS = { x: 470, y: 325 };
-const WHITEBOARD = { x: 200, y: 292, w: 160, h: 8 };
+const CONF_TABLE = { x: 330, y: 200, w: 100, h: 50 };
+const WATER_POS = { x: 525, y: 195 };
+const WHITEBOARD = { x: 300, y: 172, w: 160, h: 8 };
 
 // --- MESSAGES ---
 const WORK_MSGS = {
@@ -192,7 +206,15 @@ const WORK_MSGS = {
   Docs: ["Generating PDF...", "Formatting Excel...", "Brand colors applied.", "Report: 3 pages.", "Table styled! ✅"],
   SEO: ["Adding FAQ schema...", "Rewriting headers...", "AEO quick win found!", "Checking snippets...", "GEO authority score ↑"],
   'BAE SIG': ["Checking raffle sales...", "Ticket emailed! ✅", "PayPal revenue: $40", "Certificate ready.", "Updating prizes..."],
-  KCUSD: ["Team roster updated.", "FBA referral logged.", "Checking caseloads...", "RBT schedule synced.", "26 team members ✅"]
+  KCUSD: ["Team roster updated.", "FBA referral logged.", "Checking caseloads...", "RBT schedule synced.", "26 team members ✅"],
+  RobSite: ["Building 11ty...", "Hero section fix.", "Admin page updated.", "CV refreshed.", "Deploy to Netlify..."],
+  BehSch: ["Next.js building...", "Nav menu fixed.", "New landing page.", "IEP tool update.", "Checking SEO..."],
+  StudyApp: ["10K questions loaded.", "Mock exam scored.", "AI Tutor response.", "Stripe checkout OK.", "iOS build running..."],
+  Pro: ["FBA-to-BIP draft...", "Goal bank query.", "ACT matrix loaded.", "Convex sync ✅", "New user signup!"],
+  Superv: ["Directory updated.", "Hour log saved.", "Compliance check ✅", "Study bridge sync.", "Supervisor matched."],
+  Tools: ["Data collection...", "Graph rendered.", "BIP template ready.", "Definition written.", "Convex function OK."],
+  Video: ["Rendering batch...", "Remotion compose.", "Thumbnail gen.", "Social clip ready!", "Upload to R2..."],
+  Learn: ["Course uploaded.", "Video transcoded.", "R2 bucket sync.", "CEU tracker update.", "Module published."]
 };
 
 const MEETING_TOPICS = [
@@ -241,34 +263,33 @@ function drawOffice() {
   ctx.fillStyle = '#16162a';
   ctx.fillRect(0, 0, 640, 480);
 
-  // Main office floor
-  drawPixelRect(ROOMS.mainOffice.x, ROOMS.mainOffice.y, ROOMS.mainOffice.w, ROOMS.mainOffice.h, PAL.floor);
+  // Draw all rooms
+  Object.values(ROOMS).forEach(r => {
+    drawPixelRect(r.x, r.y, r.w, r.h, PAL.floor);
+    ctx.strokeStyle = PAL.wall;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(r.x, r.y, r.w, r.h);
+    if (r.label) {
+      ctx.fillStyle = '#475569';
+      ctx.font = '6px "Press Start 2P"';
+      ctx.fillText(r.label, r.x + 6, r.y + r.h - 4);
+    }
+  });
 
-  // Neo's office (slightly different shade)
+  // Neo's office (highlight)
   drawPixelRect(ROOMS.neoOffice.x, ROOMS.neoOffice.y, ROOMS.neoOffice.w, ROOMS.neoOffice.h, '#2e2e48');
-  // Neo's office border
-  ctx.strokeStyle = PAL.wall;
-  ctx.lineWidth = 3;
+  ctx.strokeStyle = '#10b981';
+  ctx.lineWidth = 2;
   ctx.strokeRect(ROOMS.neoOffice.x, ROOMS.neoOffice.y, ROOMS.neoOffice.w, ROOMS.neoOffice.h);
 
   // Conference room
   drawPixelRect(ROOMS.confRoom.x, ROOMS.confRoom.y, ROOMS.confRoom.w, ROOMS.confRoom.h, '#252540');
-  ctx.strokeStyle = PAL.wall;
-  ctx.strokeRect(ROOMS.confRoom.x, ROOMS.confRoom.y, ROOMS.confRoom.w, ROOMS.confRoom.h);
 
-  // Hallway connecting main to conf room
-  drawPixelRect(260, 250, 100, 42, PAL.floor);
-
-  // Water cooler area
-  drawPixelRect(ROOMS.waterCooler.x - 10, ROOMS.waterCooler.y - 10, 70, 70, '#222238');
-
-  // Walls
-  ctx.strokeStyle = PAL.wall;
-  ctx.lineWidth = 4;
-  ctx.strokeRect(ROOMS.mainOffice.x, ROOMS.mainOffice.y, ROOMS.mainOffice.w, ROOMS.mainOffice.h);
-
-  // Hallway to water cooler
-  drawPixelRect(440, 250, 80, 70, PAL.floor);
+  // Hallways
+  drawPixelRect(280, 160, 80, 12, PAL.floor);
+  drawPixelRect(280, 230, 80, 17, PAL.floor);
+  drawPixelRect(50, 230, 200, 17, PAL.floor);
+  drawPixelRect(50, 305, 200, 12, PAL.floor);
 
   // --- FURNITURE ---
 
@@ -310,7 +331,7 @@ function drawOffice() {
   }
 
   // Plants
-  [[70, 80], [570, 80], [70, 240], [570, 240]].forEach(([px, py]) => {
+  [[55, 35], [580, 35], [55, 250], [580, 250], [55, 320]].forEach(([px, py]) => {
     drawPixelRect(px, py + 4, 8, 8, '#5c4033');
     drawPixelRect(px - 2, py, 12, 6, PAL.plant);
     drawPixelRect(px + 1, py - 4, 6, 6, '#34d399');
@@ -318,14 +339,17 @@ function drawOffice() {
 
   // Labels
   ctx.fillStyle = '#475569';
-  ctx.font = '7px "Press Start 2P"';
-  ctx.fillText('MAIN OFFICE', 240, 265);
-  ctx.fillText('CONF ROOM', 235, 430);
-  ctx.fillText('☕', 465, 380);
+  ctx.font = '6px "Press Start 2P"';
+  ctx.fillText('☕', WATER_POS.x - 5, WATER_POS.y + 30);
 
   // Neo's office label
   ctx.fillStyle = '#10b981';
-  ctx.fillText("NEO", 325, 85);
+  ctx.fillText("NEO", 315, 42);
+
+  // Agent count
+  ctx.fillStyle = '#334155';
+  ctx.font = '5px "Press Start 2P"';
+  ctx.fillText(AGENTS.length + ' AGENTS ONLINE', 250, 475);
 }
 
 function drawAgent(a) {
@@ -610,7 +634,7 @@ function updateStatus() {
 setInterval(updateStatus, 500);
 
 // --- INIT ---
-addLog('<span class="action">🏢 Agent HQ online. 10 agents reporting for duty.</span>');
+addLog('<span class="action">🏢 Agent HQ online. ' + AGENTS.length + ' agents reporting for duty.</span>');
 addLog('<span class="name">Neo</span> <span class="action">Good morning team. Let\'s ship.</span>');
 
 // Stagger initial meetings

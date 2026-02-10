@@ -904,8 +904,12 @@ body {
 @media (max-width: 1200px) {
     .hero-content-premium {
         grid-template-columns: 1fr;
-        gap: var(--space-12);
+        gap: var(--space-8);
         text-align: center;
+    }
+    
+    .hero-text-premium {
+        align-items: center;
     }
     
     .hero-visual-premium {
@@ -913,8 +917,25 @@ body {
     }
     
     .hero-image-container-premium {
-        max-width: 400px;
+        max-width: 320px;
         margin: 0 auto;
+        transform: none;
+    }
+    
+    .hero-image-container-premium:hover {
+        transform: scale(1.03);
+    }
+    
+    .hero-badge-premium {
+        margin: 0 auto;
+    }
+    
+    .hero-actions-premium {
+        justify-content: center;
+    }
+    
+    .hero-title-premium {
+        font-size: clamp(2rem, 5vw, 3.5rem);
     }
 }
 

@@ -214,7 +214,7 @@ function sendInstruction() {
   // Simulate agent acknowledging
   setTimeout(() => {
     if (selectedAgent) {
-      selectedAgent.bubble = pick(['On it!', 'Got it, boss!', 'Starting now...', 'Roger that!', 'Consider it done.']);
+      selectedAgent.bubble = 'Queued for Neo →';
       selectedAgent.bubbleTimer = 150;
       addLog('<span class="name">' + selectedAgent.name + '</span> <span class="action">acknowledged task.</span>');
     }
@@ -281,31 +281,8 @@ const WATER_POS = { x: 525, y: 195 };
 const WHITEBOARD = { x: 300, y: 172, w: 160, h: 8 };
 
 // --- MESSAGES ---
-const WORK_MSGS = {
-  Neo: ["Reviewing agent reports...", "Prioritizing tasks...", "Checking heartbeat...", "Deploying updates...", "Reading Rob's messages..."],
-  Scout: ["Scanning r/bcba...", "Found a new lead!", "Competitor update...", "Checking Reddit...", "New finding: relevance 8!"],
-  Writer: ["Drafting blog post...", "Writing email copy...", "Editing for citations...", "Social post ready!", "Checking tone..."],
-  Analyst: ["Running daily report...", "Calculating MRR...", "Tracking engagement...", "Building dashboard...", "Crunching numbers..."],
-  Engineer: ["Building feature...", "Fixing bug...", "npm install...", "Pushing to GitHub...", "Code review done!"],
-  Planner: ["Decomposing task...", "Step 3 of 7 done!", "Verifying output...", "Checkpoint saved.", "Chaining next step..."],
-  Browser: ["Scraping competitor...", "Health check: all ✅", "Taking screenshot...", "Navigating LinkedIn...", "Extracting data..."],
-  Docs: ["Generating PDF...", "Formatting Excel...", "Brand colors applied.", "Report: 3 pages.", "Table styled! ✅"],
-  SEO: ["Adding FAQ schema...", "Rewriting headers...", "AEO quick win found!", "Checking snippets...", "GEO authority score ↑"],
-  'BAE SIG': ["Checking raffle sales...", "Ticket emailed! ✅", "PayPal revenue: $40", "Certificate ready.", "Updating prizes..."],
-  KCUSD: ["Team roster updated.", "FBA referral logged.", "Checking caseloads...", "RBT schedule synced.", "26 team members ✅"],
-  'RobSpain.com': ["Building 11ty...", "Hero section fix.", "Admin page updated.", "CV refreshed.", "Deploy to Netlify..."],
-  BehaviorSchool: ["Next.js building...", "Nav menu fixed.", "New landing page.", "IEP tool update.", "Checking SEO..."],
-  'Study App': ["10K questions loaded.", "Mock exam scored.", "AI Tutor response.", "Stripe checkout OK.", "iOS build running..."],
-  Pro: ["FBA-to-BIP draft...", "Goal bank query.", "ACT matrix loaded.", "Convex sync ✅", "New user signup!"],
-  Supervision: ["Directory updated.", "Hour log saved.", "Compliance check ✅", "Study bridge sync.", "Supervisor matched."],
-  Toolchest: ["Data collection...", "Graph rendered.", "BIP template ready.", "Definition written.", "Convex function OK."],
-  VideoGen: ["Rendering batch...", "Remotion compose.", "Thumbnail gen.", "Social clip ready!", "Upload to R2..."],
-  Learning: ["Course uploaded.", "Video transcoded.", "R2 bucket sync.", "CEU tracker update.", "Module published."]
-};
-
-const MEETING_TOPICS = [
-  "Content strategy sync", "Competitor deep dive", "Weekly priorities",
-  "Revenue review", "New feature planning", "SEO audit results",
+// NO fake work messages — agents only show their real task from data
+// NO fake meeting topics — meetings only happen from real handoffs
   "Blog post review", "Toolchest roadmap", "LinkedIn strategy"
 ];
 
@@ -894,16 +871,9 @@ function updateAgents() {
             a.targetY = a.desk.y + rand(-10, 15);
           }
         } else {
-          // Fallback: simulated messages
-          if (rand(0, 200) === 0) {
-            a.bubble = pick(WORK_MSGS[a.name]);
-            a.bubbleTimer = 120;
-          }
-          if (rand(0, 500) === 0 && !meetingActive) {
-            a.state = 'walking';
-            a.targetX = a.desk.x + rand(-40, 40);
-            a.targetY = a.desk.y + rand(-20, 30);
-          }
+          // No data loaded yet — agents sit at desk, no fake activity
+          a.bubble = null;
+          a.bubbleTimer = 0;
         }
         break;
 
@@ -931,9 +901,10 @@ function updateAgents() {
         break;
 
       case 'inMeeting':
-        if (rand(0, 60) === 0) {
-          a.bubble = pick([meetingTopic, "Good point!", "I agree.", "Let me check...", "Data says...", "Ship it!"]);
-          a.bubbleTimer = 90;
+        // Show the handoff topic — no fake chatter
+        if (!a.bubble && rand(0, 30) === 0) {
+          a.bubble = meetingTopic;
+          a.bubbleTimer = 150;
         }
         break;
 
@@ -1040,11 +1011,12 @@ function update() {
   tick++;
   updateAgents();
 
-  // Trigger events — much less with real data (mostly visual filler off)
-  const meetFreq = window.agentActivity ? 3000 : 600;
-  const waterFreq = window.agentActivity ? 2000 : 400;
-  if (tick % meetFreq === 300 && !meetingActive) triggerMeeting();
-  if (tick % waterFreq === 200 && !waterCoolerChat) triggerWaterCooler();
+  // Only trigger from real data — no random timers
+  if (window.agentActivity) {
+    if (tick % 3000 === 300 && !meetingActive) triggerMeeting();
+    if (tick % 2000 === 200 && !waterCoolerChat) triggerWaterCooler();
+  }
+  // No data = no movement. Period.
 
   // Meeting timer
   if (meetingActive) {

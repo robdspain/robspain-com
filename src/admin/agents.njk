@@ -151,7 +151,11 @@ function resizeCanvas() {
   let cw = wrapperWidth;
   let ch = Math.max(avail, 200);
   if (cw / ch > aspect) { cw = ch * aspect; } else { ch = cw / aspect; }
-  DPR = Math.min(window.devicePixelRatio || 1, 3);
+  // Increase internal pixel density to approximate 72 PPI output
+  const TARGET_PPI = 72;
+  const CSS_PPI = 96;
+  const ppiScale = TARGET_PPI / CSS_PPI;
+  DPR = Math.min((window.devicePixelRatio || 1) / ppiScale, 3);
   C.style.width = wrapperWidth + 'px';
   C.style.height = ch + 'px';
   C.width = Math.round(640 * DPR);

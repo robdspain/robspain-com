@@ -132,7 +132,7 @@ description: Rob Spain, School BCBA with {{ experience.display }} years experien
                     </div>
                     
                     <h1 class="hero-title-premium animate-fade-up stagger-1">
-                        Rob Spain - <span class="hero-title-gradient">School BCBA</span>
+                        Rob Spain - <span class="hero-title-gradient shimmer-text">School BCBA</span>
                     </h1>
 
                     <h2 class="hero-subtitle-premium animate-fade-up stagger-2" style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem;">
@@ -164,21 +164,21 @@ description: Rob Spain, School BCBA with {{ experience.display }} years experien
                     <!-- Value Proposition Section -->    <section class="value-proposition-section">
         <div class="container">
             <div class="proposition-grid">
-                <div class="proposition-card animate-fade-up stagger-1">
+                <div class="proposition-card fade-in-up hover-lift">
                     <div class="proposition-icon">
                         <i class="fas fa-user-graduate"></i>
                     </div>
                     <h3>For BCBAs & Specialists</h3>
                     <p>Receive professional supervision and mentorship to succeed in your career.</p>
                 </div>
-                <div class="proposition-card animate-fade-up stagger-2">
+                <div class="proposition-card fade-in-up hover-lift">
                     <div class="proposition-icon">
                         <i class="fas fa-school"></i>
                     </div>
                     <h3>For Schools</h3>
                     <p>Implement behavior systems that reduce disruptions and improve student outcomes.</p>
                 </div>
-                <div class="proposition-card animate-fade-up stagger-3">
+                <div class="proposition-card fade-in-up hover-lift">
                     <div class="proposition-icon">
                         <i class="fas fa-chalkboard-teacher"></i>
                     </div>
@@ -192,10 +192,10 @@ description: Rob Spain, School BCBA with {{ experience.display }} years experien
     <!-- About Rob Section -->
     <section class="section-premium" id="about">
         <div class="container">
-            <div class="section-header-premium animate-fade-up">
+            <div class="section-header-premium fade-in-up">
                 <div class="section-badge-premium">About Rob</div>
                 <h2 class="section-title-premium">
-                    School BCBA Expertise in <span class="text-gradient">Behavior Analysis</span>
+                    School BCBA Expertise in <span class="shimmer-text-slow">Behavior Analysis</span>
                 </h2>
                 <p class="section-description-premium">
                     With extensive experience in education and leadership in behavior analysis, Rob Spain brings a unique combination of practical expertise and innovative thinking to school-based behavior analysis.
@@ -218,17 +218,17 @@ description: Rob Spain, School BCBA with {{ experience.display }} years experien
     <!-- Stats Section -->
     <section class="stats-section">
         <div class="container">
-            <div class="hero-stats-premium animate-fade-up">
+            <div class="hero-stats-premium fade-in-up">
                 <div class="stat-premium">
-                    <span class="stat-number-premium" data-counter="{{ experience.years }}">0</span>
+                    <span class="stat-number-premium number-counter" data-target="{{ experience.years }}" data-suffix="+">0</span>
                     <span class="stat-label-premium">Years in Education</span>
                 </div>
                 <div class="stat-premium">
-                    <span class="stat-number-premium" data-counter="2011">0</span>
+                    <span class="stat-number-premium number-counter" data-target="2011">0</span>
                     <span class="stat-label-premium">BCBA Since</span>
                 </div>
                 <div class="stat-premium">
-                    <span class="stat-number-premium" data-counter="2020">0</span>
+                    <span class="stat-number-premium number-counter" data-target="2020">0</span>
                     <span class="stat-label-premium">Founded Behavior School</span>
                 </div>
             </div>
@@ -238,9 +238,9 @@ description: Rob Spain, School BCBA with {{ experience.display }} years experien
     <!-- Professional Achievements -->
     <section class="achievements-section">
         <div class="container">
-            <h2>Professional Achievements</h2>
+            <h2 class="fade-in-up">Professional Achievements</h2>
             <div class="achievements-grid">
-                <div class="achievement">
+                <div class="achievement fade-in-up hover-lift-subtle">
                     <div class="achievement-icon">
                         <i class="fas fa-certificate"></i>
                     </div>
@@ -249,7 +249,7 @@ description: Rob Spain, School BCBA with {{ experience.display }} years experien
                         <p>Board Certified Behavior Analyst since September 2011</p>
                     </div>
                 </div>
-                <div class="achievement">
+                <div class="achievement fade-in-up hover-lift-subtle">
                     <div class="achievement-icon">
                         <i class="fas fa-school"></i>
                     </div>
@@ -258,7 +258,7 @@ description: Rob Spain, School BCBA with {{ experience.display }} years experien
                         <p>Created innovative platform for school-based behavior analysts</p>
                     </div>
                 </div>
-                <div class="achievement">
+                <div class="achievement fade-in-up hover-lift-subtle">
                     <div class="achievement-icon">
                         <i class="fas fa-globe"></i>
                     </div>
@@ -275,10 +275,10 @@ description: Rob Spain, School BCBA with {{ experience.display }} years experien
     <!-- Interviews & Appearances -->
     <section class="interviews-section" id="interviews">
         <div class="container">
-            <div class="section-header-premium animate-fade-up">
+            <div class="section-header-premium fade-in-up">
                 <div class="section-badge-premium">Interviews & Appearances</div>
                 <h2 class="section-title-premium">
-                    School BCBA <span class="text-gradient">Professional Interviews</span>
+                    School BCBA <span class="shimmer-text-slow">Professional Interviews</span>
                 </h2>
                 <p class="section-description-premium">
                     Featured podcasts, conference talks, and interviews.
@@ -287,49 +287,48 @@ description: Rob Spain, School BCBA with {{ experience.display }} years experien
 
             <!-- CALABA 2026 Presentations -->
             <div class="calaba-presentations" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
-                <a href="/calaba-2026" class="calaba-card" style="background: linear-gradient(135deg, #1E3A34 0%, #047857 100%); border-radius: 16px; padding: 2rem; text-decoration: none; color: white; transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; gap: 0.75rem;">
+                <a href="/calaba-2026" class="calaba-card fade-in-up hover-lift glow-on-hover" style="background: linear-gradient(135deg, #1E3A34 0%, #047857 100%); border-radius: 16px; padding: 2rem; text-decoration: none; color: white; transition: transform 0.3s, box-shadow 0.3s; display: flex; flex-direction: column; gap: 0.75rem;">
                     <div style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #E3B23C;">🎤 CALABA 2026 · March 7 · Sacramento</div>
                     <div style="font-size: 1.1rem; font-weight: 800; line-height: 1.3;">Beyond Observable Behavior: Integrating ACT into School-Based ABA</div>
                     <div style="font-size: 0.8rem; color: #a7f3d0;">Symposium · with Cristal Lopez & Megan Caluza</div>
                 </a>
-                <a href="/calaba-2026" class="calaba-card" style="background: linear-gradient(135deg, #1E3A34 0%, #047857 100%); border-radius: 16px; padding: 2rem; text-decoration: none; color: white; transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; gap: 0.75rem;">
+                <a href="/calaba-2026" class="calaba-card fade-in-up hover-lift glow-on-hover" style="background: linear-gradient(135deg, #1E3A34 0%, #047857 100%); border-radius: 16px; padding: 2rem; text-decoration: none; color: white; transition: transform 0.3s, box-shadow 0.3s; display: flex; flex-direction: column; gap: 0.75rem;">
                     <div style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #E3B23C;">🎤 CALABA 2026 · March 5-7 · Sacramento</div>
                     <div style="font-size: 1.1rem; font-weight: 800; line-height: 1.3;">BCBAs in PBIS: Supporting All Levels Systemically</div>
                     <div style="font-size: 0.8rem; color: #a7f3d0;">Panel · with Megan Caluza, Holly Northcross & Katie Turner</div>
                 </a>
             </div>
             <style>
-                .calaba-card:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(4, 120, 87, 0.3); }
                 @media (max-width: 640px) { .calaba-presentations { grid-template-columns: 1fr !important; } }
             </style>
 
             <div class="video-grid">
-                <a class="video-card animate-fade-up" href="https://pbisca.org/conference-home" data-title="2025 PBIS CA Conference - BCBAs in PBIS: Supporting All Levels Systemically" data-thumb="https://img1.wsimg.com/isteam/ip/0307c2d7-b985-42c5-b8d3-316d5bfeae83/2025%20Conference%20Logo%20Full.png/:/cr=t:16.22%25,l:16.22%25,w:67.57%25,h:67.57%25/rs=w:400,h:400,cg:true,m/qt=q:71" target="_blank" rel="noopener" aria-label="2025 PBIS CA Conference presentation">
+                <a class="video-card fade-in-up hover-lift" href="https://pbisca.org/conference-home" data-title="2025 PBIS CA Conference - BCBAs in PBIS: Supporting All Levels Systemically" data-thumb="https://img1.wsimg.com/isteam/ip/0307c2d7-b985-42c5-b8d3-316d5bfeae83/2025%20Conference%20Logo%20Full.png/:/cr=t:16.22%25,l:16.22%25,w:67.57%25,h:67.57%25/rs=w:400,h:400,cg:true,m/qt=q:71" target="_blank" rel="noopener" aria-label="2025 PBIS CA Conference presentation">
                     <div class="video-thumb"></div>
                     <div class="video-overlay"><i class="fas fa-external-link-alt"></i></div>
                     <div class="video-title">2025 PBIS CA Conference - BCBAs in PBIS: Supporting All Levels Systemically</div>
                 </a>
-                <a class="video-card animate-fade-up stagger-1" href="https://www.youtube.com/watch?v=-_vHLicurUo&t=2395s" data-video-id="-_vHLicurUo" data-title="School-Based Behavior Analysis: Systems and Leadership" target="_blank" rel="noopener" aria-label="YouTube interview video">
+                <a class="video-card fade-in-up hover-lift" href="https://www.youtube.com/watch?v=-_vHLicurUo&t=2395s" data-video-id="-_vHLicurUo" data-title="School-Based Behavior Analysis: Systems and Leadership" target="_blank" rel="noopener" aria-label="YouTube interview video">
                     <div class="video-thumb"></div>
                     <div class="video-overlay"><i class="fas fa-play"></i></div>
                     <div class="video-title">School-Based Behavior Analysis: Systems and Leadership</div>
                 </a>
-                <a class="video-card animate-fade-up stagger-1" href="https://www.youtube.com/watch?v=_Q0dyOCd1Bk&t=36s" data-video-id="_Q0dyOCd1Bk" data-title="BCBA Professional Development Interview" target="_blank" rel="noopener" aria-label="YouTube interview video">
+                <a class="video-card fade-in-up hover-lift" href="https://www.youtube.com/watch?v=_Q0dyOCd1Bk&t=36s" data-video-id="_Q0dyOCd1Bk" data-title="BCBA Professional Development Interview" target="_blank" rel="noopener" aria-label="YouTube interview video">
                     <div class="video-thumb"></div>
                     <div class="video-overlay"><i class="fas fa-play"></i></div>
                     <div class="video-title">BCBA Professional Development Interview</div>
                 </a>
-                <a class="video-card animate-fade-up stagger-2" href="https://www.youtube.com/watch?v=ddOPwANNYvY" data-video-id="ddOPwANNYvY" data-title="School BCBA Practice and Implementation" target="_blank" rel="noopener" aria-label="YouTube interview video">
+                <a class="video-card fade-in-up hover-lift" href="https://www.youtube.com/watch?v=ddOPwANNYvY" data-video-id="ddOPwANNYvY" data-title="School BCBA Practice and Implementation" target="_blank" rel="noopener" aria-label="YouTube interview video">
                     <div class="video-thumb"></div>
                     <div class="video-overlay"><i class="fas fa-play"></i></div>
                     <div class="video-title">School BCBA Practice and Implementation</div>
                 </a>
-                <a class="video-card animate-fade-up stagger-3" href="https://www.youtube.com/watch?v=bamJgbQl8JE&t=3632s" data-video-id="bamJgbQl8JE" data-title="Educational Leadership in Behavior Analysis" target="_blank" rel="noopener" aria-label="YouTube interview video">
+                <a class="video-card fade-in-up hover-lift" href="https://www.youtube.com/watch?v=bamJgbQl8JE&t=3632s" data-video-id="bamJgbQl8JE" data-title="Educational Leadership in Behavior Analysis" target="_blank" rel="noopener" aria-label="YouTube interview video">
                     <div class="video-thumb"></div>
                     <div class="video-overlay"><i class="fas fa-play"></i></div>
                     <div class="video-title">Educational Leadership in Behavior Analysis</div>
                 </a>
-                <a class="video-card animate-fade-up stagger-4" href="https://behaviorlive.com/on-demand/achieving-meaningful-outcomes-in-schools-practical-functional-assessment-and-sk" data-title="Achieving Meaningful Outcomes in Schools (PFA/SBT)" data-thumb="/public/images/interviews/meaningful-outcomes.svg" target="_blank" rel="noopener" aria-label="BehaviorLive interview video">
+                <a class="video-card fade-in-up hover-lift" href="https://behaviorlive.com/on-demand/achieving-meaningful-outcomes-in-schools-practical-functional-assessment-and-sk" data-title="Achieving Meaningful Outcomes in Schools (PFA/SBT)" data-thumb="/public/images/interviews/meaningful-outcomes.svg" target="_blank" rel="noopener" aria-label="BehaviorLive interview video">
                     <div class="video-thumb"></div>
                     <div class="video-overlay"><i class="fas fa-play"></i></div>
                     <div class="video-title">Achieving Meaningful Outcomes in Schools (PFA/SBT)</div>

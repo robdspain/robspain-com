@@ -1036,6 +1036,19 @@ if ('serviceWorker' in navigator) {
     card.querySelectorAll('.status-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
+        const newStatus = btn.dataset.status;
+        if (newStatus === 'done') {
+          card.style.transition = 'opacity 0.3s, transform 0.3s';
+          card.style.opacity = '0';
+          card.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            task.status = newStatus;
+            saveTaskStates();
+            updateProgress();
+            renderAllTasks();
+          }, 300);
+          return;
+        }
         task.status = btn.dataset.status;
         saveTaskStates();
         updateProgress();
@@ -1059,12 +1072,37 @@ if ('serviceWorker' in navigator) {
       if (grid) grid.innerHTML = '';
     });
 
-    tasks.forEach(task => {
+    // Separate done vs not-done, render not-done first
+    const notDone = tasks.filter(t => t.status !== 'done');
+    const done = tasks.filter(t => t.status === 'done');
+
+    notDone.forEach(task => {
       const grid = grids[task.category];
-      if (grid) {
-        grid.appendChild(renderTask(task));
-      }
+      if (grid) grid.appendChild(renderTask(task));
     });
+
+    // Done tasks: collapsed at bottom with undo option
+    if (done.length > 0) {
+      const doneSection = document.createElement('div');
+      doneSection.style.cssText = 'grid-column: 1/-1; margin-top: 12px; border-top: 1px solid #334155; padding-top: 8px;';
+      doneSection.innerHTML = `<details><summary style="cursor:pointer; color:#10b981; font-size:14px; font-weight:600;">✅ ${done.length} completed — click to show</summary><div id="done-tasks" style="margin-top:8px; display:flex; flex-direction:column; gap:6px;"></div></details>`;
+      const container = doneSection.querySelector('#done-tasks');
+      done.forEach(task => {
+        const mini = document.createElement('div');
+        mini.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#0f172a; border-radius:8px; opacity:0.6;';
+        mini.innerHTML = `<span style="color:#94a3b8; text-decoration:line-through; font-size:13px;">${task.title}</span><button style="background:#334155; border:none; color:#94a3b8; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:12px;" data-id="${task.id}">↩ Undo</button>`;
+        mini.querySelector('button').addEventListener('click', () => {
+          task.status = 'not-started';
+          saveTaskStates();
+          updateProgress();
+          renderAllTasks();
+        });
+        container.appendChild(mini);
+      });
+      // Add to the first non-empty grid
+      const firstGrid = Object.values(grids).find(g => g && g.children.length > 0) || grids['urgent'];
+      if (firstGrid) firstGrid.parentElement.appendChild(doneSection);
+    }
   }
 
   // Initialize

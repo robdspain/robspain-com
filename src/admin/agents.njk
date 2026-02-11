@@ -426,23 +426,44 @@ function drawOffice() {
   // --- FURNITURE (16-bit SNES quality) ---
 
   // Desks with wood grain, monitor glow, and desk accessories
+  // Status-dependent colors for visual indicators
+  const deskStatusColors = {
+    working: { wood1: '#7a6050', wood2: '#6e5545', wood3: '#5c4033', edge: 'rgba(255,255,255,0.08)' },
+    deployed: { wood1: '#7a6050', wood2: '#6e5545', wood3: '#5c4033', edge: 'rgba(255,255,255,0.08)' },
+    waiting: { wood1: '#7a6050', wood2: '#6e5545', wood3: '#5c4033', edge: 'rgba(255,255,255,0.08)' },
+    idle: { wood1: '#5a5060', wood2: '#4e4555', wood3: '#3c3043', edge: 'rgba(128,128,160,0.12)' },
+    blocked: { wood1: '#6a3030', wood2: '#5e2525', wood3: '#4c1a1a', edge: 'rgba(255,80,80,0.15)' },
+  };
+  const monitorStatusColors = {
+    working: null,   // uses agent.color (default)
+    deployed: null,  // uses agent.color
+    waiting: '#f59e0b',  // amber
+    idle: '#3a3a4e',     // dim/off
+    blocked: '#ef4444',  // red
+  };
   AGENTS.forEach(a => {
     const dx = a.desk.x, dy = a.desk.y;
     const isNeo = a.name === 'Neo';
     const dw = isNeo ? 48 : 36, dh = isNeo ? 32 : 24;
     
+    // Get real status
+    const realData = window.agentActivity && window.agentActivity.agents && window.agentActivity.agents[a.name];
+    const agentStatus = (realData && realData.status) || 'working';
+    const deskColors = deskStatusColors[agentStatus] || deskStatusColors.working;
+    const monitorColor = monitorStatusColors[agentStatus];
+    
     // Desk shadow
-    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.fillStyle = agentStatus === 'blocked' ? 'rgba(80,0,0,0.4)' : 'rgba(0,0,0,0.3)';
     ctx.beginPath();
     ctx.roundRect(dx - (isNeo?4:2) + 2, dy - (isNeo?4:2) + 2, dw, dh, 3);
     ctx.fill();
     
-    // Desk surface with wood grain
+    // Desk surface with wood grain (tinted by status)
     const woodGrad = ctx.createLinearGradient(dx, dy, dx + dw, dy + dh);
-    woodGrad.addColorStop(0, '#7a6050');
-    woodGrad.addColorStop(0.3, '#6e5545');
-    woodGrad.addColorStop(0.6, '#7a6050');
-    woodGrad.addColorStop(1, '#5c4033');
+    woodGrad.addColorStop(0, deskColors.wood1);
+    woodGrad.addColorStop(0.3, deskColors.wood2);
+    woodGrad.addColorStop(0.6, deskColors.wood1);
+    woodGrad.addColorStop(1, deskColors.wood3);
     ctx.fillStyle = woodGrad;
     ctx.beginPath();
     ctx.roundRect(dx - (isNeo?4:2), dy - (isNeo?4:2), dw, dh, 3);
@@ -455,7 +476,7 @@ function drawOffice() {
       ctx.beginPath(); ctx.moveTo(dx, gy); ctx.lineTo(dx + dw - 6, gy); ctx.stroke();
     }
     // Desk edge highlight
-    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.strokeStyle = deskColors.edge;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(dx - (isNeo?4:2), dy - (isNeo?4:2));
@@ -474,12 +495,30 @@ function drawOffice() {
     // Screen
     ctx.fillStyle = '#0f172a';
     ctx.fillRect(mx, my, mw, mh);
-    // Screen glow (agent color)
+    // Screen glow (status-dependent: agent color for working/deployed, amber for waiting, dim for idle, red for blocked)
+    const screenColor = monitorColor || a.color;
     const glowGrad = ctx.createRadialGradient(mx + mw/2, my + mh/2, 2, mx + mw/2, my + mh/2, mw);
-    glowGrad.addColorStop(0, a.color);
+    glowGrad.addColorStop(0, screenColor);
     glowGrad.addColorStop(1, 'rgba(15,23,42,0.1)');
     ctx.fillStyle = glowGrad;
     ctx.fillRect(mx + 1, my + 1, mw - 2, mh - 2);
+    
+    // Blocked: red pulse ring around monitor
+    if (agentStatus === 'blocked') {
+      const pulse = 0.4 + Math.sin(Date.now() / 400) * 0.3;
+      ctx.strokeStyle = `rgba(239, 68, 68, ${pulse})`;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(mx - 3, my - 3, mw + 6, mh + 6, 3);
+      ctx.stroke();
+    }
+    // Idle: dim "off" scanlines on monitor
+    if (agentStatus === 'idle') {
+      ctx.fillStyle = 'rgba(0,0,0,0.4)';
+      for (let sl = 0; sl < mh; sl += 2) {
+        ctx.fillRect(mx, my + sl, mw, 1);
+      }
+    }
     // Monitor stand
     ctx.fillStyle = '#3a3a4e';
     ctx.fillRect(mx + mw/2 - 2, my + mh, 4, 3);

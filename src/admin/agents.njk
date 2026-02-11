@@ -87,7 +87,7 @@ const statusBar = document.getElementById('status');
 
 // --- BLOCKED ITEMS ---
 const BLOCKED = [
-  { item: "Reconnect GitHub in Netlify", type: "BLOCKER", priority: "CRITICAL", agents: ["BehaviorSchool", "RobSpain.com", "Study App"], instructions: "Go to app.netlify.com → Team settings → Access & security → Git provider → Reconnect GitHub. This fixes ALL 3 sites at once." },
+  { item: "CALABA Symposium Discussant needed", type: "BLOCKER", priority: "CRITICAL", agents: ["BAE SIG"], instructions: "Assign a Discussant for the 'Beyond Observable Behavior' symposium (March 7, 2:55-3:55 PM). Chair + Presenter cannot also be Discussant. Need a 4th person." },
   { item: "9 writer drafts need review", type: "APPROVAL", priority: "HIGH", agents: ["Writer"], instructions: "Review blog drafts. Neo will send you preview links on Telegram — read on phone, reply 'approved' or send feedback." },
   { item: "app.behaviorschool.com DNS setup", type: "BLOCKER", priority: "HIGH", agents: ["Pro"], instructions: "Add CNAME record for app.behaviorschool.com pointing to the Vercel/Netlify deployment. Check your domain registrar (Cloudflare?)." },
   { item: "Gmail app password for BAE SIG", type: "BLOCKER", priority: "MEDIUM", agents: ["BAE SIG"], instructions: "Go to myaccount.google.com → Security → App passwords for california.bae.sig@gmail.com. Generate an app password. Send it to Neo to set as GMAIL_APP_PASSWORD on Vercel." },

@@ -529,6 +529,11 @@ if ('serviceWorker' in navigator) {
       padding-right: env(safe-area-inset-right, 0.5rem);
     }
   }
+  .due-date-controls { display: flex; align-items: center; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
+  .tomorrow-btn { font-size: 0.85rem; padding: 6px 14px; background: #dbeafe; color: #1e40af; border: 2px solid #93c5fd; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+  .tomorrow-btn:hover { background: #bfdbfe; }
+  .clear-date-btn { font-size: 0.85rem; padding: 6px 10px; background: #fee2e2; color: #991b1b; border: 2px solid #fca5a5; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+  .clear-date-btn:hover { background: #fecaca; }
   .admin-nav { display: flex; justify-content: center; gap: 0; background: #ffffff; border-bottom: 2px solid var(--border-light); position: sticky; top: 0; z-index: 100; }
   .admin-nav a { color: var(--text-muted); font-size: 15px; font-weight: 600; padding: 12px 28px; text-decoration: none; border-bottom: 3px solid transparent; transition: all 0.2s; }
   .admin-nav a:hover { color: var(--text-dark); background: rgba(0,0,0,0.03); }
@@ -1046,7 +1051,12 @@ if ('serviceWorker' in navigator) {
       const states = JSON.parse(saved);
       tasks.forEach(task => {
         if (states[task.id]) {
-          task.status = states[task.id];
+          if (typeof states[task.id] === 'object') {
+            task.status = states[task.id].status || task.status;
+            task.dueDate = states[task.id].dueDate || task.dueDate || null;
+          } else {
+            task.status = states[task.id];
+          }
         }
       });
     }
@@ -1056,9 +1066,33 @@ if ('serviceWorker' in navigator) {
   function saveTaskStates() {
     const states = {};
     tasks.forEach(task => {
-      states[task.id] = task.status;
+      states[task.id] = { status: task.status, dueDate: task.dueDate || null };
     });
     localStorage.setItem('robTaskStates', JSON.stringify(states));
+  }
+
+  // Date helpers
+  function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr + 'T00:00:00');
+    const today = new Date(); today.setHours(0,0,0,0);
+    const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
+    const diff = Math.round((d - today) / 86400000);
+    if (diff === 0) return '📅 Today';
+    if (diff === 1) return '📅 Tomorrow';
+    if (diff < 0) return '🔴 Overdue (' + d.toLocaleDateString('en-US', {month:'short', day:'numeric'}) + ')';
+    if (diff <= 7) return '📅 ' + d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+    return '📅 ' + d.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+  }
+
+  function getTomorrow() {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return d.toISOString().split('T')[0];
+  }
+
+  function getToday() {
+    return new Date().toISOString().split('T')[0];
   }
 
   // Update progress
@@ -1097,7 +1131,7 @@ if ('serviceWorker' in navigator) {
           <div class="task-meta">
             <span class="task-badge ${platformClass}">${task.platform}</span>
             <span class="task-time">⏱️ ${task.time}</span>
-            ${task.deadline ? `<span class="task-deadline">${task.deadline}</span>` : ''}
+            ${task.dueDate ? `<span class="task-deadline">${formatDate(task.dueDate)}</span>` : (task.deadline ? `<span class="task-deadline">${task.deadline}</span>` : '')}
             ${task.priority ? '<span class="task-priority">⚡ High Priority</span>' : ''}
           </div>
         </div>
@@ -1107,6 +1141,12 @@ if ('serviceWorker' in navigator) {
         <ol>
           ${task.instructions.map(step => `<li>${step}</li>`).join('')}
         </ol>
+        <div class="due-date-controls">
+          <label style="font-size:0.85rem;font-weight:700;color:var(--text-muted);">Due Date:</label>
+          <input type="date" class="date-picker" value="${task.dueDate || ''}" style="font-size:1rem;padding:6px 10px;border:2px solid var(--border-light);border-radius:8px;background:#fff;color:var(--text-dark);cursor:pointer;">
+          <button class="tomorrow-btn" title="Move to tomorrow">📅 Tomorrow</button>
+          <button class="clear-date-btn" title="Clear date">✖</button>
+        </div>
         <div class="status-buttons">
           <button class="status-btn not-started" data-status="not-started">⬜ Not Started</button>
           <button class="status-btn in-progress" data-status="in-progress">🔄 In Progress</button>
@@ -1122,6 +1162,31 @@ if ('serviceWorker' in navigator) {
       e.stopPropagation();
       card.classList.toggle('expanded');
       toggleBtn.textContent = card.classList.contains('expanded') ? '🔼 Hide' : '👉 Show Instructions';
+    });
+
+    // Date picker
+    const datePicker = card.querySelector('.date-picker');
+    datePicker.addEventListener('change', (e) => {
+      e.stopPropagation();
+      task.dueDate = datePicker.value || null;
+      saveTaskStates();
+      renderAllTasks();
+    });
+
+    // Tomorrow button
+    card.querySelector('.tomorrow-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      task.dueDate = getTomorrow();
+      saveTaskStates();
+      renderAllTasks();
+    });
+
+    // Clear date button
+    card.querySelector('.clear-date-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      task.dueDate = null;
+      saveTaskStates();
+      renderAllTasks();
     });
 
     // Status buttons

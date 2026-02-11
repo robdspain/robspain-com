@@ -529,7 +529,16 @@ if ('serviceWorker' in navigator) {
       padding-right: env(safe-area-inset-right, 0.5rem);
     }
   }
+  .admin-nav { display: flex; justify-content: center; gap: 0; background: #ffffff; border-bottom: 2px solid var(--border-light); position: sticky; top: 0; z-index: 100; }
+  .admin-nav a { color: var(--text-muted); font-size: 15px; font-weight: 600; padding: 12px 28px; text-decoration: none; border-bottom: 3px solid transparent; transition: all 0.2s; }
+  .admin-nav a:hover { color: var(--text-dark); background: rgba(0,0,0,0.03); }
+  .admin-nav a.active { color: #047857; border-bottom-color: #047857; }
 </style>
+
+<nav class="admin-nav">
+  <a href="/admin/tasks/" class="active">📋 Tasks</a>
+  <a href="/admin/agents/">🤖 Agents</a>
+</nav>
 
 <div class="tasks-shell">
   <div class="tasks-container">

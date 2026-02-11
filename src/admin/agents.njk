@@ -54,6 +54,23 @@ permalink: /admin/agents/index.html
   #modal-send:hover { background: #10b981; color: #0f172a; }
   #modal-cancel { color: #94a3b8; border-color: #475569; }
   #modal-cancel:hover { background: #475569; color: #e2e8f0; }
+  /* Tabs */
+  #modal-tabs { display: flex; gap: 2px; margin-bottom: 16px; border-bottom: 2px solid #334155; }
+  .modal-tab { font-family: 'Press Start 2P', monospace; font-size: 9px; padding: 8px 16px; cursor: pointer; border: none; background: transparent; color: #94a3b8; border-bottom: 3px solid transparent; }
+  .modal-tab.active { color: #10b981; border-bottom-color: #10b981; }
+  .modal-tab:hover { color: #e2e8f0; background: rgba(255,255,255,0.05); }
+  /* Sent confirmation */
+  #sent-confirm { display: none; color: #10b981; font-size: 10px; margin-top: 12px; animation: pulse 1s ease-in-out; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+  /* Chat area */
+  #chat-area { display: none; max-height: 300px; overflow-y: auto; background: #0f172a; border: 2px solid #334155; padding: 12px; margin-top: 10px; font-family: 'Courier New', monospace; font-size: 11px; line-height: 1.6; }
+  .chat-msg { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #1e293b; }
+  .chat-msg:last-child { border-bottom: none; }
+  .chat-msg .sender { color: #10b981; font-weight: bold; margin-bottom: 4px; }
+  .chat-msg .time { color: #64748b; font-size: 9px; margin-left: 8px; }
+  .chat-msg .text { color: #e2e8f0; }
+  .typing-indicator { color: #94a3b8; font-style: italic; animation: typing 1.5s infinite; }
+  @keyframes typing { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 </style>
 </head>
 <body>
@@ -77,12 +94,20 @@ permalink: /admin/agents/index.html
 <div id="modal-overlay">
   <div id="modal">
     <h2 id="modal-title">📋 Instruct Agent</h2>
-    <p id="modal-info"></p>
-    <input id="modal-input" type="text" placeholder="Type instruction..." maxlength="200" />
-    <div id="modal-btns">
-      <button id="modal-send">SEND</button>
-      <button id="modal-cancel">CANCEL</button>
+    <div id="modal-tabs">
+      <button class="modal-tab active" data-tab="instruct">📝 Instruct</button>
+      <button class="modal-tab" data-tab="responses">💬 Responses</button>
     </div>
+    <div id="instruct-tab">
+      <p id="modal-info"></p>
+      <input id="modal-input" type="text" placeholder="Type instruction..." maxlength="200" />
+      <div id="modal-btns">
+        <button id="modal-send">SEND</button>
+        <button id="modal-cancel">CANCEL</button>
+      </div>
+      <div id="sent-confirm">✓ Sent! Neo will process this instruction.</div>
+    </div>
+    <div id="chat-area"></div>
   </div>
 </div>
 
@@ -128,12 +153,19 @@ function showBlockerDetail(idx) {
 }
 
 // Reset modal for agent instructions
-const origCancel = document.getElementById('modal-cancel').onclick;
 document.getElementById('modal-cancel').onclick = () => {
   document.getElementById('modal-input').style.display = '';
   document.getElementById('modal-send').style.display = '';
   document.getElementById('modal-overlay').classList.remove('show');
+  document.getElementById('sent-confirm').style.display = 'none';
+  if (pollInterval) clearInterval(pollInterval);
   selectedAgent = null;
+  // Reset to instruct tab
+  document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.modal-tab[data-tab="instruct"]').classList.add('active');
+  document.getElementById('instruct-tab').style.display = '';
+  document.getElementById('chat-area').style.display = 'none';
+  currentTab = 'instruct';
 };
 
 // --- FULLSCREEN CANVAS ---
@@ -204,25 +236,122 @@ function openAgentModal(agent) {
   modalInput.focus();
 }
 
-document.getElementById('modal-send').onclick = sendInstruction;
-modalInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendInstruction(); if (e.key === 'Escape') { modal.classList.remove('show'); selectedAgent = null; } });
+// Tab switching
+let currentTab = 'instruct';
+let pollInterval = null;
+const ADMIN_TOKEN = '8ebd24bbfa5d0c4fb2cc069c475ee1b80c42368292ea269346ff7060fa09109b';
 
-function sendInstruction() {
+document.querySelectorAll('.modal-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const targetTab = tab.dataset.tab;
+    document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentTab = targetTab;
+    
+    if (targetTab === 'instruct') {
+      document.getElementById('instruct-tab').style.display = '';
+      document.getElementById('chat-area').style.display = 'none';
+      if (pollInterval) clearInterval(pollInterval);
+    } else if (targetTab === 'responses') {
+      document.getElementById('instruct-tab').style.display = 'none';
+      document.getElementById('chat-area').style.display = 'block';
+      loadResponses();
+      // Poll every 5 seconds
+      if (pollInterval) clearInterval(pollInterval);
+      pollInterval = setInterval(loadResponses, 5000);
+    }
+  });
+});
+
+document.getElementById('modal-send').onclick = sendInstruction;
+modalInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendInstruction(); if (e.key === 'Escape') { modal.classList.remove('show'); selectedAgent = null; if (pollInterval) clearInterval(pollInterval); } });
+
+async function sendInstruction() {
   if (!selectedAgent || !modalInput.value.trim()) return;
   const msg = modalInput.value.trim();
-  addLog('<span class="name">Rob</span> → <span class="name">' + selectedAgent.name + '</span>: <span class="action">"' + msg + '"</span>');
-  selectedAgent.bubble = '📨 ' + msg.substring(0, 20) + (msg.length > 20 ? '...' : '');
-  selectedAgent.bubbleTimer = 200;
-  spawnParticles(selectedAgent.x, selectedAgent.y, selectedAgent.color, 10);
-  // Simulate agent acknowledging
-  setTimeout(() => {
-    if (selectedAgent) {
-      selectedAgent.bubble = 'Queued for Neo →';
-      selectedAgent.bubbleTimer = 150;
-      addLog('<span class="name">' + selectedAgent.name + '</span> <span class="action">acknowledged task.</span>');
+  const sendBtn = document.getElementById('modal-send');
+  const confirm = document.getElementById('sent-confirm');
+  
+  // Disable button while sending
+  sendBtn.disabled = true;
+  sendBtn.textContent = 'SENDING...';
+  
+  try {
+    const response = await fetch('/api/agent-instruct', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${ADMIN_TOKEN}`
+      },
+      body: JSON.stringify({
+        agentId: selectedAgent.name,
+        instruction: msg,
+        token: ADMIN_TOKEN
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (response.ok && result.ok) {
+      // Show confirmation
+      confirm.style.display = 'block';
+      modalInput.value = '';
+      
+      // Visual feedback on agent
+      addLog('<span class="name">Rob</span> → <span class="name">' + selectedAgent.name + '</span>: <span class="action">"' + msg + '"</span>');
+      selectedAgent.bubble = '📨 Queued for Neo';
+      selectedAgent.bubbleTimer = 200;
+      spawnParticles(selectedAgent.x, selectedAgent.y, selectedAgent.color, 10);
+      
+      // Hide confirmation after 3 seconds
+      setTimeout(() => {
+        confirm.style.display = 'none';
+      }, 3000);
+    } else {
+      alert('Failed to send instruction: ' + (result.error || 'Unknown error'));
     }
-  }, 2000);
-  modal.classList.remove('show');
+  } catch (err) {
+    console.error('Send error:', err);
+    alert('Failed to send instruction: ' + err.message);
+  } finally {
+    sendBtn.disabled = false;
+    sendBtn.textContent = 'SEND';
+  }
+}
+
+async function loadResponses() {
+  if (!selectedAgent) return;
+  const chatArea = document.getElementById('chat-area');
+  
+  try {
+    const response = await fetch(`/api/agent-responses?agentId=${encodeURIComponent(selectedAgent.name)}&token=${ADMIN_TOKEN}`);
+    const result = await response.json();
+    
+    if (response.ok && result.ok) {
+      if (!result.responses || result.responses.length === 0) {
+        chatArea.innerHTML = '<div class="typing-indicator">⏳ Awaiting response from Neo...</div>';
+      } else {
+        // Render chat messages
+        chatArea.innerHTML = result.responses.map(r => {
+          const time = new Date(r.timestamp).toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'});
+          return `
+            <div class="chat-msg">
+              <div class="sender">${r.from || selectedAgent.name}<span class="time">${time}</span></div>
+              <div class="text">${r.message}</div>
+            </div>
+          `;
+        }).join('');
+        
+        // Scroll to bottom
+        chatArea.scrollTop = chatArea.scrollHeight;
+      }
+    } else {
+      chatArea.innerHTML = '<div style="color:#ef4444">Failed to load responses.</div>';
+    }
+  } catch (err) {
+    console.error('Load responses error:', err);
+    chatArea.innerHTML = '<div style="color:#ef4444">Error: ' + err.message + '</div>';
+  }
 }
 
 // Status bar badges also clickable

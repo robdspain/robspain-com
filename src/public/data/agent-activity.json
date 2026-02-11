@@ -8,7 +8,7 @@
     },
     "Scout": {
       "status": "deployed",
-      "task": "Evening scan complete — burnout threads (rel 9), paraprofessional gaps (rel 7)",
+      "task": "Evening scan complete \u2014 burnout threads (rel 9), paraprofessional gaps (rel 7)",
       "lastActive": "2026-02-11T04:45:00Z"
     },
     "Writer": {
@@ -23,7 +23,7 @@
     },
     "Engineer": {
       "status": "deployed",
-      "task": "Agent HQ upgraded — HiDPI + modal text fix",
+      "task": "Agent HQ upgraded \u2014 HiDPI + modal text fix",
       "lastActive": "2026-02-11T04:53:00Z"
     },
     "Planner": {
@@ -58,17 +58,17 @@
     },
     "Pro": {
       "status": "blocked",
-      "task": "app.behaviorschool.com DNS not set up — signup CTAs broken",
+      "task": "app.behaviorschool.com DNS not set up \u2014 signup CTAs broken",
       "lastActive": "2026-02-10T23:35:00Z"
     },
     "RobSpain.com": {
       "status": "deployed",
-      "task": "Live — hero fix, BACB logo restored, Agent HQ upgraded",
+      "task": "Live \u2014 hero fix, BACB logo restored, Agent HQ upgraded",
       "lastActive": "2026-02-11T04:55:00Z"
     },
     "BehaviorSchool": {
       "status": "deployed",
-      "task": "Live — nav fix + pro mockups deployed via GitHub auto-deploy",
+      "task": "Live \u2014 nav fix + pro mockups deployed via GitHub auto-deploy",
       "lastActive": "2026-02-10T23:30:00Z"
     },
     "Study App": {
@@ -102,44 +102,57 @@
       "item": "9 writer drafts need review",
       "type": "APPROVAL",
       "priority": "HIGH",
-      "agents": ["Writer"]
+      "agents": [
+        "Writer"
+      ]
     },
     {
       "item": "app.behaviorschool.com DNS not set up",
       "type": "BLOCKER",
       "priority": "HIGH",
-      "agents": ["Pro"]
+      "agents": [
+        "Pro"
+      ]
     },
     {
       "item": "PayPal link from Liz Flaherty",
       "type": "BLOCKER",
       "priority": "MEDIUM",
-      "agents": ["BAE SIG"]
+      "agents": [
+        "BAE SIG"
+      ]
     },
     {
       "item": "Gmail app password for BAE SIG email",
       "type": "BLOCKER",
       "priority": "MEDIUM",
-      "agents": ["BAE SIG"]
+      "agents": [
+        "BAE SIG"
+      ]
     },
     {
       "item": "gog auth for Gmail/Calendar access",
       "type": "BLOCKER",
       "priority": "MEDIUM",
-      "agents": ["Neo", "Scout"]
+      "agents": [
+        "Neo",
+        "Scout"
+      ]
     },
     {
       "item": "study.behaviorschool.com Vite build on Netlify",
       "type": "BUG",
       "priority": "LOW",
-      "agents": ["Study App"]
+      "agents": [
+        "Study App"
+      ]
     }
   ],
   "recentActivity": [
     {
       "time": "20:55",
       "agent": "Neo",
-      "action": "Updated OpenClaw 2026.2.6 → 2026.2.9 — Opus 4.6 now 1M context!"
+      "action": "Updated OpenClaw 2026.2.6 \u2192 2026.2.9 \u2014 Opus 4.6 now 1M context!"
     },
     {
       "time": "20:53",
@@ -149,7 +162,7 @@
     {
       "time": "20:47",
       "agent": "Analyst",
-      "action": "Daily report delivered — CALABA discussant still critical"
+      "action": "Daily report delivered \u2014 CALABA discussant still critical"
     },
     {
       "time": "20:45",
@@ -159,17 +172,17 @@
     {
       "time": "16:36",
       "agent": "Neo",
-      "action": "Model stack optimized — Sonnet 4.5 as fallback #1"
+      "action": "Model stack optimized \u2014 Sonnet 4.5 as fallback #1"
     },
     {
       "time": "16:08",
       "agent": "Neo",
-      "action": "GitHub reconnected! All 3 Netlify sites auto-deploying ✅"
+      "action": "GitHub reconnected! All 3 Netlify sites auto-deploying \u2705"
     },
     {
       "time": "15:48",
       "agent": "Neo",
-      "action": "Deployed robspain.com — hero fix + BACB logo restored"
+      "action": "Deployed robspain.com \u2014 hero fix + BACB logo restored"
     },
     {
       "time": "15:45",
@@ -185,6 +198,72 @@
       "time": "15:27",
       "agent": "BehaviorSchool",
       "action": "Nav overlap fixed + pro mockups live via auto-deploy"
+    }
+  ],
+  "handoffs": [
+    {
+      "topic": "Ball State accreditation \u2192 blog post",
+      "agents": [
+        "Scout",
+        "Writer"
+      ],
+      "type": "content_pipeline"
+    },
+    {
+      "topic": "Burnout findings \u2192 social series",
+      "agents": [
+        "Scout",
+        "Writer"
+      ],
+      "type": "content_pipeline"
+    },
+    {
+      "topic": "SEO audit \u2192 blog optimization",
+      "agents": [
+        "SEO",
+        "Writer"
+      ],
+      "type": "optimization"
+    },
+    {
+      "topic": "Competitor analysis \u2192 pricing review",
+      "agents": [
+        "Scout",
+        "Analyst"
+      ],
+      "type": "research"
+    },
+    {
+      "topic": "Weekly report \u2192 Rob briefing",
+      "agents": [
+        "Analyst",
+        "Neo"
+      ],
+      "type": "reporting"
+    },
+    {
+      "topic": "Blog drafts \u2192 SEO check",
+      "agents": [
+        "Writer",
+        "SEO"
+      ],
+      "type": "quality"
+    },
+    {
+      "topic": "Pro page redesign \u2192 link audit",
+      "agents": [
+        "BehaviorSchool",
+        "SEO"
+      ],
+      "type": "deployment"
+    },
+    {
+      "topic": "Raffle site \u2192 revenue tracking",
+      "agents": [
+        "BAE SIG",
+        "Analyst"
+      ],
+      "type": "operations"
     }
   ]
 }

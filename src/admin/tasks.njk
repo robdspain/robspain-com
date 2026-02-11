@@ -549,8 +549,8 @@ if ('serviceWorker' in navigator) {
   <div class="tasks-container">
     <!-- CRITICAL BANNER -->
     <div class="critical-banner">
-      <div class="critical-title">🔴 CALABA PRESENTATIONS DUE MONDAY</div>
-      <div class="critical-subtitle">START HERE! Conference is March 7-8. Review your presentations NOW.</div>
+      <div class="critical-title">🔴 REVENUE IS PRIORITY #1</div>
+      <div class="critical-subtitle">Stripe: 2 customers, 0 active subs. Ship features that make money.</div>
     </div>
 
     <!-- Header -->
@@ -563,7 +563,7 @@ if ('serviceWorker' in navigator) {
     <div class="progress-bar-container">
       <div class="progress-stats">
         <div class="stat-item">
-          <div class="stat-value" id="total-tasks">21</div>
+          <div class="stat-value" id="total-tasks">17</div>
           <div class="stat-label">Total Tasks</div>
         </div>
         <div class="stat-item">
@@ -575,7 +575,7 @@ if ('serviceWorker' in navigator) {
           <div class="stat-label">In Progress</div>
         </div>
         <div class="stat-item">
-          <div class="stat-value" id="remaining-tasks">21</div>
+          <div class="stat-value" id="remaining-tasks">17</div>
           <div class="stat-label">Remaining</div>
         </div>
       </div>
@@ -619,38 +619,21 @@ if ('serviceWorker' in navigator) {
 
 <script>
   const tasks = [
-    // 🔴 URGENT — DUE MONDAY
+    // 🔴 URGENT — CALABA + BLOCKERS
     {
       id: 1,
-      category: 'urgent',
-      title: 'Review PBIS Presentation: "BCBAs in PBIS"',
-      platform: 'behaviorschool.com',
-      time: '20 min',
-      deadline: 'DUE MONDAY',
-      priority: true,
-      status: 'not-started',
-      instructions: [
-        'Go to <a href="https://behaviorschool.com/admin/presentations" target="_blank">behaviorschool.com/admin/presentations</a>',
-        'Find "BCBAs in PBIS" in the Library',
-        'Click "Present" to preview full presentation',
-        'Check content accuracy — make edits if needed',
-        'Click "Download" to export PPTX backup',
-        'Do a quick practice run-through (even once helps muscle memory)'
-      ]
-    },
-    {
-      id: 2,
       category: 'urgent',
       title: 'Review CALABA Symposium: "Beyond Observable Behavior"',
       platform: 'behaviorschool.com',
       time: '25 min',
-      deadline: 'DUE MONDAY',
+      deadline: 'CALABA Mar 7',
       priority: true,
       status: 'not-started',
+      dueDate: '2026-02-17',
       instructions: [
         'Go to <a href="https://behaviorschool.com/admin/presentations" target="_blank">behaviorschool.com/admin/presentations</a>',
         'Find "Beyond Observable Behavior" in Library',
-        'This is a 4-paper symposium: you, Cristal Lopez, Megan Caluza, + 1 more',
+        'Symposium team: you (Chair+Presenter), Cristal Lopez, Megan Caluza (Discussant)',
         'Click "Present" to preview',
         'Verify all content is accurate',
         'Export PPTX backup',
@@ -658,165 +641,124 @@ if ('serviceWorker' in navigator) {
       ]
     },
 
-    // 🟡 MAKES MONEY — App Store Launch (in order)
+    {
+      id: 2,
+      category: 'urgent',
+      title: 'Review PBIS Presentation: "BCBAs in PBIS"',
+      platform: 'behaviorschool.com',
+      time: '20 min',
+      deadline: 'CALABA Mar 5',
+      priority: true,
+      status: 'not-started',
+      dueDate: '2026-02-17',
+      instructions: [
+        'Go to <a href="https://behaviorschool.com/admin/presentations" target="_blank">behaviorschool.com/admin/presentations</a>',
+        'Find "BCBAs in PBIS" in the Library',
+        'Panel with Megan Caluza, Holly Northcross, Katie Turner',
+        'Click "Present" to preview — check content accuracy',
+        'Export PPTX backup'
+      ]
+    },
     {
       id: 3,
-      category: 'money',
-      title: '1️⃣ Get Google AI API Key',
-      platform: 'behaviorschool.com',
-      time: '2 min',
-      priority: false,
+      category: 'urgent',
+      title: 'Review 9 Writer Drafts',
+      platform: 'Both sites',
+      time: '30 min',
+      priority: true,
       status: 'not-started',
       instructions: [
-        'Go to <a href="https://aistudio.google.com/apikey" target="_blank">https://aistudio.google.com/apikey</a>',
-        'Sign in with your Google account',
-        'Click "Create API Key"',
-        'Copy the key',
-        'Send it to me'
+        'Ask Neo on Telegram to send preview links',
+        '9 drafts ready: Grad School, Mock Scores, Burnout Series, Supervision posts, LinkedIn, YouTube script, more',
+        'Sort each into robspain.com (thought leadership) or behaviorschool.com (SEO/products)',
+        'Reply "approved" or send feedback per draft'
       ]
     },
     {
       id: 4,
-      category: 'money',
-      title: '2️⃣ Get Groq API Key',
+      category: 'urgent',
+      title: 'Set up app.behaviorschool.com DNS',
       platform: 'behaviorschool.com',
-      time: '2 min',
-      priority: false,
+      time: '3 min',
+      priority: true,
       status: 'not-started',
       instructions: [
-        'Go to <a href="https://console.groq.com/keys" target="_blank">https://console.groq.com/keys</a>',
-        'Sign up / sign in (free account)',
-        'Click "Create API Key"',
-        'Copy the key',
-        'Send it to me'
+        'All signup buttons on <a href="https://behaviorschool.com/pro" target="_blank">behaviorschool.com/pro</a> point to app.behaviorschool.com (dead link!)',
+        'Go to <a href="https://dash.cloudflare.com" target="_blank">Cloudflare Dashboard</a> → behaviorschool.com → DNS',
+        'Add CNAME record: Name = app, Target = cname.vercel-dns.com, Proxy off',
+        'Tell Neo when done'
       ]
     },
+
+    // 🟡 MAKES MONEY
     {
       id: 5,
       category: 'money',
-      title: '3️⃣ Get DeepSeek API Key',
-      platform: 'behaviorschool.com',
-      time: '3 min',
-      priority: false,
-      status: 'not-started',
-      instructions: [
-        'Go to <a href="https://platform.deepseek.com/api_keys" target="_blank">https://platform.deepseek.com/api_keys</a>',
-        'Sign up / sign in',
-        'Click "Create new API key"',
-        'Copy the key',
-        'Send it to me'
-      ]
-    },
-    {
-      id: 6,
-      category: 'money',
-      title: '4️⃣ Get Apple Team ID',
-      platform: 'iOS App',
-      time: '2 min',
-      priority: false,
-      status: 'not-started',
-      instructions: [
-        'Go to <a href="https://developer.apple.com/account/#/membership" target="_blank">https://developer.apple.com/account/#/membership</a>',
-        'Sign in with your Apple Developer account',
-        'Copy the 10-character "Team ID"',
-        'Send it to me'
-      ]
-    },
-    {
-      id: 7,
-      category: 'money',
-      title: '5️⃣ Install Fastlane & CocoaPods',
-      platform: 'iOS App',
-      time: '5 min',
-      priority: false,
-      status: 'not-started',
-      instructions: [
-        'Open Terminal',
-        'Run: <code>sudo gem install cocoapods</code>',
-        'Run: <code>sudo gem install fastlane</code>',
-        'Done! (These are needed for iOS builds)'
-      ]
-    },
-    {
-      id: 8,
-      category: 'money',
-      title: '6️⃣ Apple Sign-In Setup',
+      title: 'Apple Sign-In Setup (App Store Blocker)',
       platform: 'iOS App',
       time: '15 min',
       priority: true,
       status: 'not-started',
       instructions: [
         'Go to <a href="https://developer.apple.com/account/resources/identifiers/list/serviceId" target="_blank">developer.apple.com Service IDs</a>',
-        'Click + to create new Service ID',
-        'Description: "Behavior Study Tools Sign In"',
+        'Click + → Description: "Behavior Study Tools Sign In"',
         'Identifier: "com.behaviorschool.studytools.signin"',
         'Enable "Sign In with Apple" → Configure',
         'Add domain: study.behaviorschool.com',
-        'Add return URL: https://study.behaviorschool.com/auth/callback',
-        'Save',
-        'Go to <a href="https://developer.apple.com/account/resources/authkeys/list" target="_blank">Keys</a>',
-        'Click + for new key',
-        'Name: "Behavior Study Tools Auth"',
-        'Enable "Sign In with Apple" → Configure',
-        'Select your App ID → Register → Download .p8 file',
-        'Send me: Team ID, Service ID, Key ID, and .p8 file'
+        'Add return URL: https://study.behaviorschool.com/auth/callback → Save',
+        'Go to <a href="https://developer.apple.com/account/resources/authkeys/list" target="_blank">Keys</a> → New key → Enable "Sign In with Apple"',
+        'Download .p8 file → Send Neo: Team ID, Service ID, Key ID, and .p8 file'
       ]
     },
     {
-      id: 9,
+      id: 6,
       category: 'money',
-      title: '7️⃣ Create iOS Certificates Repo',
-      platform: 'iOS App',
-      time: '5 min',
-      priority: false,
+      title: 'Get PayPal Link from Liz (Raffle Go-Live)',
+      platform: 'BAE SIG',
+      time: '2 min',
+      priority: true,
       status: 'not-started',
       instructions: [
-        'Go to <a href="https://github.com/new" target="_blank">https://github.com/new</a>',
-        'Name: "ios-certificates"',
-        '⚠️ Make it PRIVATE (important!)',
-        'Create (empty, no README)',
-        'Copy the SSH URL: <code>git@github.com:YOUR_USERNAME/ios-certificates.git</code>',
-        'Send it to me'
+        'Text or email Liz Flaherty',
+        'Ask for the PayPal QR/link earmarked "SIG Reception Donation"',
+        'Send the link to Neo — raffle site goes live immediately',
+        'Current site: <a href="https://calaba-sig-raffle.vercel.app" target="_blank">calaba-sig-raffle.vercel.app</a>'
       ]
     },
     {
-      id: 10,
+      id: 7,
       category: 'money',
-      title: '8️⃣ Run Supabase Migrations',
-      platform: 'behaviorschool.com',
-      time: '10 min',
+      title: 'Gmail App Password for BAE SIG Email',
+      platform: 'BAE SIG',
+      time: '3 min',
       priority: false,
       status: 'not-started',
       instructions: [
-        'Open Terminal',
-        '<code>cd "/Users/Neo/Desktop/Neo Code/bcbaaistudytool"</code>',
-        'Run: <code>npx supabase db push</code>',
-        'This creates AI tutor usage table, mock exam results, AI usage log',
-        'Type Y if it asks for confirmation',
-        'Screenshot any errors and send to me'
+        'Go to <a href="https://myaccount.google.com/apppasswords" target="_blank">Google App Passwords</a>',
+        'Sign in as california.bae.sig@gmail.com',
+        'Generate an app password',
+        'Send it to Neo — enables auto-emailing raffle tickets'
       ]
     },
     {
-      id: 11,
+      id: 8,
       category: 'money',
-      title: '9️⃣ Test iOS App Build',
-      platform: 'iOS App',
-      time: '30 min',
+      title: 'Auth Gmail for Neo (Email + Calendar Access)',
+      platform: 'robspain.com',
+      time: '3 min',
       priority: false,
       status: 'not-started',
       instructions: [
-        '⚠️ Only do this AFTER completing tasks 4-9 above',
-        'Open Terminal',
-        '<code>cd "/Users/Neo/Desktop/Neo Code/bcbaaistudytool"</code>',
-        'Run: <code>npm run ios:build</code>',
-        'If it succeeds: <code>npm run ios:beta</code> (uploads to TestFlight)',
-        'Test on your phone via TestFlight app'
+        'When home at Mac mini, open Terminal',
+        'Run: <code>GOG_KEYRING_BACKEND=file gog auth add robspain@gmail.com --services gmail,calendar,drive,contacts,docs,sheets</code>',
+        'Browser will open — sign in and approve',
+        'Unlocks: email monitoring, calendar checks, custody project, email campaigns'
       ]
     },
 
     // 🟢 MAKES MONEY LATER — Content & Marketing
     {
-      id: 12,
+      id: 9,
       category: 'later',
       title: 'Record Video #1: "5 Ethics Questions That Trip Everyone Up"',
       platform: 'behaviorschool.com',
@@ -824,68 +766,28 @@ if ('serviceWorker' in navigator) {
       priority: false,
       status: 'not-started',
       instructions: [
-        'Script ready at: <code>/Users/Neo/clawd/video-scripts/01-ethics-traps.md</code>',
-        'Or view at behaviorschool.com/admin/videos',
-        'Record on phone or webcam (vertical = social, horizontal = YouTube)',
+        'Script ready — ask Neo for it or view at behaviorschool.com/admin/videos',
+        'Record on phone (vertical = social, horizontal = YouTube)',
         'Upload to behaviorschool.com/admin/videos',
-        'I\'ll cut it into short clips automatically'
+        'Neo cuts it into short clips automatically'
       ]
     },
     {
-      id: 13,
+      id: 10,
       category: 'later',
-      title: 'Record Video #2: "Reinforcement vs Punishment"',
+      title: 'Record Videos #2-5 (Reinforcement, Design, FBA, Study Strategy)',
       platform: 'behaviorschool.com',
-      time: '30 min',
+      time: '2 hrs total',
       priority: false,
       status: 'not-started',
       instructions: [
-        'Script: <code>/Users/Neo/clawd/video-scripts/02-reinforcement-vs-punishment.md</code>',
-        'Same recording process as Video #1',
-        'Upload to behaviorschool.com/admin/videos'
+        '4 more scripts ready — all at behaviorschool.com/admin/videos',
+        'Record when you have creative energy',
+        'Neo handles editing + social clips'
       ]
     },
     {
-      id: 14,
-      category: 'later',
-      title: 'Record Video #3: "Experimental Design Made Simple"',
-      platform: 'behaviorschool.com',
-      time: '30 min',
-      priority: false,
-      status: 'not-started',
-      instructions: [
-        'Script: <code>/Users/Neo/clawd/video-scripts/03-experimental-design.md</code>',
-        'Record and upload to behaviorschool.com/admin/videos'
-      ]
-    },
-    {
-      id: 15,
-      category: 'later',
-      title: 'Record Video #4: "FBA to BIP in 10 Minutes"',
-      platform: 'behaviorschool.com',
-      time: '30 min',
-      priority: false,
-      status: 'not-started',
-      instructions: [
-        'Script: <code>/Users/Neo/clawd/video-scripts/04-fba-to-bip.md</code>',
-        'Record and upload'
-      ]
-    },
-    {
-      id: 16,
-      category: 'later',
-      title: 'Record Video #5: "How to Actually Pass the BCBA Exam"',
-      platform: 'behaviorschool.com',
-      time: '30 min',
-      priority: false,
-      status: 'not-started',
-      instructions: [
-        'Script: <code>/Users/Neo/clawd/video-scripts/05-study-strategy.md</code>',
-        'Record and upload'
-      ]
-    },
-    {
-      id: 17,
+      id: 11,
       category: 'later',
       title: 'Review Marketing Calendar',
       platform: 'behaviorschool.com',
@@ -893,153 +795,94 @@ if ('serviceWorker' in navigator) {
       priority: false,
       status: 'not-started',
       instructions: [
-        'Go to behaviorschool.com/admin/content-calendar',
+        'Go to <a href="https://behaviorschool.com/admin/content-calendar" target="_blank">behaviorschool.com/admin/content-calendar</a>',
         'Review 13 draft posts (pre-scheduled)',
         'Approve, edit, or reschedule as needed'
       ]
     },
     {
-      id: 18,
+      id: 12,
       category: 'later',
-      title: 'Review Transformation Program Marketing',
-      platform: 'behaviorschool.com',
-      time: '20 min',
-      priority: false,
-      status: 'not-started',
-      instructions: [
-        'Open: <code>/Users/Neo/clawd/transformation-program-marketing.md</code>',
-        '12 emails, 18+ social posts, 6 blog topics, 3 lead magnets',
-        'Review and approve before I send anything'
-      ]
-    },
-    {
-      id: 19,
-      category: 'later',
-      title: 'Add Testimonials',
-      platform: 'behaviorschool.com',
+      title: 'Add Testimonials to Both Sites',
+      platform: 'Both sites',
       time: '15 min',
       priority: false,
       status: 'not-started',
       instructions: [
         'Think of 3-5 people who\'ve used your tools or training',
         'Get permission for quotes',
-        'Send me: name, role, quote',
-        'I\'ll add them to both sites'
+        'Send Neo: name, role, quote — he adds them to both sites'
       ]
     },
     {
-      id: 20,
+      id: 13,
       category: 'later',
-      title: 'Record Training Videos for robspain.com',
-      platform: 'robspain.com',
-      time: '2 hrs',
+      title: 'Share Social Media Logins',
+      platform: 'Both sites',
+      time: '5 min',
       priority: false,
       status: 'not-started',
       instructions: [
-        'Video funnel ready for "Crisis Manager to Systems Leader" 10-part series',
-        'Each video 5-10 minutes',
-        'Record at your own pace',
-        'Upload to admin panel when ready'
+        'Share Instagram, LinkedIn, Facebook, YouTube logins with Neo',
+        'Enables agents to post approved content directly',
+        'Nothing goes out without your approval'
+      ]
+    },
+    {
+      id: 14,
+      category: 'later',
+      title: 'Share Ahrefs Login',
+      platform: 'SEO',
+      time: '2 min',
+      priority: false,
+      status: 'not-started',
+      instructions: [
+        'Share Ahrefs credentials with Neo',
+        'SEO agent will run keyword gap analysis + competitor tracking',
+        'First target: IEP Goal Writer page optimization'
       ]
     },
 
     // ⚪ NICE TO HAVE
     {
-      id: 21,
+      id: 15,
       category: 'nice',
       title: 'Tell Me About Email Auth Bug',
-      platform: 'behaviorschool.com',
+      platform: 'study.behaviorschool.com',
       time: '5 min',
       priority: false,
       status: 'not-started',
       instructions: [
         'What happens when users try to log in with email on study.behaviorschool.com?',
         'Not receiving emails? Redirect loop? Error message?',
-        'Screenshot if possible',
-        'Message me the details and I\'ll fix it'
+        'Screenshot if possible — message Neo the details'
       ]
     },
     {
-      id: 22,
+      id: 16,
       category: 'nice',
-      title: 'Set R2 Environment Variables',
+      title: 'Set Cloudflare R2 Environment Variables',
       platform: 'behaviorschool.com',
       time: '5 min',
       priority: false,
       status: 'not-started',
       instructions: [
-        'Learning platform already has Cloudflare R2 configured',
-        'Netlify dashboard for behaviorschool.com → Site Settings → Environment Variables',
-        'Copy these from learning platform:',
-        '• <code>CF_R2_ACCESS_KEY_ID</code>',
-        '• <code>CF_R2_SECRET_ACCESS_KEY</code>',
-        '• <code>CF_R2_BUCKET_NAME</code>',
-        '• <code>CF_R2_PUBLIC_BASE_URL</code>',
-        '• <code>CF_R2_ACCOUNT_ID</code>'
-      ]
-    },
-    // 🟡 PLAN.BEHAVIORSCHOOL.COM — SaaS Launch
-    {
-      id: 24,
-      category: 'money',
-      title: '🔑 Provide Stripe Secret Key for plan.behaviorschool.com',
-      platform: 'plan.behaviorschool.com',
-      time: '2 min',
-      priority: true,
-      status: 'done',
-      instructions: [
-        'Go to <a href="https://dashboard.stripe.com/apikeys" target="_blank">Stripe Dashboard → API Keys</a>',
-        'Copy the Secret key (sk_live_...)',
-        'Send it to me securely via Telegram',
-        'I\'ll create the new BehaviorSchool Pro products and pricing'
+        'Go to <a href="https://app.netlify.com" target="_blank">Netlify Dashboard</a> → behaviorschool.com → Site Settings → Environment Variables',
+        'Copy R2 keys from learning platform: CF_R2_ACCESS_KEY_ID, CF_R2_SECRET_ACCESS_KEY, CF_R2_BUCKET_NAME, CF_R2_PUBLIC_BASE_URL, CF_R2_ACCOUNT_ID'
       ]
     },
     {
-      id: 25,
-      category: 'money',
-      title: '🔐 Auth Gmail for custody project',
+      id: 17,
+      category: 'nice',
+      title: 'Record Training Videos for robspain.com',
       platform: 'robspain.com',
-      time: '2 min',
-      priority: true,
-      status: 'done',
-      instructions: [
-        'Open Terminal on Mac mini',
-        'Run: <code>gog auth add robspain@gmail.com --services gmail,contacts,drive</code>',
-        'Browser will open — sign in with robspain@gmail.com',
-        'Approve permissions',
-        'Tell me when done — I\'ll send the Amy Tipton email + start obstruction case compilation'
-      ]
-    },
-    {
-      id: 26,
-      category: 'money',
-      title: '🚀 Set up Convex for plan.behaviorschool.com',
-      platform: 'plan.behaviorschool.com',
-      time: '5 min',
-      priority: false,
-      status: 'done',
-      instructions: [
-        'Open Terminal',
-        '<code>cd "/Users/Neo/Desktop/Neo Code/behaviorschool-app"</code>',
-        'Run: <code>npx convex dev</code>',
-        'It will ask you to log in + create a project',
-        'Name it: "behaviorschool-plan"',
-        'Copy the deployment URL and send it to me'
-      ]
-    },
-    {
-      id: 23,
-      category: 'nice',
-      title: 'Push Git Commits',
-      platform: 'behaviorschool.com',
-      time: '5 min',
+      time: '2 hrs',
       priority: false,
       status: 'not-started',
       instructions: [
-        'Open Terminal',
-        '<code>cd "/Users/Neo/Desktop/Neo Code/behaviorschool-com-and-marketing"</code>',
-        'Run: <code>git push origin main</code>',
-        'Also: <code>cd "/Users/Neo/Desktop/Neo Code/bcbaaistudytool" && git push origin main</code>'
+        '"Crisis Manager to Systems Leader" 10-part series',
+        'Each video 5-10 minutes — record at your own pace',
+        'Upload to admin panel when ready'
       ]
     }
   ];

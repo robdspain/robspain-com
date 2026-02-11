@@ -16,13 +16,13 @@ permalink: /admin/agents/index.html
   #main-container { display: flex; flex: 1; overflow: hidden; }
   #game-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
   #game { image-rendering: auto; cursor: crosshair; flex: 1; display: block; width: 100%; }
-  #blocked-panel { width: 280px; background: #1a1a2e; border-left: 3px solid #1e3a34; overflow-y: auto; flex-shrink: 0; }
-  #blocked-panel h2 { color: #f59e0b; font-size: 10px; padding: 12px; border-bottom: 2px solid #334155; text-align: center; }
-  .blocked-item { padding: 10px 12px; border-bottom: 1px solid #334155; transition: background 0.2s; }
+  #blocked-panel { width: 340px; background: #1a1a2e; border-left: 3px solid #1e3a34; overflow-y: auto; flex-shrink: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  #blocked-panel h2 { color: #f59e0b; font-size: 16px; font-weight: 800; padding: 16px; border-bottom: 2px solid #334155; text-align: center; font-family: 'Press Start 2P', monospace; }
+  .blocked-item { padding: 14px 16px; border-bottom: 1px solid #334155; transition: background 0.2s; cursor: pointer; }
   .blocked-item:hover { background: #0f172a; }
-  .blocked-item .priority { font-size: 6px; font-weight: bold; margin-bottom: 6px; }
-  .blocked-item .text { font-size: 7px; line-height: 1.5; color: #cbd5e1; }
-  .blocked-item .type { font-size: 6px; color: #64748b; margin-top: 4px; }
+  .blocked-item .priority { font-size: 11px; font-weight: 700; margin-bottom: 6px; letter-spacing: 0.5px; }
+  .blocked-item .text { font-size: 14px; line-height: 1.5; color: #e2e8f0; font-weight: 500; }
+  .blocked-item .type { font-size: 11px; color: #94a3b8; margin-top: 6px; }
   .priority.CRITICAL { color: #ef4444; }
   .priority.HIGH { color: #f59e0b; }
   .priority.MEDIUM { color: #3b82f6; }
@@ -357,132 +357,282 @@ function drawRoundedRect(x, y, w, h, color, shadow = false) {
 }
 
 function drawOffice() {
-  // Floor with gradient
+  // Floor: rich wood-tile pattern
   const floorGrad = ctx.createLinearGradient(0, 0, 0, 480);
-  floorGrad.addColorStop(0, '#18182e');
+  floorGrad.addColorStop(0, '#1c1c32');
+  floorGrad.addColorStop(0.5, '#181830');
   floorGrad.addColorStop(1, '#14142a');
   ctx.fillStyle = floorGrad;
   ctx.fillRect(0, 0, 640, 480);
+  
+  // Tile grid overlay
+  ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+  ctx.lineWidth = 0.5;
+  for (let gx = 0; gx < 640; gx += 32) {
+    ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, 480); ctx.stroke();
+  }
+  for (let gy = 0; gy < 480; gy += 32) {
+    ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(640, gy); ctx.stroke();
+  }
 
-  // Draw all rooms with gradients
+  // Draw rooms with richer gradients + inner glow
   Object.values(ROOMS).forEach(r => {
-    drawGradientRect(r.x, r.y, r.w, r.h, '#2c2c42', '#24243a');
-    ctx.strokeStyle = PAL.wall;
+    // Room floor — subtle carpet texture
+    const roomGrad = ctx.createRadialGradient(r.x + r.w/2, r.y + r.h/2, 10, r.x + r.w/2, r.y + r.h/2, Math.max(r.w, r.h));
+    roomGrad.addColorStop(0, '#30304a');
+    roomGrad.addColorStop(1, '#24243a');
+    ctx.fillStyle = roomGrad;
+    ctx.beginPath();
+    ctx.roundRect(r.x, r.y, r.w, r.h, 4);
+    ctx.fill();
+    // Border with depth
+    ctx.strokeStyle = '#3d5a50';
     ctx.lineWidth = 2;
     ctx.strokeRect(r.x, r.y, r.w, r.h);
+    ctx.strokeStyle = 'rgba(16,185,129,0.15)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(r.x + 1, r.y + 1, r.w - 2, r.h - 2);
     if (r.label) {
-      ctx.fillStyle = '#475569';
+      ctx.fillStyle = '#5a6b7a';
       ctx.font = '6px "Press Start 2P"';
       ctx.fillText(r.label, r.x + 6, r.y + r.h - 4);
     }
   });
 
-  // Neo's office (highlight with gradient)
-  drawGradientRect(ROOMS.neoOffice.x, ROOMS.neoOffice.y, ROOMS.neoOffice.w, ROOMS.neoOffice.h, '#323254', '#2a2a48');
+  // Neo's office — premium glow
+  const neoGrad = ctx.createRadialGradient(320, 60, 10, 320, 60, 80);
+  neoGrad.addColorStop(0, '#383860');
+  neoGrad.addColorStop(1, '#2a2a48');
+  ctx.fillStyle = neoGrad;
+  ctx.beginPath();
+  ctx.roundRect(ROOMS.neoOffice.x, ROOMS.neoOffice.y, ROOMS.neoOffice.w, ROOMS.neoOffice.h, 4);
+  ctx.fill();
   ctx.strokeStyle = '#10b981';
   ctx.lineWidth = 2;
   ctx.strokeRect(ROOMS.neoOffice.x, ROOMS.neoOffice.y, ROOMS.neoOffice.w, ROOMS.neoOffice.h);
+  // Glow aura
+  ctx.shadowColor = '#10b981';
+  ctx.shadowBlur = 8;
+  ctx.strokeRect(ROOMS.neoOffice.x, ROOMS.neoOffice.y, ROOMS.neoOffice.w, ROOMS.neoOffice.h);
+  ctx.shadowBlur = 0;
 
-  // Conference room with gradient
-  drawGradientRect(ROOMS.confRoom.x, ROOMS.confRoom.y, ROOMS.confRoom.w, ROOMS.confRoom.h, '#2a2a48', '#222240');
+  // Conference room — warm lighting
+  const confGrad = ctx.createRadialGradient(380, 225, 10, 380, 225, 90);
+  confGrad.addColorStop(0, '#2e2e50');
+  confGrad.addColorStop(1, '#222240');
+  ctx.fillStyle = confGrad;
+  ctx.beginPath();
+  ctx.roundRect(ROOMS.confRoom.x, ROOMS.confRoom.y, ROOMS.confRoom.w, ROOMS.confRoom.h, 4);
+  ctx.fill();
 
-  // Hallways
-  drawPixelRect(280, 160, 80, 12, PAL.floor);
-  drawPixelRect(280, 230, 80, 17, PAL.floor);
-  drawPixelRect(50, 230, 200, 17, PAL.floor);
-  drawPixelRect(50, 305, 200, 12, PAL.floor);
+  // Hallways with subtle lighting
+  [[280, 160, 80, 12], [280, 230, 80, 17], [50, 230, 200, 17], [50, 305, 200, 12]].forEach(([hx,hy,hw,hh]) => {
+    const hGrad = ctx.createLinearGradient(hx, hy, hx + hw, hy);
+    hGrad.addColorStop(0, '#22223a');
+    hGrad.addColorStop(0.5, '#282844');
+    hGrad.addColorStop(1, '#22223a');
+    ctx.fillStyle = hGrad;
+    ctx.fillRect(hx, hy, hw, hh);
+  });
 
-  // --- FURNITURE (16-bit style with gradients) ---
+  // --- FURNITURE (16-bit SNES quality) ---
 
-  // Desks (each agent gets a desk with gradient)
+  // Desks with wood grain, monitor glow, and desk accessories
   AGENTS.forEach(a => {
-    if (a.name === 'Neo') {
-      // Neo gets a bigger desk with gradient
-      drawGradientRect(a.desk.x - 4, a.desk.y - 4, 48, 32, '#6e5545', '#5c4033');
-      drawGradientRect(a.desk.x + 8, a.desk.y, 20, 12, '#1a1f2e', PAL.monitor);
-      const glowGrad = ctx.createRadialGradient(a.desk.x + 18, a.desk.y + 6, 2, a.desk.x + 18, a.desk.y + 6, 12);
-      glowGrad.addColorStop(0, a.color);
-      glowGrad.addColorStop(1, 'rgba(15,23,42,0.3)');
-      ctx.fillStyle = glowGrad;
-      ctx.fillRect(a.desk.x + 10, a.desk.y + 2, 16, 8);
-    } else {
-      drawGradientRect(a.desk.x - 2, a.desk.y - 2, 36, 24, '#6e5545', '#5c4033');
-      drawGradientRect(a.desk.x + 6, a.desk.y + 2, 14, 10, '#1a1f2e', PAL.monitor);
-      // Screen glow with radial gradient
-      const glowGrad = ctx.createRadialGradient(a.desk.x + 13, a.desk.y + 7, 2, a.desk.x + 13, a.desk.y + 7, 8);
-      glowGrad.addColorStop(0, a.color);
-      glowGrad.addColorStop(1, 'rgba(15,23,42,0.2)');
-      ctx.fillStyle = glowGrad;
-      ctx.fillRect(a.desk.x + 8, a.desk.y + 4, 10, 6);
+    const dx = a.desk.x, dy = a.desk.y;
+    const isNeo = a.name === 'Neo';
+    const dw = isNeo ? 48 : 36, dh = isNeo ? 32 : 24;
+    
+    // Desk shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.beginPath();
+    ctx.roundRect(dx - (isNeo?4:2) + 2, dy - (isNeo?4:2) + 2, dw, dh, 3);
+    ctx.fill();
+    
+    // Desk surface with wood grain
+    const woodGrad = ctx.createLinearGradient(dx, dy, dx + dw, dy + dh);
+    woodGrad.addColorStop(0, '#7a6050');
+    woodGrad.addColorStop(0.3, '#6e5545');
+    woodGrad.addColorStop(0.6, '#7a6050');
+    woodGrad.addColorStop(1, '#5c4033');
+    ctx.fillStyle = woodGrad;
+    ctx.beginPath();
+    ctx.roundRect(dx - (isNeo?4:2), dy - (isNeo?4:2), dw, dh, 3);
+    ctx.fill();
+    // Wood grain lines
+    ctx.strokeStyle = 'rgba(90,64,51,0.4)';
+    ctx.lineWidth = 0.5;
+    for (let g = 0; g < 3; g++) {
+      const gy = dy + g * (dh/3);
+      ctx.beginPath(); ctx.moveTo(dx, gy); ctx.lineTo(dx + dw - 6, gy); ctx.stroke();
+    }
+    // Desk edge highlight
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(dx - (isNeo?4:2), dy - (isNeo?4:2));
+    ctx.lineTo(dx - (isNeo?4:2) + dw, dy - (isNeo?4:2));
+    ctx.stroke();
+    
+    // Monitor with bezel
+    const mx = isNeo ? dx + 8 : dx + 6;
+    const my = isNeo ? dy : dy + 2;
+    const mw = isNeo ? 20 : 14, mh = isNeo ? 12 : 10;
+    // Monitor bezel
+    ctx.fillStyle = '#2a2a3e';
+    ctx.beginPath();
+    ctx.roundRect(mx - 1, my - 1, mw + 2, mh + 2, 2);
+    ctx.fill();
+    // Screen
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(mx, my, mw, mh);
+    // Screen glow (agent color)
+    const glowGrad = ctx.createRadialGradient(mx + mw/2, my + mh/2, 2, mx + mw/2, my + mh/2, mw);
+    glowGrad.addColorStop(0, a.color);
+    glowGrad.addColorStop(1, 'rgba(15,23,42,0.1)');
+    ctx.fillStyle = glowGrad;
+    ctx.fillRect(mx + 1, my + 1, mw - 2, mh - 2);
+    // Monitor stand
+    ctx.fillStyle = '#3a3a4e';
+    ctx.fillRect(mx + mw/2 - 2, my + mh, 4, 3);
+    
+    // Coffee mug (small detail)
+    if (Math.abs(a.x - (dx + 12)) < 30) {
+      ctx.fillStyle = '#e2e8f0';
+      ctx.beginPath();
+      ctx.roundRect(dx + dw - 10, dy + 2, 5, 6, 1);
+      ctx.fill();
+      ctx.fillStyle = a.color;
+      ctx.fillRect(dx + dw - 9, dy + 3, 3, 2);
     }
   });
 
-  // Conference table with gradient
-  drawGradientRect(CONF_TABLE.x, CONF_TABLE.y, CONF_TABLE.w, CONF_TABLE.h, '#5a4738', '#4a3728');
-  // Chairs around table with gradient
+  // Conference table — polished wood with reflection
+  const ctGrad = ctx.createLinearGradient(CONF_TABLE.x, CONF_TABLE.y, CONF_TABLE.x, CONF_TABLE.y + CONF_TABLE.h);
+  ctGrad.addColorStop(0, '#6a5740');
+  ctGrad.addColorStop(0.5, '#5a4738');
+  ctGrad.addColorStop(1, '#4a3728');
+  ctx.fillStyle = ctGrad;
+  ctx.beginPath();
+  ctx.roundRect(CONF_TABLE.x, CONF_TABLE.y, CONF_TABLE.w, CONF_TABLE.h, 4);
+  ctx.fill();
+  // Table reflection
+  ctx.fillStyle = 'rgba(255,255,255,0.05)';
+  ctx.beginPath();
+  ctx.roundRect(CONF_TABLE.x + 5, CONF_TABLE.y + 3, CONF_TABLE.w - 10, CONF_TABLE.h/3, 2);
+  ctx.fill();
+  // Chairs with cushions
   for (let i = 0; i < 4; i++) {
-    drawGradientRect(CONF_TABLE.x + 10 + i * 22, CONF_TABLE.y - 10, 12, 8, '#4d3b2f', '#3d2b1f');
-    drawGradientRect(CONF_TABLE.x + 10 + i * 22, CONF_TABLE.y + CONF_TABLE.h + 2, 12, 8, '#4d3b2f', '#3d2b1f');
+    const cx = CONF_TABLE.x + 10 + i * 22;
+    // Top chairs
+    ctx.fillStyle = '#3d2b1f';
+    ctx.beginPath(); ctx.roundRect(cx, CONF_TABLE.y - 10, 12, 8, 2); ctx.fill();
+    ctx.fillStyle = '#5a4738';
+    ctx.beginPath(); ctx.roundRect(cx + 2, CONF_TABLE.y - 8, 8, 4, 1); ctx.fill();
+    // Bottom chairs
+    ctx.fillStyle = '#3d2b1f';
+    ctx.beginPath(); ctx.roundRect(cx, CONF_TABLE.y + CONF_TABLE.h + 2, 12, 8, 2); ctx.fill();
+    ctx.fillStyle = '#5a4738';
+    ctx.beginPath(); ctx.roundRect(cx + 2, CONF_TABLE.y + CONF_TABLE.h + 4, 8, 4, 1); ctx.fill();
   }
 
-  // Whiteboard (16-bit style with gradient frame)
-  drawGradientRect(WHITEBOARD.x, WHITEBOARD.y, WHITEBOARD.w, WHITEBOARD.h, '#f0f0f5', PAL.whiteboard);
-  ctx.strokeStyle = '#94a3b8';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(WHITEBOARD.x, WHITEBOARD.y, WHITEBOARD.w, WHITEBOARD.h);
-  ctx.fillStyle = '#059669';
-  ctx.font = '6px monospace';
-  ctx.fillText(meetingActive ? meetingTopic : 'AGENT HQ', WHITEBOARD.x + 4, WHITEBOARD.y + 6);
-
-  // Water cooler (16-bit style with gradient)
-  drawGradientRect(WATER_POS.x - 8, WATER_POS.y - 8, 16, 24, '#5a6b7a', PAL.waterBase);
-  const waterGrad = ctx.createLinearGradient(WATER_POS.x - 5, WATER_POS.y - 14, WATER_POS.x + 5, WATER_POS.y - 4);
-  waterGrad.addColorStop(0, '#22d3ee');
-  waterGrad.addColorStop(1, PAL.water);
-  ctx.fillStyle = waterGrad;
+  // Whiteboard with frame and content
+  // Frame
+  ctx.fillStyle = '#b0a890';
   ctx.beginPath();
-  ctx.roundRect(WATER_POS.x - 5, WATER_POS.y - 14, 10, 10, 2);
+  ctx.roundRect(WHITEBOARD.x - 2, WHITEBOARD.y - 2, WHITEBOARD.w + 4, WHITEBOARD.h + 14, 2);
   ctx.fill();
-  
-  // Bubbles (animated with alpha)
+  // Board surface
+  const wbGrad = ctx.createLinearGradient(WHITEBOARD.x, WHITEBOARD.y, WHITEBOARD.x, WHITEBOARD.y + 12);
+  wbGrad.addColorStop(0, '#f8f8fc');
+  wbGrad.addColorStop(1, '#e8e8f0');
+  ctx.fillStyle = wbGrad;
+  ctx.fillRect(WHITEBOARD.x, WHITEBOARD.y, WHITEBOARD.w, WHITEBOARD.h + 10);
+  ctx.fillStyle = '#059669';
+  ctx.font = '6px "Press Start 2P"';
+  ctx.fillText(meetingActive ? meetingTopic : 'AGENT HQ — SHIP IT', WHITEBOARD.x + 4, WHITEBOARD.y + 8);
+  // Marker tray
+  ctx.fillStyle = '#8a8a9a';
+  ctx.fillRect(WHITEBOARD.x + 10, WHITEBOARD.y + WHITEBOARD.h + 10, 60, 2);
+  // Colored markers
+  ['#ef4444','#22c55e','#3b82f6'].forEach((mc, mi) => {
+    ctx.fillStyle = mc;
+    ctx.fillRect(WHITEBOARD.x + 15 + mi * 12, WHITEBOARD.y + WHITEBOARD.h + 7, 8, 3);
+  });
+
+  // Water cooler — more detailed
+  // Base unit
+  const wcGrad = ctx.createLinearGradient(WATER_POS.x - 10, WATER_POS.y - 8, WATER_POS.x + 10, WATER_POS.y + 16);
+  wcGrad.addColorStop(0, '#7a8a9a');
+  wcGrad.addColorStop(1, PAL.waterBase);
+  ctx.fillStyle = wcGrad;
+  ctx.beginPath();
+  ctx.roundRect(WATER_POS.x - 10, WATER_POS.y - 8, 20, 28, 3);
+  ctx.fill();
+  // Water bottle
+  const bottleGrad = ctx.createLinearGradient(WATER_POS.x - 6, WATER_POS.y - 18, WATER_POS.x + 6, WATER_POS.y - 4);
+  bottleGrad.addColorStop(0, '#38d9f5');
+  bottleGrad.addColorStop(0.5, '#22d3ee');
+  bottleGrad.addColorStop(1, '#0ea5e9');
+  ctx.fillStyle = bottleGrad;
+  ctx.beginPath();
+  ctx.roundRect(WATER_POS.x - 6, WATER_POS.y - 18, 12, 14, 3);
+  ctx.fill();
+  // Water level shimmer
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.beginPath();
+  ctx.roundRect(WATER_POS.x - 4, WATER_POS.y - 16, 4, 10, 1);
+  ctx.fill();
+  // Bubbles (animated)
   const bubblePhase = (tick % 60) / 60;
   ctx.globalAlpha = 0.6 + Math.sin(bubblePhase * Math.PI * 2) * 0.3;
   ctx.fillStyle = '#7dd3fc';
   ctx.beginPath();
   ctx.arc(WATER_POS.x - 1, WATER_POS.y - 16 - bubblePhase * 8, 2, 0, Math.PI * 2);
   ctx.fill();
+  ctx.beginPath();
+  ctx.arc(WATER_POS.x + 2, WATER_POS.y - 14 - ((bubblePhase + 0.3) % 1) * 8, 1.5, 0, Math.PI * 2);
+  ctx.fill();
   ctx.globalAlpha = 1;
+  // Cups
+  ctx.fillStyle = '#e2e8f0';
+  ctx.beginPath(); ctx.roundRect(WATER_POS.x + 12, WATER_POS.y - 2, 4, 5, 1); ctx.fill();
+  ctx.beginPath(); ctx.roundRect(WATER_POS.x + 12, WATER_POS.y + 5, 4, 5, 1); ctx.fill();
 
-  // Plants (16-bit style with gradients)
+  // Plants — more detailed with multiple leaves
   [[55, 35], [580, 35], [55, 250], [580, 250], [55, 320]].forEach(([px, py]) => {
-    // Pot with gradient
-    drawGradientRect(px, py + 4, 8, 8, '#6e5545', '#5c4033');
-    // Leaves with gradient
-    const leafGrad = ctx.createRadialGradient(px + 4, py + 2, 2, px + 4, py + 2, 8);
-    leafGrad.addColorStop(0, '#10b981');
-    leafGrad.addColorStop(1, PAL.plant);
-    ctx.fillStyle = leafGrad;
-    ctx.beginPath();
-    ctx.arc(px + 4, py + 2, 6, 0, Math.PI * 2);
-    ctx.fill();
-    // Top highlight
-    ctx.fillStyle = '#34d399';
-    ctx.beginPath();
-    ctx.arc(px + 5, py - 1, 3, 0, Math.PI * 2);
-    ctx.fill();
+    // Pot with rim
+    ctx.fillStyle = '#8B4513';
+    ctx.beginPath(); ctx.roundRect(px - 1, py + 2, 10, 10, 2); ctx.fill();
+    ctx.fillStyle = '#A0522D';
+    ctx.fillRect(px - 2, py + 2, 12, 3);
+    // Soil
+    ctx.fillStyle = '#3E2723';
+    ctx.fillRect(px, py + 3, 8, 2);
+    // Leaves (3 layers)
+    const leafColors = ['#059669', '#10b981', '#34d399'];
+    leafColors.forEach((lc, li) => {
+      ctx.fillStyle = lc;
+      ctx.beginPath();
+      ctx.arc(px + 4 + (li-1)*3, py - li*2, 5 - li, 0, Math.PI * 2);
+      ctx.fill();
+    });
   });
 
   // Labels
-  ctx.fillStyle = '#475569';
+  ctx.fillStyle = '#5a6b7a';
   ctx.font = '6px "Press Start 2P"';
   ctx.fillText('☕', WATER_POS.x - 5, WATER_POS.y + 30);
 
-  // Neo's office label
+  // Neo's office label with glow
+  ctx.shadowColor = '#10b981';
+  ctx.shadowBlur = 6;
   ctx.fillStyle = '#10b981';
   ctx.fillText("NEO", 315, 42);
+  ctx.shadowBlur = 0;
 
   // Agent count
-  ctx.fillStyle = '#334155';
+  ctx.fillStyle = '#475569';
   ctx.font = '5px "Press Start 2P"';
   ctx.fillText(AGENTS.length + ' AGENTS ONLINE', 250, 475);
 }

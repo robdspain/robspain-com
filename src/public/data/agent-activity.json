@@ -99,12 +99,6 @@
   },
   "blocked": [
     {
-      "item": "CALABA Symposium Discussant needed",
-      "type": "BLOCKER",
-      "priority": "CRITICAL",
-      "agents": ["BAE SIG"]
-    },
-    {
       "item": "9 writer drafts need review",
       "type": "APPROVAL",
       "priority": "HIGH",

@@ -94,13 +94,12 @@ const statusBar = document.getElementById('status');
 
 // --- BLOCKED ITEMS ---
 const BLOCKED = [
-  { item: "9 writer drafts need review", type: "APPROVAL", priority: "HIGH", agents: ["Writer"], instructions: "Tell Neo on Telegram to send you preview links for the drafts. 9 posts ready:<br><br>• What They Don't Teach in Grad School<br>• What Your Mock Score Really Means<br>• Preschool Hoarding (content idea)<br>• RBT Pairing Checklist<br>• LinkedIn Build in Public<br>• Burnout Series Outline<br>• Supervision Directory Reddit Response<br>• Supervision Directory Social Posts<br>• YouTube Mock Exam Walkthrough<br><br>Reply 'approved' or send feedback per draft." },
-  { item: "app.behaviorschool.com DNS setup", type: "BLOCKER", priority: "HIGH", agents: ["Pro"], instructions: "All signup buttons on <a href='https://behaviorschool.com/pro' target='_blank' style='color:#60a5fa'>behaviorschool.com/pro</a> point to app.behaviorschool.com which doesn't exist yet.<br><br>Go to <a href='https://dcc.godaddy.com/manage/behaviorschool.com/dns' target='_blank' style='color:#60a5fa'>GoDaddy DNS Manager</a> → behaviorschool.com → Add CNAME record:<br>• Name: app<br>• Value: cname.vercel-dns.com<br>• TTL: default" },
-  { item: "Gmail app password for BAE SIG", type: "BLOCKER", priority: "MEDIUM", agents: ["BAE SIG"], instructions: "Go to <a href='https://myaccount.google.com/apppasswords' target='_blank' style='color:#60a5fa'>Google App Passwords</a> for california.bae.sig@gmail.com.<br><br>Generate an app password and send it to Neo." },
-  { item: "PayPal link from Liz Flaherty", type: "BLOCKER", priority: "MEDIUM", agents: ["BAE SIG"], instructions: "Ask Liz Flaherty for the PayPal QR/link earmarked 'SIG Reception Donation'. Neo will update the <a href='https://calaba-sig-raffle.vercel.app' target='_blank' style='color:#60a5fa'>raffle site</a>." },
-  { item: "gog auth for Gmail/Calendar", type: "BLOCKER", priority: "MEDIUM", agents: ["Neo", "Scout"], instructions: "When home at Mac mini, open Terminal and run:<br><br><code style='color:#10b981'>GOG_KEYRING_BACKEND=file gog auth add robspain@gmail.com --services gmail,calendar,drive,contacts,docs,sheets</code>" },
-  { item: "Ahrefs login credentials", type: "BLOCKER", priority: "LOW", agents: ["SEO"], instructions: "Share Ahrefs login with Neo so the SEO agent can run keyword gap analysis." },
-  { item: "Social media account logins", type: "BLOCKER", priority: "LOW", agents: ["Writer", "Browser"], instructions: "Share Instagram, LinkedIn, Facebook, YouTube logins so agents can post approved content directly." },
+  { item: "Review 9 writer drafts", type: "APPROVAL", priority: "HIGH", agents: ["Writer"], taskId: 3, instructions: "2 blog posts on behaviorschool.com + 7 content drafts need your review.<br><br>• <a href='https://behaviorschool.com/blog/what-they-dont-teach-in-grad-school' target='_blank' style='color:#60a5fa'>What They Don't Teach in Grad School</a><br>• <a href='https://behaviorschool.com/blog/what-your-mock-score-really-means' target='_blank' style='color:#60a5fa'>What Your Mock Score Really Means</a><br>• + 7 social/content drafts (ask Neo for links)<br><br><a href='/admin/tasks/' style='color:#f59e0b'>📋 View in Task List →</a>" },
+  { item: "Apple Sign-In setup (App Store blocker)", type: "BLOCKER", priority: "HIGH", agents: ["Study App"], taskId: 5, instructions: "Go to <a href='https://developer.apple.com/account/resources/identifiers/list/serviceId' target='_blank' style='color:#60a5fa'>Apple Developer Service IDs</a><br><br>Create Service ID + Auth Key. Neo has the .p8 file already — still needs Key ID + Team ID.<br><br><a href='/admin/tasks/' style='color:#f59e0b'>📋 Detailed steps in Task List →</a>" },
+  { item: "PayPal link from Liz Flaherty", type: "BLOCKER", priority: "MEDIUM", agents: ["BAE SIG"], taskId: 6, instructions: "Raffle site is built and ready at <a href='https://calaba-sig-raffle.vercel.app' target='_blank' style='color:#60a5fa'>calaba-sig-raffle.vercel.app</a>.<br><br>Need Liz's PayPal QR/link earmarked 'SIG Reception Donation' to go live.<br><br><a href='/admin/tasks/' style='color:#f59e0b'>📋 View in Task List →</a>" },
+  { item: "Google API key restriction (images blocked)", type: "BLOCKER", priority: "MEDIUM", agents: ["Writer", "BehaviorSchool"], instructions: "All 15+ blog posts need featured images but Nano Banana Pro is blocked.<br><br>Go to <a href='https://aistudio.google.com/apikeys' target='_blank' style='color:#60a5fa'>Google AI Studio API Keys</a> → find key starting with AIzaSyAH... → Edit → remove HTTP referrer restrictions." },
+  { item: "gog auth for Gmail/Calendar", type: "BLOCKER", priority: "MEDIUM", agents: ["Neo", "Scout"], taskId: 8, instructions: "When home at Mac mini, open Terminal and run:<br><br><code style='color:#10b981'>GOG_KEYRING_BACKEND=file gog auth add robspain@gmail.com --services gmail,calendar,drive,contacts,docs,sheets</code><br><br><a href='/admin/tasks/' style='color:#f59e0b'>📋 View in Task List →</a>" },
+  { item: "Ahrefs login credentials", type: "BLOCKER", priority: "LOW", agents: ["SEO"], taskId: 14, instructions: "Share Ahrefs credentials with Neo for keyword gap analysis + competitor tracking.<br><br><a href='/admin/tasks/' style='color:#f59e0b'>📋 View in Task List →</a>" },
 ];
 
 function renderBlockedPanel() {
@@ -283,8 +282,6 @@ const WHITEBOARD = { x: 300, y: 172, w: 160, h: 8 };
 // --- MESSAGES ---
 // NO fake work messages — agents only show their real task from data
 // NO fake meeting topics — meetings only happen from real handoffs
-  "Blog post review", "Toolchest roadmap", "LinkedIn strategy"
-];
 
 // Water cooler = agents that are idle or waiting on blockers (commiserating)
 const WATER_COOLER_CHAT_IDLE = [
@@ -1101,16 +1098,15 @@ fetch('/api/admin-data?key=agent-activity')
     addLog('<span class="action">📡 Loaded real agent activity data.</span>');
   })
   .catch(() => {
-    addLog('<span class="action">⚠️ Could not load activity data — showing simulation.</span>');
+    addLog('<span class="action">⚠️ Data loading — agents at desks.</span>');
+    // Agents still render at their desks, just no bubbles
   });
 
 // --- INIT ---
 addLog('<span class="action">🏢 Agent HQ online. ' + AGENTS.length + ' agents reporting for duty.</span>');
 addLog('<span class="name">Neo</span> <span class="action">Good morning team. Let\'s ship.</span>');
 
-// Stagger initial meetings — less frequent when real data loaded
-// No fake meetings — only trigger when real data is loaded
-setTimeout(() => { if (!window.agentActivity) triggerWaterCooler(); }, 8000);
+// No fake events — everything waits for real data
 
 gameLoop();
 </script>

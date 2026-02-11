@@ -1079,7 +1079,7 @@ setInterval(updateStatus, 500);
 window.agentActivity = null;
 fetch('/api/admin-data?key=agent-activity')
   .then(r => { if (!r.ok) throw new Error('API'); return r; })
-  .catch(() => fetch('/data/agent-activity.json'))  // fallback to static
+  .catch(() => fetch('/public/data/agent-activity.json'))  // fallback to static
   .then(r => r.json())
   .then(data => {
     window.agentActivity = data;

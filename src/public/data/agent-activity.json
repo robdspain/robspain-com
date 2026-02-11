@@ -1,15 +1,15 @@
 {
-  "lastUpdated": "2026-02-10T23:49:00Z",
+  "lastUpdated": "2026-02-11T04:55:00Z",
   "agents": {
     "Neo": {
       "status": "working",
-      "task": "Managing 20 agents, deploying sites via API",
-      "lastActive": "2026-02-10T23:49:00Z"
+      "task": "Cleaning up blockers, updating task queues",
+      "lastActive": "2026-02-11T04:55:00Z"
     },
     "Scout": {
-      "status": "working",
-      "task": "8 findings delivered \u2014 Ball State accreditation panic (rel 10)",
-      "lastActive": "2026-02-10T20:00:00Z"
+      "status": "deployed",
+      "task": "Evening scan complete — burnout threads (rel 9), paraprofessional gaps (rel 7)",
+      "lastActive": "2026-02-11T04:45:00Z"
     },
     "Writer": {
       "status": "waiting",
@@ -17,14 +17,14 @@
       "lastActive": "2026-02-10T18:00:00Z"
     },
     "Analyst": {
-      "status": "idle",
-      "task": "Daily report scheduled 8PM",
-      "lastActive": "2026-02-10T04:00:00Z"
+      "status": "deployed",
+      "task": "Daily report delivered 8:47 PM",
+      "lastActive": "2026-02-11T04:47:00Z"
     },
     "Engineer": {
-      "status": "working",
-      "task": "16-bit Agent HQ upgrade (sub-agent)",
-      "lastActive": "2026-02-10T23:45:00Z"
+      "status": "deployed",
+      "task": "Agent HQ upgraded — HiDPI + modal text fix",
+      "lastActive": "2026-02-11T04:53:00Z"
     },
     "Planner": {
       "status": "idle",
@@ -38,12 +38,12 @@
     },
     "Docs": {
       "status": "idle",
-      "task": "Weekly report Mon 8AM",
+      "task": "Weekly report scheduled Mon 8AM",
       "lastActive": "2026-02-10T12:00:00Z"
     },
     "SEO": {
       "status": "working",
-      "task": "AEO/GEO notes created for behaviorschool.com",
+      "task": "AEO/GEO notes created, FAQ schema tasks queued",
       "lastActive": "2026-02-10T23:20:00Z"
     },
     "BAE SIG": {
@@ -52,33 +52,33 @@
       "lastActive": "2026-02-10T22:00:00Z"
     },
     "KCUSD": {
-      "status": "idle",
-      "task": "26-member roster loaded",
-      "lastActive": "2026-02-10T20:00:00Z"
+      "status": "working",
+      "task": "ACT Lesson Search PRD in progress",
+      "lastActive": "2026-02-11T04:30:00Z"
     },
     "Pro": {
-      "status": "working",
-      "task": "4 mockup images generated for /pro page",
+      "status": "blocked",
+      "task": "app.behaviorschool.com DNS not set up — signup CTAs broken",
       "lastActive": "2026-02-10T23:35:00Z"
     },
     "RobSpain.com": {
       "status": "deployed",
-      "task": "GitHub auto-deploy restored! Site live.",
-      "lastActive": "2026-02-10T23:48:00Z"
+      "task": "Live — hero fix, BACB logo restored, Agent HQ upgraded",
+      "lastActive": "2026-02-11T04:55:00Z"
     },
     "BehaviorSchool": {
       "status": "deployed",
-      "task": "GitHub auto-deploy restored! Nav fix + pro mockups live.",
+      "task": "Live — nav fix + pro mockups deployed via GitHub auto-deploy",
       "lastActive": "2026-02-10T23:30:00Z"
     },
     "Study App": {
       "status": "deployed",
-      "task": "Manual deploy working. Netlify build fails (pnpm lockfile).",
+      "task": "Live via manual deploy. Netlify auto-build still needs Vite fix.",
       "lastActive": "2026-02-10T23:36:00Z"
     },
     "Supervision": {
       "status": "idle",
-      "task": "Phase 1 built, needs Netlify setup",
+      "task": "Phase 1 built, needs Convex deploy + Netlify setup",
       "lastActive": "2026-02-10T12:00:00Z"
     },
     "Toolchest": {
@@ -88,7 +88,7 @@
     },
     "VideoGen": {
       "status": "idle",
-      "task": "No active renders",
+      "task": "20 BCBA questions ready, no active renders",
       "lastActive": "2026-02-10T12:00:00Z"
     },
     "Learning": {
@@ -99,84 +99,88 @@
   },
   "blocked": [
     {
+      "item": "CALABA Symposium Discussant needed",
+      "type": "BLOCKER",
+      "priority": "CRITICAL",
+      "agents": ["BAE SIG"]
+    },
+    {
       "item": "9 writer drafts need review",
       "type": "APPROVAL",
       "priority": "HIGH",
-      "agents": [
-        "Writer"
-      ]
+      "agents": ["Writer"]
     },
     {
       "item": "app.behaviorschool.com DNS not set up",
       "type": "BLOCKER",
       "priority": "HIGH",
-      "agents": [
-        "Pro"
-      ]
-    },
-    {
-      "item": "Gmail app password for BAE SIG email",
-      "type": "BLOCKER",
-      "priority": "MEDIUM",
-      "agents": [
-        "BAE SIG"
-      ]
+      "agents": ["Pro"]
     },
     {
       "item": "PayPal link from Liz Flaherty",
       "type": "BLOCKER",
       "priority": "MEDIUM",
-      "agents": [
-        "BAE SIG"
-      ]
+      "agents": ["BAE SIG"]
+    },
+    {
+      "item": "Gmail app password for BAE SIG email",
+      "type": "BLOCKER",
+      "priority": "MEDIUM",
+      "agents": ["BAE SIG"]
     },
     {
       "item": "gog auth for Gmail/Calendar access",
       "type": "BLOCKER",
       "priority": "MEDIUM",
-      "agents": [
-        "Neo",
-        "Scout"
-      ]
+      "agents": ["Neo", "Scout"]
     },
     {
-      "item": "Ahrefs login credentials",
-      "type": "BLOCKER",
+      "item": "study.behaviorschool.com Vite build on Netlify",
+      "type": "BUG",
       "priority": "LOW",
-      "agents": [
-        "SEO"
-      ]
-    },
-    {
-      "item": "Social media account logins",
-      "type": "BLOCKER",
-      "priority": "LOW",
-      "agents": [
-        "Writer",
-        "Browser"
-      ]
+      "agents": ["Study App"]
     }
   ],
   "recentActivity": [
     {
+      "time": "20:55",
+      "agent": "Neo",
+      "action": "Updated OpenClaw 2026.2.6 → 2026.2.9 — Opus 4.6 now 1M context!"
+    },
+    {
+      "time": "20:53",
+      "agent": "Engineer",
+      "action": "Agent HQ: HiDPI rendering + modal text enlarged"
+    },
+    {
+      "time": "20:47",
+      "agent": "Analyst",
+      "action": "Daily report delivered — CALABA discussant still critical"
+    },
+    {
+      "time": "20:45",
+      "agent": "Scout",
+      "action": "Evening scan: burnout (rel 9), paraprofessional training (rel 7)"
+    },
+    {
+      "time": "16:36",
+      "agent": "Neo",
+      "action": "Model stack optimized — Sonnet 4.5 as fallback #1"
+    },
+    {
       "time": "16:08",
       "agent": "Neo",
-      "action": "GitHub reconnected! robspain.com + behaviorschool.com auto-deploying"
+      "action": "GitHub reconnected! All 3 Netlify sites auto-deploying ✅"
     },
     {
       "time": "15:48",
       "agent": "Neo",
-      "action": "Deployed robspain.com with CALABA cards"
+      "action": "Deployed robspain.com — hero fix + BACB logo restored"
     },
     {
       "time": "15:45",
       "agent": "Neo",
-      "action": "Added 8 repo agents to Agent HQ (20 total)"
-    },
-    {
-      "time": "15:40",
-      "agent": "Engineer",
-      "action": "Sub-agent: 16-bit upgrade in progress"
+      "action": "Agent HQ expanded to 20 agents"
     },
     {
       "time": "15:36",
@@ -184,29 +188,9 @@
       "action": "Deployed study.behaviorschool.com via API"
     },
     {
-      "time": "15:35",
-      "agent": "Engineer",
-      "action": "Sub-agent: Generated 4 /pro mockup images"
-    },
-    {
-      "time": "15:31",
-      "agent": "Neo",
-      "action": "Fixed hero alignment on robspain.com"
-    },
-    {
       "time": "15:27",
-      "agent": "BehSch",
-      "action": "Fixed nav menu overlap (committed, pending deploy)"
-    },
-    {
-      "time": "15:20",
-      "agent": "SEO",
-      "action": "Created AEO/GEO audit notes for behaviorschool.com"
-    },
-    {
-      "time": "15:13",
-      "agent": "Neo",
-      "action": "Established blog publishing workflow"
+      "agent": "BehaviorSchool",
+      "action": "Nav overlap fixed + pro mockups live via auto-deploy"
     }
   ]
 }

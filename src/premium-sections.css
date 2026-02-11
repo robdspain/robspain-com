@@ -3218,3 +3218,20 @@
         font-size: 0.7rem;
     }
 }
+
+/* Fix: Projects image styling */
+.projects-image {
+    width: 100%;
+    overflow: hidden;
+    border-radius: var(--radius-2xl);
+}
+
+.project-screenshot {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-lg);
+    max-height: 500px;
+    object-fit: cover;
+    object-position: top;
+}

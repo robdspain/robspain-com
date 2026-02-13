@@ -284,7 +284,11 @@ function resizeCanvas() {
   const status = document.getElementById('status');
   const bottom = document.getElementById('bottom');
   const gameWrapper = document.getElementById('game-wrapper');
-  const avail = window.innerHeight - (header ? header.offsetHeight : 30) - (status ? status.offsetHeight : 30) - (bottom ? bottom.offsetHeight : 120) - 10;
+  const nav = document.querySelector('.admin-nav');
+  const sysState = document.getElementById('system-state');
+  const projFilter = document.getElementById('project-filter');
+  const topHeight = (nav ? nav.offsetHeight : 0) + (header ? header.offsetHeight : 30) + (sysState ? sysState.offsetHeight : 0) + (projFilter ? projFilter.offsetHeight : 0);
+  const avail = window.innerHeight - topHeight - (status ? status.offsetHeight : 30) - (bottom ? bottom.offsetHeight : 120) - 10;
   const aspect = 640 / 480;
   const wrapperWidth = gameWrapper ? gameWrapper.offsetWidth : window.innerWidth - 280;
   let cw = wrapperWidth;
@@ -1427,8 +1431,16 @@ function render() {
 }
 
 function gameLoop() {
-  update();
-  render();
+  try {
+    update();
+    render();
+  } catch(e) {
+    console.error('Agent HQ render error:', e);
+    ctx.fillStyle = '#ef4444';
+    ctx.font = '12px monospace';
+    ctx.fillText('ERROR: ' + e.message, 20, 240);
+    return; // stop loop on error so we can see the message
+  }
   requestAnimationFrame(gameLoop);
 }
 
@@ -1654,6 +1666,10 @@ C.addEventListener('mousemove', (e) => {
 C.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
 
 // --- INIT ---
+// Quick canvas test
+ctx.fillStyle = '#10b981';
+ctx.font = '10px monospace';
+ctx.fillText('Agent HQ initializing...', 200, 240);
 addLog('<span class="action">Agent HQ online. ' + AGENTS.length + ' agents reporting.</span>');
 
 // No fake events -- everything waits for real data

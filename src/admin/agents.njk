@@ -430,18 +430,18 @@ const ROOMS = {
   operations: { x: 370, y: 100, w: 220, h: 130, label: '' },
   engineering: { x: 40, y: 245, w: 550, h: 130, label: '' },
   confRoom: { x: 40, y: 390, w: 180, h: 70, label: 'CONF ROOM' },
-  waterCooler: { x: 540, y: 390, w: 60, h: 60, label: '' },
+  coffeeBar: { x: 520, y: 385, w: 90, h: 70, label: '' },
 };
 
 const CONF_TABLE = { x: 80, y: 410, w: 100, h: 40 };
-const WATER_POS = { x: 565, y: 415 };
+const COFFEE_POS = { x: 560, y: 415 };
 const WHITEBOARD = { x: 50, y: 392, w: 160, h: 8 };
 
 // --- MESSAGES ---
 // NO fake work messages — agents only show their real task from data
 // NO fake meeting topics — meetings only happen from real handoffs
 
-// Water cooler = agents that are idle or waiting on blockers (commiserating)
+// Coffee bar = agents that are idle or waiting on blockers (commiserating)
 const WATER_COOLER_CHAT_IDLE = [
   ["Waiting on Rob...", "Same. Blocker life."],
   ["Nothing in my queue.", "Enjoy it while it lasts."],
@@ -461,8 +461,8 @@ let meetingActive = false;
 let meetingTopic = '';
 let meetingAgents = [];
 let meetingTimer = 0;
-let waterCoolerChat = null;
-let waterCoolerTimer = 0;
+let coffeeBreakChat = null;
+let coffeeBreakTimer = 0;
 let particles = [];
 
 function addLog(msg) {
@@ -554,10 +554,10 @@ function drawOffice() {
         ctx.strokeStyle = dept.border;
         ctx.lineWidth = 2;
         ctx.strokeRect(r.x, r.y, r.w, r.h);
-        // Department label top-left
+        // Department label top-left (large, readable)
         ctx.fillStyle = dept.border;
-        ctx.font = '5px "Press Start 2P"';
-        ctx.fillText(dept.label, r.x + 6, r.y - 3);
+        ctx.font = 'bold 9px "Press Start 2P"';
+        ctx.fillText(dept.label, r.x + 6, r.y - 4);
         // Subtle fill
         ctx.fillStyle = dept.bg;
         ctx.fillRect(r.x + 1, r.y + 1, r.w - 2, r.h - 2);
@@ -748,44 +748,59 @@ function drawOffice() {
     ctx.fillRect(WHITEBOARD.x + 15 + mi * 12, WHITEBOARD.y + WHITEBOARD.h + 7, 8, 3);
   });
 
-  // Water cooler — more detailed
-  // Base unit
-  const wcGrad = ctx.createLinearGradient(WATER_POS.x - 10, WATER_POS.y - 8, WATER_POS.x + 10, WATER_POS.y + 16);
-  wcGrad.addColorStop(0, '#7a8a9a');
-  wcGrad.addColorStop(1, PAL.waterBase);
-  ctx.fillStyle = wcGrad;
+  // Coffee Bar
+  // Counter
+  const barGrad = ctx.createLinearGradient(COFFEE_POS.x - 25, COFFEE_POS.y - 10, COFFEE_POS.x + 25, COFFEE_POS.y + 20);
+  barGrad.addColorStop(0, '#5C4033');
+  barGrad.addColorStop(1, '#3E2723');
+  ctx.fillStyle = barGrad;
   ctx.beginPath();
-  ctx.roundRect(WATER_POS.x - 10, WATER_POS.y - 8, 20, 28, 3);
+  ctx.roundRect(COFFEE_POS.x - 25, COFFEE_POS.y - 10, 50, 30, 4);
   ctx.fill();
-  // Water bottle
-  const bottleGrad = ctx.createLinearGradient(WATER_POS.x - 6, WATER_POS.y - 18, WATER_POS.x + 6, WATER_POS.y - 4);
-  bottleGrad.addColorStop(0, '#38d9f5');
-  bottleGrad.addColorStop(0.5, '#22d3ee');
-  bottleGrad.addColorStop(1, '#0ea5e9');
-  ctx.fillStyle = bottleGrad;
+  // Counter top highlight
+  ctx.fillStyle = '#8D6E63';
   ctx.beginPath();
-  ctx.roundRect(WATER_POS.x - 6, WATER_POS.y - 18, 12, 14, 3);
+  ctx.roundRect(COFFEE_POS.x - 24, COFFEE_POS.y - 10, 48, 4, 2);
   ctx.fill();
-  // Water level shimmer
-  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  // Espresso machine
+  ctx.fillStyle = '#37474F';
   ctx.beginPath();
-  ctx.roundRect(WATER_POS.x - 4, WATER_POS.y - 16, 4, 10, 1);
+  ctx.roundRect(COFFEE_POS.x - 8, COFFEE_POS.y - 22, 16, 14, 2);
   ctx.fill();
-  // Bubbles (animated)
-  const bubblePhase = (tick % 60) / 60;
-  ctx.globalAlpha = 0.6 + Math.sin(bubblePhase * Math.PI * 2) * 0.3;
-  ctx.fillStyle = '#7dd3fc';
+  // Machine top
+  ctx.fillStyle = '#546E7A';
   ctx.beginPath();
-  ctx.arc(WATER_POS.x - 1, WATER_POS.y - 16 - bubblePhase * 8, 2, 0, Math.PI * 2);
+  ctx.roundRect(COFFEE_POS.x - 6, COFFEE_POS.y - 24, 12, 4, 2);
   ctx.fill();
-  ctx.beginPath();
-  ctx.arc(WATER_POS.x + 2, WATER_POS.y - 14 - ((bubblePhase + 0.3) % 1) * 8, 1.5, 0, Math.PI * 2);
-  ctx.fill();
+  // Steam (animated)
+  const steamPhase = (tick % 80) / 80;
+  for (let si = 0; si < 3; si++) {
+    const sp = (steamPhase + si * 0.33) % 1;
+    ctx.globalAlpha = 0.3 - sp * 0.3;
+    ctx.fillStyle = '#e2e8f0';
+    ctx.beginPath();
+    ctx.arc(COFFEE_POS.x - 2 + si * 4 + Math.sin(sp * 6) * 2, COFFEE_POS.y - 26 - sp * 12, 2 - sp, 0, Math.PI * 2);
+    ctx.fill();
+  }
   ctx.globalAlpha = 1;
-  // Cups
-  ctx.fillStyle = '#e2e8f0';
-  ctx.beginPath(); ctx.roundRect(WATER_POS.x + 12, WATER_POS.y - 2, 4, 5, 1); ctx.fill();
-  ctx.beginPath(); ctx.roundRect(WATER_POS.x + 12, WATER_POS.y + 5, 4, 5, 1); ctx.fill();
+  // Coffee cups on counter
+  const cupColors = ['#e2e8f0', '#ffcc80', '#ef9a9a'];
+  cupColors.forEach((cc, ci) => {
+    ctx.fillStyle = cc;
+    ctx.beginPath();
+    ctx.roundRect(COFFEE_POS.x - 20 + ci * 14, COFFEE_POS.y - 4, 6, 7, 1);
+    ctx.fill();
+    // Cup handle
+    ctx.strokeStyle = cc;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(COFFEE_POS.x - 14 + ci * 14, COFFEE_POS.y, 2, -Math.PI/2, Math.PI/2);
+    ctx.stroke();
+  });
+  // Coffee bar label
+  ctx.fillStyle = '#BCAAA4';
+  ctx.font = '5px "Press Start 2P"';
+  ctx.fillText('COFFEE', COFFEE_POS.x - 18, COFFEE_POS.y + 28);
 
   // Plants — more detailed with multiple leaves
   [[55, 35], [580, 35], [55, 250], [580, 250], [55, 320]].forEach(([px, py]) => {
@@ -807,10 +822,7 @@ function drawOffice() {
     });
   });
 
-  // Labels
-  ctx.fillStyle = '#5a6b7a';
-  ctx.font = '6px "Press Start 2P"';
-  ctx.fillText('☕', WATER_POS.x - 5, WATER_POS.y + 30);
+  // Labels (coffee bar label drawn above in coffee bar section)
 
   // Neo's office label with glow
   ctx.shadowColor = '#10b981';
@@ -883,7 +895,7 @@ function drawAgent(a) {
   ctx.fillRect(bx + 4.5, by - 6, 1, 1);
 
   // Walking animation (smoother with more frames)
-  if (a.state === 'walking' || a.state === 'toMeeting' || a.state === 'toWater' || a.state === 'toDesk') {
+  if (a.state === 'walking' || a.state === 'toMeeting' || a.state === 'toCoffee' || a.state === 'toDesk') {
     const legPhase = (tick * 0.15) % (Math.PI * 2);
     const leftLeg = Math.sin(legPhase) * 4;
     const rightLeg = Math.sin(legPhase + Math.PI) * 4;
@@ -1061,11 +1073,19 @@ function updateAgents() {
             a.bubble = real.task;
             a.bubbleTimer = 200;
           }
-          // No random wandering with real data — only walk if idle
-          if (real && real.status === 'idle' && rand(0, 800) === 0 && !meetingActive) {
+          // Agents roam between departments when idle or working
+          if (rand(0, 600) === 0 && !meetingActive) {
             a.state = 'walking';
-            a.targetX = a.desk.x + rand(-20, 20);
-            a.targetY = a.desk.y + rand(-10, 15);
+            // 30% chance to visit another department, 70% stay near desk
+            if (rand(0, 9) < 3) {
+              // Pick a random other agent's desk area to visit
+              const other = AGENTS[rand(0, AGENTS.length - 1)];
+              a.targetX = other.desk.x + rand(-15, 25);
+              a.targetY = other.desk.y + rand(-5, 25);
+            } else {
+              a.targetX = a.desk.x + rand(-25, 25);
+              a.targetY = a.desk.y + rand(-10, 20);
+            }
           }
         } else {
           // No data loaded yet — agents sit at desk, no fake activity
@@ -1105,18 +1125,18 @@ function updateAgents() {
         }
         break;
 
-      case 'toWater':
+      case 'toCoffee':
         {
-          const wx = WATER_POS.x + rand(-20, 20);
-          const wy = WATER_POS.y + rand(10, 25);
+          const wx = COFFEE_POS.x + rand(-20, 20);
+          const wy = COFFEE_POS.y + rand(10, 25);
           if (moveToward(a, wx, wy)) {
-            a.state = 'atWater';
+            a.state = 'atCoffee';
             a.waterTimer = rand(100, 200);
           }
         }
         break;
 
-      case 'atWater':
+      case 'atCoffee':
         a.waterTimer--;
         if (a.waterTimer <= 0) {
           a.state = 'toDesk';
@@ -1173,12 +1193,12 @@ function endMeeting() {
   meetingTopic = '';
 }
 
-function triggerWaterCooler() {
-  if (waterCoolerChat) return;
+function triggerCoffeeBreak() {
+  if (coffeeBreakChat) return;
   const data = window.agentActivity;
   if (!data) return;
 
-  // Water cooler = idle or blocked agents only (they have nothing better to do)
+  // Coffee bar = idle or blocked agents only (they have nothing better to do)
   const idleAgents = AGENTS.filter(a => {
     const real = data.agents[a.name];
     return real && (real.status === 'idle' || real.status === 'blocked');
@@ -1186,9 +1206,9 @@ function triggerWaterCooler() {
   if (idleAgents.length < 2) return;
 
   const pair = idleAgents.sort(() => Math.random() - 0.5).slice(0, 2);
-  waterCoolerChat = pair;
-  waterCoolerTimer = rand(150, 250);
-  pair.forEach(a => { a.state = 'toWater'; });
+  coffeeBreakChat = pair;
+  coffeeBreakTimer = rand(150, 250);
+  pair.forEach(a => { a.state = 'toCoffee'; });
 
   // Pick contextual chat based on whether they're blocked or just idle
   const anyBlocked = pair.some(a => { const r = data.agents[a.name]; return r && r.status === 'blocked'; });
@@ -1200,7 +1220,7 @@ function triggerWaterCooler() {
   setTimeout(() => {
     if (pair[1]) { pair[1].bubble = chat[1]; pair[1].bubbleTimer = 120; }
   }, 3500);
-  addLog(`<span class="name">${pair[0].name}</span> and <span class="name">${pair[1].name}</span> <span class="action">→ Water cooler ☕ (${anyBlocked ? 'blocked' : 'idle'})</span>`);
+  addLog(`<span class="name">${pair[0].name}</span> and <span class="name">${pair[1].name}</span> <span class="action">→ Coffee bar ☕ (${anyBlocked ? 'blocked' : 'idle'})</span>`);
 }
 
 // --- MAIN LOOP ---
@@ -1211,7 +1231,7 @@ function update() {
   // Only trigger from real data — no random timers
   if (window.agentActivity) {
     if (tick % 3000 === 300 && !meetingActive) triggerMeeting();
-    if (tick % 2000 === 200 && !waterCoolerChat) triggerWaterCooler();
+    if (tick % 2000 === 200 && !coffeeBreakChat) triggerCoffeeBreak();
   }
   // No data = no movement. Period.
 
@@ -1221,12 +1241,12 @@ function update() {
     if (meetingTimer <= 0) endMeeting();
   }
 
-  // Water cooler timer
-  if (waterCoolerChat) {
-    waterCoolerTimer--;
-    if (waterCoolerTimer <= 0) {
-      waterCoolerChat.forEach(a => { if (a.state === 'atWater') a.state = 'toDesk'; });
-      waterCoolerChat = null;
+  // Coffee bar timer
+  if (coffeeBreakChat) {
+    coffeeBreakTimer--;
+    if (coffeeBreakTimer <= 0) {
+      coffeeBreakChat.forEach(a => { if (a.state === 'atCoffee') a.state = 'toDesk'; });
+      coffeeBreakChat = null;
     }
   }
 }
@@ -1265,7 +1285,7 @@ function updateStatus() {
     if (real) {
       stateLabel = {working:'🟢',idle:'⚪',waiting:'🟡',blocked:'🔴',deployed:'✅'}[real.status] || '❓';
     } else {
-      stateLabel = {working:'💻',walking:'🚶',toMeeting:'🏃',inMeeting:'🗣️',toWater:'🚶',atWater:'☕',toDesk:'🏃'}[a.state] || '?';
+      stateLabel = {working:'💻',walking:'🚶',toMeeting:'🏃',inMeeting:'🗣️',toCoffee:'🚶',atCoffee:'☕',toDesk:'🏃'}[a.state] || '?';
     }
     return `<div class="agent-badge" data-agent="${a.name}"><span class="dot" style="background:${a.color}"></span>${a.icon} ${a.name} ${stateLabel}</div>`;
   }).join('');

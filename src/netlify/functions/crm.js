@@ -138,7 +138,7 @@ exports.handler = async (event) => {
       query += ' WHERE ' + whereClauses.join(' AND ');
     }
 
-    query += ' ORDER BY c.name LIMIT 200';
+    query += ' ORDER BY c.name LIMIT 600';
 
     const results = db.exec(query, queryParams);
     

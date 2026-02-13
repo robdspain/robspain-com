@@ -409,11 +409,6 @@ function closeModal() {
 document.getElementById('modal-cancel').onclick = closeModal;
 document.getElementById('modal-close').onclick = closeModal;
 
-// Close when clicking outside modal
-modal.addEventListener('click', (e) => {
-  if (e.target === modal) closeModal();
-});
-
 // --- FULLSCREEN CANVAS ---
 let SCALE = 1;
 let W = 640, H = 480;
@@ -456,6 +451,11 @@ const modal = document.getElementById('modal-overlay');
 const modalTitle = document.getElementById('modal-title');
 const modalInfo = document.getElementById('modal-info');
 const modalInput = document.getElementById('modal-input');
+
+// Close when clicking outside modal
+modal.addEventListener('click', (e) => {
+  if (e.target === modal) closeModal();
+});
 
 C.addEventListener('click', (e) => {
   const rect = C.getBoundingClientRect();

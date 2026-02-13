@@ -149,11 +149,17 @@ function showBlockerDetail(idx) {
   const title = document.getElementById('modal-title');
   const info = document.getElementById('modal-info');
   const input = document.getElementById('modal-input');
-  title.textContent = '⚠️ ' + b.priority + ': ' + b.item;
+  title.textContent = '!! ' + b.priority + ': ' + b.item;
   info.innerHTML = '<strong style="color:#f59e0b">Blocked agents:</strong> ' + b.agents.join(', ') + '<br><br><strong style="color:#10b981">What Rob needs to do:</strong><br>' + b.instructions;
-  input.style.display = 'none';
-  document.getElementById('modal-send').style.display = 'none';
+  // Allow Rob to respond/comment on blockers
+  input.style.display = '';
+  input.placeholder = 'Reply to Neo about this blocker...';
+  document.getElementById('modal-send').style.display = '';
+  // Override send to handle blocker response
+  selectedAgent = { name: 'Neo', icon: '!!' };
+  modalInput.value = '';
   overlay.classList.add('show');
+  input.focus();
 }
 
 // Reset modal for agent instructions
@@ -442,18 +448,28 @@ const WHITEBOARD = { x: 50, y: 392, w: 160, h: 8 };
 // NO fake meeting topics — meetings only happen from real handoffs
 
 // Coffee bar = agents that are idle or waiting on blockers (commiserating)
-const WATER_COOLER_CHAT_IDLE = [
-  ["Waiting on Rob...", "Same. Blocker life."],
-  ["Nothing in my queue.", "Enjoy it while it lasts."],
-  ["API key still blocked?", "Yep. Referrer restriction."],
-  ["Any new findings?", "Not since last scan."],
-];
-const WATER_COOLER_CHAT_BLOCKED = [
-  ["Still blocked on DNS.", "Rob's got the GoDaddy key now."],
-  ["Need Gmail auth.", "It's in the task list."],
-  ["Drafts waiting on review.", "9 of them. Rob's busy."],
-  ["PayPal link from Liz?", "Not yet."],
-];
+// Generate real conversation from agent data
+function getCoffeeChat(a1, a2, data) {
+  const r1 = data.agents[a1.name] || {};
+  const r2 = data.agents[a2.name] || {};
+  // Use real task/blocker info
+  if (r1.status === 'blocked' && r1.blocker) {
+    return [r1.blocker, "Ouch. Flagged for Rob?"];
+  }
+  if (r2.status === 'blocked' && r2.blocker) {
+    return ["How's your queue?", "Blocked: " + r2.blocker];
+  }
+  if (r1.task && r2.task) {
+    return ["Working on: " + r1.task.slice(0, 40), "Me: " + r2.task.slice(0, 40)];
+  }
+  if (r1.task) {
+    return [r1.task.slice(0, 45), "Nice. I'm free."];
+  }
+  if (r2.task) {
+    return ["Anything going on?", r2.task.slice(0, 45)];
+  }
+  return ["Quiet day.", "Too quiet."];
+}
 
 // --- STATE ---
 let tick = 0;
@@ -684,6 +700,36 @@ function drawOffice() {
     ctx.fillStyle = '#3a3a4e';
     ctx.fillRect(mx + mw/2 - 2, my + mh, 4, 3);
     
+    // Keyboard (small rectangle in front of monitor)
+    ctx.fillStyle = '#2c2c3e';
+    ctx.beginPath();
+    ctx.roundRect(mx + 1, my + mh + 4, mw - 2, 4, 1);
+    ctx.fill();
+    // Key dots on keyboard
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    for (let ki = 0; ki < 3; ki++) {
+      ctx.fillRect(mx + 3 + ki * 4, my + mh + 5, 2, 1);
+    }
+
+    // Desk chair (behind desk, below)
+    const chairX = dx + dw/2 - 5;
+    const chairY = dy + dh + 2;
+    // Seat
+    ctx.fillStyle = '#2a2a42';
+    ctx.beginPath();
+    ctx.roundRect(chairX, chairY, 10, 5, 2);
+    ctx.fill();
+    // Back rest
+    ctx.fillStyle = '#22223a';
+    ctx.beginPath();
+    ctx.roundRect(chairX + 1, chairY + 5, 8, 6, 2);
+    ctx.fill();
+    // Chair wheels (3 dots)
+    ctx.fillStyle = '#1a1a2e';
+    ctx.beginPath(); ctx.arc(chairX + 2, chairY + 12, 1.5, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(chairX + 5, chairY + 13, 1.5, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(chairX + 8, chairY + 12, 1.5, 0, Math.PI*2); ctx.fill();
+
     // Coffee mug (small detail)
     if (Math.abs(a.x - (dx + 12)) < 30) {
       ctx.fillStyle = '#e2e8f0';
@@ -1210,9 +1256,9 @@ function triggerCoffeeBreak() {
   coffeeBreakTimer = rand(150, 250);
   pair.forEach(a => { a.state = 'toCoffee'; });
 
-  // Pick contextual chat based on whether they're blocked or just idle
+  // Pick contextual chat from real agent data
   const anyBlocked = pair.some(a => { const r = data.agents[a.name]; return r && r.status === 'blocked'; });
-  const chat = pick(anyBlocked ? WATER_COOLER_CHAT_BLOCKED : WATER_COOLER_CHAT_IDLE);
+  const chat = getCoffeeChat(pair[0], pair[1], data);
 
   setTimeout(() => {
     if (pair[0]) { pair[0].bubble = chat[0]; pair[0].bubbleTimer = 120; }

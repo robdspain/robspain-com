@@ -426,8 +426,10 @@ function resizeCanvas() {
   const nav = document.querySelector('.admin-nav');
   const sysState = document.getElementById('system-state');
   const projFilter = document.getElementById('project-filter');
+  const taskPanel = document.getElementById('task-panel');
   const topHeight = (nav ? nav.offsetHeight : 0) + (header ? header.offsetHeight : 30) + (sysState ? sysState.offsetHeight : 0) + (projFilter ? projFilter.offsetHeight : 0);
-  const avail = window.innerHeight - topHeight - (status ? status.offsetHeight : 30) - (bottom ? bottom.offsetHeight : 120) - 10;
+  const taskPanelHeight = (taskPanel && taskPanel.classList.contains('show')) ? taskPanel.offsetHeight : 0;
+  const avail = window.innerHeight - topHeight - (status ? status.offsetHeight : 30) - (bottom ? bottom.offsetHeight : 120) - taskPanelHeight - 10;
   const aspect = 640 / 480;
   const wrapperWidth = gameWrapper ? gameWrapper.offsetWidth : window.innerWidth - 280;
   let cw = wrapperWidth;
@@ -1299,6 +1301,18 @@ function drawAgent(a) {
     ctx.globalAlpha = 0.15;
   }
 
+  // Highlight when task is selected
+  if (a._highlighted) {
+    const pulse = 0.5 + Math.sin(Date.now() / 300) * 0.3;
+    ctx.shadowColor = '#10b981';
+    ctx.shadowBlur = 16 + Math.sin(Date.now() / 200) * 8;
+    ctx.fillStyle = `rgba(16, 185, 129, ${pulse})`;
+    ctx.beginPath();
+    ctx.arc(bx, by, 18, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
   // Escalation glow for long-blocked agents
   const realInfo = window.agentActivity && window.agentActivity.agents && window.agentActivity.agents[a.name];
   if (realInfo && realInfo.status === 'blocked') {
@@ -1537,12 +1551,21 @@ function updateAgents() {
   AGENTS.forEach(a => {
     switch (a.state) {
       case 'working':
+        // Show current task from TASKS array
+        const currentTask = TASKS.find(t => t.owner === a.name && (t.status === 'running' || t.status === 'queued'));
+        if (currentTask && rand(0, 300) === 0) {
+          a.bubble = currentTask.title;
+          a.bubbleTimer = 200;
+        }
+        
         if (hasRealData) {
-          // Show real task, refresh periodically
-          const real = window.agentActivity.agents[a.name];
-          if (real && rand(0, 300) === 0) {
-            a.bubble = real.task;
-            a.bubbleTimer = 200;
+          // Fallback to agentActivity data if no task in TASKS
+          if (!currentTask) {
+            const real = window.agentActivity.agents[a.name];
+            if (real && rand(0, 300) === 0) {
+              a.bubble = real.task;
+              a.bubbleTimer = 200;
+            }
           }
           // Agents roam between departments when idle or working
           if (rand(0, 600) === 0 && !meetingActive) {
@@ -1558,8 +1581,8 @@ function updateAgents() {
               a.targetY = a.desk.y + rand(-10, 20);
             }
           }
-        } else {
-          // No data loaded yet — agents sit at desk, no fake activity
+        } else if (!currentTask) {
+          // No data and no task — agents sit at desk, no fake activity
           a.bubble = null;
           a.bubbleTimer = 0;
         }
@@ -1758,14 +1781,6 @@ function gameLoop() {
     ctx.fillText('RENDER ERROR', 200, 240);
     ctx.font = '6px "Press Start 2P"';
     ctx.fillText(err.message, 50, 260);
-  }
-    render();
-  } catch(e) {
-    console.error('Agent HQ render error:', e);
-    ctx.fillStyle = '#ef4444';
-    ctx.font = '12px monospace';
-    ctx.fillText('ERROR: ' + e.message, 20, 240);
-    return; // stop loop on error so we can see the message
   }
   requestAnimationFrame(gameLoop);
 }

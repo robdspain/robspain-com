@@ -17,6 +17,19 @@ permalink: /admin/agents/index.html
   .admin-nav a { color: #94a3b8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; font-weight: 600; padding: 12px 28px; text-decoration: none; border-bottom: 3px solid transparent; transition: all 0.2s; }
   .admin-nav a:hover { color: #e2e8f0; background: rgba(255,255,255,0.05); }
   .admin-nav a.active { color: #10b981; border-bottom-color: #10b981; }
+  #system-state { display: flex; align-items: center; justify-content: space-between; padding: 6px 20px; background: #111827; border-bottom: 2px solid #1e3a34; flex-shrink: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  #state-indicator { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: #e2e8f0; }
+  #state-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  #state-dot.healthy { background: #10b981; box-shadow: 0 0 8px #10b981; }
+  #state-dot.backlogged { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
+  #state-dot.blocked { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+  #state-dot.human { background: #3b82f6; box-shadow: 0 0 8px #3b82f6; }
+  #state-stats { display: flex; gap: 16px; font-size: 12px; font-weight: 600; color: #94a3b8; }
+  #state-stats span { padding: 3px 10px; background: #1a1a2e; border-radius: 4px; }
+  .stat-red { color: #ef4444 !important; }
+  .stat-blue { color: #3b82f6 !important; }
+  .stat-green { color: #10b981 !important; }
+  .stat-yellow { color: #f59e0b !important; }
   #main-container { display: flex; flex: 1; overflow: hidden; }
   #game-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
   #game { image-rendering: auto; -webkit-font-smoothing: antialiased; cursor: crosshair; flex: 1; display: block; width: 100%; }
@@ -81,7 +94,17 @@ permalink: /admin/agents/index.html
   <a href="/admin/agents/" class="active">🤖 Agents</a>
   <a href="/admin/crm/">👥 CRM</a>
 </nav>
-<h1>⚔️ NEO'S OFFICE — AGENT HQ ⚔️</h1>
+<h1>NEO'S OFFICE -- AGENT HQ</h1>
+<div id="system-state">
+  <div id="state-indicator"><span id="state-dot"></span> <span id="state-label">LOADING...</span></div>
+  <div id="state-stats">
+    <span id="stat-agents">-- agents</span>
+    <span id="stat-queue">-- tasks</span>
+    <span id="stat-blocked" class="stat-red">-- blocked</span>
+    <span id="stat-human" class="stat-blue">-- human</span>
+    <span id="stat-running" class="stat-green">-- running</span>
+  </div>
+</div>
 <div id="main-container">
   <div id="game-wrapper">
     <canvas id="game"></canvas>
@@ -1299,6 +1322,8 @@ function update() {
 
 function render() {
   drawOffice();
+  // Draw dependency lines between agents
+  drawDepLines();
   // Sort agents by Y for depth
   const sorted = [...AGENTS].sort((a, b) => a.y - b.y);
   sorted.forEach(a => {
@@ -1339,6 +1364,101 @@ function updateStatus() {
 setInterval(updateStatus, 500);
 
 // --- LOAD REAL ACTIVITY DATA ---
+// --- SYSTEM STATE BAR ---
+function updateSystemState(data) {
+  const dot = document.getElementById('state-dot');
+  const label = document.getElementById('state-label');
+  const agents = data && data.agents ? Object.keys(data.agents) : [];
+  const statuses = agents.map(n => (data.agents[n] || {}).status || 'working');
+  
+  const total = AGENTS.length;
+  const blocked = statuses.filter(s => s === 'blocked').length;
+  const waiting = statuses.filter(s => s === 'waiting').length;
+  const idle = statuses.filter(s => s === 'idle').length;
+  const running = statuses.filter(s => s === 'working' || s === 'deployed').length;
+  const queueDepth = data && data.recentActivity ? data.recentActivity.length : 0;
+
+  // Determine system health
+  let health = 'healthy', healthText = 'HEALTHY';
+  if (blocked >= 3) { health = 'blocked'; healthText = 'BLOCKED'; }
+  else if (blocked > 0 || waiting > 2) { health = 'backlogged'; healthText = 'BACKLOGGED'; }
+  else if (waiting > 0) { health = 'human'; healthText = 'HUMAN PENDING'; }
+
+  dot.className = health;
+  label.textContent = healthText;
+  document.getElementById('stat-agents').textContent = total + ' agents';
+  document.getElementById('stat-queue').textContent = queueDepth + ' tasks';
+  document.getElementById('stat-blocked').textContent = blocked + ' blocked';
+  document.getElementById('stat-human').textContent = waiting + ' waiting';
+  document.getElementById('stat-running').textContent = running + ' running';
+}
+
+// --- DEPENDENCY LINES ---
+let depLines = [];
+function updateDepLines(data) {
+  depLines = [];
+  if (!data || !data.agents) return;
+  // Build dependency lines from handoffs
+  if (data.handoffs) {
+    data.handoffs.forEach(h => {
+      if (h.agents && h.agents.length >= 2) {
+        const a1 = AGENTS.find(a => a.name === h.agents[0]);
+        const a2 = AGENTS.find(a => a.name === h.agents[1]);
+        if (a1 && a2) {
+          const status = h.status || 'passing';
+          depLines.push({ from: a1, to: a2, status, topic: h.topic || '' });
+        }
+      }
+    });
+  }
+  // Auto-detect: blocked agents get red lines to their blockers
+  Object.entries(data.agents).forEach(([name, info]) => {
+    if (info.status === 'blocked' && info.blockedBy) {
+      const a1 = AGENTS.find(a => a.name === name);
+      const a2 = AGENTS.find(a => a.name === info.blockedBy);
+      if (a1 && a2) depLines.push({ from: a1, to: a2, status: 'blocked' });
+    }
+  });
+}
+
+function drawDepLines() {
+  const lineColors = {
+    passing: '#10b981',
+    waiting: '#f59e0b',
+    blocked: '#ef4444',
+    human: '#3b82f6',
+  };
+  depLines.forEach(line => {
+    const color = lineColors[line.status] || '#10b981';
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5;
+    ctx.globalAlpha = 0.5 + Math.sin(tick / 30) * 0.2;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(line.from.x, line.from.y);
+    ctx.lineTo(line.to.x, line.to.y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+    
+    // Animated pulse dot traveling along the line
+    const progress = (tick % 120) / 120;
+    const px = line.from.x + (line.to.x - line.from.x) * progress;
+    const py = line.from.y + (line.to.y - line.from.y) * progress;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(px, py, 3, 0, Math.PI * 2);
+    ctx.fill();
+    // Glow on pulse
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 6;
+    ctx.beginPath();
+    ctx.arc(px, py, 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  });
+}
+
 window.agentActivity = null;
 fetch('/api/admin-data?key=agent-activity')
   .then(r => { if (!r.ok) throw new Error('API'); return r; })
@@ -1361,10 +1481,12 @@ fetch('/api/admin-data?key=agent-activity')
         addLog('<span class="time">[' + act.time + ']</span> <span class="name">' + act.agent + '</span> <span class="action">' + act.action + '</span>');
       });
     }
-    addLog('<span class="action">📡 Loaded real agent activity data.</span>');
+    updateSystemState(data);
+    updateDepLines(data);
+    addLog('<span class="action">Loaded real agent activity data.</span>');
   })
   .catch(() => {
-    addLog('<span class="action">⚠️ Data loading — agents at desks.</span>');
+    addLog('<span class="action">Data loading -- agents at desks.</span>');
   });
 
 // --- AUTO-REFRESH LIVE DATA (every 30s) ---
@@ -1388,12 +1510,8 @@ setInterval(() => {
           }
         }
       });
-      // Update blockers panel
-      if (data.needsRob && document.getElementById('needs-rob-items')) {
-        document.getElementById('needs-rob-items').innerHTML = data.needsRob.map(b =>
-          '<div class="rob-item">' + (b.link ? '<a href="' + b.link + '" target="_blank" style="color:#fbbf24;text-decoration:underline">' + b.text + '</a>' : b.text) + '</div>'
-        ).join('');
-      }
+      updateSystemState(data);
+      updateDepLines(data);
     })
     .catch(() => {}); // silent fail on refresh
 }, 30000);

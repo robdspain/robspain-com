@@ -112,6 +112,78 @@ permalink: /admin/agents/index.html
   #log .ev-blocked { color: #ef4444; }
   #log .ev-waiting { color: #f59e0b; }
   #log .ev-human { color: #3b82f6; }
+  
+  /* Task panel */
+  #task-panel { display: none; position: fixed; bottom: 0; left: 0; right: 340px; height: 320px; background: #1a1a2e; border-top: 3px solid #1e3a34; z-index: 40; flex-direction: column; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  #task-panel.show { display: flex; }
+  #task-panel-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 2px solid #334155; background: #0f172a; }
+  #task-panel-header h2 { color: #10b981; font-size: 16px; font-weight: 800; font-family: 'Press Start 2P', monospace; margin: 0; }
+  #task-panel-close { background: transparent; border: 2px solid #334155; color: #e2e8f0; font-family: 'Press Start 2P', monospace; font-size: 10px; padding: 6px 12px; cursor: pointer; }
+  #task-panel-close:hover { border-color: #10b981; color: #10b981; }
+  #task-filters { display: flex; gap: 8px; padding: 8px 16px; border-bottom: 1px solid #334155; flex-wrap: wrap; }
+  #task-filters select { background: #0f172a; border: 1px solid #334155; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 3px; outline: none; }
+  #task-filters select:focus { border-color: #10b981; }
+  #task-list { flex: 1; overflow-y: auto; }
+  .task-row { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid #1e293b; cursor: pointer; transition: background 0.2s; }
+  .task-row:hover { background: #0f172a; }
+  .task-row.selected { background: rgba(16, 185, 129, 0.1); border-left: 3px solid #10b981; }
+  .task-status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .task-status-dot.running { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
+  .task-status-dot.queued { background: #94a3b8; }
+  .task-status-dot.blocked { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
+  .task-status-dot.complete { background: #10b981; }
+  .task-status-dot.failed { background: #dc2626; }
+  .task-title { flex: 1; color: #e2e8f0; font-size: 13px; font-weight: 500; }
+  .task-owner { color: #94a3b8; font-size: 11px; font-weight: 600; min-width: 80px; }
+  .task-priority-badge { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 3px; text-transform: uppercase; }
+  .task-priority-badge.high { background: #dc2626; color: #fff; }
+  .task-priority-badge.normal { background: #3b82f6; color: #fff; }
+  .task-priority-badge.low { background: #6b7280; color: #fff; }
+  .task-project-tag { font-size: 10px; font-weight: 600; color: #10b981; background: rgba(16, 185, 129, 0.15); padding: 2px 8px; border-radius: 3px; }
+  
+  /* Task detail drawer */
+  #task-drawer { display: none; position: fixed; top: 0; right: 340px; width: 480px; height: 100vh; background: #1a1a2e; border-left: 3px solid #10b981; z-index: 50; flex-direction: column; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; box-shadow: -4px 0 12px rgba(0,0,0,0.5); }
+  #task-drawer.show { display: flex; }
+  #task-drawer-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 2px solid #334155; background: #0f172a; }
+  #task-drawer-title { color: #10b981; font-size: 14px; font-weight: 700; flex: 1; margin: 0; }
+  #task-drawer-close { background: transparent; border: 2px solid #334155; color: #e2e8f0; font-family: 'Press Start 2P', monospace; font-size: 10px; padding: 6px 8px; cursor: pointer; }
+  #task-drawer-close:hover { border-color: #10b981; color: #10b981; }
+  #task-drawer-body { flex: 1; overflow-y: auto; padding: 20px; }
+  .td-section { margin-bottom: 24px; }
+  .td-label { color: #94a3b8; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .td-value { color: #e2e8f0; font-size: 13px; line-height: 1.6; }
+  .td-status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+  .td-status-badge.running { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+  .td-status-badge.queued { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
+  .td-status-badge.blocked { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+  .td-status-badge.complete { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+  .td-status-badge.failed { background: rgba(220, 38, 38, 0.2); color: #dc2626; }
+  .td-deps { display: flex; flex-wrap: wrap; gap: 8px; }
+  .td-dep-link { background: #0f172a; border: 1px solid #334155; color: #10b981; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 3px; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+  .td-dep-link:hover { background: rgba(16, 185, 129, 0.15); border-color: #10b981; }
+  .td-logs { background: #0f172a; border: 2px solid #334155; border-radius: 4px; padding: 12px; max-height: 200px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 11px; line-height: 1.6; }
+  .td-log-entry { color: #94a3b8; margin-bottom: 6px; }
+  .td-log-entry:last-child { margin-bottom: 0; }
+  .td-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .td-action-btn { font-family: 'Press Start 2P', monospace; font-size: 9px; padding: 8px 14px; cursor: pointer; border: 2px solid; background: transparent; border-radius: 3px; transition: all 0.2s; }
+  .td-action-btn.reassign { color: #3b82f6; border-color: #3b82f6; }
+  .td-action-btn.reassign:hover { background: #3b82f6; color: #0f172a; }
+  .td-action-btn.pause { color: #f59e0b; border-color: #f59e0b; }
+  .td-action-btn.pause:hover { background: #f59e0b; color: #0f172a; }
+  .td-action-btn.resume { color: #10b981; border-color: #10b981; }
+  .td-action-btn.resume:hover { background: #10b981; color: #0f172a; }
+  .td-action-btn.cancel { color: #94a3b8; border-color: #475569; }
+  .td-action-btn.cancel:hover { background: #475569; color: #e2e8f0; }
+  .td-action-btn.escalate { color: #ef4444; border-color: #ef4444; }
+  .td-action-btn.escalate:hover { background: #ef4444; color: #0f172a; }
+  .td-timestamp { color: #64748b; font-size: 11px; }
+  
+  /* Task toggle button */
+  .pf-btn.task-toggle { background: #10b981; color: #0f172a; font-weight: 700; }
+  .pf-btn.task-toggle:hover { background: #059669; }
+  
+  /* Canvas highlight */
+  .agent-highlighted { filter: drop-shadow(0 0 12px #10b981); }
 </style>
 </head>
 <body>
@@ -137,6 +209,7 @@ permalink: /admin/agents/index.html
   <button class="pf-btn" data-filter="operations">Operations</button>
   <button class="pf-btn" data-filter="engineering">Engineering</button>
   <button class="pf-btn" data-filter="leadership">Leadership</button>
+  <button class="pf-btn task-toggle" onclick="toggleTaskPanel()">📋 Tasks</button>
 </div>
 <div id="agent-tooltip">
   <div class="tt-name"></div>
@@ -175,6 +248,48 @@ permalink: /admin/agents/index.html
   </div>
 </div>
 
+<div id="task-panel">
+  <div id="task-panel-header">
+    <h2>📋 TASK LIST</h2>
+    <button id="task-panel-close" onclick="toggleTaskPanel()">CLOSE</button>
+  </div>
+  <div id="task-filters">
+    <select id="filter-status" onchange="filterTasks()">
+      <option value="all">All Status</option>
+      <option value="running">Running</option>
+      <option value="queued">Queued</option>
+      <option value="blocked">Blocked</option>
+      <option value="complete">Complete</option>
+      <option value="failed">Failed</option>
+    </select>
+    <select id="filter-project" onchange="filterTasks()">
+      <option value="all">All Projects</option>
+      <option value="Content">Content</option>
+      <option value="Operations">Operations</option>
+      <option value="Engineering">Engineering</option>
+      <option value="Leadership">Leadership</option>
+    </select>
+    <select id="filter-owner" onchange="filterTasks()">
+      <option value="all">All Agents</option>
+    </select>
+    <select id="filter-priority" onchange="filterTasks()">
+      <option value="all">All Priority</option>
+      <option value="high">High</option>
+      <option value="normal">Normal</option>
+      <option value="low">Low</option>
+    </select>
+  </div>
+  <div id="task-list"></div>
+</div>
+
+<div id="task-drawer">
+  <div id="task-drawer-header">
+    <h3 id="task-drawer-title">Task Detail</h3>
+    <button id="task-drawer-close" onclick="closeTaskDrawer()">X</button>
+  </div>
+  <div id="task-drawer-body"></div>
+</div>
+
 <script>
 const C = document.getElementById('game');
 const ctx = C.getContext('2d');
@@ -192,6 +307,30 @@ const BLOCKED = [
   { item: "IBAO certification renewal", type: "BLOCKER", priority: "MEDIUM", agents: ["Docs"], category: "blocker", waitingSince: "2026-02-08T00:00:00", instructions: "3 months left. Need CEU files from Drive." },
   // INPUT NEEDED
   { item: "Convex DB for learning marketplace", type: "INPUT", priority: "HIGH", agents: ["Learning"], category: "input", waitingSince: "2026-02-12T22:00:00", instructions: "Run: <code style='color:#10b981'>cd /Volumes/Fast\\ Storage/neo_code_repos/learning-behaviorschool && ./QUICK_MARKETPLACE_SETUP.sh</code>" },
+];
+
+// --- TASKS ---
+const TASKS = [
+  { id: 'T001', title: 'Review and approve 15 writer drafts', status: 'blocked', priority: 'high', owner: 'Writer', project: 'Content', upstream: [], downstream: ['T002'], createdAt: '2026-02-10T08:00:00Z', completedAt: null, logs: ['Created task', 'Waiting for Rob approval'], inputs: '15 drafts in agents/writer/drafts', outputs: 'Approved drafts ready for publish' },
+  { id: 'T002', title: 'Publish approved blog posts with featured images', status: 'queued', priority: 'high', owner: 'Writer', project: 'Content', upstream: ['T001'], downstream: [], createdAt: '2026-02-10T08:05:00Z', completedAt: null, logs: ['Created task', 'Blocked on T001'], inputs: 'Approved drafts', outputs: 'Live blog posts with social media promotion' },
+  { id: 'T003', title: 'Weekly SEO audit - AEO + GEO compliance', status: 'running', priority: 'normal', owner: 'SEO', project: 'Content', upstream: [], downstream: ['T004'], createdAt: '2026-02-12T10:00:00Z', completedAt: null, logs: ['Started weekly audit', 'Analyzing competitor backlinks', 'Checking schema markup'], inputs: 'All site pages', outputs: 'SEO audit report with action items' },
+  { id: 'T004', title: 'Implement schema markup on IEP Goal Writer', status: 'queued', priority: 'normal', owner: 'SEO', project: 'Engineering', upstream: ['T003'], downstream: [], createdAt: '2026-02-12T10:05:00Z', completedAt: null, logs: ['Created task'], inputs: 'SEO audit findings', outputs: 'SoftwareApplication schema on tool page' },
+  { id: 'T005', title: 'Scout competitor raffle campaigns', status: 'running', priority: 'normal', owner: 'Scout', project: 'Operations', upstream: [], downstream: ['T011'], createdAt: '2026-02-11T14:00:00Z', completedAt: null, logs: ['Started research', 'Found 4 similar ABA raffles', 'Analyzing engagement tactics'], inputs: 'CalABA raffle requirements', outputs: 'Competitor analysis report' },
+  { id: 'T006', title: 'KCUSD behavior team site deploy', status: 'blocked', priority: 'high', owner: 'KCUSD', project: 'Operations', upstream: [], downstream: [], createdAt: '2026-02-09T12:00:00Z', completedAt: null, logs: ['Created task', 'Waiting for GitHub SSH reconnect'], inputs: 'Site ready in repo', outputs: 'Live site at kcusd-behavior-team.netlify.app' },
+  { id: 'T007', title: 'Court declaration document prep', status: 'running', priority: 'high', owner: 'Docs', project: 'Leadership', upstream: [], downstream: [], createdAt: '2026-02-08T09:00:00Z', completedAt: null, logs: ['Started document prep', 'Gathering phone log evidence', 'Formatting legal template'], inputs: 'Supporting Hands phone logs', outputs: 'Declaration PDF for attorney review' },
+  { id: 'T008', title: 'BAE SIG raffle campaign social media images', status: 'complete', priority: 'normal', owner: 'Writer', project: 'Operations', upstream: [], downstream: ['T011'], createdAt: '2026-02-11T10:00:00Z', completedAt: '2026-02-11T18:00:00Z', logs: ['Created task', 'Generated 3 image variants', 'Saved to drafts/raffle-social-media/'], inputs: 'Raffle donor list', outputs: '3 social media images (Instagram, LinkedIn, Facebook)' },
+  { id: 'T009', title: 'Generate featured images for 3 pending blog posts', status: 'queued', priority: 'normal', owner: 'Writer', project: 'Content', upstream: ['T001'], downstream: ['T002'], createdAt: '2026-02-10T08:10:00Z', completedAt: null, logs: ['Created task', 'Waiting for approved posts'], inputs: 'Approved blog post topics', outputs: 'Hand-drawn style images (teal/coral)' },
+  { id: 'T010', title: 'Study app Apple Sign-In integration', status: 'blocked', priority: 'high', owner: 'Study App', project: 'Engineering', upstream: [], downstream: [], createdAt: '2026-02-09T10:00:00Z', completedAt: null, logs: ['Created task', 'Awaiting Key ID + Team ID from Rob'], inputs: 'Apple .p8 file (saved)', outputs: 'Working Apple Sign-In in iOS app' },
+  { id: 'T011', title: 'BAE SIG raffle email campaign', status: 'queued', priority: 'normal', owner: 'BAE SIG', project: 'Operations', upstream: ['T005', 'T008'], downstream: [], createdAt: '2026-02-11T18:00:00Z', completedAt: null, logs: ['Created task', 'Waiting for Scout competitor analysis'], inputs: 'Social images + Scout findings', outputs: 'Email sent to CalABA attendees' },
+  { id: 'T012', title: 'Supervision platform study data integration QA', status: 'running', priority: 'high', owner: 'Supervision', project: 'Engineering', upstream: [], downstream: [], createdAt: '2026-02-10T15:00:00Z', completedAt: null, logs: ['Started QA testing', 'Verified Supabase to Convex bridge', 'Testing StudyDataPanel UI'], inputs: 'Study app quiz data', outputs: 'Working supervisor dashboard with weak areas' },
+  { id: 'T013', title: 'Toolchest auth integration with Better Auth', status: 'queued', priority: 'normal', owner: 'Toolchest', project: 'Engineering', upstream: [], downstream: [], createdAt: '2026-02-09T16:00:00Z', completedAt: null, logs: ['Created task'], inputs: 'MVP tools complete', outputs: 'Protected routes + user sessions' },
+  { id: 'T014', title: 'CALABA 2026 slides enhancement - ACT/RFT section', status: 'running', priority: 'high', owner: 'Council', project: 'Leadership', upstream: [], downstream: [], createdAt: '2026-02-07T11:00:00Z', completedAt: null, logs: ['Started enhancement', 'Added relational frame diagrams', 'Integrating ACT hexaflex'], inputs: 'PPTX with 64 slides', outputs: 'Enhanced slides with data graphs' },
+  { id: 'T015', title: 'Free practice exam schema markup', status: 'queued', priority: 'normal', owner: 'SEO', project: 'Engineering', upstream: ['T003'], downstream: [], createdAt: '2026-02-12T10:10:00Z', completedAt: null, logs: ['Created task'], inputs: 'Exam page structure', outputs: 'Quiz + FAQPage schema' },
+  { id: 'T016', title: 'Video library R2 migration verification', status: 'complete', priority: 'normal', owner: 'BehaviorSchool', project: 'Engineering', upstream: [], downstream: [], createdAt: '2026-02-05T14:00:00Z', completedAt: '2026-02-09T10:00:00Z', logs: ['Created task', 'Verified R2 bucket integration', 'Tested video playback', 'All videos streaming correctly'], inputs: 'Cloudflare R2 bucket', outputs: 'Working video library at /videos' },
+  { id: 'T017', title: 'Content calendar 5-platform sync', status: 'running', priority: 'normal', owner: 'Analyst', project: 'Content', upstream: [], downstream: [], createdAt: '2026-02-11T08:00:00Z', completedAt: null, logs: ['Started sync', 'Processing Instagram queue', 'LinkedIn posts scheduled'], inputs: 'Weekly content plan', outputs: 'Scheduled posts across 5 platforms' },
+  { id: 'T018', title: 'Restore behaviorschool.com Premium UI images', status: 'blocked', priority: 'normal', owner: 'BehaviorSchool', project: 'Engineering', upstream: [], downstream: [], createdAt: '2026-02-11T14:00:00Z', completedAt: null, logs: ['Created task', 'Images removed during redesign', 'Need approval on which to restore'], inputs: 'Premium UI redesign commit history', outputs: 'Restored images on live site' },
+  { id: 'T019', title: 'Weekly analytics report generation', status: 'queued', priority: 'low', owner: 'Analyst', project: 'Operations', upstream: [], downstream: [], createdAt: '2026-02-12T08:00:00Z', completedAt: null, logs: ['Created task', 'Scheduled for Monday 8 AM'], inputs: 'Week activity data', outputs: 'PDF report with charts' },
+  { id: 'T020', title: 'IEP Goal Writer conversion rate optimization', status: 'running', priority: 'high', owner: 'Engineer', project: 'Engineering', upstream: [], downstream: [], createdAt: '2026-02-09T09:00:00Z', completedAt: null, logs: ['Started analysis', 'Current conversion: 12%', 'Testing CTA button placement'], inputs: 'Analytics data', outputs: 'A/B test results + implementation plan' },
 ];
 
 function getSLA(waitingSince) {
@@ -535,6 +674,181 @@ const ROOMS = {
 const CONF_TABLE = { x: 80, y: 410, w: 100, h: 40 };
 const COFFEE_POS = { x: 560, y: 415 };
 const WHITEBOARD = { x: 50, y: 392, w: 160, h: 8 };
+
+// --- TASK MANAGEMENT ---
+let selectedTaskId = null;
+let taskFilters = { status: 'all', project: 'all', owner: 'all', priority: 'all' };
+
+function toggleTaskPanel() {
+  const panel = document.getElementById('task-panel');
+  const isShowing = panel.classList.contains('show');
+  if (isShowing) {
+    panel.classList.remove('show');
+  } else {
+    panel.classList.add('show');
+    renderTaskList();
+  }
+}
+
+function filterTasks() {
+  taskFilters.status = document.getElementById('filter-status').value;
+  taskFilters.project = document.getElementById('filter-project').value;
+  taskFilters.owner = document.getElementById('filter-owner').value;
+  taskFilters.priority = document.getElementById('filter-priority').value;
+  renderTaskList();
+}
+
+function getFilteredTasks() {
+  return TASKS.filter(t => {
+    if (taskFilters.status !== 'all' && t.status !== taskFilters.status) return false;
+    if (taskFilters.project !== 'all' && t.project !== taskFilters.project) return false;
+    if (taskFilters.owner !== 'all' && t.owner !== taskFilters.owner) return false;
+    if (taskFilters.priority !== 'all' && t.priority !== taskFilters.priority) return false;
+    return true;
+  });
+}
+
+function renderTaskList() {
+  const listEl = document.getElementById('task-list');
+  const filtered = getFilteredTasks();
+  
+  if (filtered.length === 0) {
+    listEl.innerHTML = '<div style="padding:20px;text-align:center;color:#94a3b8;">No tasks match filters</div>';
+    return;
+  }
+  
+  listEl.innerHTML = filtered.map(t => {
+    const selected = selectedTaskId === t.id ? ' selected' : '';
+    return `
+      <div class="task-row${selected}" onclick="openTaskDetail('${t.id}')">
+        <div class="task-status-dot ${t.status}"></div>
+        <div class="task-title">${t.title}</div>
+        <div class="task-owner">${t.owner}</div>
+        <div class="task-priority-badge ${t.priority}">${t.priority}</div>
+        <div class="task-project-tag">${t.project}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openTaskDetail(taskId) {
+  selectedTaskId = taskId;
+  const task = TASKS.find(t => t.id === taskId);
+  if (!task) return;
+  
+  const drawer = document.getElementById('task-drawer');
+  const body = document.getElementById('task-drawer-body');
+  
+  // Highlight owner agent on canvas
+  AGENTS.forEach(a => {
+    a._highlighted = (a.name === task.owner);
+  });
+  
+  const createdDate = new Date(task.createdAt).toLocaleString();
+  const completedDate = task.completedAt ? new Date(task.completedAt).toLocaleString() : 'N/A';
+  
+  const upstreamLinks = task.upstream.map(id => {
+    const upTask = TASKS.find(t => t.id === id);
+    return upTask ? `<a class="td-dep-link" onclick="openTaskDetail('${id}')">${id}: ${upTask.title}</a>` : '';
+  }).join('');
+  
+  const downstreamLinks = task.downstream.map(id => {
+    const downTask = TASKS.find(t => t.id === id);
+    return downTask ? `<a class="td-dep-link" onclick="openTaskDetail('${id}')">${id}: ${downTask.title}</a>` : '';
+  }).join('');
+  
+  body.innerHTML = `
+    <div class="td-section">
+      <div class="td-label">Status</div>
+      <div class="td-status-badge ${task.status}">${task.status}</div>
+    </div>
+    <div class="td-section">
+      <div class="td-label">Owner</div>
+      <div class="td-value">${task.owner}</div>
+    </div>
+    <div class="td-section">
+      <div class="td-label">Priority</div>
+      <div class="td-value"><span class="task-priority-badge ${task.priority}">${task.priority}</span></div>
+    </div>
+    <div class="td-section">
+      <div class="td-label">Project</div>
+      <div class="td-value"><span class="task-project-tag">${task.project}</span></div>
+    </div>
+    ${task.upstream.length > 0 ? `
+    <div class="td-section">
+      <div class="td-label">Upstream Dependencies</div>
+      <div class="td-deps">${upstreamLinks || '<div class="td-value">None</div>'}</div>
+    </div>` : ''}
+    ${task.downstream.length > 0 ? `
+    <div class="td-section">
+      <div class="td-label">Downstream Dependencies</div>
+      <div class="td-deps">${downstreamLinks || '<div class="td-value">None</div>'}</div>
+    </div>` : ''}
+    <div class="td-section">
+      <div class="td-label">Created</div>
+      <div class="td-timestamp">${createdDate}</div>
+    </div>
+    <div class="td-section">
+      <div class="td-label">Completed</div>
+      <div class="td-timestamp">${completedDate}</div>
+    </div>
+    <div class="td-section">
+      <div class="td-label">Inputs</div>
+      <div class="td-value">${task.inputs}</div>
+    </div>
+    <div class="td-section">
+      <div class="td-label">Outputs</div>
+      <div class="td-value">${task.outputs}</div>
+    </div>
+    <div class="td-section">
+      <div class="td-label">Logs</div>
+      <div class="td-logs">
+        ${task.logs.map(log => `<div class="td-log-entry">> ${log}</div>`).join('')}
+      </div>
+    </div>
+    <div class="td-section">
+      <div class="td-label">Actions</div>
+      <div class="td-actions">
+        <button class="td-action-btn reassign" onclick="taskAction('reassign', '${task.id}')">Reassign</button>
+        ${task.status === 'running' ? '<button class="td-action-btn pause" onclick="taskAction(\'pause\', \'' + task.id + '\')">Pause</button>' : ''}
+        ${task.status === 'queued' || task.status === 'blocked' ? '<button class="td-action-btn resume" onclick="taskAction(\'resume\', \'' + task.id + '\')">Resume</button>' : ''}
+        <button class="td-action-btn cancel" onclick="taskAction('cancel', '${task.id}')">Cancel</button>
+        <button class="td-action-btn escalate" onclick="taskAction('escalate', '${task.id}')">Escalate</button>
+      </div>
+    </div>
+  `;
+  
+  document.getElementById('task-drawer-title').textContent = `${task.id}: ${task.title}`;
+  drawer.classList.add('show');
+  renderTaskList(); // Refresh to show selected state
+}
+
+function closeTaskDrawer() {
+  selectedTaskId = null;
+  document.getElementById('task-drawer').classList.remove('show');
+  // Remove highlights
+  AGENTS.forEach(a => { a._highlighted = false; });
+  renderTaskList();
+}
+
+function taskAction(action, taskId) {
+  console.log(`Task action: ${action} on ${taskId}`);
+  // TODO Phase 2: real backend integration
+  alert(`Action "${action}" on task ${taskId} - Phase 2 will implement backend.`);
+}
+
+// Populate owner filter dropdown
+function initTaskFilters() {
+  const ownerSet = new Set(TASKS.map(t => t.owner));
+  const ownerFilter = document.getElementById('filter-owner');
+  Array.from(ownerSet).sort().forEach(owner => {
+    const opt = document.createElement('option');
+    opt.value = owner;
+    opt.textContent = owner;
+    ownerFilter.appendChild(opt);
+  });
+}
+initTaskFilters();
 
 // --- MESSAGES ---
 // NO fake work messages — agents only show their real task from data
@@ -1433,6 +1747,18 @@ function render() {
 function gameLoop() {
   try {
     update();
+    render();
+  } catch (err) {
+    console.error('Render error:', err);
+    // Draw error indicator instead of black screen
+    ctx.fillStyle = '#1a1a2e';
+    ctx.fillRect(0, 0, 640, 480);
+    ctx.fillStyle = '#ef4444';
+    ctx.font = '10px "Press Start 2P"';
+    ctx.fillText('RENDER ERROR', 200, 240);
+    ctx.font = '6px "Press Start 2P"';
+    ctx.fillText(err.message, 50, 260);
+  }
     render();
   } catch(e) {
     console.error('Agent HQ render error:', e);

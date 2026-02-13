@@ -86,6 +86,32 @@ permalink: /admin/agents/index.html
   .chat-msg .text { color: #e2e8f0; }
   .typing-indicator { color: #94a3b8; font-style: italic; animation: typing 1.5s infinite; }
   @keyframes typing { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+  /* Agent hover tooltip */
+  #agent-tooltip { display: none; position: fixed; background: #1a1a2e; border: 2px solid #10b981; padding: 12px 16px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 12px; color: #e2e8f0; z-index: 100; pointer-events: none; min-width: 220px; max-width: 300px; }
+  #agent-tooltip .tt-name { font-size: 14px; font-weight: 700; color: #10b981; margin-bottom: 8px; }
+  #agent-tooltip .tt-row { display: flex; justify-content: space-between; padding: 2px 0; }
+  #agent-tooltip .tt-label { color: #94a3b8; }
+  #agent-tooltip .tt-val { font-weight: 600; }
+  #agent-tooltip .tt-bar { height: 4px; background: #334155; border-radius: 2px; margin-top: 6px; }
+  #agent-tooltip .tt-bar-fill { height: 4px; border-radius: 2px; }
+  /* Project filter bar */
+  #project-filter { display: flex; gap: 4px; padding: 4px 16px; background: #111827; border-bottom: 1px solid #1e3a34; flex-shrink: 0; flex-wrap: wrap; }
+  .pf-btn { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 11px; font-weight: 600; padding: 4px 12px; border: 1px solid #334155; background: transparent; color: #94a3b8; cursor: pointer; border-radius: 3px; }
+  .pf-btn:hover { border-color: #10b981; color: #e2e8f0; }
+  .pf-btn.active { background: #10b981; color: #0f172a; border-color: #10b981; }
+  /* Blocked panel categories */
+  .blocked-category { padding: 8px 14px; color: #94a3b8; font-size: 11px; font-weight: 700; letter-spacing: 1px; border-bottom: 1px solid #1e293b; background: #0f172a; }
+  .blocked-category.decision { color: #3b82f6; }
+  .blocked-category.blocker { color: #ef4444; }
+  .blocked-category.input { color: #f59e0b; }
+  /* SLA timer */
+  .sla-timer { font-size: 10px; color: #f59e0b; margin-top: 4px; }
+  .sla-timer.overdue { color: #ef4444; }
+  /* Event log color coding */
+  #log .ev-complete { color: #10b981; }
+  #log .ev-blocked { color: #ef4444; }
+  #log .ev-waiting { color: #f59e0b; }
+  #log .ev-human { color: #3b82f6; }
 </style>
 </head>
 <body>
@@ -104,6 +130,17 @@ permalink: /admin/agents/index.html
     <span id="stat-human" class="stat-blue">-- human</span>
     <span id="stat-running" class="stat-green">-- running</span>
   </div>
+</div>
+<div id="project-filter">
+  <button class="pf-btn active" data-filter="all">All</button>
+  <button class="pf-btn" data-filter="content">Content</button>
+  <button class="pf-btn" data-filter="operations">Operations</button>
+  <button class="pf-btn" data-filter="engineering">Engineering</button>
+  <button class="pf-btn" data-filter="leadership">Leadership</button>
+</div>
+<div id="agent-tooltip">
+  <div class="tt-name"></div>
+  <div class="tt-body"></div>
 </div>
 <div id="main-container">
   <div id="game-wrapper">
@@ -146,23 +183,52 @@ const statusBar = document.getElementById('status');
 
 // --- BLOCKED ITEMS ---
 const BLOCKED = [
-  { item: "Review 15 writer drafts", type: "APPROVAL", priority: "HIGH", agents: ["Writer"], instructions: "3 blog posts + 12 content/social/lead drafts need your review.<br><br><a href='https://github.com/robdspain/neo-workspace/tree/master/agents/writer/drafts' target='_blank' style='color:#60a5fa'>View all drafts on GitHub</a><br><br><a href='/admin/tasks/' style='color:#f59e0b'>View in Task List</a>" },
-  { item: "Apple Sign-In (App Store blocker)", type: "BLOCKER", priority: "HIGH", agents: ["Study App"], instructions: "Go to <a href='https://developer.apple.com/account/resources/identifiers/list/serviceId' target='_blank' style='color:#60a5fa'>Apple Developer Service IDs</a><br><br>Neo has the .p8 file. Still needs Key ID + Team ID." },
-  { item: "Google API key restriction (images)", type: "BLOCKER", priority: "MEDIUM", agents: ["Writer", "BehaviorSchool"], instructions: "Blog featured images blocked.<br><br><a href='https://aistudio.google.com/apikeys' target='_blank' style='color:#60a5fa'>Google AI Studio API Keys</a> - find key AIzaSyAH... - remove HTTP referrer restrictions." },
-  { item: "Convex DB for learning platform", type: "BLOCKER", priority: "HIGH", agents: ["Learning"], instructions: "Run on Mac mini:<br><code style='color:#10b981'>cd /Volumes/Fast\\ Storage/neo_code_repos/learning-behaviorschool && npx convex dev</code><br>Keep terminal running." },
-  { item: "Restore behaviorschool.com images", type: "APPROVAL", priority: "MEDIUM", agents: ["BehaviorSchool"], instructions: "Images removed during Premium UI redesign. Need to identify + restore." },
-  { item: "IBAO certification renewal", type: "BLOCKER", priority: "MEDIUM", agents: ["Docs"], instructions: "Only 3 months left. Need CEU files from Google Drive to upload." },
+  // DECISIONS (need Rob's judgment)
+  { item: "Review 15 writer drafts", type: "APPROVAL", priority: "HIGH", agents: ["Writer"], category: "decision", waitingSince: "2026-02-10T08:00:00", instructions: "3 blog posts + 12 content drafts.<br><a href='https://github.com/robdspain/neo-workspace/tree/master/agents/writer/drafts' target='_blank' style='color:#60a5fa'>View drafts on GitHub</a>" },
+  { item: "Restore behaviorschool.com images", type: "APPROVAL", priority: "MEDIUM", agents: ["BehaviorSchool"], category: "decision", waitingSince: "2026-02-11T14:00:00", instructions: "Images removed during Premium UI redesign. Need to identify + restore." },
+  // BLOCKERS (technical/external)
+  { item: "Apple Sign-In (App Store)", type: "BLOCKER", priority: "HIGH", agents: ["Study App"], category: "blocker", waitingSince: "2026-02-09T10:00:00", instructions: "<a href='https://developer.apple.com/account/resources/identifiers/list/serviceId' target='_blank' style='color:#60a5fa'>Apple Developer</a> - Neo has .p8 file, needs Key ID + Team ID." },
+  { item: "Google API key restriction", type: "BLOCKER", priority: "MEDIUM", agents: ["Writer", "BehaviorSchool"], category: "blocker", waitingSince: "2026-02-10T09:00:00", instructions: "<a href='https://aistudio.google.com/apikeys' target='_blank' style='color:#60a5fa'>AI Studio API Keys</a> - remove HTTP referrer restriction on AIzaSyAH..." },
+  { item: "IBAO certification renewal", type: "BLOCKER", priority: "MEDIUM", agents: ["Docs"], category: "blocker", waitingSince: "2026-02-08T00:00:00", instructions: "3 months left. Need CEU files from Drive." },
+  // INPUT NEEDED
+  { item: "Convex DB for learning marketplace", type: "INPUT", priority: "HIGH", agents: ["Learning"], category: "input", waitingSince: "2026-02-12T22:00:00", instructions: "Run: <code style='color:#10b981'>cd /Volumes/Fast\\ Storage/neo_code_repos/learning-behaviorschool && ./QUICK_MARKETPLACE_SETUP.sh</code>" },
 ];
+
+function getSLA(waitingSince) {
+  if (!waitingSince) return '';
+  const ms = Date.now() - new Date(waitingSince).getTime();
+  const hours = Math.floor(ms / 3600000);
+  const days = Math.floor(hours / 24);
+  if (days > 0) return days + 'd ' + (hours % 24) + 'h waiting';
+  if (hours > 0) return hours + 'h waiting';
+  return Math.floor(ms / 60000) + 'm waiting';
+}
 
 function renderBlockedPanel() {
   const panel = document.getElementById('blocked-list');
-  panel.innerHTML = BLOCKED.map((item, i) => `
-    <div class="blocked-item" style="cursor:pointer" onclick="showBlockerDetail(${i})">
-      <div class="priority ${item.priority}">⚠ ${item.priority}</div>
-      <div class="text">${item.item}</div>
-      <div class="type">${item.type} · ${item.agents.join(', ')}</div>
-    </div>
-  `).join('');
+  const categories = [
+    { key: 'decision', label: 'NEEDS DECISION', icon: '!!' },
+    { key: 'blocker', label: 'BLOCKERS', icon: '!!' },
+    { key: 'input', label: 'NEEDS INPUT', icon: '??' },
+  ];
+  let html = '';
+  categories.forEach(cat => {
+    const items = BLOCKED.filter(b => b.category === cat.key);
+    if (items.length === 0) return;
+    html += '<div class="blocked-category ' + cat.key + '">' + cat.label + ' (' + items.length + ')</div>';
+    items.forEach((item, i) => {
+      const idx = BLOCKED.indexOf(item);
+      const sla = getSLA(item.waitingSince);
+      const overdue = sla.includes('d') ? ' overdue' : '';
+      html += '<div class="blocked-item" onclick="showBlockerDetail(' + idx + ')">' +
+        '<div class="priority ' + item.priority + '">' + item.priority + '</div>' +
+        '<div class="text">' + item.item + '</div>' +
+        '<div class="type">' + item.type + ' -- ' + item.agents.join(', ') + '</div>' +
+        (sla ? '<div class="sla-timer' + overdue + '">' + sla + '</div>' : '') +
+        '</div>';
+    });
+  });
+  panel.innerHTML = html;
 }
 renderBlockedPanel();
 
@@ -910,6 +976,24 @@ function drawAgent(a) {
   const bx = Math.floor(a.x);
   const by = Math.floor(a.y);
 
+  // Filter dimming: fade agents not in selected department
+  if (a._filtered) {
+    ctx.globalAlpha = 0.15;
+  }
+
+  // Escalation glow for long-blocked agents
+  const realInfo = window.agentActivity && window.agentActivity.agents && window.agentActivity.agents[a.name];
+  if (realInfo && realInfo.status === 'blocked') {
+    const pulse = 0.3 + Math.sin(Date.now() / 300) * 0.25;
+    ctx.shadowColor = '#ef4444';
+    ctx.shadowBlur = 12 + Math.sin(Date.now() / 200) * 6;
+    ctx.fillStyle = 'rgba(239,68,68,' + pulse + ')';
+    ctx.beginPath();
+    ctx.arc(bx, by, 16, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
   // Drop shadow (16-bit style with blur)
   ctx.save();
   ctx.shadowColor = 'rgba(0,0,0,0.5)';
@@ -1516,11 +1600,63 @@ setInterval(() => {
     .catch(() => {}); // silent fail on refresh
 }, 30000);
 
-// --- INIT ---
-addLog('<span class="action">🏢 Agent HQ online. ' + AGENTS.length + ' agents reporting for duty.</span>');
-addLog('<span class="name">Neo</span> <span class="action">Good morning team. Let\'s ship.</span>');
+// --- PROJECT FILTER ---
+let activeFilter = 'all';
+document.querySelectorAll('.pf-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.pf-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter;
+    AGENTS.forEach(a => { a._filtered = activeFilter !== 'all' && a.dept !== activeFilter; });
+  });
+});
 
-// No fake events — everything waits for real data
+// --- AGENT HOVER TOOLTIP ---
+const tooltip = document.getElementById('agent-tooltip');
+C.addEventListener('mousemove', (e) => {
+  const rect = C.getBoundingClientRect();
+  const mx = (e.clientX - rect.left) / rect.width * 640;
+  const my = (e.clientY - rect.top) / rect.height * 480;
+  let found = null;
+  AGENTS.forEach(a => {
+    if (Math.hypot(a.x - mx, a.y - my) < 20) found = a;
+  });
+  if (found) {
+    const data = window.agentActivity && window.agentActivity.agents && window.agentActivity.agents[found.name];
+    const ttName = tooltip.querySelector('.tt-name');
+    const ttBody = tooltip.querySelector('.tt-body');
+    ttName.textContent = found.icon + ' ' + found.name + ' -- ' + found.role;
+    ttName.style.color = found.color;
+    let rows = '';
+    rows += '<div class="tt-row"><span class="tt-label">Dept:</span><span class="tt-val">' + (found.dept || 'N/A') + '</span></div>';
+    rows += '<div class="tt-row"><span class="tt-label">Status:</span><span class="tt-val" style="color:' + ({working:'#10b981',idle:'#94a3b8',blocked:'#ef4444',waiting:'#f59e0b',deployed:'#10b981'}[data ? data.status : 'working'] || '#94a3b8') + '">' + (data ? data.status : 'working') + '</span></div>';
+    if (data && data.task) rows += '<div class="tt-row"><span class="tt-label">Task:</span><span class="tt-val" style="font-size:10px">' + data.task.slice(0, 50) + '</span></div>';
+    if (data && data.blocker) rows += '<div class="tt-row"><span class="tt-label">Blocker:</span><span class="tt-val stat-red">' + data.blocker.slice(0, 40) + '</span></div>';
+    if (data && data.lastRun) rows += '<div class="tt-row"><span class="tt-label">Last run:</span><span class="tt-val">' + data.lastRun + '</span></div>';
+    // Load bar
+    const load = data && data.queueDepth ? data.queueDepth : 0;
+    const loadPct = Math.min(load * 20, 100);
+    const loadColor = loadPct > 60 ? '#ef4444' : loadPct > 30 ? '#f59e0b' : '#10b981';
+    rows += '<div class="tt-row"><span class="tt-label">Load:</span><span class="tt-val">' + load + ' tasks</span></div>';
+    rows += '<div class="tt-bar"><div class="tt-bar-fill" style="width:' + loadPct + '%;background:' + loadColor + '"></div></div>';
+    ttBody.innerHTML = rows;
+    tooltip.style.display = 'block';
+    tooltip.style.left = (e.clientX + 16) + 'px';
+    tooltip.style.top = (e.clientY - 10) + 'px';
+    // Keep tooltip on screen
+    const tr = tooltip.getBoundingClientRect();
+    if (tr.right > window.innerWidth) tooltip.style.left = (e.clientX - tr.width - 10) + 'px';
+    if (tr.bottom > window.innerHeight) tooltip.style.top = (e.clientY - tr.height - 10) + 'px';
+  } else {
+    tooltip.style.display = 'none';
+  }
+});
+C.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+
+// --- INIT ---
+addLog('<span class="action">Agent HQ online. ' + AGENTS.length + ' agents reporting.</span>');
+
+// No fake events -- everything waits for real data
 
 gameLoop();
 </script>

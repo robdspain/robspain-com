@@ -4,6 +4,7 @@
 
 [functions]
   directory = "src/netlify/functions"
+  included_files = ["src/netlify/functions/crm.db"]
 
 [[redirects]]
   from = "http:///*"

@@ -43,8 +43,10 @@ permalink: /admin/agents/index.html
   /* Modal */
   #modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50; align-items: center; justify-content: center; }
   #modal-overlay.show { display: flex; }
-  #modal { background: #1a1a2e; border: 3px solid #10b981; padding: 24px; max-width: 520px; width: 90%; }
+  #modal { position: relative; background: #1a1a2e; border: 3px solid #10b981; padding: 24px; max-width: 520px; width: 90%; }
   #modal h2 { color: #10b981; font-size: 16px; margin-bottom: 16px; line-height: 1.4; }
+  #modal-close { position: absolute; top: 10px; right: 12px; background: #0f172a; border: 2px solid #334155; color: #e2e8f0; font-family: 'Press Start 2P', monospace; font-size: 10px; padding: 6px 8px; cursor: pointer; }
+  #modal-close:hover { border-color: #10b981; color: #10b981; }
   #modal p { color: #e2e8f0; font-size: 15px; margin-bottom: 10px; line-height: 1.7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
   #modal-input { width: 100%; background: #0f172a; border: 2px solid #334155; color: #e2e8f0; font-family: 'Press Start 2P', monospace; font-size: 10px; padding: 10px; margin-top: 10px; outline: none; }
   #modal-input:focus { border-color: #10b981; }
@@ -94,6 +96,7 @@ permalink: /admin/agents/index.html
 
 <div id="modal-overlay">
   <div id="modal">
+    <button id="modal-close" aria-label="Close">X</button>
     <h2 id="modal-title">📋 Instruct Agent</h2>
     <div id="modal-tabs">
       <button class="modal-tab active" data-tab="instruct">📝 Instruct</button>
@@ -154,7 +157,7 @@ function showBlockerDetail(idx) {
 }
 
 // Reset modal for agent instructions
-document.getElementById('modal-cancel').onclick = () => {
+function closeModal() {
   document.getElementById('modal-input').style.display = '';
   document.getElementById('modal-send').style.display = '';
   document.getElementById('modal-overlay').classList.remove('show');
@@ -167,7 +170,15 @@ document.getElementById('modal-cancel').onclick = () => {
   document.getElementById('instruct-tab').style.display = '';
   document.getElementById('chat-area').style.display = 'none';
   currentTab = 'instruct';
-};
+}
+
+document.getElementById('modal-cancel').onclick = closeModal;
+document.getElementById('modal-close').onclick = closeModal;
+
+// Close when clicking outside modal
+modal.addEventListener('click', (e) => {
+  if (e.target === modal) closeModal();
+});
 
 // --- FULLSCREEN CANVAS ---
 let SCALE = 1;
@@ -265,7 +276,7 @@ document.querySelectorAll('.modal-tab').forEach(tab => {
 });
 
 document.getElementById('modal-send').onclick = sendInstruction;
-modalInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendInstruction(); if (e.key === 'Escape') { modal.classList.remove('show'); selectedAgent = null; if (pollInterval) clearInterval(pollInterval); } });
+modalInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendInstruction(); if (e.key === 'Escape') { closeModal(); } });
 
 async function sendInstruction() {
   if (!selectedAgent || !modalInput.value.trim()) return;

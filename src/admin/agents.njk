@@ -120,12 +120,12 @@ const statusBar = document.getElementById('status');
 
 // --- BLOCKED ITEMS ---
 const BLOCKED = [
-  { item: "Review 9 writer drafts", type: "APPROVAL", priority: "HIGH", agents: ["Writer"], taskId: 3, instructions: "2 blog posts on behaviorschool.com + 7 content drafts need your review.<br><br>• <a href='https://behaviorschool.com/blog/what-they-dont-teach-in-grad-school' target='_blank' style='color:#60a5fa'>What They Don't Teach in Grad School</a><br>• <a href='https://behaviorschool.com/blog/what-your-mock-score-really-means' target='_blank' style='color:#60a5fa'>What Your Mock Score Really Means</a><br>• + 7 social/content drafts (ask Neo for links)<br><br><a href='/admin/tasks/' style='color:#f59e0b'>📋 View in Task List →</a>" },
-  { item: "Apple Sign-In setup (App Store blocker)", type: "BLOCKER", priority: "HIGH", agents: ["Study App"], taskId: 5, instructions: "Go to <a href='https://developer.apple.com/account/resources/identifiers/list/serviceId' target='_blank' style='color:#60a5fa'>Apple Developer Service IDs</a><br><br>Create Service ID + Auth Key. Neo has the .p8 file already — still needs Key ID + Team ID.<br><br><a href='/admin/tasks/' style='color:#f59e0b'>📋 Detailed steps in Task List →</a>" },
-  { item: "PayPal link from Liz Flaherty", type: "BLOCKER", priority: "MEDIUM", agents: ["BAE SIG"], taskId: 6, instructions: "Raffle site is built and ready at <a href='https://calaba-sig-raffle.vercel.app' target='_blank' style='color:#60a5fa'>calaba-sig-raffle.vercel.app</a>.<br><br>Need Liz's PayPal QR/link earmarked 'SIG Reception Donation' to go live.<br><br><a href='/admin/tasks/' style='color:#f59e0b'>📋 View in Task List →</a>" },
-  { item: "Google API key restriction (images blocked)", type: "BLOCKER", priority: "MEDIUM", agents: ["Writer", "BehaviorSchool"], instructions: "All 15+ blog posts need featured images but Nano Banana Pro is blocked.<br><br>Go to <a href='https://aistudio.google.com/apikeys' target='_blank' style='color:#60a5fa'>Google AI Studio API Keys</a> → find key starting with AIzaSyAH... → Edit → remove HTTP referrer restrictions." },
-  { item: "gog auth for Gmail/Calendar", type: "BLOCKER", priority: "MEDIUM", agents: ["Neo", "Scout"], taskId: 8, instructions: "When home at Mac mini, open Terminal and run:<br><br><code style='color:#10b981'>GOG_KEYRING_BACKEND=file gog auth add robspain@gmail.com --services gmail,calendar,drive,contacts,docs,sheets</code><br><br><a href='/admin/tasks/' style='color:#f59e0b'>📋 View in Task List →</a>" },
-  { item: "Ahrefs login credentials", type: "BLOCKER", priority: "LOW", agents: ["SEO"], taskId: 14, instructions: "Share Ahrefs credentials with Neo for keyword gap analysis + competitor tracking.<br><br><a href='/admin/tasks/' style='color:#f59e0b'>📋 View in Task List →</a>" },
+  { item: "Review 15 writer drafts", type: "APPROVAL", priority: "HIGH", agents: ["Writer"], instructions: "3 blog posts + 12 content/social/lead drafts need your review.<br><br><a href='https://github.com/robdspain/neo-workspace/tree/master/agents/writer/drafts' target='_blank' style='color:#60a5fa'>View all drafts on GitHub</a><br><br><a href='/admin/tasks/' style='color:#f59e0b'>View in Task List</a>" },
+  { item: "Apple Sign-In (App Store blocker)", type: "BLOCKER", priority: "HIGH", agents: ["Study App"], instructions: "Go to <a href='https://developer.apple.com/account/resources/identifiers/list/serviceId' target='_blank' style='color:#60a5fa'>Apple Developer Service IDs</a><br><br>Neo has the .p8 file. Still needs Key ID + Team ID." },
+  { item: "Google API key restriction (images)", type: "BLOCKER", priority: "MEDIUM", agents: ["Writer", "BehaviorSchool"], instructions: "Blog featured images blocked.<br><br><a href='https://aistudio.google.com/apikeys' target='_blank' style='color:#60a5fa'>Google AI Studio API Keys</a> - find key AIzaSyAH... - remove HTTP referrer restrictions." },
+  { item: "Convex DB for learning platform", type: "BLOCKER", priority: "HIGH", agents: ["Learning"], instructions: "Run on Mac mini:<br><code style='color:#10b981'>cd /Volumes/Fast\\ Storage/neo_code_repos/learning-behaviorschool && npx convex dev</code><br>Keep terminal running." },
+  { item: "Restore behaviorschool.com images", type: "APPROVAL", priority: "MEDIUM", agents: ["BehaviorSchool"], instructions: "Images removed during Premium UI redesign. Need to identify + restore." },
+  { item: "IBAO certification renewal", type: "BLOCKER", priority: "MEDIUM", agents: ["Docs"], instructions: "Only 3 months left. Need CEU files from Google Drive to upload." },
 ];
 
 function renderBlockedPanel() {
@@ -374,44 +374,57 @@ const PAL = {
 
 // --- AGENTS ---
 const AGENTS = [
-  // --- Tier 1: Core Operations ---
-  { name: 'Neo', role: 'Chief of Staff', color: '#10b981', accent: '#059669', icon: '🕶️', x: 320, y: 80, state: 'working', desk: {x:296,y:60}, speed: 1.2 },
-  { name: 'Scout', role: 'Research', color: '#f59e0b', accent: '#d97706', icon: '🔍', x: 100, y: 60, state: 'working', desk: {x:80,y:40}, speed: 0.9 },
-  { name: 'Writer', role: 'Content', color: '#8b5cf6', accent: '#7c3aed', icon: '✍️', x: 100, y: 120, state: 'working', desk: {x:80,y:100}, speed: 0.8 },
-  { name: 'Analyst', role: 'Analytics', color: '#ec4899', accent: '#db2777', icon: '📊', x: 180, y: 60, state: 'working', desk: {x:170,y:40}, speed: 0.7 },
-  { name: 'Engineer', role: 'Developer', color: '#06b6d4', accent: '#0891b2', icon: '⚙️', x: 180, y: 120, state: 'working', desk: {x:170,y:100}, speed: 1.0 },
-  { name: 'Planner', role: 'Task Chains', color: '#f97316', accent: '#ea580c', icon: '📋', x: 460, y: 60, state: 'working', desk: {x:450,y:40}, speed: 0.85 },
-  { name: 'Browser', role: 'Web Agent', color: '#14b8a6', accent: '#0d9488', icon: '🌐', x: 460, y: 120, state: 'working', desk: {x:450,y:100}, speed: 0.95 },
-  { name: 'Docs', role: 'Documents', color: '#a855f7', accent: '#9333ea', icon: '📄', x: 540, y: 60, state: 'working', desk: {x:530,y:40}, speed: 0.75 },
-  { name: 'SEO', role: 'AEO + GEO', color: '#22d3ee', accent: '#06b6d4', icon: '🔎', x: 540, y: 120, state: 'working', desk: {x:530,y:100}, speed: 0.8 },
-  // --- Tier 2: Org Agents ---
-  { name: 'BAE SIG', role: 'CalABA Ops', color: '#fbbf24', accent: '#f59e0b', icon: '🎓', x: 100, y: 195, state: 'working', desk: {x:80,y:175}, speed: 0.7 },
-  { name: 'KCUSD', role: 'Schools', color: '#4ade80', accent: '#22c55e', icon: '🏫', x: 180, y: 195, state: 'working', desk: {x:170,y:175}, speed: 0.65 },
-  // --- Tier 3: Repo Agents ---
-  { name: 'RobSpain.com', role: 'robspain.com', color: '#34d399', accent: '#10b981', icon: '🌿', x: 100, y: 280, state: 'working', desk: {x:80,y:260}, speed: 0.7 },
-  { name: 'BehaviorSchool', role: 'behaviorschool.com', color: '#047857', accent: '#065f46', icon: '📗', x: 180, y: 280, state: 'working', desk: {x:170,y:260}, speed: 0.7 },
-  { name: 'Study App', role: 'study.beh...', color: '#fb923c', accent: '#ea580c', icon: '📱', x: 260, y: 280, state: 'working', desk: {x:250,y:260}, speed: 0.75 },
-  { name: 'Pro', role: 'app.beh...', color: '#a78bfa', accent: '#7c3aed', icon: '💎', x: 340, y: 280, state: 'working', desk: {x:330,y:260}, speed: 0.7 },
-  { name: 'Supervision', role: 'supervision', color: '#f472b6', accent: '#db2777', icon: '👥', x: 420, y: 280, state: 'working', desk: {x:410,y:260}, speed: 0.65 },
-  { name: 'Toolchest', role: 'toolchest', color: '#facc15', accent: '#eab308', icon: '🧰', x: 500, y: 280, state: 'working', desk: {x:490,y:260}, speed: 0.7 },
-  { name: 'VideoGen', role: 'video gen', color: '#f87171', accent: '#ef4444', icon: '🎬', x: 100, y: 345, state: 'working', desk: {x:80,y:325}, speed: 0.8 },
-  { name: 'Learning', role: 'learning', color: '#38bdf8', accent: '#0284c7', icon: '📚', x: 180, y: 345, state: 'working', desk: {x:170,y:325}, speed: 0.65 },
+  // --- LEADERSHIP ---
+  { name: 'Neo', role: 'Chief of Staff', color: '#10b981', accent: '#059669', icon: '🕶️', x: 320, y: 55, state: 'working', desk: {x:296,y:35}, speed: 1.2, dept: 'leadership' },
+  { name: 'Council', role: 'Strategy', color: '#fbbf24', accent: '#f59e0b', icon: '👑', x: 390, y: 55, state: 'working', desk: {x:376,y:35}, speed: 0.6, dept: 'leadership' },
+
+  // --- CONTENT & MARKETING ---
+  { name: 'Writer', role: 'Content', color: '#8b5cf6', accent: '#7c3aed', icon: '✍️', x: 80, y: 140, state: 'working', desk: {x:60,y:120}, speed: 0.8, dept: 'content' },
+  { name: 'SEO', role: 'AEO + GEO', color: '#22d3ee', accent: '#06b6d4', icon: '🔎', x: 150, y: 140, state: 'working', desk: {x:136,y:120}, speed: 0.8, dept: 'content' },
+  { name: 'Scout', role: 'Research', color: '#f59e0b', accent: '#d97706', icon: '🔍', x: 220, y: 140, state: 'working', desk: {x:206,y:120}, speed: 0.9, dept: 'content' },
+  { name: 'Browser', role: 'Web Agent', color: '#14b8a6', accent: '#0d9488', icon: '🌐', x: 290, y: 140, state: 'working', desk: {x:276,y:120}, speed: 0.95, dept: 'content' },
+
+  // --- OPERATIONS ---
+  { name: 'Analyst', role: 'Analytics', color: '#ec4899', accent: '#db2777', icon: '📊', x: 400, y: 140, state: 'working', desk: {x:386,y:120}, speed: 0.7, dept: 'operations' },
+  { name: 'Planner', role: 'Task Chains', color: '#f97316', accent: '#ea580c', icon: '📋', x: 470, y: 140, state: 'working', desk: {x:456,y:120}, speed: 0.85, dept: 'operations' },
+  { name: 'Docs', role: 'Documents', color: '#a855f7', accent: '#9333ea', icon: '📄', x: 540, y: 140, state: 'working', desk: {x:526,y:120}, speed: 0.75, dept: 'operations' },
+  { name: 'BAE SIG', role: 'CalABA Ops', color: '#fbbf24', accent: '#f59e0b', icon: '🎓', x: 400, y: 200, state: 'working', desk: {x:386,y:180}, speed: 0.7, dept: 'operations' },
+  { name: 'KCUSD', role: 'Schools', color: '#4ade80', accent: '#22c55e', icon: '🏫', x: 470, y: 200, state: 'working', desk: {x:456,y:180}, speed: 0.65, dept: 'operations' },
+
+  // --- ENGINEERING ---
+  { name: 'Engineer', role: 'Developer', color: '#06b6d4', accent: '#0891b2', icon: '⚙️', x: 80, y: 280, state: 'working', desk: {x:60,y:260}, speed: 1.0, dept: 'engineering' },
+  { name: 'Study App', role: 'study.beh...', color: '#fb923c', accent: '#ea580c', icon: '📱', x: 150, y: 280, state: 'working', desk: {x:136,y:260}, speed: 0.75, dept: 'engineering' },
+  { name: 'BehaviorSchool', role: 'behaviorschool', color: '#047857', accent: '#065f46', icon: '📗', x: 220, y: 280, state: 'working', desk: {x:206,y:260}, speed: 0.7, dept: 'engineering' },
+  { name: 'Learning', role: 'Marketplace', color: '#38bdf8', accent: '#0284c7', icon: '📚', x: 290, y: 280, state: 'working', desk: {x:276,y:260}, speed: 0.65, dept: 'engineering' },
+  { name: 'Pro', role: 'plan.beh...', color: '#a78bfa', accent: '#7c3aed', icon: '💎', x: 360, y: 280, state: 'working', desk: {x:346,y:260}, speed: 0.7, dept: 'engineering' },
+  { name: 'Supervision', role: 'supervision', color: '#f472b6', accent: '#db2777', icon: '👥', x: 430, y: 280, state: 'working', desk: {x:416,y:260}, speed: 0.65, dept: 'engineering' },
+  { name: 'Toolchest', role: 'toolchest', color: '#facc15', accent: '#eab308', icon: '🧰', x: 500, y: 280, state: 'working', desk: {x:486,y:260}, speed: 0.7, dept: 'engineering' },
+  { name: 'RobSpain.com', role: 'robspain.com', color: '#34d399', accent: '#10b981', icon: '🌿', x: 80, y: 340, state: 'working', desk: {x:60,y:320}, speed: 0.7, dept: 'engineering' },
+  { name: 'VideoGen', role: 'video gen', color: '#f87171', accent: '#ef4444', icon: '🎬', x: 150, y: 340, state: 'working', desk: {x:136,y:320}, speed: 0.8, dept: 'engineering' },
+  { name: 'RBT Study', role: 'rbtstudy', color: '#fb923c', accent: '#ea580c', icon: '📖', x: 220, y: 340, state: 'working', desk: {x:206,y:320}, speed: 0.7, dept: 'engineering' },
 ];
+
+// --- DEPARTMENT COLORS ---
+const DEPT_COLORS = {
+  leadership: { bg: 'rgba(16,185,129,0.08)', border: '#10b981', label: 'LEADERSHIP' },
+  content: { bg: 'rgba(139,92,246,0.08)', border: '#8b5cf6', label: 'CONTENT & MARKETING' },
+  operations: { bg: 'rgba(236,72,153,0.08)', border: '#ec4899', label: 'OPERATIONS' },
+  engineering: { bg: 'rgba(6,182,212,0.08)', border: '#06b6d4', label: 'ENGINEERING' },
+};
 
 // --- OFFICE LAYOUT ---
 const ROOMS = {
-  coreOps: { x: 50, y: 30, w: 540, h: 130, label: 'CORE OPERATIONS' },
-  orgAgents: { x: 50, y: 170, w: 220, h: 60, label: 'ORG AGENTS' },
-  repoAgents: { x: 50, y: 245, w: 540, h: 60, label: 'REPO AGENTS' },
-  repoAgents2: { x: 50, y: 315, w: 220, h: 55, label: '' },
-  confRoom: { x: 290, y: 170, w: 180, h: 110, label: 'CONF ROOM' },
-  waterCooler: { x: 500, y: 170, w: 60, h: 60, label: '' },
-  neoOffice: { x: 270, y: 30, w: 120, h: 65, label: '' }
+  leadership: { x: 260, y: 25, w: 180, h: 55, label: '' },
+  content: { x: 40, y: 100, w: 310, h: 70, label: '' },
+  operations: { x: 370, y: 100, w: 220, h: 130, label: '' },
+  engineering: { x: 40, y: 245, w: 550, h: 130, label: '' },
+  confRoom: { x: 40, y: 390, w: 180, h: 70, label: 'CONF ROOM' },
+  waterCooler: { x: 540, y: 390, w: 60, h: 60, label: '' },
 };
 
-const CONF_TABLE = { x: 330, y: 200, w: 100, h: 50 };
-const WATER_POS = { x: 525, y: 195 };
-const WHITEBOARD = { x: 300, y: 172, w: 160, h: 8 };
+const CONF_TABLE = { x: 80, y: 410, w: 100, h: 40 };
+const WATER_POS = { x: 565, y: 415 };
+const WHITEBOARD = { x: 50, y: 392, w: 160, h: 8 };
 
 // --- MESSAGES ---
 // NO fake work messages — agents only show their real task from data
@@ -521,22 +534,25 @@ function drawOffice() {
     }
   });
 
-  // Neo's office — premium glow
-  const neoGrad = ctx.createRadialGradient(320, 60, 10, 320, 60, 80);
-  neoGrad.addColorStop(0, '#383860');
-  neoGrad.addColorStop(1, '#2a2a48');
-  ctx.fillStyle = neoGrad;
-  ctx.beginPath();
-  ctx.roundRect(ROOMS.neoOffice.x, ROOMS.neoOffice.y, ROOMS.neoOffice.w, ROOMS.neoOffice.h, 4);
-  ctx.fill();
-  ctx.strokeStyle = '#10b981';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(ROOMS.neoOffice.x, ROOMS.neoOffice.y, ROOMS.neoOffice.w, ROOMS.neoOffice.h);
-  // Glow aura
-  ctx.shadowColor = '#10b981';
-  ctx.shadowBlur = 8;
-  ctx.strokeRect(ROOMS.neoOffice.x, ROOMS.neoOffice.y, ROOMS.neoOffice.w, ROOMS.neoOffice.h);
-  ctx.shadowBlur = 0;
+  // Department labels
+  if (typeof DEPT_COLORS !== 'undefined') {
+    Object.entries(ROOMS).forEach(([key, r]) => {
+      const dept = DEPT_COLORS[key];
+      if (dept) {
+        // Department colored border
+        ctx.strokeStyle = dept.border;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(r.x, r.y, r.w, r.h);
+        // Department label top-left
+        ctx.fillStyle = dept.border;
+        ctx.font = '5px "Press Start 2P"';
+        ctx.fillText(dept.label, r.x + 6, r.y - 3);
+        // Subtle fill
+        ctx.fillStyle = dept.bg;
+        ctx.fillRect(r.x + 1, r.y + 1, r.w - 2, r.h - 2);
+      }
+    });
+  }
 
   // Conference room — warm lighting
   const confGrad = ctx.createRadialGradient(380, 225, 10, 380, 225, 90);

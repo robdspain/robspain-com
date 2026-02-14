@@ -86,3 +86,13 @@
   from = "/api/agent-instructions"
   to = "/.netlify/functions/agent-instructions-list"
   status = 200
+
+[[redirects]]
+  from = "/api/seo-audit"
+  to = "/.netlify/functions/seo-audit"
+  status = 200
+
+[[redirects]]
+  from = "/api/seo-keywords"
+  to = "/.netlify/functions/seo-keywords"
+  status = 200

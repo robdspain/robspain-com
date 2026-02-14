@@ -1,0 +1,712 @@
+---
+layout: false
+permalink: /admin/seo/index.html
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEO KPI Tracker - robspain.com</title>
+<style>
+  :root {
+    --chalkboard-green: #1E3A34;
+    --vintage-gold: #E3B23C;
+    --cream: #FAF3E0;
+    --emerald: #047857;
+    --bg-slate: #f8fafc;
+    --border-light: #e2e8f0;
+    --text-dark: #1f2937;
+    --text-muted: #6b7280;
+    --card-bg: #ffffff;
+    --red-alert: #dc2626;
+    --yellow-warn: #f59e0b;
+    --green-ok: #10b981;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg-slate);
+    color: var(--text-dark);
+    min-height: 100vh;
+  }
+
+  /* Admin Nav */
+  .admin-nav {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    background: #ffffff;
+    border-bottom: 2px solid var(--border-light);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .admin-nav a {
+    color: var(--text-muted);
+    font-size: 15px;
+    font-weight: 600;
+    padding: 12px 28px;
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+  }
+
+  .admin-nav a:hover {
+    color: var(--text-dark);
+    background: rgba(0,0,0,0.03);
+  }
+
+  .admin-nav a.active {
+    color: var(--emerald);
+    border-bottom-color: var(--emerald);
+  }
+
+  /* Header */
+  .seo-header {
+    background: linear-gradient(135deg, var(--chalkboard-green) 0%, var(--emerald) 100%);
+    color: white;
+    padding: 3rem 2rem 2rem;
+    text-align: center;
+  }
+
+  .seo-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+  }
+
+  .seo-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.95;
+  }
+
+  /* Container */
+  .seo-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  /* Overview Cards */
+  .overview-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .kpi-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    border-left: 4px solid var(--emerald);
+  }
+
+  .kpi-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--emerald);
+    margin-bottom: 0.5rem;
+  }
+
+  .kpi-label {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Section Headers */
+  .section-header {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--chalkboard-green);
+    margin: 3rem 0 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 3px solid var(--vintage-gold);
+  }
+
+  /* Tables */
+  .data-table {
+    width: 100%;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+  }
+
+  .data-table table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .data-table thead {
+    background: var(--chalkboard-green);
+    color: white;
+  }
+
+  .data-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .data-table tbody tr {
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .data-table tbody tr:nth-child(even) {
+    background: #f9fafb;
+  }
+
+  .data-table tbody tr:hover {
+    background: #f3f4f6;
+  }
+
+  .data-table td {
+    padding: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .data-table td.numeric {
+    text-align: center;
+    font-weight: 600;
+  }
+
+  .data-table a {
+    color: var(--emerald);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .data-table a:hover {
+    text-decoration: underline;
+  }
+
+  /* Status Icons */
+  .status-icon {
+    font-size: 1.25rem;
+    display: inline-block;
+  }
+
+  .status-icon.yes {
+    color: var(--green-ok);
+  }
+
+  .status-icon.no {
+    color: var(--red-alert);
+  }
+
+  /* Length Indicators */
+  .length-ok {
+    color: var(--green-ok);
+    font-weight: 700;
+  }
+
+  .length-warn {
+    color: var(--yellow-warn);
+    font-weight: 700;
+  }
+
+  .length-bad {
+    color: var(--red-alert);
+    font-weight: 700;
+  }
+
+  /* Action Items */
+  .action-items {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+  }
+
+  .action-items ul {
+    list-style: none;
+  }
+
+  .action-items li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .action-items li:last-child {
+    border-bottom: none;
+  }
+
+  .action-icon {
+    font-size: 1.5rem;
+  }
+
+  /* Keyword Tracker */
+  .keyword-form {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 1.5rem;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-group label {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+  }
+
+  .form-group input {
+    padding: 0.75rem;
+    border: 2px solid var(--border-light);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+  }
+
+  .form-group input:focus {
+    outline: none;
+    border-color: var(--emerald);
+    box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.1);
+  }
+
+  .btn {
+    padding: 0.875rem 2rem;
+    background: var(--emerald);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn:hover {
+    background: var(--chalkboard-green);
+  }
+
+  .btn-secondary {
+    background: var(--vintage-gold);
+  }
+
+  .btn-secondary:hover {
+    background: #d4a02d;
+  }
+
+  /* Loading State */
+  .loading {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-muted);
+    font-size: 1.125rem;
+  }
+
+  .error {
+    background: #fee2e2;
+    border-left: 4px solid var(--red-alert);
+    padding: 1.5rem;
+    border-radius: 8px;
+    color: #991b1b;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .seo-header {
+      padding: 2rem 1rem 1.5rem;
+    }
+
+    .seo-title {
+      font-size: 1.75rem;
+    }
+
+    .section-header {
+      font-size: 1.25rem;
+    }
+
+    .overview-cards {
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+    }
+
+    .kpi-value {
+      font-size: 1.75rem;
+    }
+
+    .data-table {
+      overflow-x: auto;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+
+<nav class="admin-nav">
+  <a href="/admin/tasks/">📋 Tasks</a>
+  <a href="/admin/agents/">🤖 Agents</a>
+  <a href="/admin/crm/">👥 CRM</a>
+  <a href="/admin/seo/" class="active">📊 SEO</a>
+</nav>
+
+<div class="seo-header">
+  <h1 class="seo-title">SEO KPI Tracker</h1>
+  <p class="seo-subtitle">Monitor blog performance, track keywords, and identify optimization opportunities</p>
+</div>
+
+<div class="seo-container">
+  <!-- Overview Cards -->
+  <div class="overview-cards">
+    <div class="kpi-card">
+      <div class="kpi-value" id="total-posts">-</div>
+      <div class="kpi-label">Total Blog Posts</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value" id="faq-count">-</div>
+      <div class="kpi-label">Posts with FAQ Schema</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value" id="image-count">-</div>
+      <div class="kpi-label">Posts with Featured Image</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value" id="newsletter-count">-</div>
+      <div class="kpi-label">Newsletter Signups</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value" id="indexed-count">-</div>
+      <div class="kpi-label">Pages Indexed</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value" id="avg-meta-length">-</div>
+      <div class="kpi-label">Avg Meta Desc Length</div>
+    </div>
+  </div>
+
+  <!-- Blog Post Audit Table -->
+  <h2 class="section-header">Blog Post Audit</h2>
+  <div class="data-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Status</th>
+          <th>FAQ</th>
+          <th>Image</th>
+          <th>Meta Title</th>
+          <th>Meta Desc</th>
+          <th>Newsletter</th>
+          <th>Words</th>
+          <th>Links</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody id="blog-audit-body">
+        <tr>
+          <td colspan="10" class="loading">Loading blog data...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SEO Action Items -->
+  <h2 class="section-header">SEO Action Items</h2>
+  <div class="action-items">
+    <ul id="action-items-list">
+      <li class="loading">Analyzing posts...</li>
+    </ul>
+  </div>
+
+  <!-- Keyword Tracker -->
+  <h2 class="section-header">Keyword Tracker</h2>
+  <div class="keyword-form">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Keyword</label>
+        <input type="text" id="keyword-input" placeholder="BCBA exam tips">
+      </div>
+      <div class="form-group">
+        <label>Target Page</label>
+        <input type="text" id="target-page-input" placeholder="/blog/bcba-exam-guide">
+      </div>
+      <div class="form-group">
+        <label>Current Rank</label>
+        <input type="number" id="rank-input" placeholder="12">
+      </div>
+      <div class="form-group">
+        <label>Search Volume</label>
+        <input type="number" id="volume-input" placeholder="1500">
+      </div>
+    </div>
+    <button class="btn" onclick="addKeyword()">Add Keyword</button>
+    <button class="btn btn-secondary" onclick="refreshKeywords()" style="margin-left: 1rem;">Refresh</button>
+  </div>
+
+  <div class="data-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Keyword</th>
+          <th>Target Page</th>
+          <th>Current Rank</th>
+          <th>Search Volume</th>
+          <th>Last Checked</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="keywords-body">
+        <tr>
+          <td colspan="6" class="loading">Loading keywords...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+let auditData = null;
+let keywordsData = [];
+
+// Load SEO audit data
+async function loadAuditData() {
+  try {
+    const response = await fetch('/api/seo-audit');
+    if (!response.ok) throw new Error('Failed to load audit data');
+    auditData = await response.json();
+    renderAuditData();
+  } catch (e) {
+    document.getElementById('blog-audit-body').innerHTML = '<tr><td colspan="10" class="error">Error loading blog data: ' + e.message + '</td></tr>';
+  }
+}
+
+// Load keywords data
+async function loadKeywords() {
+  try {
+    const response = await fetch('/api/seo-keywords');
+    if (!response.ok) throw new Error('Failed to load keywords');
+    const data = await response.json();
+    keywordsData = data.keywords || [];
+    renderKeywords();
+  } catch (e) {
+    document.getElementById('keywords-body').innerHTML = '<tr><td colspan="6" class="error">Error loading keywords: ' + e.message + '</td></tr>';
+  }
+}
+
+// Render audit data
+function renderAuditData() {
+  if (!auditData) return;
+
+  // Update overview cards
+  document.getElementById('total-posts').textContent = auditData.summary.totalPosts;
+  document.getElementById('faq-count').textContent = auditData.summary.postsWithFAQ;
+  document.getElementById('image-count').textContent = auditData.summary.postsWithImage;
+  document.getElementById('newsletter-count').textContent = '0'; // Placeholder
+  document.getElementById('indexed-count').textContent = '-'; // Placeholder
+  document.getElementById('avg-meta-length').textContent = Math.round(auditData.summary.avgMetaDescLength);
+
+  // Render blog posts
+  const tbody = document.getElementById('blog-audit-body');
+  tbody.innerHTML = '';
+
+  auditData.posts.forEach(post => {
+    const row = document.createElement('tr');
+    
+    const metaTitleClass = post.metaTitleLength < 60 ? 'length-ok' : 
+                          post.metaTitleLength <= 65 ? 'length-warn' : 'length-bad';
+    const metaDescClass = post.metaDescLength < 155 ? 'length-ok' : 
+                         post.metaDescLength <= 160 ? 'length-warn' : 'length-bad';
+
+    row.innerHTML = `
+      <td><a href="https://robspain.com${post.url}" target="_blank">${post.title}</a></td>
+      <td>${post.status === 'published' ? '✅ Published' : '🔴 Draft'}</td>
+      <td class="numeric"><span class="status-icon ${post.hasFAQ ? 'yes' : 'no'}">${post.hasFAQ ? '✓' : '✗'}</span></td>
+      <td class="numeric"><span class="status-icon ${post.hasImage ? 'yes' : 'no'}">${post.hasImage ? '✓' : '✗'}</span></td>
+      <td class="numeric ${metaTitleClass}">${post.metaTitleLength}</td>
+      <td class="numeric ${metaDescClass}">${post.metaDescLength}</td>
+      <td class="numeric"><span class="status-icon ${post.hasNewsletter ? 'yes' : 'no'}">${post.hasNewsletter ? '✓' : '✗'}</span></td>
+      <td class="numeric">${post.wordCount.toLocaleString()}</td>
+      <td class="numeric">${post.internalLinks}</td>
+      <td>${post.date ? new Date(post.date).toLocaleDateString() : '-'}</td>
+    `;
+    tbody.appendChild(row);
+  });
+
+  // Render action items
+  renderActionItems();
+}
+
+// Render action items
+function renderActionItems() {
+  if (!auditData) return;
+
+  const list = document.getElementById('action-items-list');
+  list.innerHTML = '';
+
+  const issues = [];
+
+  auditData.posts.forEach(post => {
+    if (!post.hasFAQ) {
+      issues.push({ icon: '❓', text: `Add FAQ section to: ${post.title}` });
+    }
+    if (!post.hasImage) {
+      issues.push({ icon: '🖼️', text: `Add featured image to: ${post.title}` });
+    }
+    if (post.metaTitleLength > 60) {
+      issues.push({ icon: '📏', text: `Shorten meta title (${post.metaTitleLength} chars): ${post.title}` });
+    }
+    if (post.metaDescLength > 160) {
+      issues.push({ icon: '📏', text: `Shorten meta description (${post.metaDescLength} chars): ${post.title}` });
+    }
+    if (post.internalLinks === 0) {
+      issues.push({ icon: '🔗', text: `Add internal links to: ${post.title}` });
+    }
+    if (post.status === 'draft') {
+      issues.push({ icon: '📝', text: `Consider publishing draft: ${post.title}` });
+    }
+  });
+
+  if (issues.length === 0) {
+    list.innerHTML = '<li><span class="action-icon">✅</span> No issues found! All posts are optimized.</li>';
+    return;
+  }
+
+  issues.slice(0, 20).forEach(issue => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="action-icon">${issue.icon}</span> ${issue.text}`;
+    list.appendChild(li);
+  });
+
+  if (issues.length > 20) {
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="action-icon">📋</span> ...and ${issues.length - 20} more issues`;
+    list.appendChild(li);
+  }
+}
+
+// Render keywords
+function renderKeywords() {
+  const tbody = document.getElementById('keywords-body');
+  tbody.innerHTML = '';
+
+  if (keywordsData.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">No keywords tracked yet. Add one above!</td></tr>';
+    return;
+  }
+
+  keywordsData.forEach((kw, index) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${kw.keyword}</td>
+      <td>${kw.targetPage}</td>
+      <td class="numeric">${kw.rank || '-'}</td>
+      <td class="numeric">${kw.volume ? kw.volume.toLocaleString() : '-'}</td>
+      <td>${kw.lastChecked ? new Date(kw.lastChecked).toLocaleDateString() : '-'}</td>
+      <td class="numeric">
+        <button class="btn" style="padding:0.5rem 1rem;font-size:0.85rem;" onclick="deleteKeyword(${index})">Delete</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+// Add keyword
+async function addKeyword() {
+  const keyword = document.getElementById('keyword-input').value.trim();
+  const targetPage = document.getElementById('target-page-input').value.trim();
+  const rank = parseInt(document.getElementById('rank-input').value) || null;
+  const volume = parseInt(document.getElementById('volume-input').value) || null;
+
+  if (!keyword || !targetPage) {
+    alert('Please enter keyword and target page');
+    return;
+  }
+
+  const newKeyword = {
+    keyword,
+    targetPage,
+    rank,
+    volume,
+    lastChecked: new Date().toISOString()
+  };
+
+  keywordsData.push(newKeyword);
+
+  try {
+    await fetch('/api/seo-keywords', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ keywords: keywordsData })
+    });
+
+    // Clear form
+    document.getElementById('keyword-input').value = '';
+    document.getElementById('target-page-input').value = '';
+    document.getElementById('rank-input').value = '';
+    document.getElementById('volume-input').value = '';
+
+    renderKeywords();
+  } catch (e) {
+    alert('Error saving keyword: ' + e.message);
+  }
+}
+
+// Delete keyword
+async function deleteKeyword(index) {
+  if (!confirm('Delete this keyword?')) return;
+
+  keywordsData.splice(index, 1);
+
+  try {
+    await fetch('/api/seo-keywords', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ keywords: keywordsData })
+    });
+    renderKeywords();
+  } catch (e) {
+    alert('Error deleting keyword: ' + e.message);
+  }
+}
+
+// Refresh keywords
+function refreshKeywords() {
+  loadKeywords();
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+  loadAuditData();
+  loadKeywords();
+});
+</script>
+
+</body>
+</html>

@@ -96,3 +96,8 @@
   from = "/api/seo-keywords"
   to = "/.netlify/functions/seo-keywords"
   status = 200
+
+[[redirects]]
+  from = "/api/behaviorschool-submissions"
+  to = "/.netlify/functions/behaviorschool-submissions"
+  status = 200

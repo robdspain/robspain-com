@@ -9,7 +9,7 @@ exports.handler = async (event) => {
   const headers = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Cache-Control': 'private, max-age=60',
   };
@@ -18,7 +18,7 @@ exports.handler = async (event) => {
     return { statusCode: 200, headers, body: '' };
   }
 
-  if (event.httpMethod !== 'GET') {
+  if (event.httpMethod !== 'GET' && event.httpMethod !== 'POST') {
     return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
   }
 
@@ -26,10 +26,83 @@ exports.handler = async (event) => {
   const { q, id, tag, tags } = params;
 
   try {
-    // Load database
     const SQL = await initSqlJs();
     const dbBuffer = fs.readFileSync(DB_PATH);
     const db = new SQL.Database(dbBuffer);
+
+    if (event.httpMethod === 'POST') {
+      const body = event.body ? JSON.parse(event.body) : {};
+      const email = String(body.email || '').trim().toLowerCase();
+      const firstName = String(body.first_name || body.firstName || '').trim();
+      const lastName = String(body.last_name || body.lastName || '').trim();
+      const role = String(body.role || '').trim();
+      const organization = String(body.organization || 'Behavior School').trim();
+      const source = String(body.source || 'behaviorschool_rbt_waitlist').trim();
+
+      if (!email) {
+        db.close();
+        return { statusCode: 400, headers, body: JSON.stringify({ error: 'Email is required' }) };
+      }
+
+      if (!role) {
+        db.close();
+        return { statusCode: 400, headers, body: JSON.stringify({ error: 'Role is required' }) };
+      }
+
+      const normalizedRole = role.toUpperCase();
+      const allowedRoles = ['BCBA', 'RBT', 'OTHER'];
+      if (!allowedRoles.includes(normalizedRole)) {
+        db.close();
+        return { statusCode: 400, headers, body: JSON.stringify({ error: 'Role must be BCBA, RBT, or OTHER' }) };
+      }
+
+      const name = `${firstName} ${lastName}`.trim() || email;
+      const existing = db.exec('SELECT id, notes FROM contacts WHERE email = ? LIMIT 1', [email]);
+      let contactId;
+
+      if (existing.length > 0 && existing[0].values.length > 0) {
+        contactId = existing[0].values[0][0];
+        db.run(
+          'UPDATE contacts SET name = ?, role = ?, organization = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+          [name, normalizedRole, organization, contactId]
+        );
+      } else {
+        db.run(
+          'INSERT INTO contacts (name, email, organization, role, notes) VALUES (?, ?, ?, ?, ?)',
+          [name, email, organization, normalizedRole, `Source: ${source}`]
+        );
+        const result = db.exec('SELECT last_insert_rowid()');
+        contactId = result[0].values[0][0];
+      }
+
+      const tagsToAdd = [
+        'segment:behaviorschool',
+        `source:${source}`,
+        `role:${normalizedRole.toLowerCase()}`
+      ];
+
+      tagsToAdd.forEach((tagValue) => {
+        db.run('INSERT OR IGNORE INTO contact_tags (contact_id, tag) VALUES (?, ?)', [contactId, tagValue]);
+      });
+
+      let persisted = true;
+      let persistWarning = null;
+      try {
+        const data = db.export();
+        fs.writeFileSync(DB_PATH, Buffer.from(data));
+      } catch (persistError) {
+        persisted = false;
+        persistWarning = persistError.message;
+        console.error('CRM persist warning:', persistError);
+      }
+
+      db.close();
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({ ok: true, contactId, persisted, warning: persistWarning }),
+      };
+    }
 
     // Route: GET /api/crm/tags - list all tags
     if (tags === 'true' || event.path.endsWith('/tags')) {

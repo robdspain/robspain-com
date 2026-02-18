@@ -1,0 +1,86 @@
+---
+layout: base.njk
+title: Neo Dashboard v2 - Rob Spain
+permalink: /admin/neo-dashboard/
+---
+
+<link rel="stylesheet" href="/public/css/neo-dashboard.css">
+
+<div class="neo-dashboard-page">
+  <div class="neo-dashboard-container">
+    <div class="neo-header">
+      <span class="neo-badge">⚡ Neo Dashboard v2</span>
+      <h1>Project Status, Quick Wins, and Content Calendar</h1>
+      <p>
+        One place to see what’s building, what needs a quick decision, and what content is going out next.
+        Everything here is editable and saved locally in your browser.
+      </p>
+    </div>
+
+    <div class="neo-grid">
+      <section class="neo-card neo-projects">
+        <h2>Active Projects</h2>
+        <p class="neo-card-subtitle">Click any project card to expand and update progress, phase, or blocked reason.</p>
+        <div id="project-grid" class="project-grid"></div>
+      </section>
+
+      <section class="neo-card neo-quickwins">
+        <h2>Quick Wins</h2>
+        <p class="neo-card-subtitle">Fast approvals and reviews to keep momentum moving.</p>
+        <div id="quickwin-list" class="quickwin-list"></div>
+
+        <form id="quickwin-form" class="quickwin-form">
+          <input id="quickwin-title" type="text" placeholder="Quick win title" required>
+          <select id="quickwin-estimate">
+            <option value="5">5 minutes</option>
+            <option value="10" selected>10 minutes</option>
+            <option value="15">15 minutes</option>
+          </select>
+          <select id="quickwin-type">
+            <option value="approve">Approve</option>
+            <option value="review">Review</option>
+            <option value="decision">Decision</option>
+            <option value="action">Action</option>
+          </select>
+          <button type="submit">Add Quick Win</button>
+        </form>
+      </section>
+
+      <section class="neo-card neo-calendar">
+        <div class="calendar-header">
+          <div>
+            <h2>Content Calendar</h2>
+            <p class="neo-card-subtitle">Schedule and preview upcoming content across channels.</p>
+          </div>
+          <div class="calendar-controls">
+            <button id="calendar-prev" type="button">◀</button>
+            <button id="calendar-next" type="button">▶</button>
+          </div>
+        </div>
+
+        <div class="calendar-header">
+          <h3 id="calendar-label"></h3>
+        </div>
+        <div id="calendar-grid" class="calendar-grid"></div>
+        <div id="calendar-warning" class="neo-alert"></div>
+
+        <form id="calendar-form" class="calendar-form">
+          <input id="content-title" type="text" placeholder="Content title" required>
+          <select id="content-channel">
+            <option value="email">Email</option>
+            <option value="youtube">YouTube</option>
+            <option value="linkedin">LinkedIn</option>
+            <option value="blog">Blog</option>
+            <option value="twitter">Twitter/X</option>
+          </select>
+          <input id="content-date" type="date" required>
+          <button type="submit">Schedule</button>
+        </form>
+
+        <div id="calendar-upcoming" class="calendar-upcoming"></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script src="/public/js/neo-dashboard.js"></script>

@@ -1,0 +1,43 @@
+---
+layout: base.njk
+title: Shot Calendar - Rob Spain
+permalink: /admin/shot-calendar/
+---
+
+<link rel="stylesheet" href="/public/css/shot-calendar.css">
+
+<div class="shot-calendar-page">
+  <div class="shot-calendar-container">
+    <div class="shot-header">
+      <span class="shot-priority high">Revenue First</span>
+      <h1>Shot Calendar (Revenue-Priority)</h1>
+      <p>All upcoming shoots prioritized by revenue impact. High-ticket offers and recurring MRR first.</p>
+    </div>
+
+    <div class="shot-grid">
+      <section class="shot-card shot-schedule">
+        <h2>Upcoming Shoots</h2>
+        <div id="shot-list" class="shot-list"></div>
+      </section>
+
+      <section class="shot-card shot-queue">
+        <h2>Add a Shoot</h2>
+        <p style="color: var(--shot-slate); margin-top: -0.5rem;">Capture a new shoot idea and assign priority.</p>
+        <form id="shot-form" class="shot-form">
+          <input id="shot-title" type="text" placeholder="Shoot title" required>
+          <input id="shot-date" type="date" required>
+          <input id="shot-platform" type="text" placeholder="Platform (YouTube, Email, etc.)">
+          <input id="shot-offer" type="text" placeholder="Offer / CTA">
+          <select id="shot-priority">
+            <option value="high">High revenue</option>
+            <option value="med">Medium revenue</option>
+            <option value="low">Support content</option>
+          </select>
+          <button type="submit">Add Shoot</button>
+        </form>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script src="/public/js/shot-calendar.js"></script>

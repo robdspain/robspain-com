@@ -1921,6 +1921,7 @@ fetch('/api/admin-data?key=agent-activity')
     }
     updateSystemState(data);
     updateDepLines(data);
+    syncBlockedQueue(data);
     addLog('<span class="action">Loaded real agent activity data.</span>');
   })
   .catch(() => {
@@ -1950,9 +1951,87 @@ setInterval(() => {
       });
       updateSystemState(data);
       updateDepLines(data);
+      syncBlockedQueue(data);
+      triggerAgentMovements(data);
     })
     .catch(() => {}); // silent fail on refresh
-}, 30000);
+}, 5000); // Poll every 5s for near-real-time updates
+
+// --- SYNC BLOCKED QUEUE FROM WEBHOOK ---
+let lastBlockedCount = 0;
+function syncBlockedQueue(data) {
+  if (!data || !data.blockedQueue) return;
+  
+  // Map webhook blockedQueue to BLOCKED format
+  const newBlocked = data.blockedQueue.map(item => ({
+    item: item.text,
+    priority: item.priority || 'MEDIUM',
+    agents: [item.agent || 'System'],
+    category: item.type === 'decision' ? 'decision' : item.type === 'blocker' ? 'blocker' : 'input',
+    type: item.type || 'blocker',
+    instructions: 'Resolve this item to unblock ' + (item.agent || 'the task'),
+    waitingSince: new Date(item.timestamp || Date.now()),
+  }));
+  
+  // Update BLOCKED array
+  if (newBlocked.length > 0) {
+    BLOCKED = newBlocked;
+    renderBlockedPanel();
+    
+    // Flash notification if new blockers appeared
+    if (newBlocked.length > lastBlockedCount) {
+      addLog('<span class="ev-blocked">⚠️ New blocker added to queue</span>');
+    }
+    lastBlockedCount = newBlocked.length;
+  }
+}
+
+// --- TRIGGER AGENT MOVEMENTS BASED ON STATUS CHANGES ---
+const prevStatuses = {};
+function triggerAgentMovements(data) {
+  if (!data || !data.agents) return;
+  
+  Object.entries(data.agents).forEach(([name, info]) => {
+    const agent = AGENTS.find(a => a.name === name);
+    if (!agent) return;
+    
+    const prevStatus = prevStatuses[name];
+    const newStatus = info.status;
+    
+    // Status changed — trigger animation
+    if (prevStatus && prevStatus !== newStatus) {
+      switch (newStatus) {
+        case 'working':
+          agent.state = 'toDesk';
+          spawnParticles(agent.x, agent.y, agent.color, 8);
+          addLog('<span class="name">' + name + '</span> <span class="ev-complete">→ Started working</span>');
+          break;
+        case 'blocked':
+          agent.state = 'working';
+          spawnParticles(agent.x, agent.y, '#ef4444', 12);
+          addLog('<span class="name">' + name + '</span> <span class="ev-blocked">→ Blocked!</span>');
+          break;
+        case 'waiting':
+          agent.state = 'working';
+          spawnParticles(agent.x, agent.y, '#f59e0b', 6);
+          addLog('<span class="name">' + name + '</span> <span class="ev-waiting">→ Waiting for input</span>');
+          break;
+        case 'idle':
+          // Maybe trigger coffee break
+          if (Math.random() < 0.3) {
+            agent.state = 'toCoffee';
+          }
+          break;
+        case 'deployed':
+          spawnParticles(agent.x, agent.y, '#10b981', 20);
+          addLog('<span class="name">' + name + '</span> <span class="ev-complete">🚀 Deployed!</span>');
+          break;
+      }
+    }
+    
+    prevStatuses[name] = newStatus;
+  });
+}
 
 // --- PROJECT FILTER ---
 let activeFilter = 'all';

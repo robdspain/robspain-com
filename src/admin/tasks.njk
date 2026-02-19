@@ -139,10 +139,12 @@ permalink: /admin/tasks/
     overflow-x: auto;
     min-height: calc(100vh - 160px);
     align-items: flex-start;
+    width: 100%;
   }
 
   .kanban-column {
-    flex: 0 0 320px;
+    flex: 1 1 0;
+    min-width: 280px;
     background: var(--bg-column);
     border-radius: 12px;
     display: flex;
@@ -498,13 +500,21 @@ permalink: /admin/tasks/
   }
 
   /* Responsive */
+  @media (max-width: 1200px) {
+    .kanban-column {
+      min-width: 260px;
+    }
+  }
+
   @media (max-width: 900px) {
     .kanban-board {
       padding: 1rem;
+      flex-wrap: nowrap;
     }
     
     .kanban-column {
-      flex: 0 0 280px;
+      flex: 0 0 300px;
+      min-width: 300px;
     }
     
     .board-header {
@@ -519,6 +529,7 @@ permalink: /admin/tasks/
     
     .kanban-column {
       flex: 0 0 85vw;
+      min-width: 85vw;
     }
   }
 </style>

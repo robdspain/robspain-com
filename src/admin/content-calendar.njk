@@ -155,6 +155,44 @@ let calendarData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"weeks":[]}
 let currentFilter = 'all';
 let statusFilter = null;
 
+// Leap year handling
+function isLeapYear(year) {
+  return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+}
+
+function isValidDate(dateStr) {
+  const d = new Date(dateStr);
+  return d instanceof Date && !isNaN(d) && d.toISOString().slice(0, 10) === dateStr;
+}
+
+function fixInvalidDates() {
+  let fixed = 0;
+  calendarData.weeks.forEach(week => {
+    week.posts.forEach(post => {
+      if (post.date && !isValidDate(post.date)) {
+        // If Feb 29 in a non-leap year, move to Feb 28
+        if (post.date.endsWith('-02-29')) {
+          post.date = post.date.replace('-02-29', '-02-28');
+          fixed++;
+        }
+      }
+    });
+  });
+  if (fixed > 0) {
+    console.log(`Fixed ${fixed} invalid date(s) (Feb 29 → Feb 28)`);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(calendarData));
+  }
+  return fixed;
+}
+
+// Auto-fix on load
+const fixedCount = fixInvalidDates();
+if (fixedCount > 0) {
+  setTimeout(() => {
+    alert(`📅 Adjusted ${fixedCount} date(s) from Feb 29 to Feb 28 (2026 is not a leap year).`);
+  }, 500);
+}
+
 function save() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(calendarData));
   render();

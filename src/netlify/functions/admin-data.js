@@ -20,16 +20,19 @@ exports.handler = async (event) => {
     return { statusCode: 400, headers, body: JSON.stringify({ error: `Invalid key. Valid: ${validKeys.join(', ')}` }) };
   }
 
-  // Use Netlify Blobs with explicit config for deploy context
-  const siteID = process.env.SITE_ID || process.env.NETLIFY_SITE_ID;
-  const token = process.env.NETLIFY_TOKEN || process.env.NETLIFY_API_TOKEN;
-
-  if (!siteID || !token) {
-    // Blobs not configured — return 404 so client falls back to static JSON
-    return { statusCode: 404, headers, body: JSON.stringify({ error: 'Blobs not configured' }) };
+  // Use Netlify Blobs - auto-context in production, fall back to explicit config
+  let store;
+  try {
+    store = getStore('admin-data');
+  } catch (e) {
+    const siteID = process.env.SITE_ID || process.env.NETLIFY_SITE_ID;
+    const token = process.env.NETLIFY_TOKEN || process.env.NETLIFY_API_TOKEN;
+    if (!siteID || !token) {
+      // Blobs not configured — return 404 so client falls back to static JSON
+      return { statusCode: 404, headers, body: JSON.stringify({ error: 'Blobs not configured' }) };
+    }
+    store = getStore({ name: 'admin-data', siteID, token });
   }
-
-  const store = getStore({ name: 'admin-data', siteID, token });
 
   if (event.httpMethod === 'GET') {
     try {

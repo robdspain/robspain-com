@@ -54,15 +54,20 @@ exports.handler = async (event) => {
     return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ error: 'Missing event type' }) };
   }
 
-  // Get store
-  const siteID = process.env.SITE_ID || process.env.NETLIFY_SITE_ID;
-  const storeToken = process.env.NETLIFY_TOKEN || process.env.NETLIFY_API_TOKEN;
-
-  if (!siteID || !storeToken) {
-    return { statusCode: 500, headers: CORS_HEADERS, body: JSON.stringify({ error: 'Blobs not configured' }) };
+  // Get store - try auto-context first (works in production), then fall back to explicit config
+  let store;
+  try {
+    // In production, Netlify provides context automatically
+    store = getStore('admin-data');
+  } catch (e) {
+    // Fall back to explicit config
+    const siteID = process.env.SITE_ID || process.env.NETLIFY_SITE_ID;
+    const storeToken = process.env.NETLIFY_TOKEN || process.env.NETLIFY_API_TOKEN;
+    if (!siteID || !storeToken) {
+      return { statusCode: 500, headers: CORS_HEADERS, body: JSON.stringify({ error: 'Blobs not configured', details: e.message }) };
+    }
+    store = getStore({ name: 'admin-data', siteID, token: storeToken });
   }
-
-  const store = getStore({ name: 'admin-data', siteID, token: storeToken });
 
   try {
     // Load current activity

@@ -101,3 +101,8 @@
   from = "/api/behaviorschool-submissions"
   to = "/.netlify/functions/behaviorschool-submissions"
   status = 200
+
+[[redirects]]
+  from = "/api/agent-webhook"
+  to = "/.netlify/functions/agent-webhook"
+  status = 200

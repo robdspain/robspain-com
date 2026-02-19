@@ -1,0 +1,122 @@
+# robspain.com SEO Fixes Patch
+# Generated: 2026-02-19
+# ========================================
+
+## Summary of Changes
+
+### 1. Deleted Files
+- src/index 2.html (stray duplicate file)
+
+### 2. src/_includes/base.njk (main layout - affects all pages)
+   - Added canonical URL tag: <link rel="canonical" href="https://robspain.com{{ page.url | url }}">
+   - Fixed OG image URL: changed relative to absolute (https://robspain.com prefix)
+   - Fixed Twitter image URL: changed relative to absolute (https://robspain.com prefix)
+   - Added default Schema.org WebSite markup for non-blog pages
+   - Nav links: /blog.html → /blog/, /cv.html → /cv/
+   - Footer links: /cv.html → /cv/, /privacy.html → /privacy/, /terms.html → /terms/
+
+### 3. src/index.njk
+   - Fixed hardcoded link: /cv.html → /cv/
+
+### 4. src/cv.njk
+   - Fixed contact link: /index.html#contact → /#contact
+
+### 5. src/_includes/post.njk
+   - Fixed back link: /blog.html → /blog/
+
+### 6. src/404.html
+   - Fixed CV link: /cv.html → /cv/
+
+### 7. src/sitemap.xml
+   - No changes needed (already uses absolute URLs via Nunjucks template)
+
+---
+
+## Detailed Diffs
+
+--- a/src/_includes/base.njk
++++ b/src/_includes/base.njk
+@@ -30,21 +30,24 @@
+     <link rel="stylesheet" href="{{ extra_css }}">
+     {% endif %}
+ 
++    <!-- Canonical URL -->
++    <link rel="canonical" href="https://robspain.com{{ page.url | url }}">
++
+     <!-- SEO & Social Meta Tags -->
+     <meta property="og:title" content="{{ seo.metaTitle or title or "Rob Spain - School BCBA" }}">
+     <meta property="og:description" content="{{ seo.metaDesc or description or "Rob Spain, School BCBA." }}">
+-    <meta property="og:image" content="{{ seo.socialImage or image or "/public/images/profile-Rob.png" }}">
++    <meta property="og:image" content="https://robspain.com{{ seo.socialImage or image or "/public/images/profile-Rob.png" }}">
+     <meta property="og:url" content="https://robspain.com{{ page.url }}">
+     <meta property="og:type" content="article">
+     
+     <meta name="twitter:card" content="summary_large_image">
+     <meta name="twitter:title" content="{{ seo.metaTitle or title or "Rob Spain - School BCBA" }}">
+     <meta name="twitter:description" content="{{ seo.metaDesc or description or "Rob Spain, School BCBA." }}">
+-    <meta name="twitter:image" content="{{ seo.socialImage or image or "/public/images/profile-Rob.png" }}">
++    <meta name="twitter:image" content="https://robspain.com{{ seo.socialImage or image or "/public/images/profile-Rob.png" }}">
+     <meta name="twitter:creator" content="@robspainBCBA">
+ 
+-    {% if layout == "post.njk" %}
+     <script type="application/ld+json">
++    {% if layout == "post.njk" %}
+     {
+       "@context": "https://schema.org",
+       "@type": "BlogPosting",
+@@ -59,8 +62,21 @@
+       "description": "{{ seo.metaDesc or description }}"{% if tags or keywords %},
+       "keywords": "{{ (tags or keywords) | join(', ') }}"{% endif %}
+     }
+-    </script>
++    {% else %}
++    {
++      "@context": "https://schema.org",
++      "@type": "WebSite",
++      "url": "https://robspain.com/",
++      "name": "Rob Spain, BCBA",
++      "author": {
++        "@type": "Person",
++        "name": "Rob Spain",
++        "url": "https://robspain.com"
++      },
++      "description": "{{ seo.metaDesc or description or 'Rob Spain, School BCBA.' }}"
++    }
+     {% endif %}
++    </script>
+
+@@ nav links @@
+-    <a href="/blog.html" class="nav-link-premium">BLOG</a>
+-    <a href="/cv.html" class="nav-link-premium">CV</a>
++    <a href="/blog/" class="nav-link-premium">BLOG</a>
++    <a href="/cv/" class="nav-link-premium">CV</a>
+
+@@ footer links @@
+-    <a href="/cv.html" class="footer-link">
++    <a href="/cv/" class="footer-link">
+
+-    <a href="/privacy.html" class="footer-link">
++    <a href="/privacy/" class="footer-link">
+
+-    <a href="/terms.html" class="footer-link">
++    <a href="/terms/" class="footer-link">
+
+--- a/src/index.njk
++++ b/src/index.njk
+-    <a href="/cv.html" class="story-button">
++    <a href="/cv/" class="story-button">
+
+--- a/src/cv.njk
++++ b/src/cv.njk
+-    <a href="/index.html#contact">Send Message</a>
++    <a href="/#contact">Send Message</a>
+
+--- a/src/_includes/post.njk
++++ b/src/_includes/post.njk
+-    <a href="/blog.html" class="btn-secondary-premium">
++    <a href="/blog/" class="btn-secondary-premium">
+
+--- a/src/404.html
++++ b/src/404.html
+-    <a href="/cv.html" class="link">Professional CV</a>
++    <a href="/cv/" class="link">Professional CV</a>

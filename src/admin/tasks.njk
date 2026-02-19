@@ -1,543 +1,526 @@
 ---
 layout: base.njk
-title: Rob's Priority Task List - ADHD-Optimized
+title: Task Board — Kanban
 permalink: /admin/tasks/
 ---
 
-<!-- PWA Support -->
-<link rel="manifest" href="/public/manifest.json">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Tasks">
-<link rel="apple-touch-icon" href="/public/images/task-icon-192.png">
-<meta name="theme-color" content="#047857">
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/public/sw.js').catch(() => {});
-}
-</script>
-
 <style>
   :root {
-    --red-urgent: #dc2626;
-    --orange-important: #ea580c;
-    --yellow-money: #ca8a04;
-    --green-later: #16a34a;
-    --gray-nice: #64748b;
-    --bg-slate: #f8fafc;
-    --border-light: #e2e8f0;
-    --text-dark: #1f2937;
-    --text-muted: #6b7280;
+    --bg-dark: #0f172a;
+    --bg-card: #1e293b;
+    --bg-column: #1a2234;
+    --border: #334155;
+    --text: #f8fafc;
+    --text-muted: #94a3b8;
+    --red: #ef4444;
+    --orange: #f97316;
+    --green: #22c55e;
+    --blue: #3b82f6;
+    --purple: #a855f7;
+    --yellow: #eab308;
   }
 
-  .tasks-shell {
-    background: linear-gradient(135deg, #f8fafc 0%, #fef2f2 100%);
-    min-height: 100vh;
-    padding: 1.5rem 1rem 4rem;
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg-dark);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
   }
 
-  .tasks-container {
-    max-width: 1100px;
-    margin: 0 auto;
-  }
-
-  /* CRITICAL BANNER */
-  .critical-banner {
-    background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
-    color: #ffffff;
-    border-radius: 20px;
-    padding: 2rem;
-    text-align: center;
-    box-shadow: 0 10px 25px rgba(220, 38, 38, 0.4);
-    margin-bottom: 2rem;
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.02); }
-  }
-
-  .critical-title {
-    font-size: 2.5rem;
-    font-weight: 900;
-    margin-bottom: 0.5rem;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-  }
-
-  .critical-subtitle {
-    font-size: 1.3rem;
-    font-weight: 600;
-    opacity: 0.95;
-  }
-
-  /* HEADER */
-  .tasks-header {
-    text-align: center;
-    margin-bottom: 1.5rem;
-  }
-
-  .tasks-title {
-    font-size: 2rem;
-    font-weight: 800;
-    color: var(--text-dark);
-    margin-bottom: 0.25rem;
-  }
-
-  .tasks-subtitle {
-    font-size: 1rem;
-    color: var(--text-muted);
-    margin-bottom: 1.5rem;
-  }
-
-  /* PROGRESS BAR */
-  .progress-bar-container {
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 1.25rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    margin-bottom: 2rem;
-  }
-
-  .progress-stats {
+  .admin-nav {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
+    gap: 0;
+    background: var(--bg-card);
+    border-bottom: 2px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .admin-nav a {
+    color: var(--text-muted);
+    font-size: 15px;
+    font-weight: 600;
+    padding: 14px 28px;
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+  }
+
+  .admin-nav a:hover {
+    color: var(--text);
+    background: rgba(255,255,255,0.05);
+  }
+
+  .admin-nav a.active {
+    color: #10b981;
+    border-bottom-color: #10b981;
+  }
+
+  .board-header {
+    padding: 1.5rem 2rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     flex-wrap: wrap;
     gap: 1rem;
-    margin-bottom: 1rem;
   }
 
-  .stat-item {
-    text-align: center;
-  }
-
-  .stat-value {
-    font-size: 1.8rem;
+  .board-title {
+    font-size: 1.75rem;
     font-weight: 800;
-    color: var(--red-urgent);
-  }
-
-  .stat-label {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-weight: 600;
-  }
-
-  .progress-bar {
-    height: 20px;
-    background: var(--border-light);
-    border-radius: 999px;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--red-urgent) 0%, var(--orange-important) 100%);
-    border-radius: 999px;
-    transition: width 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #ffffff;
-    font-weight: 700;
-    font-size: 0.8rem;
-  }
-
-  /* SECTION HEADERS */
-  .section-header {
-    font-size: 1.6rem;
-    font-weight: 800;
-    margin: 2rem 0 0.75rem;
+    margin: 0;
     display: flex;
     align-items: center;
     gap: 0.75rem;
   }
 
-  .section-header.urgent { color: var(--red-urgent); }
-  .section-header.money { color: var(--orange-important); }
-  .section-header.later { color: var(--green-later); }
-  .section-header.nice { color: var(--gray-nice); }
-
-  .section-subtitle {
-    font-size: 0.95rem;
-    color: var(--text-muted);
-    margin-bottom: 1rem;
-    font-weight: 600;
-  }
-
-  /* TASK CARDS */
-  .tasks-grid {
-    display: grid;
-    gap: 1rem;
-  }
-
-  .task-card {
-    background: #ffffff;
-    border-radius: 14px;
-    padding: 1.25rem;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-    border-left: 6px solid var(--border-light);
-    transition: all 0.2s ease;
-    cursor: pointer;
-  }
-
-  .task-card.urgent { border-left-color: var(--red-urgent); }
-  .task-card.money { border-left-color: var(--orange-important); }
-  .task-card.later { border-left-color: var(--green-later); }
-  .task-card.nice { border-left-color: var(--gray-nice); }
-
-  .task-card:hover {
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-    transform: translateY(-2px);
-  }
-
-  .task-card.completed {
-    opacity: 0.6;
-    border-left-color: #22c55e;
-    background: #f0fdf4;
-  }
-
-  .task-card.in-progress {
-    border-left-color: #3b82f6;
-    background: #eff6ff;
-  }
-
-  .task-header {
+  .board-stats {
     display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 0.75rem;
+    gap: 1.5rem;
+    font-size: 0.9rem;
   }
 
-  .task-checkbox {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    border: 3px solid var(--border-light);
-    border-radius: 10px;
-    cursor: pointer;
+  .stat {
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 1.4rem;
-    transition: all 0.2s ease;
-    background: #ffffff;
-  }
-
-  .task-card.completed .task-checkbox {
-    background: #22c55e;
-    border-color: #22c55e;
-    color: #ffffff;
-  }
-
-  .task-card.in-progress .task-checkbox {
-    background: #3b82f6;
-    border-color: #3b82f6;
-    color: #ffffff;
-  }
-
-  .task-info {
-    flex: 1;
-  }
-
-  .task-title {
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: var(--text-dark);
-    margin-bottom: 0.5rem;
-    line-height: 1.3;
-  }
-
-  .task-meta {
-    display: flex;
-    flex-wrap: wrap;
     gap: 0.5rem;
-    align-items: center;
   }
 
-  .task-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    padding: 0.3rem 0.7rem;
-    border-radius: 999px;
-    font-size: 0.7rem;
+  .stat-num {
+    font-weight: 800;
+    font-size: 1.25rem;
+  }
+
+  .stat-label {
+    color: var(--text-muted);
+  }
+
+  .board-actions {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 2px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text);
+    transition: all 0.2s;
+  }
+
+  .btn:hover {
+    background: var(--border);
+  }
+
+  .btn-primary {
+    background: var(--green);
+    border-color: var(--green);
+    color: #000;
+  }
+
+  .btn-primary:hover {
+    background: #16a34a;
+  }
+
+  /* KANBAN BOARD */
+  .kanban-board {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 2rem 2rem;
+    overflow-x: auto;
+    min-height: calc(100vh - 160px);
+    align-items: flex-start;
+  }
+
+  .kanban-column {
+    flex: 0 0 320px;
+    background: var(--bg-column);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 180px);
+  }
+
+  .column-header {
+    padding: 1rem 1.25rem;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .badge-robspain {
-    background: #dbeafe;
-    color: #1e40af;
-  }
-
-  .badge-behaviorschool {
-    background: #e0e7ff;
-    color: #4338ca;
-  }
-
-  .badge-ios {
-    background: #fce7f3;
-    color: #be185d;
-  }
-
-  .badge-both {
-    background: #fef3c7;
-    color: #92400e;
-  }
-
-  .task-time {
-    display: inline-flex;
+    font-size: 0.95rem;
+    display: flex;
     align-items: center;
-    gap: 0.3rem;
-    padding: 0.3rem 0.7rem;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--bg-column);
+    border-radius: 12px 12px 0 0;
+    z-index: 10;
+  }
+
+  .column-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .column-count {
+    background: var(--border);
+    padding: 0.2rem 0.6rem;
     border-radius: 999px;
-    background: #f0fdf4;
-    color: #166534;
     font-size: 0.75rem;
     font-weight: 700;
   }
 
-  .task-deadline {
-    padding: 0.3rem 0.7rem;
-    border-radius: 999px;
-    font-size: 0.7rem;
-    font-weight: 800;
-    background: #fee2e2;
-    color: #991b1b;
-    text-transform: uppercase;
-    animation: blink 1.5s ease-in-out infinite;
+  .column-header.backlog { border-left: 4px solid var(--text-muted); }
+  .column-header.in-progress { border-left: 4px solid var(--blue); }
+  .column-header.done { border-left: 4px solid var(--green); }
+
+  .column-cards {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
   }
 
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
+  .column-cards.drag-over {
+    background: rgba(59, 130, 246, 0.1);
   }
 
-  .task-priority {
-    padding: 0.3rem 0.7rem;
-    border-radius: 999px;
-    font-size: 0.7rem;
+  /* TASK CARDS */
+  .task-card {
+    background: var(--bg-card);
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+    cursor: grab;
+    border: 2px solid transparent;
+    transition: all 0.15s;
+    position: relative;
+  }
+
+  .task-card:hover {
+    border-color: var(--border);
+    transform: translateY(-1px);
+  }
+
+  .task-card.dragging {
+    opacity: 0.5;
+    transform: rotate(2deg);
+  }
+
+  .task-card.drag-preview {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    border-color: var(--blue);
+  }
+
+  .card-priority {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    border-radius: 10px 10px 0 0;
+  }
+
+  .card-priority.urgent { background: var(--red); }
+  .card-priority.money { background: var(--orange); }
+  .card-priority.later { background: var(--green); }
+  .card-priority.nice { background: var(--text-muted); }
+
+  .card-labels {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .card-label {
+    font-size: 0.65rem;
     font-weight: 700;
-    background: #fef3c7;
-    color: #92400e;
-  }
-
-  /* INSTRUCTIONS */
-  .task-instructions {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 2px solid var(--border-light);
-  }
-
-  .task-card.expanded .task-instructions {
-    max-height: 2000px;
-  }
-
-  .task-instructions h4 {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: var(--text-dark);
-    margin-bottom: 0.75rem;
-  }
-
-  .task-instructions ol,
-  .task-instructions ul {
-    margin-left: 1.5rem;
-    color: var(--text-dark);
-  }
-
-  .task-instructions li {
-    margin-bottom: 0.5rem;
-    line-height: 1.6;
-  }
-
-  .task-instructions code {
-    background: #f1f5f9;
     padding: 0.2rem 0.5rem;
     border-radius: 4px;
-    font-size: 0.85rem;
-    color: #dc2626;
-    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
   }
 
-  .task-instructions a {
-    color: #3b82f6;
-    text-decoration: none;
+  .label-urgent { background: rgba(239, 68, 68, 0.2); color: var(--red); }
+  .label-money { background: rgba(249, 115, 22, 0.2); color: var(--orange); }
+  .label-later { background: rgba(34, 197, 94, 0.2); color: var(--green); }
+  .label-nice { background: rgba(148, 163, 184, 0.2); color: var(--text-muted); }
+
+  .label-robspain { background: rgba(59, 130, 246, 0.2); color: var(--blue); }
+  .label-behaviorschool { background: rgba(168, 85, 247, 0.2); color: var(--purple); }
+  .label-ios { background: rgba(234, 179, 8, 0.2); color: var(--yellow); }
+
+  .card-title {
+    font-size: 0.9rem;
     font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 0.6rem;
+    color: var(--text);
   }
 
-  .task-instructions a:hover {
-    text-decoration: underline;
-  }
-
-  .expand-toggle {
-    margin-top: 0.75rem;
-    padding: 0.5rem 1rem;
-    background: var(--bg-slate);
-    border: none;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text-dark);
-    cursor: pointer;
-    width: 100%;
-    transition: all 0.2s ease;
-  }
-
-  .expand-toggle:hover {
-    background: var(--border-light);
-  }
-
-  .status-buttons {
+  .card-meta {
     display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
-  }
-
-  .status-btn {
-    flex: 1;
-    padding: 0.6rem 1rem;
-    border: 2px solid var(--border-light);
-    border-radius: 8px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    background: #ffffff;
-  }
-
-  .status-btn.not-started {
-    border-color: var(--border-light);
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.75rem;
     color: var(--text-muted);
   }
 
-  .status-btn.in-progress {
-    border-color: #3b82f6;
-    background: #3b82f6;
-    color: #ffffff;
+  .card-time {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
   }
 
-  .status-btn.done {
-    border-color: #22c55e;
-    background: #22c55e;
-    color: #ffffff;
+  .card-due {
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.7rem;
   }
 
-  .status-btn:hover {
-    opacity: 0.85;
+  .card-due.overdue { background: rgba(239, 68, 68, 0.2); color: var(--red); }
+  .card-due.today { background: rgba(249, 115, 22, 0.2); color: var(--orange); }
+  .card-due.soon { background: rgba(234, 179, 8, 0.2); color: var(--yellow); }
+  .card-due.future { background: rgba(148, 163, 184, 0.1); color: var(--text-muted); }
+
+  /* CARD EXPANDED STATE */
+  .task-card.expanded {
+    border-color: var(--blue);
   }
 
-  /* QUICK TIP BOX */
-  .tip-box {
-    background: #fef3c7;
-    border-left: 4px solid #f59e0b;
+  .card-details {
+    display: none;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .task-card.expanded .card-details {
+    display: block;
+  }
+
+  .card-details h4 {
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+    color: var(--text-muted);
+  }
+
+  .card-details ol {
+    margin: 0;
+    padding-left: 1.25rem;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--text);
+  }
+
+  .card-details li {
+    margin-bottom: 0.4rem;
+  }
+
+  .card-details a {
+    color: var(--blue);
+    text-decoration: none;
+  }
+
+  .card-details a:hover {
+    text-decoration: underline;
+  }
+
+  .card-details code {
+    background: var(--bg-dark);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    color: var(--orange);
+  }
+
+  /* ADD CARD BUTTON */
+  .add-card-btn {
+    width: 100%;
+    padding: 0.6rem;
+    background: transparent;
+    border: 2px dashed var(--border);
     border-radius: 8px;
-    padding: 1rem;
-    margin: 1rem 0;
-    font-size: 0.9rem;
-    color: var(--text-dark);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 0.5rem;
   }
 
-  .tip-box strong {
-    color: #92400e;
+  .add-card-btn:hover {
+    border-color: var(--text-muted);
+    color: var(--text);
   }
 
-  @media (max-width: 768px) {
-    .tasks-shell {
-      padding: 0.75rem 0.5rem 3rem;
-    }
+  /* QUICK FILTERS */
+  .filter-bar {
+    padding: 0 2rem 0.5rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
 
-    .critical-banner {
+  .filter-chip {
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 2px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    transition: all 0.2s;
+  }
+
+  .filter-chip:hover {
+    border-color: var(--text-muted);
+    color: var(--text);
+  }
+
+  .filter-chip.active {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: #fff;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+  }
+
+  .modal-overlay.show {
+    display: flex;
+  }
+
+  .modal {
+    background: var(--bg-card);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+
+  .modal-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .modal-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .form-input,
+  .form-textarea,
+  .form-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-dark);
+    color: var(--text);
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+  }
+
+  .form-input:focus,
+  .form-textarea:focus,
+  .form-select:focus {
+    outline: none;
+    border-color: var(--blue);
+  }
+
+  .form-textarea {
+    min-height: 100px;
+    resize: vertical;
+    font-family: inherit;
+  }
+
+  .modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 2px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .kanban-board {
       padding: 1rem;
-      border-radius: 0.75rem;
     }
-
-    .critical-title {
-      font-size: 1.4rem;
+    
+    .kanban-column {
+      flex: 0 0 280px;
     }
-
-    .critical-subtitle {
-      font-size: 0.9rem;
-    }
-
-    .tasks-title {
-      font-size: 1.4rem;
-    }
-
-    .tasks-subtitle {
-      font-size: 0.85rem;
-    }
-
-    .section-header {
-      font-size: 1.1rem;
-      padding: 0.6rem 0.8rem;
-    }
-
-    .task-item {
-      padding: 0.6rem 0.8rem;
-    }
-
-    .task-meta {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.25rem;
-    }
-
-    .task-meta .badge,
-    .task-meta .tag {
-      font-size: 0.7rem;
-      padding: 0.15rem 0.4rem;
-    }
-
-    .task-title {
-      font-size: 0.95rem;
-    }
-
-    .task-description {
-      font-size: 0.8rem;
-    }
-
-    .progress-bar-container {
-      padding: 0.75rem;
-    }
-
-    .tip-box {
-      padding: 0.75rem;
-      font-size: 0.85rem;
-    }
-
-    /* PWA install banner */
-    .pwa-install-banner {
-      display: block;
+    
+    .board-header {
+      padding: 1rem;
     }
   }
 
-  /* PWA standalone mode adjustments */
-  @media (display-mode: standalone) {
-    .tasks-shell {
-      padding-top: env(safe-area-inset-top, 1rem);
-      padding-bottom: env(safe-area-inset-bottom, 2rem);
-      padding-left: env(safe-area-inset-left, 0.5rem);
-      padding-right: env(safe-area-inset-right, 0.5rem);
+  @media (max-width: 600px) {
+    .board-stats {
+      display: none;
+    }
+    
+    .kanban-column {
+      flex: 0 0 85vw;
     }
   }
-  .due-date-controls { display: flex; align-items: center; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
-  .tomorrow-btn { font-size: 0.85rem; padding: 6px 14px; background: #dbeafe; color: #1e40af; border: 2px solid #93c5fd; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
-  .tomorrow-btn:hover { background: #bfdbfe; }
-  .clear-date-btn { font-size: 0.85rem; padding: 6px 10px; background: #fee2e2; color: #991b1b; border: 2px solid #fca5a5; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
-  .clear-date-btn:hover { background: #fecaca; }
-  .admin-nav { display: flex; justify-content: center; gap: 0; background: #ffffff; border-bottom: 2px solid var(--border-light); position: sticky; top: 0; z-index: 100; }
-  .admin-nav a { color: var(--text-muted); font-size: 15px; font-weight: 600; padding: 12px 28px; text-decoration: none; border-bottom: 3px solid transparent; transition: all 0.2s; }
-  .admin-nav a:hover { color: var(--text-dark); background: rgba(0,0,0,0.03); }
-  .admin-nav a.active { color: #047857; border-bottom-color: #047857; }
 </style>
 
 <nav class="admin-nav">
@@ -547,91 +530,122 @@ if ('serviceWorker' in navigator) {
   <a href="/admin/seo/">📊 SEO</a>
 </nav>
 
-<div class="tasks-shell">
-  <div class="tasks-container">
-    <!-- CRITICAL BANNER -->
-    <div class="critical-banner">
-      <div class="critical-title">🔴 REVENUE IS PRIORITY #1</div>
-      <div class="critical-subtitle">Stripe: 2 customers, 0 active subs. Ship features that make money.</div>
+<header class="board-header">
+  <h1 class="board-title">📋 Task Board</h1>
+  <div class="board-stats">
+    <div class="stat">
+      <span class="stat-num" id="stat-total">0</span>
+      <span class="stat-label">Total</span>
     </div>
+    <div class="stat">
+      <span class="stat-num" id="stat-progress" style="color: var(--blue)">0</span>
+      <span class="stat-label">In Progress</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num" id="stat-done" style="color: var(--green)">0</span>
+      <span class="stat-label">Done</span>
+    </div>
+  </div>
+  <div class="board-actions">
+    <button class="btn" onclick="resetFilters()">🔄 Reset</button>
+    <button class="btn btn-primary" onclick="openAddModal()">+ Add Task</button>
+  </div>
+</header>
 
-    <!-- Header -->
-    <header class="tasks-header">
-      <h1 class="tasks-title">Rob's Priority Task List</h1>
-      <p class="tasks-subtitle">ADHD-optimized: Deadlines first, then money, then everything else</p>
-    </header>
+<div class="filter-bar">
+  <button class="filter-chip active" data-filter="all">All</button>
+  <button class="filter-chip" data-filter="urgent">🔴 Urgent</button>
+  <button class="filter-chip" data-filter="money">🟡 Money</button>
+  <button class="filter-chip" data-filter="later">🟢 Later</button>
+  <button class="filter-chip" data-filter="nice">⚪ Nice</button>
+</div>
 
-    <!-- Progress Bar -->
-    <div class="progress-bar-container">
-      <div class="progress-stats">
-        <div class="stat-item">
-          <div class="stat-value" id="total-tasks">17</div>
-          <div class="stat-label">Total Tasks</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-value" id="completed-tasks">0</div>
-          <div class="stat-label">Completed</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-value" id="in-progress-tasks">0</div>
-          <div class="stat-label">In Progress</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-value" id="remaining-tasks">17</div>
-          <div class="stat-label">Remaining</div>
-        </div>
+<div class="kanban-board">
+  <div class="kanban-column">
+    <div class="column-header backlog">
+      <span class="column-title">📥 Backlog <span class="column-count" id="count-backlog">0</span></span>
+    </div>
+    <div class="column-cards" id="col-backlog" data-status="not-started"></div>
+  </div>
+
+  <div class="kanban-column">
+    <div class="column-header in-progress">
+      <span class="column-title">🔄 In Progress <span class="column-count" id="count-progress">0</span></span>
+    </div>
+    <div class="column-cards" id="col-progress" data-status="in-progress"></div>
+  </div>
+
+  <div class="kanban-column">
+    <div class="column-header done">
+      <span class="column-title">✅ Done <span class="column-count" id="count-done">0</span></span>
+    </div>
+    <div class="column-cards" id="col-done" data-status="done"></div>
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal-overlay" id="task-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">Add Task</span>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Title</label>
+        <input type="text" class="form-input" id="task-title-input" placeholder="What needs to be done?">
       </div>
-      <div class="progress-bar">
-        <div class="progress-fill" id="progress-fill" style="width: 0%;">0%</div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select class="form-select" id="task-category-input">
+          <option value="urgent">🔴 Urgent</option>
+          <option value="money">🟡 Makes Money</option>
+          <option value="later">🟢 Later</option>
+          <option value="nice">⚪ Nice to Have</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Platform</label>
+        <select class="form-select" id="task-platform-input">
+          <option value="robspain.com">robspain.com</option>
+          <option value="behaviorschool.com">behaviorschool.com</option>
+          <option value="iOS App">iOS App</option>
+          <option value="BAE SIG">BAE SIG</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Time Estimate</label>
+        <input type="text" class="form-input" id="task-time-input" placeholder="e.g. 15 min">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Due Date</label>
+        <input type="date" class="form-input" id="task-due-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Instructions (one per line)</label>
+        <textarea class="form-textarea" id="task-instructions-input" placeholder="Step 1&#10;Step 2&#10;Step 3"></textarea>
       </div>
     </div>
-
-    <!-- 🔴 DUE MONDAY — CALABA -->
-    <section id="urgent-section">
-      <h2 class="section-header urgent">🔴 DUE MONDAY — CALABA Presentations</h2>
-      <p class="section-subtitle">Conference March 7-8. Review and practice these NOW.</p>
-      <div class="tasks-grid" id="urgent-grid"></div>
-    </section>
-
-    <!-- 🟡 MAKES MONEY — App Store Launch -->
-    <section id="money-section">
-      <h2 class="section-header money">🟡 MAKES MONEY — App Store Launch</h2>
-      <p class="section-subtitle">Do these IN ORDER. Each one unlocks the next.</p>
-      <div class="tip-box">
-        <strong>💡 ADHD Tip:</strong> These are sequenced perfectly. Start with #1, finish it, move to #2. No decisions needed.
-      </div>
-      <div class="tasks-grid" id="money-grid"></div>
-    </section>
-
-    <!-- 🟢 MAKES MONEY LATER — Content & Marketing -->
-    <section id="later-section">
-      <h2 class="section-header later">🟢 MAKES MONEY LATER — Content & Marketing</h2>
-      <p class="section-subtitle">Not urgent, but high impact. Do when you have creative energy.</p>
-      <div class="tasks-grid" id="later-grid"></div>
-    </section>
-
-    <!-- ⚪ NICE TO HAVE -->
-    <section id="nice-section">
-      <h2 class="section-header nice">⚪ NICE TO HAVE</h2>
-      <p class="section-subtitle">Do these when everything else is done. Low stress.</p>
-      <div class="tasks-grid" id="nice-grid"></div>
-    </section>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveTask()">Save Task</button>
+    </div>
   </div>
 </div>
 
 <script>
-  const tasks = [
-    // 🔴 URGENT — CALABA + BLOCKERS
+  let tasks = [
+    // 🔴 URGENT
     {
       id: 1,
       category: 'urgent',
       title: 'Review CALABA Symposium: "Beyond Observable Behavior"',
       platform: 'behaviorschool.com',
       time: '25 min',
-      deadline: 'CALABA Mar 7',
-      priority: true,
+      dueDate: '2026-03-07',
       status: 'not-started',
-      dueDate: '2026-02-17',
+      priority: true,
       instructions: [
         'Go to <a href="https://behaviorschool.com/admin/presentations" target="_blank">behaviorschool.com/admin/presentations</a>',
         'Find "Beyond Observable Behavior" in Library',
@@ -642,17 +656,15 @@ if ('serviceWorker' in navigator) {
         'Practice your section (5-10 min talk track)'
       ]
     },
-
     {
       id: 2,
       category: 'urgent',
       title: 'Review PBIS Presentation: "BCBAs in PBIS"',
       platform: 'behaviorschool.com',
       time: '20 min',
-      deadline: 'CALABA Mar 5',
-      priority: true,
+      dueDate: '2026-03-05',
       status: 'not-started',
-      dueDate: '2026-02-17',
+      priority: true,
       instructions: [
         'Go to <a href="https://behaviorschool.com/admin/presentations" target="_blank">behaviorschool.com/admin/presentations</a>',
         'Find "BCBAs in PBIS" in the Library',
@@ -667,8 +679,9 @@ if ('serviceWorker' in navigator) {
       title: 'Review 9 Writer Drafts',
       platform: 'Both sites',
       time: '30 min',
-      priority: true,
+      dueDate: null,
       status: 'not-started',
+      priority: true,
       instructions: [
         'Ask Neo on Telegram to send preview links',
         '9 drafts ready: Grad School, Mock Scores, Burnout Series, Supervision posts, LinkedIn, YouTube script, more',
@@ -682,8 +695,9 @@ if ('serviceWorker' in navigator) {
       title: 'Set up app.behaviorschool.com DNS',
       platform: 'behaviorschool.com',
       time: '3 min',
-      priority: true,
+      dueDate: null,
       status: 'not-started',
+      priority: true,
       instructions: [
         'All signup buttons on <a href="https://behaviorschool.com/pro" target="_blank">behaviorschool.com/pro</a> point to app.behaviorschool.com (dead link!)',
         'Go to <a href="https://dcc.godaddy.com/manage/behaviorschool.com/dns" target="_blank">GoDaddy DNS Manager</a> → behaviorschool.com',
@@ -691,7 +705,7 @@ if ('serviceWorker' in navigator) {
         'Tell Neo when done'
       ]
     },
-
+    
     // 🟡 MAKES MONEY
     {
       id: 5,
@@ -699,8 +713,9 @@ if ('serviceWorker' in navigator) {
       title: 'Apple Sign-In Setup (App Store Blocker)',
       platform: 'iOS App',
       time: '15 min',
-      priority: true,
+      dueDate: null,
       status: 'not-started',
+      priority: true,
       instructions: [
         'Go to <a href="https://developer.apple.com/account/resources/identifiers/list/serviceId" target="_blank">developer.apple.com Service IDs</a>',
         'Click + → Description: "Behavior Study Tools Sign In"',
@@ -718,8 +733,9 @@ if ('serviceWorker' in navigator) {
       title: 'Get PayPal Link from Liz (Raffle Go-Live)',
       platform: 'BAE SIG',
       time: '2 min',
-      priority: true,
+      dueDate: null,
       status: 'not-started',
+      priority: true,
       instructions: [
         'Text or email Liz Flaherty',
         'Ask for the PayPal QR/link earmarked "SIG Reception Donation"',
@@ -733,8 +749,9 @@ if ('serviceWorker' in navigator) {
       title: 'Gmail App Password for BAE SIG Email',
       platform: 'BAE SIG',
       time: '3 min',
-      priority: false,
+      dueDate: null,
       status: 'not-started',
+      priority: false,
       instructions: [
         'Go to <a href="https://myaccount.google.com/apppasswords" target="_blank">Google App Passwords</a>',
         'Sign in as california.bae.sig@gmail.com',
@@ -748,8 +765,9 @@ if ('serviceWorker' in navigator) {
       title: 'Auth Gmail for Neo (Email + Calendar Access)',
       platform: 'robspain.com',
       time: '3 min',
-      priority: false,
+      dueDate: null,
       status: 'not-started',
+      priority: false,
       instructions: [
         'When home at Mac mini, open Terminal',
         'Run: <code>GOG_KEYRING_BACKEND=file gog auth add robspain@gmail.com --services gmail,calendar,drive,contacts,docs,sheets</code>',
@@ -758,15 +776,16 @@ if ('serviceWorker' in navigator) {
       ]
     },
 
-    // 🟢 MAKES MONEY LATER — Content & Marketing
+    // 🟢 LATER
     {
       id: 9,
       category: 'later',
       title: 'Record Video #1: "5 Ethics Questions That Trip Everyone Up"',
       platform: 'behaviorschool.com',
       time: '30 min',
-      priority: false,
+      dueDate: null,
       status: 'not-started',
+      priority: false,
       instructions: [
         'Script ready — ask Neo for it or view at behaviorschool.com/admin/videos',
         'Record on phone (vertical = social, horizontal = YouTube)',
@@ -779,9 +798,10 @@ if ('serviceWorker' in navigator) {
       category: 'later',
       title: 'Record Videos #2-5 (Reinforcement, Design, FBA, Study Strategy)',
       platform: 'behaviorschool.com',
-      time: '2 hrs total',
-      priority: false,
+      time: '2 hrs',
+      dueDate: null,
       status: 'not-started',
+      priority: false,
       instructions: [
         '4 more scripts ready — all at behaviorschool.com/admin/videos',
         'Record when you have creative energy',
@@ -794,8 +814,9 @@ if ('serviceWorker' in navigator) {
       title: 'Review Marketing Calendar',
       platform: 'behaviorschool.com',
       time: '15 min',
-      priority: false,
+      dueDate: null,
       status: 'not-started',
+      priority: false,
       instructions: [
         'Go to <a href="https://behaviorschool.com/admin/content-calendar" target="_blank">behaviorschool.com/admin/content-calendar</a>',
         'Review 13 draft posts (pre-scheduled)',
@@ -808,8 +829,9 @@ if ('serviceWorker' in navigator) {
       title: 'Add Testimonials to Both Sites',
       platform: 'Both sites',
       time: '15 min',
-      priority: false,
+      dueDate: null,
       status: 'not-started',
+      priority: false,
       instructions: [
         'Think of 3-5 people who\'ve used your tools or training',
         'Get permission for quotes',
@@ -822,8 +844,9 @@ if ('serviceWorker' in navigator) {
       title: 'Share Social Media Logins',
       platform: 'Both sites',
       time: '5 min',
-      priority: false,
+      dueDate: null,
       status: 'not-started',
+      priority: false,
       instructions: [
         'Share Instagram, LinkedIn, Facebook, YouTube logins with Neo',
         'Enables agents to post approved content directly',
@@ -836,8 +859,9 @@ if ('serviceWorker' in navigator) {
       title: 'Share Ahrefs Login',
       platform: 'SEO',
       time: '2 min',
-      priority: false,
+      dueDate: null,
       status: 'not-started',
+      priority: false,
       instructions: [
         'Share Ahrefs credentials with Neo',
         'SEO agent will run keyword gap analysis + competitor tracking',
@@ -845,15 +869,16 @@ if ('serviceWorker' in navigator) {
       ]
     },
 
-    // ⚪ NICE TO HAVE
+    // ⚪ NICE
     {
       id: 15,
       category: 'nice',
       title: 'Tell Me About Email Auth Bug',
       platform: 'study.behaviorschool.com',
       time: '5 min',
-      priority: false,
+      dueDate: null,
       status: 'not-started',
+      priority: false,
       instructions: [
         'What happens when users try to log in with email on study.behaviorschool.com?',
         'Not receiving emails? Redirect loop? Error message?',
@@ -866,8 +891,9 @@ if ('serviceWorker' in navigator) {
       title: 'Set Cloudflare R2 Environment Variables',
       platform: 'behaviorschool.com',
       time: '5 min',
-      priority: false,
+      dueDate: null,
       status: 'not-started',
+      priority: false,
       instructions: [
         'Go to <a href="https://app.netlify.com" target="_blank">Netlify Dashboard</a> → behaviorschool.com → Site Settings → Environment Variables',
         'Copy R2 keys from learning platform: CF_R2_ACCESS_KEY_ID, CF_R2_SECRET_ACCESS_KEY, CF_R2_BUCKET_NAME, CF_R2_PUBLIC_BASE_URL, CF_R2_ACCOUNT_ID'
@@ -879,8 +905,9 @@ if ('serviceWorker' in navigator) {
       title: 'Record Training Videos for robspain.com',
       platform: 'robspain.com',
       time: '2 hrs',
-      priority: false,
+      dueDate: null,
       status: 'not-started',
+      priority: false,
       instructions: [
         '"Crisis Manager to Systems Leader" 10-part series',
         'Each video 5-10 minutes — record at your own pace',
@@ -889,228 +916,248 @@ if ('serviceWorker' in navigator) {
     }
   ];
 
-  // Load task states from localStorage
+  let activeFilter = 'all';
+  let editingTaskId = null;
+
+  // Load saved states
   function loadTaskStates() {
-    const saved = localStorage.getItem('robTaskStates');
+    const saved = localStorage.getItem('robKanbanTasks');
     if (saved) {
       const states = JSON.parse(saved);
       tasks.forEach(task => {
         if (states[task.id]) {
-          if (typeof states[task.id] === 'object') {
-            task.status = states[task.id].status || task.status;
-            task.dueDate = states[task.id].dueDate || task.dueDate || null;
-          } else {
-            task.status = states[task.id];
-          }
+          task.status = states[task.id].status || task.status;
+          task.dueDate = states[task.id].dueDate ?? task.dueDate;
         }
       });
     }
   }
 
-  // Save task states
   function saveTaskStates() {
     const states = {};
     tasks.forEach(task => {
-      states[task.id] = { status: task.status, dueDate: task.dueDate || null };
+      states[task.id] = { status: task.status, dueDate: task.dueDate };
     });
-    localStorage.setItem('robTaskStates', JSON.stringify(states));
+    localStorage.setItem('robKanbanTasks', JSON.stringify(states));
   }
 
-  // Date helpers
-  function formatDate(dateStr) {
-    if (!dateStr) return '';
+  // Due date formatting
+  function formatDue(dateStr) {
+    if (!dateStr) return null;
     const d = new Date(dateStr + 'T00:00:00');
     const today = new Date(); today.setHours(0,0,0,0);
-    const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
     const diff = Math.round((d - today) / 86400000);
-    if (diff === 0) return '📅 Today';
-    if (diff === 1) return '📅 Tomorrow';
-    if (diff < 0) return '🔴 Overdue (' + d.toLocaleDateString('en-US', {month:'short', day:'numeric'}) + ')';
-    if (diff <= 7) return '📅 ' + d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
-    return '📅 ' + d.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+    
+    if (diff < 0) return { text: 'Overdue', class: 'overdue' };
+    if (diff === 0) return { text: 'Today', class: 'today' };
+    if (diff === 1) return { text: 'Tomorrow', class: 'soon' };
+    if (diff <= 7) return { text: d.toLocaleDateString('en-US', {weekday: 'short'}), class: 'soon' };
+    return { text: d.toLocaleDateString('en-US', {month: 'short', day: 'numeric'}), class: 'future' };
   }
 
-  function getTomorrow() {
-    const d = new Date();
-    d.setDate(d.getDate() + 1);
-    return d.toISOString().split('T')[0];
+  // Get platform label class
+  function getPlatformClass(platform) {
+    if (platform.includes('robspain')) return 'label-robspain';
+    if (platform.includes('behaviorschool')) return 'label-behaviorschool';
+    if (platform.includes('iOS')) return 'label-ios';
+    return '';
   }
 
-  function getToday() {
-    return new Date().toISOString().split('T')[0];
-  }
-
-  // Update progress
-  function updateProgress() {
-    const total = tasks.length;
-    const completed = tasks.filter(t => t.status === 'done').length;
-    const inProgress = tasks.filter(t => t.status === 'in-progress').length;
-    const remaining = total - completed;
-    const percentage = Math.round((completed / total) * 100);
-
-    document.getElementById('total-tasks').textContent = total;
-    document.getElementById('completed-tasks').textContent = completed;
-    document.getElementById('in-progress-tasks').textContent = inProgress;
-    document.getElementById('remaining-tasks').textContent = remaining;
-    document.getElementById('progress-fill').style.width = percentage + '%';
-    document.getElementById('progress-fill').textContent = percentage + '%';
-  }
-
-  // Render task card
-  function renderTask(task) {
-    const platformClass = task.platform.includes('robspain') ? 'badge-robspain' : 
-                         task.platform.includes('behaviorschool') ? 'badge-behaviorschool' : 
-                         task.platform.includes('iOS') ? 'badge-ios' : 'badge-both';
-
-    const checkboxIcon = task.status === 'done' ? '✅' : task.status === 'in-progress' ? '🔄' : '';
-
+  // Render a card
+  function renderCard(task) {
+    const due = formatDue(task.dueDate);
+    const platformClass = getPlatformClass(task.platform);
+    
     const card = document.createElement('div');
-    card.className = `task-card ${task.category} ${task.status}`;
-    card.dataset.taskId = task.id;
-
+    card.className = 'task-card';
+    card.draggable = true;
+    card.dataset.id = task.id;
+    
     card.innerHTML = `
-      <div class="task-header">
-        <div class="task-checkbox">${checkboxIcon}</div>
-        <div class="task-info">
-          <div class="task-title">${task.title}</div>
-          <div class="task-meta">
-            <span class="task-badge ${platformClass}">${task.platform}</span>
-            <span class="task-time">⏱️ ${task.time}</span>
-            ${task.dueDate ? `<span class="task-deadline">${formatDate(task.dueDate)}</span>` : (task.deadline ? `<span class="task-deadline">${task.deadline}</span>` : '')}
-            ${task.priority ? '<span class="task-priority">⚡ High Priority</span>' : ''}
-          </div>
-        </div>
+      <div class="card-priority ${task.category}"></div>
+      <div class="card-labels">
+        <span class="card-label label-${task.category}">${task.category}</span>
+        ${platformClass ? `<span class="card-label ${platformClass}">${task.platform}</span>` : ''}
       </div>
-      <div class="task-instructions">
-        <h4>Step-by-step:</h4>
-        <ol>
-          ${task.instructions.map(step => `<li>${step}</li>`).join('')}
-        </ol>
-        <div class="due-date-controls">
-          <label style="font-size:0.85rem;font-weight:700;color:var(--text-muted);">Due Date:</label>
-          <input type="date" class="date-picker" value="${task.dueDate || ''}" style="font-size:1rem;padding:6px 10px;border:2px solid var(--border-light);border-radius:8px;background:#fff;color:var(--text-dark);cursor:pointer;">
-          <button class="tomorrow-btn" title="Move to tomorrow">📅 Tomorrow</button>
-          <button class="clear-date-btn" title="Clear date">✖</button>
-        </div>
-        <div class="status-buttons">
-          <button class="status-btn not-started" data-status="not-started">⬜ Not Started</button>
-          <button class="status-btn in-progress" data-status="in-progress">🔄 In Progress</button>
-          <button class="status-btn done" data-status="done">✅ Done</button>
-        </div>
+      <div class="card-title">${task.title}</div>
+      <div class="card-meta">
+        <span class="card-time">⏱️ ${task.time}</span>
+        ${due ? `<span class="card-due ${due.class}">${due.text}</span>` : ''}
       </div>
-      <button class="expand-toggle">👉 Show Instructions</button>
+      <div class="card-details">
+        <h4>Instructions:</h4>
+        <ol>${task.instructions.map(i => `<li>${i}</li>`).join('')}</ol>
+      </div>
     `;
 
-    // Toggle expand
-    const toggleBtn = card.querySelector('.expand-toggle');
-    toggleBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
+    // Click to expand
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('a')) return;
       card.classList.toggle('expanded');
-      toggleBtn.textContent = card.classList.contains('expanded') ? '🔼 Hide' : '👉 Show Instructions';
     });
 
-    // Date picker
-    const datePicker = card.querySelector('.date-picker');
-    datePicker.addEventListener('change', (e) => {
-      e.stopPropagation();
-      task.dueDate = datePicker.value || null;
-      saveTaskStates();
-      renderAllTasks();
-    });
-
-    // Tomorrow button
-    card.querySelector('.tomorrow-btn').addEventListener('click', (e) => {
-      e.stopPropagation();
-      task.dueDate = getTomorrow();
-      saveTaskStates();
-      renderAllTasks();
-    });
-
-    // Clear date button
-    card.querySelector('.clear-date-btn').addEventListener('click', (e) => {
-      e.stopPropagation();
-      task.dueDate = null;
-      saveTaskStates();
-      renderAllTasks();
-    });
-
-    // Status buttons
-    card.querySelectorAll('.status-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const newStatus = btn.dataset.status;
-        if (newStatus === 'done') {
-          card.style.transition = 'opacity 0.3s, transform 0.3s';
-          card.style.opacity = '0';
-          card.style.transform = 'scale(0.95)';
-          setTimeout(() => {
-            task.status = newStatus;
-            saveTaskStates();
-            updateProgress();
-            renderAllTasks();
-          }, 300);
-          return;
-        }
-        task.status = btn.dataset.status;
-        saveTaskStates();
-        updateProgress();
-        renderAllTasks();
-      });
-    });
+    // Drag events
+    card.addEventListener('dragstart', handleDragStart);
+    card.addEventListener('dragend', handleDragEnd);
 
     return card;
   }
 
-  // Render all tasks by category
-  function renderAllTasks() {
-    const grids = {
-      'urgent': document.getElementById('urgent-grid'),
-      'money': document.getElementById('money-grid'),
-      'later': document.getElementById('later-grid'),
-      'nice': document.getElementById('nice-grid')
+  // Render board
+  function renderBoard() {
+    const cols = {
+      'not-started': document.getElementById('col-backlog'),
+      'in-progress': document.getElementById('col-progress'),
+      'done': document.getElementById('col-done')
     };
 
-    Object.values(grids).forEach(grid => {
-      if (grid) grid.innerHTML = '';
+    Object.values(cols).forEach(col => col.innerHTML = '');
+
+    const filtered = activeFilter === 'all' 
+      ? tasks 
+      : tasks.filter(t => t.category === activeFilter);
+
+    filtered.forEach(task => {
+      const col = cols[task.status];
+      if (col) col.appendChild(renderCard(task));
     });
 
-    // Separate done vs not-done, render not-done first
-    const notDone = tasks.filter(t => t.status !== 'done');
-    const done = tasks.filter(t => t.status === 'done');
+    // Update counts
+    document.getElementById('count-backlog').textContent = 
+      filtered.filter(t => t.status === 'not-started').length;
+    document.getElementById('count-progress').textContent = 
+      filtered.filter(t => t.status === 'in-progress').length;
+    document.getElementById('count-done').textContent = 
+      filtered.filter(t => t.status === 'done').length;
 
-    notDone.forEach(task => {
-      const grid = grids[task.category];
-      if (grid) grid.appendChild(renderTask(task));
-    });
-
-    // Done tasks: collapsed at bottom with undo option
-    if (done.length > 0) {
-      const doneSection = document.createElement('div');
-      doneSection.style.cssText = 'grid-column: 1/-1; margin-top: 12px; border-top: 1px solid #334155; padding-top: 8px;';
-      doneSection.innerHTML = `<details><summary style="cursor:pointer; color:#10b981; font-size:14px; font-weight:600;">✅ ${done.length} completed — click to show</summary><div id="done-tasks" style="margin-top:8px; display:flex; flex-direction:column; gap:6px;"></div></details>`;
-      const container = doneSection.querySelector('#done-tasks');
-      done.forEach(task => {
-        const mini = document.createElement('div');
-        mini.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#0f172a; border-radius:8px; opacity:0.6;';
-        mini.innerHTML = `<span style="color:#94a3b8; text-decoration:line-through; font-size:13px;">${task.title}</span><button style="background:#334155; border:none; color:#94a3b8; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:12px;" data-id="${task.id}">↩ Undo</button>`;
-        mini.querySelector('button').addEventListener('click', () => {
-          task.status = 'not-started';
-          saveTaskStates();
-          updateProgress();
-          renderAllTasks();
-        });
-        container.appendChild(mini);
-      });
-      // Add to the first non-empty grid
-      const firstGrid = Object.values(grids).find(g => g && g.children.length > 0) || grids['urgent'];
-      if (firstGrid) firstGrid.parentElement.appendChild(doneSection);
-    }
+    // Stats
+    document.getElementById('stat-total').textContent = tasks.length;
+    document.getElementById('stat-progress').textContent = 
+      tasks.filter(t => t.status === 'in-progress').length;
+    document.getElementById('stat-done').textContent = 
+      tasks.filter(t => t.status === 'done').length;
   }
 
-  // Initialize
+  // Drag & Drop
+  let draggedCard = null;
+
+  function handleDragStart(e) {
+    draggedCard = e.target;
+    e.target.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', e.target.dataset.id);
+  }
+
+  function handleDragEnd(e) {
+    e.target.classList.remove('dragging');
+    document.querySelectorAll('.column-cards').forEach(col => {
+      col.classList.remove('drag-over');
+    });
+    draggedCard = null;
+  }
+
+  // Setup drop zones
+  document.querySelectorAll('.column-cards').forEach(col => {
+    col.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      col.classList.add('drag-over');
+    });
+
+    col.addEventListener('dragleave', () => {
+      col.classList.remove('drag-over');
+    });
+
+    col.addEventListener('drop', (e) => {
+      e.preventDefault();
+      col.classList.remove('drag-over');
+      
+      const taskId = parseInt(e.dataTransfer.getData('text/plain'));
+      const newStatus = col.dataset.status;
+      
+      const task = tasks.find(t => t.id === taskId);
+      if (task) {
+        task.status = newStatus;
+        saveTaskStates();
+        renderBoard();
+      }
+    });
+  });
+
+  // Filter chips
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      activeFilter = chip.dataset.filter;
+      renderBoard();
+    });
+  });
+
+  function resetFilters() {
+    activeFilter = 'all';
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    document.querySelector('[data-filter="all"]').classList.add('active');
+    renderBoard();
+  }
+
+  // Modal
+  function openAddModal() {
+    editingTaskId = null;
+    document.getElementById('modal-title').textContent = 'Add Task';
+    document.getElementById('task-title-input').value = '';
+    document.getElementById('task-category-input').value = 'urgent';
+    document.getElementById('task-platform-input').value = 'behaviorschool.com';
+    document.getElementById('task-time-input').value = '';
+    document.getElementById('task-due-input').value = '';
+    document.getElementById('task-instructions-input').value = '';
+    document.getElementById('task-modal').classList.add('show');
+  }
+
+  function closeModal() {
+    document.getElementById('task-modal').classList.remove('show');
+  }
+
+  function saveTask() {
+    const title = document.getElementById('task-title-input').value.trim();
+    if (!title) {
+      alert('Please enter a task title');
+      return;
+    }
+
+    const newTask = {
+      id: editingTaskId || Date.now(),
+      title,
+      category: document.getElementById('task-category-input').value,
+      platform: document.getElementById('task-platform-input').value,
+      time: document.getElementById('task-time-input').value || '15 min',
+      dueDate: document.getElementById('task-due-input').value || null,
+      status: 'not-started',
+      priority: document.getElementById('task-category-input').value === 'urgent',
+      instructions: document.getElementById('task-instructions-input').value
+        .split('\n')
+        .filter(l => l.trim())
+    };
+
+    if (editingTaskId) {
+      const idx = tasks.findIndex(t => t.id === editingTaskId);
+      if (idx >= 0) tasks[idx] = { ...tasks[idx], ...newTask };
+    } else {
+      tasks.unshift(newTask);
+    }
+
+    saveTaskStates();
+    renderBoard();
+    closeModal();
+  }
+
+  // Close modal on overlay click
+  document.getElementById('task-modal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeModal();
+  });
+
+  // Init
   document.addEventListener('DOMContentLoaded', () => {
     loadTaskStates();
-    updateProgress();
-    renderAllTasks();
+    renderBoard();
   });
 </script>

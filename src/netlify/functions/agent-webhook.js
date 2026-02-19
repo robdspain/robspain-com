@@ -20,7 +20,7 @@ const { getStore, connectLambda } = require('@netlify/blobs');
 const CORS_HEADERS = {
   'Content-Type': 'application/json',
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
@@ -30,8 +30,31 @@ exports.handler = async (event) => {
     return { statusCode: 200, headers: CORS_HEADERS, body: '' };
   }
 
+  // Initialize Blobs context for Lambda-compatible functions
+  connectLambda(event);
+  const store = getStore('agent-activity');
+
+  // GET — return current state (no auth required for reading)
+  if (event.httpMethod === 'GET') {
+    try {
+      let activityRaw = await store.get('agent-activity');
+      let activity = activityRaw ? JSON.parse(activityRaw) : getDefaultActivity();
+      return {
+        statusCode: 200,
+        headers: CORS_HEADERS,
+        body: JSON.stringify(activity),
+      };
+    } catch (e) {
+      return {
+        statusCode: 200,
+        headers: CORS_HEADERS,
+        body: JSON.stringify(getDefaultActivity()),
+      };
+    }
+  }
+
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, headers: CORS_HEADERS, body: JSON.stringify({ error: 'POST only' }) };
+    return { statusCode: 405, headers: CORS_HEADERS, body: JSON.stringify({ error: 'GET or POST only' }) };
   }
 
   // Auth check
@@ -53,12 +76,6 @@ exports.handler = async (event) => {
   if (!eventType) {
     return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ error: 'Missing event type' }) };
   }
-
-  // Initialize Blobs context for Lambda-compatible functions
-  connectLambda(event);
-
-  // Get store
-  const store = getStore('agent-activity');
 
   try {
     // Load current activity

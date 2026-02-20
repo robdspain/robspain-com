@@ -924,6 +924,169 @@ permalink: /admin/tasks/
         'Each video 5-10 minutes — record at your own pace',
         'Upload to admin panel when ready'
       ]
+    },
+
+    // ═══════════════════════════════════════════════════════════════════
+    // NEO TASKS - Added 2026-02-20
+    // ═══════════════════════════════════════════════════════════════════
+    
+    // 🔴 URGENT - Rob manual tasks
+    {
+      id: 18,
+      category: 'urgent',
+      title: 'Connect Convex Backend for Learning Platform',
+      platform: 'learning.behaviorschool.com',
+      time: '15 min',
+      dueDate: null,
+      status: 'not-started',
+      priority: true,
+      instructions: [
+        'Site is 85% complete — just needs Convex backend connection',
+        'cd to /Volumes/Fast Storage/00-Organized/Work/Neo AI/neo_code_repos/learning-behaviorschool',
+        'Run: <code>./QUICK_MARKETPLACE_SETUP.sh</code>',
+        'Follow browser prompts to create Convex deployment',
+        'Copy VITE_CONVEX_URL to .env.local',
+        'Run: <code>npx convex deploy</code>',
+        'Rebuild and redeploy to Netlify'
+      ]
+    },
+    {
+      id: 19,
+      category: 'urgent',
+      title: 'Add GEMINI_API_KEY to Netlify',
+      platform: 'behaviorschool.com',
+      time: '3 min',
+      dueDate: null,
+      status: 'not-started',
+      priority: true,
+      instructions: [
+        'Fusion FA tool needs Gemini API for AI script generation',
+        'Go to <a href="https://app.netlify.com" target="_blank">Netlify Dashboard</a> → behaviorschool.com',
+        'Site Settings → Environment Variables',
+        'Add: GEMINI_API_KEY = [your Gemini API key]',
+        'Trigger redeploy'
+      ]
+    },
+
+    // 🟢 LATER - Neo PRD tracking  
+    {
+      id: 20,
+      category: 'later',
+      title: '[NEO] PRD: ObservationPro iOS App',
+      platform: 'iOS App',
+      time: 'Multi-day',
+      dueDate: null,
+      status: 'not-started',
+      priority: false,
+      instructions: [
+        '📍 Location: /Volumes/Fast Storage/.../ObservationPro/PRD.md',
+        'iOS Swift app for behavior observation data collection',
+        'Features: 6 recording methods, Apple Watch stealth mode, AI ABC parser',
+        '⚠️ BLOCKED: Needs Xcode IDE for iOS development',
+        'Some Swift code exists but needs full implementation'
+      ]
+    },
+    {
+      id: 21,
+      category: 'later',
+      title: '[NEO] PRD: Caseload App',
+      platform: 'TBD',
+      time: 'TBD',
+      dueDate: null,
+      status: 'not-started',
+      priority: false,
+      instructions: [
+        '📍 Location: /Volumes/Fast Storage/.../Caseload-App/PRD-Behavior-Team-Management-System.md',
+        '⚠️ PRD FILE IS EMPTY - needs content',
+        'Rob needs to define requirements before Neo can build'
+      ]
+    },
+
+    // ✅ DONE - Completed PRDs (Feb 20, 2026)
+    {
+      id: 22,
+      category: 'later',
+      title: '[NEO] ✅ PRD: IEP Goal Writer',
+      platform: 'behaviorschool.com',
+      time: 'Done',
+      dueDate: null,
+      status: 'done',
+      priority: false,
+      instructions: [
+        'Completed by sub-agent 2026-02-20',
+        'Values Wizard 5-step workflow',
+        'Quality meter (1-5 levels)',
+        'PDF download functionality',
+        '4 goal templates added',
+        'Commit: 2301483'
+      ]
+    },
+    {
+      id: 23,
+      category: 'later',
+      title: '[NEO] ✅ PRD: ACT Interactive Tools',
+      platform: 'behaviorschool.com',
+      time: 'Done',
+      dueDate: null,
+      status: 'done',
+      priority: false,
+      instructions: [
+        'Completed by sub-agent 2026-02-20',
+        '18 metaphors (added 5 Committed Action)',
+        '44 values cards (expanded from 12)',
+        'Reflection prompts added',
+        'Commit: 2b28b96'
+      ]
+    },
+    {
+      id: 24,
+      category: 'later',
+      title: '[NEO] ✅ PRD: Neo Dashboard v2',
+      platform: 'behaviorschool.com',
+      time: 'Done',
+      dueDate: null,
+      status: 'done',
+      priority: false,
+      instructions: [
+        'Completed by sub-agent 2026-02-20',
+        'Project cards with progress bars',
+        'Quick wins section',
+        'Content calendar with channel icons',
+        'API endpoints for syncing',
+        'Commit: e33c52f'
+      ]
+    },
+    {
+      id: 25,
+      category: 'later',
+      title: '[NEO] ✅ PRD: ACE CEU Platform Enhancement',
+      platform: 'behaviorschool.com',
+      time: 'Done',
+      dueDate: null,
+      status: 'done',
+      priority: false,
+      instructions: [
+        'Enhanced by Neo main session 2026-02-20',
+        'Added event detail page (/ce-events/[id])',
+        'Registration API with credential validation',
+        'CE for BCBAs, PD for RBTs enforcement',
+        'Commit: 302430b'
+      ]
+    },
+    {
+      id: 26,
+      category: 'later',
+      title: '[NEO] ✅ PRD: Toolchest Auth System',
+      platform: 'behaviorschool-toolchest',
+      time: 'Done',
+      dueDate: null,
+      status: 'done',
+      priority: false,
+      instructions: [
+        'Already 95% complete (found during audit)',
+        'Full auth UI, usage tracking, trials, settings page',
+        'Just needs Stripe webhook integration for payments'
+      ]
     }
   ];
 

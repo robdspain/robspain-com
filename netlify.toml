@@ -106,3 +106,39 @@
   from = "/api/agent-webhook"
   to = "/.netlify/functions/agent-webhook"
   status = 200
+
+# Neo Dashboard API
+[[redirects]]
+  from = "/api/projects"
+  to = "/.netlify/functions/dashboard-api"
+  status = 200
+
+[[redirects]]
+  from = "/api/projects/*"
+  to = "/.netlify/functions/dashboard-api"
+  status = 200
+
+[[redirects]]
+  from = "/api/quick-wins"
+  to = "/.netlify/functions/dashboard-api"
+  status = 200
+
+[[redirects]]
+  from = "/api/quick-wins/*"
+  to = "/.netlify/functions/dashboard-api"
+  status = 200
+
+[[redirects]]
+  from = "/api/content"
+  to = "/.netlify/functions/dashboard-api"
+  status = 200
+
+[[redirects]]
+  from = "/api/content/*"
+  to = "/.netlify/functions/dashboard-api"
+  status = 200
+
+[[redirects]]
+  from = "/api/sync"
+  to = "/.netlify/functions/dashboard-api"
+  status = 200

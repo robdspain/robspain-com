@@ -10,68 +10,99 @@ permalink: /admin/neo-dashboard/
   <div class="neo-dashboard-container">
     <div class="neo-header">
       <span class="neo-badge">⚡ Neo Dashboard v2</span>
-      <h1>Project Status, Quick Wins, and Content Calendar</h1>
+      <h1>Project Status & Quick Wins</h1>
       <p>
-        One place to see what’s building, what needs a quick decision, and what content is going out next.
-        Everything here is editable and saved locally in your browser.
+        See all active projects at a glance, knock out quick wins, and plan content.
+        Everything syncs to your browser's local storage.
       </p>
     </div>
 
     <div class="neo-grid">
+      <!-- Projects Section -->
       <section class="neo-card neo-projects">
-        <h2>Active Projects</h2>
-        <p class="neo-card-subtitle">Click any project card to expand and update progress, phase, or blocked reason.</p>
+        <h2>🟢 Active Projects</h2>
+        <p class="neo-card-subtitle">Click any card to expand and update progress, phase, or status.</p>
         <div id="project-grid" class="project-grid"></div>
+        <!-- Blocked section is dynamically inserted here -->
       </section>
 
+      <!-- Quick Wins Section -->
       <section class="neo-card neo-quickwins">
-        <h2>Quick Wins</h2>
-        <p class="neo-card-subtitle">Fast approvals and reviews to keep momentum moving.</p>
+        <div class="quickwin-header">
+          <h2>⚡ Quick Wins</h2>
+        </div>
+        <p class="neo-card-subtitle">5-15 minute tasks. Sorted by time — fastest first.</p>
+        
         <div id="quickwin-list" class="quickwin-list"></div>
 
         <form id="quickwin-form" class="quickwin-form">
-          <input id="quickwin-title" type="text" placeholder="Quick win title" required>
-          <select id="quickwin-estimate">
-            <option value="5">5 minutes</option>
-            <option value="10" selected>10 minutes</option>
-            <option value="15">15 minutes</option>
-          </select>
-          <select id="quickwin-type">
-            <option value="approve">Approve</option>
-            <option value="review">Review</option>
-            <option value="decision">Decision</option>
-            <option value="action">Action</option>
-          </select>
-          <button type="submit">Add Quick Win</button>
+          <input id="quickwin-title" type="text" placeholder="Add a quick win..." required>
+          <div class="quickwin-form-row">
+            <select id="quickwin-estimate">
+              <option value="5">5 min</option>
+              <option value="10" selected>10 min</option>
+              <option value="15">15 min</option>
+            </select>
+            <select id="quickwin-type">
+              <option value="action">⚡ Action</option>
+              <option value="approve">✅ Approve</option>
+              <option value="review">📄 Review</option>
+              <option value="decision">🤔 Decision</option>
+            </select>
+          </div>
+          <button type="submit">+ Add Quick Win</button>
         </form>
       </section>
 
+      <!-- Content Calendar Section -->
       <section class="neo-card neo-calendar">
         <div class="calendar-header">
           <div>
-            <h2>Content Calendar</h2>
-            <p class="neo-card-subtitle">Schedule and preview upcoming content across channels.</p>
+            <h2>📅 Content Calendar</h2>
+            <p class="neo-card-subtitle">Schedule and visualize content across channels.</p>
           </div>
           <div class="calendar-controls">
-            <button id="calendar-prev" type="button">◀</button>
-            <button id="calendar-next" type="button">▶</button>
+            <button id="calendar-prev" type="button" aria-label="Previous month">◀</button>
+            <h3 id="calendar-label"></h3>
+            <button id="calendar-next" type="button" aria-label="Next month">▶</button>
           </div>
         </div>
 
-        <div class="calendar-header">
-          <h3 id="calendar-label"></h3>
-        </div>
         <div id="calendar-grid" class="calendar-grid"></div>
+        
+        <div class="calendar-legend">
+          <div class="legend-item">
+            <span class="legend-color" style="background: #fef3c7;"></span>
+            <span>📧 Email</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background: #fee2e2;"></span>
+            <span>🎥 YouTube</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background: #dbeafe;"></span>
+            <span>💼 LinkedIn</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background: #f3e8ff;"></span>
+            <span>📝 Blog</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background: #e0f2fe;"></span>
+            <span>🐦 Twitter</span>
+          </div>
+        </div>
+        
         <div id="calendar-warning" class="neo-alert"></div>
 
         <form id="calendar-form" class="calendar-form">
           <input id="content-title" type="text" placeholder="Content title" required>
           <select id="content-channel">
-            <option value="email">Email</option>
-            <option value="youtube">YouTube</option>
-            <option value="linkedin">LinkedIn</option>
-            <option value="blog">Blog</option>
-            <option value="twitter">Twitter/X</option>
+            <option value="email">📧 Email</option>
+            <option value="youtube">🎥 YouTube</option>
+            <option value="linkedin">💼 LinkedIn</option>
+            <option value="blog">📝 Blog</option>
+            <option value="twitter">🐦 Twitter</option>
           </select>
           <input id="content-date" type="date" required>
           <button type="submit">Schedule</button>

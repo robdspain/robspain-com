@@ -2,8 +2,8 @@
   {
     "name": "SchoolRBT - RBT Exam Prep",
     "description": "A complete study toolkit for the RBT® certification exam, featuring 500 practice questions, mock exams, and detailed analytics.",
-    "status": "Launched",
-    "status_slug": "launched",
+    "status": "Awaiting DNS",
+    "status_slug": "development",
     "url": "https://schoolrbt.com"
   },
   {

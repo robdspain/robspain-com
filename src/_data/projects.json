@@ -43,7 +43,7 @@
   },
   {
     "name": "Behavior School Pro",
-    "description": "The next generation of behavior analytic software for planning, data collection, and supervision.",
+    "description": "The next generation of behavior analytic software for planning, data collection, and supervision. Awaiting a modern landing page and user authentication.",
     "status": "In Development",
     "status_slug": "development",
     "url": "https://plan.behaviorschool.com"

@@ -29,7 +29,7 @@
   },
   {
     "name": "ReunifyScience Tools",
-    "description": "A suite of evidence-based assessments and tools for professionals working in family reunification and co-parenting.",
+    "description": "A suite of evidence-based assessments and tools for professionals. Currently in beta, with ongoing work to fix broken links and add user data storage with multi-provider authentication.",
     "status": "Beta",
     "status_slug": "beta",
     "url": "https://reunifyscience.com"

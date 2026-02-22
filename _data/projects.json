@@ -1,0 +1,51 @@
+[
+  {
+    "name": "SchoolRBT - RBT Exam Prep",
+    "description": "A complete study toolkit for the RBT® certification exam, featuring 500 practice questions, mock exams, and detailed analytics.",
+    "status": "Launched",
+    "status_slug": "launched",
+    "url": "https://schoolrbt.com"
+  },
+  {
+    "name": "ACE CEU Platform",
+    "description": "A platform for Board Certified Behavior Analysts (BCBAs) to earn Continuing Education Units (CEUs) through advanced courses and events.",
+    "status": "In Development",
+    "status_slug": "development",
+    "url": "https://behaviorschool.com"
+  },
+  {
+    "name": "IEP Goal Writer",
+    "description": "A free lead-generation tool to help special education professionals write effective and measurable IEP goals.",
+    "status": "In Development",
+    "status_slug": "development",
+    "url": null
+  },
+  {
+    "name": "ObservationPro Watch App",
+    "description": "A professional data collection app for Apple Watch, allowing for discreet and efficient real-time behavior tracking.",
+    "status": "In Development",
+    "status_slug": "development",
+    "url": null
+  },
+  {
+    "name": "ReunifyScience Tools",
+    "description": "A suite of evidence-based assessments and tools for professionals working in family reunification and co-parenting.",
+    "status": "Beta",
+    "status_slug": "beta",
+    "url": "https://reunifyscience.com"
+  },
+  {
+    "name": "KCUSD Behavior Team Hub",
+    "description": "An internal tool suite for the KCUSD Behavior Intervention Team, featuring case management, a goal bank, and observation tools.",
+    "status": "Launched",
+    "status_slug": "launched",
+    "url": null
+  },
+  {
+    "name": "Behavior School Pro",
+    "description": "The next generation of behavior analytic software for planning, data collection, and supervision.",
+    "status": "In Development",
+    "status_slug": "development",
+    "url": "https://plan.behaviorschool.com"
+  }
+]

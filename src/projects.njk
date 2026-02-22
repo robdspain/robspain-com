@@ -1,0 +1,27 @@
+---
+layout: layout.njk
+title: Projects
+permalink: /projects/
+---
+
+<div class="container-prose">
+  <h1>Projects</h1>
+  <p class="subtitle">A curated list of projects I'm currently building or have launched. This page is automatically updated from project management logs.</p>
+</div>
+
+<div class="projects-grid">
+  {% for project in projects %}
+    <div class="project-card">
+      <div class="project-card-header">
+        <h2 class="project-title">{{ project.name }}</h2>
+        <span class="status-badge status-{{ project.status_slug }}">{{ project.status }}</span>
+      </div>
+      <p class="project-description">{{ project.description }}</p>
+      {% if project.url %}
+        <a href="{{ project.url }}" class="project-link" target="_blank" rel="noopener noreferrer">Visit Project &rarr;</a>
+      {% else %}
+        <span class="project-link-disabled">Internal Tool</span>
+      {% endif %}
+    </div>
+  {% endfor %}
+</div>

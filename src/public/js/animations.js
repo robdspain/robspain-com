@@ -104,13 +104,16 @@ class AnimationController {
             const easeOut = 1 - Math.pow(1 - progress, 3);
             const current = Math.floor(startValue + (target - startValue) * easeOut);
             
-            element.textContent = prefix + current.toLocaleString() + suffix;
+            // Conditional formatting: don't use locale string for years.
+            const formattedCurrent = target < 10000 ? current.toString() : current.toLocaleString();
+            element.textContent = prefix + formattedCurrent + suffix;
             
             if (progress < 1) {
                 requestAnimationFrame(animate);
             } else {
                 element.classList.remove('counting');
-                element.textContent = prefix + target.toLocaleString() + suffix;
+                const formattedTarget = target < 10000 ? target.toString() : target.toLocaleString();
+                element.textContent = prefix + formattedTarget + suffix;
             }
         };
 

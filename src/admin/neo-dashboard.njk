@@ -54,55 +54,30 @@ permalink: /admin/neo-dashboard/
         </form>
       </section>
 
-      <!-- Content Calendar Section -->
+      <!-- Content Calendar Section (Weekly View) -->
       <section class="neo-card neo-calendar">
         <div class="calendar-header">
           <div>
             <h2>📅 Content Calendar</h2>
-            <p class="neo-card-subtitle">Schedule and visualize content across channels.</p>
+            <p class="neo-card-subtitle">Weekly view — click any empty slot to schedule content.</p>
           </div>
           <div class="calendar-controls">
-            <button id="calendar-prev" type="button" aria-label="Previous month">◀</button>
+            <button id="calendar-prev" type="button" aria-label="Previous week">◀</button>
             <h3 id="calendar-label"></h3>
-            <button id="calendar-next" type="button" aria-label="Next month">▶</button>
+            <button id="calendar-next" type="button" aria-label="Next week">▶</button>
           </div>
         </div>
 
         <div id="calendar-grid" class="calendar-grid"></div>
-        
-        <div class="calendar-legend">
-          <div class="legend-item">
-            <span class="legend-color" style="background: #fef3c7;"></span>
-            <span>📧 Email</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-color" style="background: #fee2e2;"></span>
-            <span>🎥 YouTube</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-color" style="background: #dbeafe;"></span>
-            <span>💼 LinkedIn</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-color" style="background: #f3e8ff;"></span>
-            <span>📝 Blog</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-color" style="background: #e0f2fe;"></span>
-            <span>🐦 Twitter</span>
-          </div>
-        </div>
-        
+
         <div id="calendar-warning" class="neo-alert"></div>
 
         <form id="calendar-form" class="calendar-form">
           <input id="content-title" type="text" placeholder="Content title" required>
           <select id="content-channel">
-            <option value="email">📧 Email</option>
-            <option value="youtube">🎥 YouTube</option>
             <option value="linkedin">💼 LinkedIn</option>
-            <option value="blog">📝 Blog</option>
-            <option value="twitter">🐦 Twitter</option>
+            <option value="twitter">🐦 Twitter/X</option>
+            <option value="email">📧 Email</option>
           </select>
           <input id="content-date" type="date" required>
           <button type="submit">Schedule</button>

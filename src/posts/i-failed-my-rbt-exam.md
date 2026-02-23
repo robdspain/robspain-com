@@ -2,8 +2,8 @@
 layout: post.njk
 title: "I Failed My RBT Exam — Here's Exactly What to Do Next"
 date: 2026-02-23
-image: null
-description: If you just failed the RBT exam, you're not alone. Here's a practical 4-week retake plan to pass on your next attempt.
+description: If you just failed the RBT exam, you're not alone. Here's a practical
+  4-week retake plan to pass on your next attempt.
 tags:
   - rbt-exam
   - study-tips
@@ -17,7 +17,7 @@ You didn't waste anything. And you're closer than you think.
 
 ## Failing the RBT Exam Is Common — Really Common
 
-Here's something most study programs won't tell you upfront: **the first-time pass rate for the RBT exam is below 50%.** That means most people sitting for this exam for the first time don't pass. You're not in some small, embarrassing minority. You're in the majority.
+Here's something most study programs won't tell you upfront: **a significant percentage of people don't pass the RBT exam on their first attempt.** You're not in some small, embarrassing minority. You're in much larger company than you think.
 
 That doesn't make it feel better right now. I know. But it matters, because the story you're telling yourself — that you're not smart enough, that you're not cut out for this field — is wrong. The RBT exam is genuinely difficult. It tests applied knowledge across domains that many training programs only cover at a surface level. Failing it doesn't say something about you. It says something about the gap between how you prepared and what the exam actually asks.
 

@@ -72,161 +72,169 @@ const store = {
   }
 };
 
-// Default data matching the PRD examples
+// Default data — real projects and actionable quick wins
 const defaultData = {
   projects: [
+    {
+      id: 'schoolrbt',
+      name: 'SchoolRBT',
+      emoji: '📖',
+      status: 'blocked',
+      progress: 85,
+      phase: 'Awaiting DNS',
+      blockedReason: 'DNS for rbtstudy.behaviorschool.com needs to be pointed',
+      lastUpdated: '2026-02-22T18:00:00Z',
+      prdPath: ''
+    },
+    {
+      id: 'ace-ceu',
+      name: 'ACE CEU Platform',
+      emoji: '🎓',
+      status: 'active',
+      progress: 45,
+      phase: 'Building',
+      blockedReason: '',
+      lastUpdated: '2026-02-21T14:30:00Z',
+      prdPath: ''
+    },
     {
       id: 'iep-goal-writer',
       name: 'IEP Goal Writer',
       emoji: '📝',
       status: 'active',
-      progress: 40,
+      progress: 55,
       phase: 'Building',
       blockedReason: '',
-      lastUpdated: new Date().toISOString(),
+      lastUpdated: '2026-02-23T09:00:00Z',
       prdPath: ''
     },
     {
-      id: 'learning-platform',
-      name: 'Learning Platform',
-      emoji: '🎓',
+      id: 'observationpro',
+      name: 'ObservationPro Watch',
+      emoji: '⌚',
       status: 'active',
-      progress: 80,
-      phase: 'Polish',
+      progress: 30,
+      phase: 'Prototyping',
       blockedReason: '',
-      lastUpdated: new Date().toISOString(),
+      lastUpdated: '2026-02-19T11:00:00Z',
       prdPath: ''
     },
     {
-      id: 'kcusd-site',
-      name: 'KCUSD Site',
+      id: 'reunifyscience',
+      name: 'ReunifyScience Tools',
+      emoji: '🔬',
+      status: 'active',
+      progress: 70,
+      phase: 'Beta',
+      blockedReason: '',
+      lastUpdated: '2026-02-20T16:45:00Z',
+      prdPath: ''
+    },
+    {
+      id: 'kcusd-hub',
+      name: 'KCUSD Behavior Hub',
       emoji: '🏫',
       status: 'done',
       progress: 100,
-      phase: 'Done',
+      phase: 'Launched',
       blockedReason: '',
-      lastUpdated: new Date().toISOString(),
+      lastUpdated: '2026-02-10T08:00:00Z',
       prdPath: ''
     },
     {
-      id: 'neo-ios',
-      name: 'Neo iOS App',
-      emoji: '📱',
-      status: 'paused',
-      progress: 20,
-      phase: 'Planning',
-      blockedReason: 'Waiting on Apple dev account',
-      lastUpdated: new Date().toISOString(),
-      prdPath: ''
-    },
-    {
-      id: 'phone-calling',
-      name: 'Phone Calling',
-      emoji: '📞',
+      id: 'behavior-school-pro',
+      name: 'Behavior School Pro',
+      emoji: '🧠',
       status: 'blocked',
-      progress: 10,
-      phase: 'Setup',
-      blockedReason: 'Need Twilio creds from Rob',
-      lastUpdated: new Date().toISOString(),
+      progress: 25,
+      phase: 'Auth Setup',
+      blockedReason: 'Needs Google OAuth credentials configured',
+      lastUpdated: '2026-02-18T13:20:00Z',
       prdPath: ''
     }
   ],
   quickWins: [
     {
-      id: 'review-landing-copy',
-      title: 'Review IEP Writer landing copy',
-      description: 'Check the new hero section and CTA buttons',
-      estimateMinutes: 5,
-      type: 'review',
-      previewUrl: '/iep-writer',
-      actionUrl: '',
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-      completedAt: null,
-      relatedProject: 'iep-goal-writer'
-    },
-    {
-      id: 'approve-email-seq',
-      title: 'Approve welcome email sequence',
-      description: '3-email welcome series for new subscribers',
+      id: 'r2-credentials',
+      title: 'Set up Cloudflare R2 credentials for video hosting',
+      description: 'Log into Cloudflare dashboard, create R2 API token, and add to .env — needed to unblock video uploads',
       estimateMinutes: 10,
-      type: 'approve',
+      type: 'action',
       previewUrl: '',
-      actionUrl: '',
+      actionUrl: 'https://dash.cloudflare.com/',
       status: 'pending',
-      createdAt: new Date().toISOString(),
+      createdAt: '2026-02-23T08:00:00Z',
       completedAt: null,
       relatedProject: ''
     },
     {
-      id: 'signup-twilio',
-      title: 'Sign up for Twilio account',
-      description: '',
+      id: 'stripe-price-id',
+      title: 'Create Stripe price ID for ACE CEU subscription',
+      description: 'Set up a recurring price in Stripe dashboard and copy the price_xxx ID into the config',
+      estimateMinutes: 10,
+      type: 'action',
+      previewUrl: '',
+      actionUrl: 'https://dashboard.stripe.com/products',
+      status: 'pending',
+      createdAt: '2026-02-23T08:00:00Z',
+      completedAt: null,
+      relatedProject: 'ace-ceu'
+    },
+    {
+      id: 'resend-pro',
+      title: 'Upgrade to Resend Pro for transactional email',
+      description: 'Current free tier is hitting limits. Upgrade plan and verify sending domain',
       estimateMinutes: 5,
       type: 'action',
       previewUrl: '',
-      actionUrl: 'https://twilio.com/try-twilio',
+      actionUrl: 'https://resend.com/settings/billing',
       status: 'pending',
-      createdAt: new Date().toISOString(),
+      createdAt: '2026-02-23T08:00:00Z',
       completedAt: null,
-      relatedProject: 'phone-calling'
-    }
-  ],
-  content: [
-    {
-      id: 'yt-bcba-mistakes',
-      title: '5 Mistakes School BCBAs Make',
-      channel: 'youtube',
-      scheduledDate: getDateOffset(2),
-      status: 'drafting',
-      contentDraft: 'Script in progress...',
-      previewUrl: '',
-      publishUrl: '',
-      tags: ['bcba', 'mistakes']
+      relatedProject: ''
     },
     {
-      id: 'email-calaba-preview',
-      title: 'CalABA Preview - What I\'m Presenting',
-      channel: 'email',
-      scheduledDate: getDateOffset(3),
-      status: 'review',
-      contentDraft: '',
+      id: 'google-oauth',
+      title: 'Configure Google OAuth for Behavior School Pro',
+      description: 'Create OAuth 2.0 client ID in Google Cloud Console and add credentials to project config',
+      estimateMinutes: 15,
+      type: 'action',
       previewUrl: '',
-      publishUrl: '',
-      tags: ['calaba', 'conference']
+      actionUrl: 'https://console.cloud.google.com/apis/credentials',
+      status: 'pending',
+      createdAt: '2026-02-23T08:00:00Z',
+      completedAt: null,
+      relatedProject: 'behavior-school-pro'
     },
     {
-      id: 'li-tip-post',
-      title: 'Quick Tip: Data Collection',
-      channel: 'linkedin',
-      scheduledDate: getDateOffset(5),
-      status: 'idea',
-      contentDraft: '',
+      id: 'dns-rbtstudy',
+      title: 'Point DNS for rbtstudy.behaviorschool.com',
+      description: 'Add CNAME record in Cloudflare DNS to point rbtstudy subdomain to hosting provider',
+      estimateMinutes: 5,
+      type: 'action',
       previewUrl: '',
-      publishUrl: '',
-      tags: ['data', 'tips']
+      actionUrl: 'https://dash.cloudflare.com/',
+      status: 'pending',
+      createdAt: '2026-02-23T08:00:00Z',
+      completedAt: null,
+      relatedProject: 'schoolrbt'
     }
   ],
-  monthOffset: 0
+  content: [],
+  weekOffset: 0
 };
-
-function getDateOffset(days) {
-  const date = new Date();
-  date.setDate(date.getDate() + days);
-  return date.toISOString().split('T')[0];
-}
 
 // Get data with defaults
 function getData() {
   const stored = store.load();
   if (!stored) return { ...defaultData };
-  
+
   // Merge with defaults to ensure all fields exist
   return {
     projects: stored.projects || defaultData.projects,
     quickWins: stored.quickWins || defaultData.quickWins,
     content: stored.content || defaultData.content,
-    monthOffset: stored.monthOffset || 0
+    weekOffset: stored.weekOffset || 0
   };
 }
 
@@ -515,81 +523,120 @@ function setupQuickWinForm(data) {
   });
 }
 
-// ===== CALENDAR RENDERING =====
+// ===== WEEKLY CALENDAR RENDERING =====
+const WEEK_CHANNELS = ['linkedin', 'twitter', 'email'];
+const CHANNEL_LABELS = {
+  linkedin: '💼 LinkedIn',
+  twitter: '🐦 Twitter/X',
+  email: '📧 Email'
+};
+
+function getWeekDates(offset) {
+  const today = new Date();
+  const dayOfWeek = today.getDay(); // 0=Sun
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1) + offset * 7);
+
+  const dates = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    dates.push(d);
+  }
+  return dates;
+}
+
 function renderCalendar(data) {
   const grid = document.getElementById('calendar-grid');
   const label = document.getElementById('calendar-label');
   if (!grid || !label) return;
-  
-  const today = new Date();
-  const monthDate = new Date(today.getFullYear(), today.getMonth() + data.monthOffset, 1);
-  
-  const monthName = monthDate.toLocaleString('default', { month: 'long', year: 'numeric' });
-  label.textContent = monthName;
-  
-  const startDay = monthDate.getDay();
-  const daysInMonth = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0).getDate();
-  
+
+  const weekDates = getWeekDates(data.weekOffset || 0);
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  // Week label
+  const startStr = weekDates[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const endStr = weekDates[6].toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  label.textContent = `${startStr} – ${endStr}`;
+
   grid.innerHTML = '';
-  
-  // Day headers
-  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  dayNames.forEach(day => {
+
+  // Build the weekly grid: channel rows x 7 day columns
+  // Header row: empty corner + day headers
+  const corner = document.createElement('div');
+  corner.className = 'week-corner';
+  grid.appendChild(corner);
+
+  const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  weekDates.forEach((date, i) => {
     const header = document.createElement('div');
-    header.className = 'calendar-day-header';
-    header.textContent = day;
+    const dateStr = date.toISOString().split('T')[0];
+    header.className = 'week-day-header' + (dateStr === todayStr ? ' today' : '');
+    header.innerHTML = `<span class="week-day-name">${dayNames[i]}</span><span class="week-day-date">${date.getDate()}</span>`;
     grid.appendChild(header);
   });
-  
-  // Empty cells for start of month
-  for (let i = 0; i < startDay; i++) {
-    const empty = document.createElement('div');
-    empty.className = 'calendar-cell';
-    empty.style.opacity = '0.3';
-    empty.style.pointerEvents = 'none';
-    grid.appendChild(empty);
-  }
-  
-  // Day cells
-  const todayStr = today.toISOString().split('T')[0];
-  
-  for (let day = 1; day <= daysInMonth; day++) {
-    const dateStr = new Date(monthDate.getFullYear(), monthDate.getMonth(), day)
-      .toISOString()
-      .split('T')[0];
-    
-    const cell = document.createElement('div');
-    cell.className = 'calendar-cell';
-    if (dateStr === todayStr) cell.classList.add('today');
-    
-    cell.innerHTML = `<div class="day">${day}</div>`;
-    
-    // Add content items for this day
-    data.content
-      .filter(item => item.scheduledDate === dateStr)
-      .forEach(item => {
-        const badge = document.createElement('div');
-        badge.className = 'calendar-item';
-        badge.dataset.channel = item.channel;
-        badge.dataset.status = item.status;
-        
-        if (isOverdue(item.scheduledDate, item.status)) {
-          badge.classList.add('overdue');
-        }
-        
-        badge.innerHTML = `
-          <span class="channel-icon">${CHANNEL_ICONS[item.channel] || '📌'}</span>
-          <span>${truncate(item.title, 15)}</span>
-        `;
-        
-        badge.title = `${item.title} (${item.status})`;
-        
-        cell.appendChild(badge);
-      });
-    
-    grid.appendChild(cell);
-  }
-  
+
+  // Channel rows
+  WEEK_CHANNELS.forEach(channel => {
+    // Row label
+    const rowLabel = document.createElement('div');
+    rowLabel.className = 'week-channel-label';
+    rowLabel.dataset.channel = channel;
+    rowLabel.textContent = CHANNEL_LABELS[channel];
+    grid.appendChild(rowLabel);
+
+    // Day cells for this channel
+    weekDates.forEach(date => {
+      const dateStr = date.toISOString().split('T')[0];
+      const cell = document.createElement('div');
+      cell.className = 'week-cell';
+      if (dateStr === todayStr) cell.classList.add('today');
+      cell.dataset.channel = channel;
+      cell.dataset.date = dateStr;
+
+      // Find content items for this cell
+      const items = data.content.filter(
+        item => item.scheduledDate === dateStr && item.channel === channel
+      );
+
+      if (items.length > 0) {
+        items.forEach(item => {
+          const badge = document.createElement('div');
+          badge.className = 'week-item';
+          badge.dataset.status = item.status;
+          if (isOverdue(item.scheduledDate, item.status)) {
+            badge.classList.add('overdue');
+          }
+          badge.innerHTML = `<span class="week-item-title">${escapeHtml(truncate(item.title, 22))}</span>`;
+          badge.title = `${item.title} (${item.status})`;
+          cell.appendChild(badge);
+        });
+      } else {
+        // Empty placeholder slot
+        const placeholder = document.createElement('div');
+        placeholder.className = 'week-placeholder';
+        placeholder.innerHTML = '<span>+</span>';
+        placeholder.title = `Schedule ${CHANNEL_LABELS[channel]} for ${date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`;
+        placeholder.addEventListener('click', () => {
+          // Pre-fill form
+          const titleInput = document.getElementById('content-title');
+          const channelSelect = document.getElementById('content-channel');
+          const dateInput = document.getElementById('content-date');
+          if (titleInput && channelSelect && dateInput) {
+            channelSelect.value = channel;
+            dateInput.value = dateStr;
+            titleInput.focus();
+            // Scroll form into view
+            titleInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        });
+        cell.appendChild(placeholder);
+      }
+
+      grid.appendChild(cell);
+    });
+  });
+
   renderUpcoming(data);
   renderContentWarnings(data);
 }
@@ -726,18 +773,18 @@ function setupContentForm(data) {
 function setupCalendarControls(data) {
   const prevBtn = document.getElementById('calendar-prev');
   const nextBtn = document.getElementById('calendar-next');
-  
+
   if (prevBtn) {
     prevBtn.addEventListener('click', () => {
-      data.monthOffset -= 1;
+      data.weekOffset = (data.weekOffset || 0) - 1;
       saveData(data);
       renderCalendar(data);
     });
   }
-  
+
   if (nextBtn) {
     nextBtn.addEventListener('click', () => {
-      data.monthOffset += 1;
+      data.weekOffset = (data.weekOffset || 0) + 1;
       saveData(data);
       renderCalendar(data);
     });

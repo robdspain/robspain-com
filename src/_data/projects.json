@@ -1,51 +1,58 @@
 [
   {
-    "name": "SchoolRBT - RBT Exam Prep",
-    "description": "A complete study toolkit for the RBT® certification exam, featuring 500 practice questions, mock exams, and detailed analytics.",
-    "status": "Awaiting DNS",
-    "status_slug": "development",
+    "name": "SchoolRBT — RBT Exam Hub",
+    "description": "The hub for school-based RBTs. Links to the exam prep tool, PDU courses, and supervision hour tracker. Landing page live; custom domain pending DNS.",
+    "status": "Live",
+    "status_slug": "launched",
     "url": "https://schoolrbt.com"
   },
   {
+    "name": "RBT Study — Exam Prep",
+    "description": "500 practice questions, mock exams, domain breakdowns, and AI-powered study plans for school-based RBTs. $49/mo subscription.",
+    "status": "Live",
+    "status_slug": "launched",
+    "url": "https://rbtstudy.behaviorschool.com"
+  },
+  {
+    "name": "Supervision Hour Tracker",
+    "description": "Log and track RBT supervision hours. Supervisor dashboard with student progress, attention flags, and Phase 2 multi-tenant org management.",
+    "status": "Live",
+    "status_slug": "launched",
+    "url": "https://supervision.behaviorschool.com"
+  },
+  {
+    "name": "Behavior School Plan",
+    "description": "AI-powered FBA, BIP, and IEP goal writing platform for BCBAs. FERPA-encrypted student management, 14-day trial, Stripe billing.",
+    "status": "Live",
+    "status_slug": "launched",
+    "url": "https://plan.behaviorschool.com"
+  },
+  {
     "name": "ACE CEU Platform",
-    "description": "A platform for Board Certified Behavior Analysts (BCBAs) to earn Continuing Education Units (CEUs) through advanced courses and events.",
+    "description": "BACB-approved continuing education courses for BCBAs and RBT PDUs. Video hosting via Cloudflare R2. Final deploy blocked pending R2 credentials.",
     "status": "In Development",
     "status_slug": "development",
-    "url": "https://behaviorschool.com"
-  },
-  {
-    "name": "IEP Goal Writer",
-    "description": "A free lead-generation tool to help special education professionals write effective and measurable IEP goals.",
-    "status": "In Development",
-    "status_slug": "development",
-    "url": null
-  },
-  {
-    "name": "ObservationPro Watch App",
-    "description": "A professional data collection app for Apple Watch, allowing for discreet and efficient real-time behavior tracking.",
-    "status": "In Development",
-    "status_slug": "development",
-    "url": null
+    "url": "https://learning.behaviorschool.com"
   },
   {
     "name": "ReunifyScience Tools",
-    "description": "A suite of evidence-based assessments and tools for professionals. Currently in beta, with ongoing work to fix broken links and add user data storage with multi-provider authentication.",
+    "description": "Evidence-based assessments and tools for family reunification professionals. Rule-Governed vs Contingency-Shaped assessment, Fusion FA tool, CA Family Law Library.",
     "status": "Beta",
     "status_slug": "beta",
     "url": "https://reunifyscience.com"
   },
   {
-    "name": "KCUSD Behavior Team Hub",
-    "description": "An internal tool suite for the KCUSD Behavior Intervention Team, featuring case management, a goal bank, and observation tools.",
-    "status": "Launched",
-    "status_slug": "launched",
+    "name": "ObservationPro Watch App",
+    "description": "Professional behavior data collection for Apple Watch. Stealth mode, AI-powered ABC parsing, dual-tracker. In active development.",
+    "status": "In Development",
+    "status_slug": "development",
     "url": null
   },
   {
-    "name": "Behavior School Pro",
-    "description": "The next generation of behavior analytic software for planning, data collection, and supervision. Awaiting a modern landing page and user authentication.",
-    "status": "In Development",
-    "status_slug": "development",
-    "url": "https://plan.behaviorschool.com"
+    "name": "KCUSD Behavior Team Hub",
+    "description": "Internal tool suite for the KCUSD Behavior Intervention Team. Case management, goal bank, observation tools, assessment process tracker.",
+    "status": "Live",
+    "status_slug": "launched",
+    "url": null
   }
 ]

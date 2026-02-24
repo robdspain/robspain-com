@@ -1087,6 +1087,189 @@ permalink: /admin/tasks/
         'Full auth UI, usage tracking, trials, settings page',
         'Just needs Stripe webhook integration for payments'
       ]
+    },
+
+    // ═══════════════════════════════════════════════════════════════════
+    // COMPLETED TODAY - Feb 24, 2026
+    // ═══════════════════════════════════════════════════════════════════
+    {
+      id: 27,
+      category: 'money',
+      title: '[NEO] ✅ Supervision Hour Tracker MVP',
+      platform: 'behaviorschool-supervision',
+      time: 'Done',
+      dueDate: null,
+      status: 'done',
+      priority: false,
+      instructions: [
+        'Completed 2026-02-24',
+        'New Convex schema: hourEntries + monthlyForms tables',
+        'RBT Log Hours page (/rbt/log-hours)',
+        'Monthly Form page with supervisor signoff (/rbt/monthly-form)',
+        'Supervisor stub dashboard (/rbt/supervisor)',
+        'Lint + TypeScript clean. Commits: 45f8c6b → 1aa6ac9'
+      ]
+    },
+    {
+      id: 28,
+      category: 'money',
+      title: '[NEO] ✅ AI Study Plan Generator',
+      platform: 'schoolrbt-com',
+      time: 'Done',
+      dueDate: null,
+      status: 'done',
+      priority: false,
+      instructions: [
+        'Completed 2026-02-24',
+        'Netlify function: generate-ai-set.js (Gemini 2.0 Flash)',
+        'Supabase migration: ai_study_sets + ai_study_questions tables',
+        'UI components: AIStudyGenerator, AIStudyDeck, AIStudyCard',
+        'Dashboard integration with AI Study Sets tab',
+        'Fixed critical syntax error in questions-rbt.ts',
+        'Commits: 25cedc4 → a290d3d'
+      ]
+    },
+    {
+      id: 29,
+      category: 'money',
+      title: '[NEO] ✅ AI FBA/BIP Drafting Assistant',
+      platform: 'behaviorschool-app',
+      time: 'Done',
+      dueDate: null,
+      status: 'done',
+      priority: false,
+      instructions: [
+        'Completed 2026-02-24',
+        'Convex action: draftDocumentWithAI (Gemini 2.0 Flash)',
+        'AIDraftingModal: student context form, section display, copy buttons',
+        'FBAToBIPWizard: AI Draft button, field pre-population, yellow AI highlights',
+        'HIPAA disclaimer on all AI-generated content',
+        'Commits: 1f57f59 → e263aa2 → d3de830'
+      ]
+    },
+    {
+      id: 30,
+      category: 'money',
+      title: '[NEO] ✅ behaviorstudytools.com Redesign',
+      platform: 'behaviorstudytools.com',
+      time: 'Done',
+      dueDate: null,
+      status: 'done',
+      priority: false,
+      instructions: [
+        'Completed 2026-02-24',
+        'Dual landing page: BCBA + RBT app sections',
+        'Hero, product cards, value props, social proof, footer',
+        'Brand colors: --quiz-primary: #1f4d3f / --quiz-secondary: #e4b63d',
+        'TODO: Replace placeholder screenshot divs with real app screenshots',
+        'Commit: 3071775'
+      ]
+    },
+    {
+      id: 31,
+      category: 'urgent',
+      title: '[NEO] ✅ plan.behaviorschool.com Crash Fixed',
+      platform: 'behaviorschool-app',
+      time: 'Done',
+      dueDate: null,
+      status: 'done',
+      priority: false,
+      instructions: [
+        'Fixed 2026-02-24',
+        'Root cause: Convex had zero env vars — Better Auth threw on missing BETTER_AUTH_SECRET',
+        'Set 5 Convex env vars via dashboard',
+        'Site returns HTTP 200 ✅',
+        'Still needs: AUTH_GOOGLE_ID, AUTH_GOOGLE_SECRET, STRIPE_WEBHOOK_SECRET, 4 Stripe price IDs'
+      ]
+    },
+
+    // ═══════════════════════════════════════════════════════════════════
+    // NEW ROB TASKS - Feb 24, 2026
+    // ═══════════════════════════════════════════════════════════════════
+    {
+      id: 32,
+      category: 'urgent',
+      title: 'Add GoDaddy CNAME for rbtstudy.behaviorschool.com',
+      platform: 'schoolrbt-com',
+      time: '2 min',
+      dueDate: '2026-02-25',
+      status: 'not-started',
+      priority: true,
+      instructions: [
+        'SchoolRBT.com is live but DNS is broken — site unreachable at rbtstudy.behaviorschool.com',
+        'Go to GoDaddy → DNS Manager → behaviorschool.com',
+        'Add CNAME record: Name = rbtstudy, Value = rbt-study-app.netlify.app, TTL = default',
+        'Tell Neo when done — will verify propagation'
+      ]
+    },
+    {
+      id: 33,
+      category: 'urgent',
+      title: 'Get Free Google AI Studio API Key (Blog Images)',
+      platform: 'behaviorschool.com',
+      time: '1 min',
+      dueDate: null,
+      status: 'not-started',
+      priority: true,
+      instructions: [
+        'Needed to generate blog featured images (free, no billing required)',
+        'Go to <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a>',
+        'Sign in with any Google account',
+        'Click "Create API key"',
+        'Copy key and send to Neo — will generate 2 blog images immediately'
+      ]
+    },
+    {
+      id: 34,
+      category: 'money',
+      title: 'Set Convex Env Vars for plan.behaviorschool.com',
+      platform: 'behaviorschool-app',
+      time: '10 min',
+      dueDate: null,
+      status: 'not-started',
+      priority: true,
+      instructions: [
+        'Go to <a href="https://dashboard.convex.dev" target="_blank">Convex Dashboard</a> → quixotic-fox-157 → Settings → Environment Variables',
+        'Add: AUTH_GOOGLE_ID (from Google Cloud Console OAuth credentials)',
+        'Add: AUTH_GOOGLE_SECRET (from Google Cloud Console OAuth credentials)',
+        'Add: STRIPE_WEBHOOK_SECRET (from Stripe Dashboard → Webhooks)',
+        'Add: STRIPE_BASIC_PRICE_ID (price_xxx from Stripe → Products)',
+        'Add: STRIPE_PRO_PRICE_ID, STRIPE_TEAM_PRICE_ID, STRIPE_ENTERPRISE_PRICE_ID',
+        'These unlock Google OAuth login and Stripe billing on plan.behaviorschool.com'
+      ]
+    },
+    {
+      id: 35,
+      category: 'money',
+      title: 'Share Raffle Purchases Sheet (Google Sheets)',
+      platform: 'BAE SIG',
+      time: '1 min',
+      dueDate: null,
+      status: 'not-started',
+      priority: false,
+      instructions: [
+        'PayPal purchases auto-log but Neo needs read access to confirm it working',
+        'Open Google Sheet ID: 1umiLYHYtszRFaInsq17RJR2XpzLs1v9H89yBOP8cjLI',
+        'Share → Anyone with link → Viewer',
+        'Tell Neo when done'
+      ]
+    },
+    {
+      id: 36,
+      category: 'money',
+      title: 'Confirm Resend Pro Upgrade (Email Campaign)',
+      platform: 'BAE SIG',
+      time: '2 min',
+      dueDate: '2026-02-25',
+      status: 'not-started',
+      priority: true,
+      instructions: [
+        'BAE SIG Email 2 (Mellanie Page spotlight) sends Feb 25',
+        'Verify Resend Pro is active on robspain@gmail.com account',
+        'Go to <a href="https://resend.com/settings/billing" target="_blank">resend.com/settings/billing</a>',
+        'Confirm plan is Pro (not free tier — 100/day limit)',
+        'Tell Neo if any issues — email sends at 9AM tomorrow'
+      ]
     }
   ];
 

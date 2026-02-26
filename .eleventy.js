@@ -44,9 +44,11 @@ async function imageShortcode(src, alt, sizes = "100vw", widths = [400, 800, 120
 
 module.exports = function(eleventyConfig) {
   // Pass-through copies for static assets
-  eleventyConfig.addPassthroughCopy("src/public");
+  // Use object form so src/public/* lands at site root (not /public/*)
+  eleventyConfig.addPassthroughCopy({ "src/public": "." });
   eleventyConfig.addPassthroughCopy("src/*.css");
   eleventyConfig.addPassthroughCopy("src/*.js");
+  eleventyConfig.addPassthroughCopy("src/favicon.png");
   eleventyConfig.addPassthroughCopy("src/admin");
   eleventyConfig.addPassthroughCopy("src/_headers");
   eleventyConfig.addPassthroughCopy("src/_redirects");

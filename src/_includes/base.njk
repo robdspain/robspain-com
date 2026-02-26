@@ -29,6 +29,9 @@
     {% if extra_css %}
     <link rel="stylesheet" href="{{ extra_css }}">
     {% endif %}
+    {% if extra_head %}
+    {{ extra_head | safe }}
+    {% endif %}
 
     <!-- Canonical URL -->
     <link rel="canonical" href="https://robspain.com{{ page.url | url }}">

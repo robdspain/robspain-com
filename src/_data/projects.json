@@ -1,21 +1,21 @@
 [
   {
     "name": "SchoolRBT — RBT Exam Hub",
-    "description": "The hub for school-based RBTs. Links to the exam prep tool, PDU courses, and supervision hour tracker. Landing page live; custom domain pending DNS.",
+    "description": "The hub for school-based RBTs. 500 practice questions, mock exams, SAFMEDS mode, custom flashcard decks, error analysis, and the full 2026 RBT Task List + Ethics Code. Phase 2 underway with supervisor dashboard and adaptive learning.",
     "status": "Live",
     "status_slug": "launched",
     "url": "https://schoolrbt.com"
   },
   {
     "name": "RBT Study — Exam Prep",
-    "description": "500 practice questions, mock exams, domain breakdowns, and AI-powered study plans for school-based RBTs. $49/mo subscription.",
+    "description": "500 practice questions, mock exams, domain breakdowns, SAFMEDS timed drills, and AI-powered study plans for school-based RBTs. $49/mo subscription.",
     "status": "Live",
     "status_slug": "launched",
     "url": "https://rbtstudy.behaviorschool.com"
   },
   {
-    "name": "Supervision Hour Tracker",
-    "description": "Log and track RBT supervision hours. Supervisor dashboard with student progress, attention flags, and Phase 2 multi-tenant org management.",
+    "name": "Supervision Platform",
+    "description": "Full supervision ecosystem for BCBAs and RBTs. Supervision hour logging, CEU tracker, Supervisor Marketplace, Trainee Readiness Dashboard, AI session generator with PDF export, and job board. BACB-compliant fieldwork tracking.",
     "status": "Live",
     "status_slug": "launched",
     "url": "https://supervision.behaviorschool.com"
@@ -29,14 +29,14 @@
   },
   {
     "name": "ACE CEU Platform",
-    "description": "BACB-approved continuing education courses for BCBAs and RBT PDUs. Video hosting via Cloudflare R2. Final deploy blocked pending R2 credentials.",
+    "description": "BACB-approved continuing education courses for BCBAs and RBT PDUs. Video hosting via Cloudflare R2. Final deploy pending R2 credentials.",
     "status": "In Development",
     "status_slug": "development",
     "url": "https://learning.behaviorschool.com"
   },
   {
     "name": "ReunifyScience Tools",
-    "description": "Evidence-based assessments and tools for family reunification professionals. Rule-Governed vs Contingency-Shaped assessment, Fusion FA tool, CA Family Law Library.",
+    "description": "Evidence-based assessments and tools for family reunification professionals. Rule-Governed vs Contingency-Shaped assessment, Fusion FA tool, CA Family Law Library, and Risk & Protective Factors research hub.",
     "status": "Beta",
     "status_slug": "beta",
     "url": "https://reunifyscience.com"
@@ -50,7 +50,7 @@
   },
   {
     "name": "KCUSD Behavior Team Hub",
-    "description": "Internal tool suite for the KCUSD Behavior Intervention Team. Case management, goal bank, observation tools, assessment process tracker.",
+    "description": "Internal tool suite for the KCUSD Behavior Intervention Team. Case management, goal bank, observation tools, assessment process tracker. Also serves as the beta lab for new features across the BehaviorSchool ecosystem.",
     "status": "Live",
     "status_slug": "launched",
     "url": null

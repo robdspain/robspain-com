@@ -139,19 +139,20 @@ class VideoFunnel {
             playerFrame.innerHTML = `
                 <div class="video-placeholder-overlay">
                     <div class="optin-overlay animate-fade-up">
-                        <h3 class="optin-title">🔓 Unlock The Full Series</h3>
-                        <p style="margin-bottom: 1.5rem; color: #cbd5e1;">Enter your email to unlock the remaining videos and bonus resources.</p>
-                        <form class="optin-form" id="funnel-optin-form">
-                            <input type="email" class="optin-input" placeholder="Your Best Email Address" required>
-                            <button type="submit" class="optin-btn">Unlock Now <i class="fas fa-unlock"></i></button>
+                        <h3 class="optin-title">Unlock The Full Series</h3>
+                        <p class="optin-subtitle">Enter your email to access all 10 videos and download the free 10-Minute Staff Script.</p>
+                        <form class="optin-form" id="funnel-optin-form" novalidate>
+                            <input type="email" class="optin-input" placeholder="Your email address" required autocomplete="email">
+                            <button type="submit" class="optin-btn">Unlock Free Access <i class="fas fa-arrow-right"></i></button>
                         </form>
+                        <div id="optin-msg" style="display:none;" class="optin-success"></div>
                     </div>
                 </div>
             `;
             document.getElementById('funnel-optin-form').addEventListener('submit', (e) => {
                 e.preventDefault();
-                const email = e.target.querySelector('input').value;
-                if (email) this.handleOptIn(email);
+                const email = e.target.querySelector('input').value.trim();
+                if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) this.handleOptIn(email);
             });
         } else {
             const videoInfo = this.parseVideoUrl(step.videoUrl);
@@ -335,11 +336,13 @@ class VideoFunnel {
                         playerFrame.innerHTML = `
                             <div class="video-placeholder-overlay">
                                 <div style="text-align:center;">
-                                    <div style="font-size:3rem;margin-bottom:1rem;">🎉</div>
-                                    <h3 style="color:#10B981;font-size:1.5rem;margin-bottom:1rem;">Series Complete!</h3>
-                                    <p style="color:#cbd5e1;margin-bottom:2rem;">You've completed the entire training series.</p>
-                                    <a href="#contact" class="optin-btn" style="display:inline-block;text-decoration:none;">
-                                        Get Started with Rob <i class="fas fa-arrow-right"></i>
+                                    <div style="width:64px;height:64px;background:#10B981;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">
+                                        <i class="fas fa-check" style="color:#fff;font-size:1.5rem;"></i>
+                                    </div>
+                                    <h3 style="color:#10B981;font-size:1.5rem;font-weight:800;margin-bottom:0.75rem;">Series Complete</h3>
+                                    <p style="color:#94a3b8;margin-bottom:2rem;max-width:340px;line-height:1.6;">You now have the framework. Ready to implement it with support? Apply to the 8-Week Transformation Program.</p>
+                                    <a href="/transformation-program" class="optin-btn" style="display:inline-block;text-decoration:none;">
+                                        Apply to the Program <i class="fas fa-arrow-right"></i>
                                     </a>
                                 </div>
                             </div>
@@ -352,17 +355,40 @@ class VideoFunnel {
 
     // ── Email Gate ────────────────────────────────────────────────────
 
-    handleOptIn(email) {
-        console.log('Video funnel opt-in:', email);
-        // TODO: Send to email service (Mailchimp, ConvertKit, etc.)
-        // For now, just unlock locally
+    async handleOptIn(email) {
+        const btn = document.querySelector('#funnel-optin-form .optin-btn');
+        const msgEl = document.getElementById('optin-msg');
+        if (btn) { btn.disabled = true; btn.textContent = 'Unlocking...'; }
+
+        try {
+            const res = await fetch('/.netlify/functions/collect-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, source: 'video-funnel', name: '' }),
+            });
+            const data = await res.json().catch(() => ({}));
+
+            if (res.ok || data.alreadySubscribed) {
+                if (msgEl) {
+                    msgEl.style.display = 'block';
+                    msgEl.textContent = data.alreadySubscribed ? "You're already in — unlocking now!" : 'Confirmed! Unlocking your videos...';
+                }
+                setTimeout(() => this.unlockAll(), 900);
+            } else {
+                throw new Error(data.error || 'Signup failed');
+            }
+        } catch (err) {
+            console.warn('Opt-in error (unlocking anyway):', err);
+            // Always unlock on any network error so users aren't blocked
+            this.unlockAll();
+        }
+
         localStorage.setItem('videoFunnelState', JSON.stringify({
             unlocked: true,
-            email: email,
+            email,
             currentIndex: this.currentIndex,
-            watched: Array.from(this.watchedSteps)
+            watched: Array.from(this.watchedSteps),
         }));
-        this.unlockAll();
     }
 
     unlockAll() {

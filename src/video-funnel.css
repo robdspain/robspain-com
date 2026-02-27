@@ -213,3 +213,149 @@
 .script-content-view strong {
     color: white;
 }
+
+/* ── Bento Grid Cards ──────────────────────────────────────────── */
+
+.video-bento-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.bento-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.25rem 1rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+  min-height: 110px;
+}
+
+.bento-card:hover {
+  border-color: #10B981;
+  transform: translateY(-2px);
+}
+
+.bento-card.is-active {
+  border-color: #10B981;
+  background: rgba(16, 185, 129, 0.15);
+}
+
+.bento-card.is-locked {
+  cursor: not-allowed;
+  opacity: 0.38;
+}
+
+.bento-step-num {
+  font-size: 0.7rem;
+  font-weight: 900;
+  color: #10B981;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.bento-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  line-height: 1.35;
+  flex: 1;
+}
+
+.bento-status {
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.bento-card.is-active .bento-status,
+.bento-status .fa-check-circle {
+  color: #10B981;
+}
+
+/* ── Section background ───────────────────────────────────────── */
+
+.video-funnel-section {
+  background: #0b1120;
+  border-top: none;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* ── Optin overlay polish ─────────────────────────────────────── */
+
+.optin-overlay {
+  max-width: 460px;
+  width: 100%;
+  padding: 0 1rem;
+}
+
+.optin-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  color: #fff;
+}
+
+.optin-subtitle {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.optin-form {
+  display: flex;
+  gap: 0.5rem;
+  flex-direction: column;
+}
+
+.optin-input {
+  width: 100%;
+  padding: 0.85rem 1.1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 1rem;
+}
+.optin-input::placeholder { color: #64748b; }
+.optin-input:focus {
+  outline: none;
+  border-color: #10B981;
+}
+
+.optin-btn {
+  width: 100%;
+  padding: 0.9rem 1.25rem;
+  background: #10B981;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+.optin-btn:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.optin-success {
+  text-align: center;
+  color: #10B981;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 640px) {
+  .video-bento-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

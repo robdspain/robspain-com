@@ -710,51 +710,56 @@ description: "Rob Spain, School BCBA and IBA with 25+ years transforming school 
 @media (max-width: 640px) { .video-bento-grid { grid-template-columns: repeat(2, 1fr) !important; } }
 </style>
 
-{# HIDDEN: Restore condition below when videos are live #}
-{% if false %}{# was: collections.published_scripts.length > 0 #}
-    <!-- Video Funnel Section (Dynamic) -->
-    <section class="video-funnel-section" id="free-training">
-        <div class="container">
-            <div class="section-header-premium animate-fade-up">
-                <div class="section-badge-premium">Free Training Series</div>
-                <h2 class="section-title-premium">
-                    From Chaos to <span class="text-gradient">Systems Leader</span>
-                </h2>
-                <div class="funnel-progress-container">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 0%"></div>
-                    </div>
-                    <span class="progress-percentage">0% UNLOCKED</span>
-                </div>
-            </div>
+<!-- ── Free Video Training ─────────────────────────────────────────── -->
+<section style="background:#0b1120;padding:5rem 1.5rem;" id="free-training">
+  <div style="max-width:960px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:3rem;">
+      <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#10B981;margin-bottom:0.75rem;">Free Video Training</p>
+      <h2 style="font-size:clamp(1.75rem,4vw,2.75rem);font-weight:900;color:#fff;line-height:1.15;letter-spacing:-0.02em;margin-bottom:1rem;">From Crisis Manager<br>to Systems Leader</h2>
+      <p style="font-size:1rem;color:#94a3b8;max-width:500px;margin:0 auto 1.5rem;line-height:1.7;">10 short videos. One proven framework. Built for school-based BCBAs who are done running toward fires.</p>
+      <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+        <span style="background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);color:#10B981;font-size:0.8rem;font-weight:600;padding:0.35rem 0.9rem;border-radius:999px;">10 Videos</span>
+        <span style="background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);color:#10B981;font-size:0.8rem;font-weight:600;padding:0.35rem 0.9rem;border-radius:999px;">1–3 min each</span>
+        <span style="background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);color:#10B981;font-size:0.8rem;font-weight:600;padding:0.35rem 0.9rem;border-radius:999px;">100% Free</span>
+      </div>
+    </div>
 
-            <div class="video-display-container animate-fade-up">
-                <div class="video-player-frame">
-                    <div class="video-placeholder-overlay">
-                        <div class="play-btn-large">
-                            <i class="fas fa-play"></i>
-                        </div>
-                        <h3 class="active-video-title">The Reactivity Trap</h3>
-                        <p style="color: #94a3b8; margin-top: 1rem;">Click to Start Training</p>
-                    </div>
-                </div>
-                
-                <div class="video-nav-controls">
-                    <div class="video-info-box">
-                        <span class="step-label">STEP 01</span>
-                        <h3 class="current-step-title">The Reactivity Trap</h3>
-                    </div>
-                    <button class="next-video-btn" id="next-video">
-                        <span>Next Video</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
-                </div>
-            </div>
+    <!-- Progress -->
+    <div class="funnel-progress-container">
+      <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+      <span class="progress-percentage">0% COMPLETE</span>
+    </div>
 
-            <!-- Bento Grid for Video Selection -->
-            <div class="video-bento-grid">
-                <!-- Dynamically populated by video-funnel.js -->
-            </div>
+    <!-- Player -->
+    <div class="video-display-container">
+      <div class="video-player-frame"></div>
+      <div class="video-nav-controls">
+        <div class="video-info-box">
+          <span class="step-label">STEP 01</span>
+          <h3 class="current-step-title">Loading...</h3>
         </div>
-    </section>
-{% endif %}
+        <button id="next-video" class="next-video-btn" type="button">
+          <span>Next Video</span>
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Bento Grid -->
+    <p style="font-size:0.8rem;color:#475569;margin:2rem 0 0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;">All 10 Videos — Videos 1–3 unlocked</p>
+    <div class="video-bento-grid"></div>
+
+    <!-- CTA -->
+    <div style="text-align:center;margin-top:3rem;">
+      <a href="/free-training/" style="font-size:0.9rem;color:#10B981;text-decoration:none;font-weight:600;border-bottom:1px solid rgba(16,185,129,0.4);padding-bottom:2px;">
+        Open full-screen training view
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Inject video funnel data and boot the class -->
+<script>
+  window.videoFunnelData = {{ videoFunnel | dump | safe }};
+</script>
+<script src="/video-funnel.js"></script>

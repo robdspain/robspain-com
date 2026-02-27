@@ -1,170 +1,111 @@
-const fs = require('fs').promises;
-const path = require('path');
+/**
+ * collect-email.js
+ * Handles video funnel email opt-ins.
+ * Sends a welcome email via Resend and optionally pings Telegram.
+ */
 
-// Simple in-memory rate limiting
 const ipToHits = new Map();
-const RATE_LIMIT_WINDOW_MS = 60000; // 1 minute
+const RATE_LIMIT_MS = 60_000;
 const RATE_LIMIT_MAX = 5;
 
 function isRateLimited(ip) {
   const now = Date.now();
   const entry = ipToHits.get(ip);
-  
-  if (!entry) {
-    ipToHits.set(ip, { count: 1, windowStart: now });
-    return false;
-  }
-  
-  if (now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
-    ipToHits.set(ip, { count: 1, windowStart: now });
-    return false;
-  }
-  
-  entry.count += 1;
+  if (!entry) { ipToHits.set(ip, { count: 1, windowStart: now }); return false; }
+  if (now - entry.windowStart > RATE_LIMIT_MS) { ipToHits.set(ip, { count: 1, windowStart: now }); return false; }
+  entry.count++;
   return entry.count > RATE_LIMIT_MAX;
 }
 
-exports.handler = async (event, context) => {
-  // Only allow POST requests
-  if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-      },
-      body: JSON.stringify({ error: 'Method not allowed' }),
-    };
+const CORS = {
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin': '*',
+};
+
+async function sendWelcomeEmail(email, name) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return;
+
+  const firstName = name ? name.split(' ')[0] : 'there';
+
+  await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      from: 'Rob Spain <rob@robspain.com>',
+      to: email,
+      subject: "Your free training is unlocked",
+      html: `
+        <div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#1e293b;">
+          <p>Hi ${firstName},</p>
+          <p>I'm glad you're in. The rest of the video series is now unlocked for you — including the 10-Minute Staff Script from Video 4.</p>
+          <p><strong>Go back and keep watching:</strong><br>
+          <a href="https://robspain.com/free-training/" style="color:#10B981;">robspain.com/free-training</a></p>
+          <p>The system I walk through in Videos 5–10 is the same one I've used to help school BCBAs cut their "crisis call" volume by 40% or more. Start with Video 5 — it's the map for everything.</p>
+          <p>If you have questions, just reply to this email.</p>
+          <p>— Rob Spain, BCBA, IBA</p>
+          <hr style="border:none;border-top:1px solid #e2e8f0;margin:2rem 0;">
+          <p style="font-size:0.75rem;color:#94a3b8;">You opted in at robspain.com/free-training. <a href="https://robspain.com/unsubscribe" style="color:#94a3b8;">Unsubscribe</a>.</p>
+        </div>
+      `,
+    }),
+  });
+}
+
+async function notifyTelegram(email, source) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID || '8181098703';
+  if (!token) return;
+
+  await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text: `New video funnel opt-in\nEmail: ${email}\nSource: ${source}`,
+    }),
+  }).catch(() => {});
+}
+
+exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 204, headers: CORS, body: '' };
   }
 
-  // Rate limiting
-  const ip = event.headers['x-forwarded-for']?.split(',')[0]?.trim() || 
-             event.headers['x-real-ip'] || 
-             'unknown';
-  
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, headers: CORS, body: JSON.stringify({ error: 'Method not allowed' }) };
+  }
+
+  const ip = event.headers['x-forwarded-for']?.split(',')[0]?.trim() || 'unknown';
   if (isRateLimited(ip)) {
-    return {
-      statusCode: 429,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-      },
-      body: JSON.stringify({ error: 'Too many requests. Please try again later.' }),
-    };
+    return { statusCode: 429, headers: CORS, body: JSON.stringify({ error: 'Too many requests.' }) };
+  }
+
+  let email, source, name;
+  try {
+    ({ email, source = 'unknown', name = '' } = JSON.parse(event.body || '{}'));
+  } catch {
+    return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: 'Invalid JSON' }) };
+  }
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: 'Invalid email address' }) };
   }
 
   try {
-    const data = JSON.parse(event.body);
-    const { email, source, name = '' } = data;
-
-    // Validate email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || !emailRegex.test(email)) {
-      return {
-        statusCode: 400,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-        },
-        body: JSON.stringify({ error: 'Invalid email address' }),
-      };
-    }
-
-    // Prepare email data
-    const emailData = {
-      email,
-      name,
-      source: source || 'unknown',
-      timestamp: new Date().toISOString(),
-      ip,
-    };
-
-    console.log('Email signup:', emailData);
-
-    // TODO: Future integration points:
-    // - ConvertKit: https://developers.convertkit.com/#add-subscriber-to-a-form
-    // - Mailchimp: https://mailchimp.com/developer/marketing/api/list-members/
-    // 
-    // Example ConvertKit integration:
-    // if (process.env.CONVERTKIT_API_KEY && process.env.CONVERTKIT_FORM_ID) {
-    //   const response = await fetch(`https://api.convertkit.com/v3/forms/${process.env.CONVERTKIT_FORM_ID}/subscribe`, {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({
-    //       api_key: process.env.CONVERTKIT_API_KEY,
-    //       email: email,
-    //       first_name: name,
-    //       fields: { source: source }
-    //     }),
-    //   });
-    // }
-
-    // For now, just store locally in a JSON file
-    // In production, replace this with your email service provider
-    const emailsFilePath = path.join('/tmp', 'emails.json');
-    
-    let emails = [];
-    try {
-      const fileContent = await fs.readFile(emailsFilePath, 'utf-8');
-      emails = JSON.parse(fileContent);
-    } catch (err) {
-      // File doesn't exist yet, that's okay
-    }
-
-    // Check for duplicates
-    const existingEmail = emails.find(e => e.email.toLowerCase() === email.toLowerCase());
-    if (existingEmail) {
-      return {
-        statusCode: 409,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-        },
-        body: JSON.stringify({ 
-          message: "You're already subscribed!",
-          alreadySubscribed: true 
-        }),
-      };
-    }
-
-    emails.push(emailData);
-    await fs.writeFile(emailsFilePath, JSON.stringify(emails, null, 2));
-
-    // Send webhook notification if configured
-    if (process.env.EMAIL_WEBHOOK_URL) {
-      try {
-        await fetch(process.env.EMAIL_WEBHOOK_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(emailData),
-        });
-      } catch (webhookError) {
-        console.error('Webhook error:', webhookError);
-        // Don't fail the request if webhook fails
-      }
-    }
+    // Fire welcome email + Telegram notification in parallel (non-blocking)
+    await Promise.allSettled([
+      sendWelcomeEmail(email, name),
+      notifyTelegram(email, source),
+    ]);
 
     return {
       statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-      },
-      body: JSON.stringify({ 
-        success: true,
-        message: 'Successfully subscribed!' 
-      }),
+      headers: CORS,
+      body: JSON.stringify({ success: true, message: 'Subscribed!' }),
     };
-
-  } catch (error) {
-    console.error('Error processing email signup:', error);
-    return {
-      statusCode: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-      },
-      body: JSON.stringify({ error: 'Failed to process signup' }),
-    };
+  } catch (err) {
+    console.error('collect-email error:', err);
+    return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: 'Server error' }) };
   }
 };

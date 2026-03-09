@@ -4,8 +4,178 @@ title: "Rob Spain | School BCBA Expert & Behavior Systems Consultant"
 description: "Rob Spain, School BCBA and IBA with 25+ years transforming school behavior systems. Founder of Behavior School, CalABA speaker, and trainer for 3,200+ BCBAs."
 ---
 
-<!-- Premium Hero Section -->
-    <section class="hero-premium">
+<!-- BehaviorSchool-style Hero Section -->
+<style>
+.bs-hero {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #123628 0%, #1f4d3f 50%, #2c6b57 100%);
+  color: white;
+  padding: 5rem 1.5rem 4rem;
+}
+.bs-hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(to right, #ffffff14 1px, transparent 1px), linear-gradient(to bottom, #ffffff14 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+}
+.bs-hero-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top, #e4b63d26, transparent 55%);
+  pointer-events: none;
+}
+.bs-hero-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+@media (max-width: 768px) {
+  .bs-hero-inner { grid-template-columns: 1fr; text-align: center; }
+  .bs-hero-actions { justify-content: center; }
+  .bs-hero-image-wrap { display: none; }
+}
+.bs-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid #e4b63d;
+  background: rgba(255,255,255,0.08);
+  border-radius: 999px;
+  padding: 0.35rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #e4b63d;
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.03em;
+}
+.bs-hero-badge-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #e4b63d;
+  animation: pulse 2.2s infinite;
+}
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+.bs-hero-h1 {
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin: 0 0 1.25rem;
+  letter-spacing: -0.02em;
+}
+.bs-hero-accent {
+  background: linear-gradient(90deg, #e4b63d, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.bs-hero-sub {
+  font-size: 1.15rem;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.82);
+  margin: 0 0 2rem;
+  max-width: 520px;
+}
+.bs-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.875rem;
+}
+.bs-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #e4b63d;
+  color: #1f4d3f;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.875rem 1.75rem;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.2s;
+}
+.bs-btn-primary:hover { background: #d4a82d; transform: translateY(-2px); }
+.bs-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 2px solid rgba(255,255,255,0.35);
+  color: white;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.875rem 1.75rem;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.bs-btn-secondary:hover { border-color: rgba(255,255,255,0.7); transform: translateY(-2px); }
+.bs-hero-image-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+.bs-hero-image-frame {
+  position: relative;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.12);
+  max-width: 400px;
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+}
+.bs-hero-image-frame img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+</style>
+
+<section class="bs-hero">
+  <div class="bs-hero-grid"></div>
+  <div class="bs-hero-glow"></div>
+  <div class="bs-hero-inner">
+    <div class="bs-hero-text">
+      <div class="bs-hero-badge">
+        <span class="bs-hero-badge-dot"></span>
+        School BCBA · BCBA, IBA
+      </div>
+      <h1 class="bs-hero-h1">
+        Rob Spain —<br>
+        <span class="bs-hero-accent">School Behavior Analyst</span>
+      </h1>
+      <p class="bs-hero-sub">
+        25+ years transforming school behavior systems. Founder of <a href="https://behaviorschool.com" style="color:#e4b63d;text-decoration:none;font-weight:600;">Behavior School</a> — helping teams move from crisis management to systems leadership.
+      </p>
+      <div class="bs-hero-actions">
+        <a href="https://behaviorschool.com/transformation-program" class="bs-btn-primary">
+          Transformation Program →
+        </a>
+        <a href="#contact" class="bs-btn-secondary">
+          Get in Touch
+        </a>
+      </div>
+    </div>
+    <div class="bs-hero-image-wrap">
+      <div class="bs-hero-image-frame">
+        <picture>
+          <source srcset="/public/images/profile-Rob.webp" type="image/webp">
+          <img src="/public/images/profile-Rob.png" alt="Rob Spain, School BCBA" fetchpriority="high">
+        </picture>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- legacy hero hidden -->
+    <section class="hero-premium" style="display:none!important;visibility:hidden;height:0;overflow:hidden">
         <div class="hero-background-premium">
             <div class="hero-grid-pattern"></div>
             <div class="animated-paths-container">
@@ -411,6 +581,10 @@ description: "Rob Spain, School BCBA and IBA with 25+ years transforming school 
             <div class="story-content">
                 <div class="story-header">
                     <h2 class="story-title">Hi, I'm Rob, and I'm Glad You're Here!</h2>
+                </div>
+
+                <div class="story-photo">
+                    <img src="/images/rob-speaking-calaba.jpg" alt="Rob Spain presenting at a conference" style="width:100%;border-radius:16px;margin-bottom:2rem;display:block;">
                 </div>
 
                 <div class="story-single-column">

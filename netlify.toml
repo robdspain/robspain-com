@@ -58,6 +58,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/research-stream"
+  to = "/.netlify/functions/research-stream"
+  status = 200
+
+[[redirects]]
   from = "/api/crm"
   to = "/.netlify/functions/crm"
   status = 200

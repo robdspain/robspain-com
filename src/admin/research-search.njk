@@ -1187,12 +1187,19 @@ async function search() {
         data.sources.forEach((r, i) => {
             const score = r.score ? (r.score * 100).toFixed(1) : '?';
             
-            // Use clean metadata from API
-            const sourcePath = r.sourcePdf || '';
-            const title = r.paperTitle || 'Research Paper';
+            // Use clean metadata from API, with fallback extraction
+            const sourcePath = r.sourcePdf || r.source_pdf || '';
+            const isGeneric = !r.paperTitle || r.paperTitle === 'Behavior Analysis Research' || r.paperTitle === 'Research Paper';
+            let title = r.paperTitle || '';
+            if (isGeneric && sourcePath) {
+                const base = sourcePath.replace(/^.*\//, '').replace(/\.pdf$/i, '');
+                title = /^\d{2}\.\d{4}/.test(base) ? base.replace(/_/g, '/') : base.replace(/[-_]/g, ' ');
+            } else if (!title) {
+                title = 'Research Paper';
+            }
             const authors = r.authors || '';
             const year = r.year || '';
-            const journal = r.journal || '';
+            const journal = r.journal || r.venue || '';
             
             // Build citation line
             const citationParts = [];
@@ -1447,10 +1454,16 @@ async function findSimilar(sourcePath, btn) {
         modalHtml += '<div class="modal-content">';
         
         result.sources.forEach((s, i) => {
-            const title = s.paperTitle || 'Research Paper';
+            const srcPath = s.sourcePdf || s.source_pdf || '';
+            const isGen = !s.paperTitle || s.paperTitle === 'Behavior Analysis Research' || s.paperTitle === 'Research Paper';
+            let title = s.paperTitle || '';
+            if (isGen && srcPath) {
+                const base = srcPath.replace(/^.*\//, '').replace(/\.pdf$/i, '');
+                title = /^\d{2}\.\d{4}/.test(base) ? base.replace(/_/g, '/') : base.replace(/[-_]/g, ' ');
+            } else if (!title) { title = 'Research Paper'; }
             const authors = s.authors || '';
             const year = s.year || '';
-            const journal = s.journal || '';
+            const journal = s.journal || s.venue || '';
             const score = s.score ? (s.score * 100).toFixed(0) : '?';
             const paperLink = s.paperUrl || '';
             const apa = buildApaCitation(authors, year, title, journal, paperLink);
@@ -1543,13 +1556,40 @@ function drawNetwork(sources) {
     container.innerHTML = `<svg width="${width}" height="${height}" id="network-svg"></svg>`;
     const svg = document.getElementById('network-svg');
     
+    // Extract a readable title from source_pdf path or chunk_id when paperTitle is missing/generic
+    function extractFallbackTitle(s) {
+        const generic = !s.paperTitle || s.paperTitle === 'Behavior Analysis Research' || s.paperTitle === 'Research Paper';
+        if (!generic) return s.paperTitle;
+        // Try source_pdf: '/path/to/10.1016_j.jcbs.2024.100804.pdf' -> '10.1016/j.jcbs.2024.100804'
+        const src = s.sourcePdf || s.source_pdf || '';
+        if (src) {
+            const base = src.replace(/^.*\//, '').replace(/\.pdf$/i, '');
+            // Looks like a DOI slug — humanize it
+            if (/^\d{2}\.\d{4}/.test(base)) {
+                return base.replace(/_/g, '/');
+            }
+            return base.replace(/[-_]/g, ' ');
+        }
+        return 'Paper ' + (i + 1);
+    }
+
+    // Extract authors from chunk text (often appears in first lines as "Author A, Author B (Year)")
+    function extractFallbackAuthors(s) {
+        if (s.authors && s.authors.trim()) return s.authors;
+        const text = s.text || s.snippet || '';
+        // Look for author-year pattern at start of chunk
+        const match = text.match(/^([A-Z][a-z]+(?:,?\s+[A-Z]\.?)+(?:,\s+[A-Z][a-z]+(?:,?\s+[A-Z]\.?)+)*)\s*[\(\[]\d{4}/);
+        if (match) return match[1].trim();
+        return '';
+    }
+
     // Create nodes from sources
     const nodes = sources.map((s, i) => ({
         id: i,
-        title: s.paperTitle || 'Paper ' + (i + 1),
-        authors: s.authors || '',
+        title: extractFallbackTitle(s),
+        authors: extractFallbackAuthors(s),
         year: s.year || '',
-        journal: s.journal || '',
+        journal: s.journal || s.venue || '',
         score: s.score || 0.5,
         x: width/2 + (Math.random() - 0.5) * 200,
         y: height/2 + (Math.random() - 0.5) * 200,

@@ -1520,17 +1520,22 @@ function showView(view) {
     const btns = document.querySelectorAll('.view-btn');
     btns.forEach(btn => btn.classList.remove('active'));
     event.target.classList.add('active');
-    
-    const networkSection = document.querySelector('.network-section');
+
+    const networkContainer = document.getElementById('network-container');
+    const networkLegend = document.querySelector('.network-legend');
     const sourcesList = document.getElementById('sources-list');
     const sourceControls = document.querySelector('.source-controls');
-    
+
     if (view === 'network') {
-        document.getElementById('network-container').style.display = 'block';
-        document.querySelector('.network-legend').style.display = 'flex';
+        networkContainer.style.display = 'block';
+        if (networkLegend) networkLegend.style.display = 'flex';
+        if (sourcesList) sourcesList.style.display = 'none';
+        if (sourceControls) sourceControls.style.display = 'none';
     } else {
-        document.getElementById('network-container').style.display = 'none';
-        document.querySelector('.network-legend').style.display = 'none';
+        networkContainer.style.display = 'none';
+        if (networkLegend) networkLegend.style.display = 'none';
+        if (sourcesList) sourcesList.style.display = 'block';
+        if (sourceControls) sourceControls.style.display = 'flex';
     }
 }
 

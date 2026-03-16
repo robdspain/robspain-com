@@ -1,0 +1,1916 @@
+---
+layout: base.njk
+title: Research Corpus Search - Rob Spain
+permalink: /admin/research-search/
+---
+
+<style>
+.research-search-page {
+    padding: 4rem 2rem;
+    background: #f8fafc;
+    min-height: 100vh;
+}
+
+.search-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.search-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.search-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #1f4d3f 0%, #2d6a4f 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 100px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.search-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.search-stats {
+    color: #64748b;
+    font-size: 1rem;
+}
+
+.search-box {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.search-input-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.search-input {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #1f4d3f;
+}
+
+.search-btn {
+    background: #1f4d3f;
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.search-btn:hover {
+    background: #123628;
+}
+
+.search-btn:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+}
+
+.example-queries {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.example-query {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 0.5rem 1rem;
+    border-radius: 100px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+}
+
+.example-query:hover {
+    background: #e2e8f0;
+    color: #1f4d3f;
+}
+
+.loading {
+    text-align: center;
+    padding: 3rem;
+    display: none;
+}
+
+.loading.active {
+    display: block;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e2e8f0;
+    border-top-color: #1f4d3f;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.results {
+    display: none;
+}
+
+.results.active {
+    display: block;
+}
+
+.result-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border-left: 4px solid #1f4d3f;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.result-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.result-rank {
+    font-weight: 700;
+    color: #1f4d3f;
+}
+
+.result-score {
+    background: #f0f5f3;
+    color: #1f4d3f;
+    padding: 0.25rem 0.75rem;
+    border-radius: 100px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.result-text {
+    color: #374151;
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+}
+
+.result-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+}
+
+.result-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.result-source {
+    color: #64748b;
+    font-size: 0.875rem;
+}
+
+.result-link {
+    color: #1f4d3f;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.result-link:hover {
+    text-decoration: underline;
+}
+
+/* AI Answer styling */
+.ai-answer {
+    background: linear-gradient(135deg, #f8faf9 0%, #f0f5f3 100%);
+    border: 2px solid #1f4d3f;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.ai-answer-header {
+    margin-bottom: 1rem;
+}
+
+.ai-badge {
+    background: #1f4d3f;
+    color: white;
+    padding: 0.35rem 0.75rem;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.ai-answer-text {
+    color: #1e293b;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.source-link {
+    color: #1f4d3f;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.source-link:hover {
+    text-decoration: underline;
+}
+
+.sources-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.sources-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #475569;
+}
+
+.source-count {
+    font-weight: 400;
+    color: #94a3b8;
+}
+
+.toggle-sources {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+.toggle-sources:hover {
+    background: #e2e8f0;
+}
+
+.sources-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.sources-list.expanded {
+    max-height: none;
+}
+
+.source-card {
+    border-left-color: #94a3b8;
+}
+
+.source-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.4;
+}
+
+.source-meta {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin: 0 0 0.75rem 0;
+    font-style: italic;
+}
+
+.source-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.summarize-btn {
+    background: #f0f5f3;
+    border: 1px solid #1f4d3f;
+    color: #1f4d3f;
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.summarize-btn:hover {
+    background: #1f4d3f;
+    color: white;
+}
+
+.summarize-btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.paper-summary {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.summary-content {
+    background: #fafafa;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.summary-citation {
+    margin: 0 0 0.5rem 0;
+    color: #1e293b;
+}
+
+.summary-meta {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+.summary-text {
+    margin: 0;
+    color: #374151;
+    line-height: 1.6;
+}
+
+.summary-error {
+    color: #dc2626;
+    font-size: 0.875rem;
+}
+
+/* Follow-up inline */
+.followup-inline {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.followup-inline .followup-input {
+    flex: 1;
+    padding: 0.6rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.followup-inline .followup-input:focus {
+    outline: none;
+    border-color: #1f4d3f;
+}
+
+.followup-ask-btn {
+    background: #1f4d3f;
+    color: white;
+    padding: 0.6rem 1.25rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.followup-ask-btn:hover {
+    background: #123628;
+}
+
+.followup-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.followup-chip {
+    background: #f8faf9;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+    padding: 0.35rem 0.65rem;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.followup-chip:hover {
+    border-color: #1f4d3f;
+    color: #1f4d3f;
+}
+
+/* Source controls */
+.source-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: #f8faf9;
+    border-radius: 8px;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-label {
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.filter-select {
+    padding: 0.4rem 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    background: white;
+}
+
+.sort-btn {
+    background: white;
+    border: 1px solid #e2e8f0;
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.sort-btn:hover {
+    background: #f1f5f9;
+}
+
+.bulk-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.bulk-btn {
+    background: #f0f5f3;
+    border: 1px solid #1f4d3f;
+    color: #1f4d3f;
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.bulk-btn:hover {
+    background: #1f4d3f;
+    color: white;
+}
+
+/* Copy citation button */
+.copy-citation-btn {
+    background: transparent;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.copy-citation-btn:hover {
+    border-color: #1f4d3f;
+    color: #1f4d3f;
+}
+
+.copy-citation-btn.copied {
+    background: #1f4d3f;
+    border-color: #1f4d3f;
+    color: white;
+}
+
+/* Toast notification */
+.toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: #1f4d3f;
+    color: white;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    opacity: 0;
+    transform: translateY(1rem);
+    transition: all 0.3s;
+    z-index: 1000;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Citation Network */
+.network-section {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.network-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.network-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: #1e293b;
+}
+
+.network-toggle {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.view-btn {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.view-btn.active {
+    background: #1f4d3f;
+    border-color: #1f4d3f;
+    color: white;
+}
+
+#network-container {
+    width: 100%;
+    height: 400px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #fafafa;
+    position: relative;
+}
+
+.network-legend {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.legend-dot.high { background: #1f4d3f; }
+.legend-dot.medium { background: #4ade80; }
+.legend-dot.low { background: #94a3b8; }
+
+/* Network node tooltip */
+.network-tooltip {
+    position: absolute;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-size: 0.85rem;
+    max-width: 250px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    pointer-events: none;
+    z-index: 100;
+    display: none;
+}
+
+.network-tooltip.show {
+    display: block;
+}
+
+/* Generate BIP button */
+.ai-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(31, 77, 63, 0.2);
+}
+
+.ai-action-btn {
+    background: white;
+    border: 1px solid #1f4d3f;
+    color: #1f4d3f;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.ai-action-btn:hover {
+    background: #1f4d3f;
+    color: white;
+}
+
+.ai-action-btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+/* BIP Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s;
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 80vh;
+    overflow: auto;
+    padding: 2rem;
+    position: relative;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #1e293b;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #64748b;
+    padding: 0.25rem;
+}
+
+.modal-body {
+    line-height: 1.7;
+    color: #374151;
+}
+
+.modal-body h3 {
+    color: #1f4d3f;
+    font-size: 1rem;
+    margin: 1.5rem 0 0.5rem;
+}
+
+.modal-body p, .modal-body ul {
+    margin: 0.5rem 0;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* Visual explanation */
+.visual-section {
+    background: #f8faf9;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+}
+
+.visual-container {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+    min-height: 200px;
+}
+
+.visual-summary {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #374151;
+    line-height: 1.6;
+}
+
+/* Similar papers modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.similar-papers-modal {
+    background: white;
+    border-radius: 16px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #1e293b;
+}
+
+.modal-header button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #64748b;
+}
+
+.modal-content {
+    padding: 1rem 1.5rem;
+    overflow-y: auto;
+}
+
+.similar-paper {
+    padding: 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+}
+
+.similar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.similar-score {
+    background: #f0f5f3;
+    color: #1f4d3f;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.similar-paper h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.95rem;
+    color: #1e293b;
+}
+
+.similar-meta {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+/* Follow-up section */
+.followup-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #e2e8f0;
+}
+
+.followup-input-row {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.followup-input {
+    flex: 1;
+    padding: 0.875rem 1.25rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.followup-input:focus {
+    outline: none;
+    border-color: #1f4d3f;
+}
+
+.followup-btn {
+    background: #1f4d3f;
+    color: white;
+    padding: 0.875rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.followup-btn:hover {
+    background: #123628;
+}
+
+.followup-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.followup-chip {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 0.5rem 1rem;
+    border-radius: 100px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s;
+}
+
+.followup-chip:hover {
+    background: #1f4d3f;
+    color: white;
+    border-color: #1f4d3f;
+}
+
+.no-link {
+    color: #94a3b8;
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
+.result-stats {
+    text-align: center;
+    color: #64748b;
+    font-size: 0.875rem;
+    margin-top: 1rem;
+}
+
+.error-message {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    padding: 1rem;
+    border-radius: 12px;
+    display: none;
+}
+
+.error-message.active {
+    display: block;
+}
+
+.status-bar {
+    background: #f0f5f3;
+    border: 1px solid #1f4d3f;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+    color: #1f4d3f;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-bar.loading-status {
+    background: #fefce8;
+    border-color: #e4b63d;
+    color: #92400e;
+}
+
+.status-bar.error-status {
+    background: #fef2f2;
+    border-color: #ef4444;
+    color: #dc2626;
+}
+</style>
+
+<div class="research-search-page">
+    <div class="search-container">
+        <div class="search-header">
+            <span class="search-badge">Research Corpus</span>
+            <h1 class="search-title">Semantic Search</h1>
+            <p class="search-stats" id="corpus-stats">Loading corpus stats...</p>
+        </div>
+
+        <div id="status-bar" class="status-bar loading-status">
+            Connecting to research corpus...
+        </div>
+
+        <div class="search-box">
+            <div class="search-input-row">
+                <input type="text" id="query" class="search-input" 
+                    placeholder="Ask a question about behavior analysis research..."
+                    onkeypress="if(event.key==='Enter')search()">
+                <button onclick="search()" class="search-btn" id="search-btn">Search</button>
+            </div>
+            
+            <div class="example-queries">
+                <button class="example-query" onclick="setQuery('function-based intervention for escape behavior')">Escape-maintained behavior</button>
+                <button class="example-query" onclick="setQuery('ACT matrix school settings')">ACT in schools</button>
+                <button class="example-query" onclick="setQuery('IISCA assessment validation')">IISCA validation</button>
+                <button class="example-query" onclick="setQuery('staff training behavior intervention')">Staff training</button>
+                <button class="example-query" onclick="setQuery('parent training autism')">Parent training</button>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Searching research corpus...</p>
+        </div>
+
+        <div class="error-message" id="error"></div>
+
+        <div class="results" id="results"></div>
+    </div>
+</div>
+
+<script type="module">
+import { ConvexClient } from "https://esm.sh/convex@1.17.0/browser";
+
+// Convex client setup
+const CONVEX_URL = "https://third-loris-453.convex.cloud";
+let convexClient = null;
+
+// Conversation context for follow-ups
+let lastQuery = '';
+let lastAnswer = '';
+let lastSources = [];
+
+// Make functions available globally
+window.setQuery = setQuery;
+window.search = search;
+window.askFollowup = askFollowup;
+window.setFollowup = setFollowup;
+
+// Initialize Convex
+async function initConvex() {
+    const statusBar = document.getElementById('status-bar');
+    
+    try {
+        console.log("Connecting to Convex:", CONVEX_URL);
+        convexClient = new ConvexClient(CONVEX_URL);
+        
+        // Check if corpus is loaded with timeout
+        console.log("Fetching stats...");
+        const statsPromise = convexClient.action("researchCorpus:getStats");
+        const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error("Connection timeout - try refreshing")), 15000)
+        );
+        const stats = await Promise.race([statsPromise, timeoutPromise]);
+        console.log("Stats received:", stats);
+        
+        if (stats.loaded && stats.totalChunks > 0) {
+            document.getElementById('corpus-stats').textContent = 
+                `${stats.totalChunks.toLocaleString()} chunks • ${stats.uniquePapers.toLocaleString()} papers • Semantic search`;
+            statusBar.className = 'status-bar';
+            statusBar.innerHTML = 'Connected • Ready to search';
+        } else {
+            document.getElementById('corpus-stats').textContent = 'Corpus not yet loaded';
+            statusBar.className = 'status-bar loading-status';
+            statusBar.innerHTML = 'Corpus migration in progress — check back soon';
+        }
+    } catch (err) {
+        console.error("Convex connection error:", err);
+        statusBar.className = 'status-bar error-status';
+        statusBar.innerHTML = `Connection error: ${err.message || err}`;
+    }
+}
+
+function setQuery(q) {
+    document.getElementById('query').value = q;
+    search();
+}
+
+async function search() {
+    const query = document.getElementById('query').value.trim();
+    if (!query) return;
+
+    const loading = document.getElementById('loading');
+    const results = document.getElementById('results');
+    const error = document.getElementById('error');
+    const btn = document.getElementById('search-btn');
+
+    loading.classList.add('active');
+    results.classList.remove('active');
+    error.classList.remove('active');
+    btn.disabled = true;
+
+    try {
+        if (!convexClient) {
+            throw new Error('Convex not connected');
+        }
+
+        const data = await convexClient.action("researchCorpus:ask", {
+            query: query,
+            limit: 8
+        });
+
+        let html = '';
+        
+        // AI Answer section
+        if (data.answer) {
+            // Convert [Source N] to clickable links and handle paragraphs
+            let formattedAnswer = escapeHtml(data.answer);
+            formattedAnswer = formattedAnswer.replace(/\[Source (\d+)\]/g, '<a href="#source-$1" class="source-link">[Source $1]</a>');
+            // Convert double newlines to paragraph breaks
+            formattedAnswer = formattedAnswer.replace(/\n\n/g, '</p><p class="ai-answer-text">');
+            formattedAnswer = formattedAnswer.replace(/\n/g, '<br>');
+            
+            html += `
+                <div class="ai-answer">
+                    <div class="ai-answer-header">
+                        <span class="ai-badge">AI Overview</span>
+                    </div>
+                    <p class="ai-answer-text">${formattedAnswer}</p>
+                    <div class="ai-actions">
+                        <button class="ai-action-btn" onclick="generateBipLanguage()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+                            Generate BIP Language
+                        </button>
+                        <button class="ai-action-btn" onclick="showVisually()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                            Show Me Visually
+                        </button>
+                    </div>
+                    <div class="followup-inline">
+                        <input type="text" class="followup-input" id="followup-input" placeholder="Ask a follow-up question..." onkeypress="if(event.key==='Enter')askFollowup()">
+                        <button class="followup-ask-btn" onclick="askFollowup()">Ask</button>
+                    </div>
+                    </div>
+                <div class="network-section">
+                    <div class="network-header">
+                        <h3>Citation Network</h3>
+                        <div class="network-toggle">
+                            <button class="view-btn active" onclick="showView('network')">Network</button>
+                            <button class="view-btn" onclick="showView('list')">List</button>
+                        </div>
+                    </div>
+                    <div id="network-container"></div>
+                    <div class="network-legend">
+                        <div class="legend-item"><span class="legend-dot high"></span> High relevance</div>
+                        <div class="legend-item"><span class="legend-dot medium"></span> Medium</div>
+                        <div class="legend-item"><span class="legend-dot low"></span> Lower</div>
+                    </div>
+                    <div class="network-tooltip" id="network-tooltip"></div>
+                </div>
+                <div class="sources-header">
+                    <h3>Sources <span class="source-count">(${data.sources.length})</span></h3>
+                    <button class="toggle-sources" onclick="toggleSources()">Show All</button>
+                </div>
+                <div class="source-controls">
+                    <div class="filter-group">
+                        <span class="filter-label">Journal:</span>
+                        <select class="filter-select" id="journal-filter" onchange="filterSources()">
+                            <option value="">All</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <span class="filter-label">Year:</span>
+                        <select class="filter-select" id="year-filter" onchange="filterSources()">
+                            <option value="">All</option>
+                        </select>
+                    </div>
+                    <button class="sort-btn" id="sort-btn" onclick="toggleSort()">
+                        Newest first
+                    </button>
+                    <div class="bulk-actions">
+                        <button class="bulk-btn" onclick="copyAllCitations()">Copy All</button>
+                        <button class="bulk-btn" onclick="exportResults()">Export</button>
+                    </div>
+                </div>
+            `;
+        
+            }
+        
+        // Sources section
+        html += '<div class="sources-list" id="sources-list">';
+        data.sources.forEach((r, i) => {
+            const score = r.score ? (r.score * 100).toFixed(1) : '?';
+            
+            // Use clean metadata from API
+            const sourcePath = r.sourcePdf || '';
+            const title = r.paperTitle || 'Research Paper';
+            const authors = r.authors || '';
+            const year = r.year || '';
+            const journal = r.journal || '';
+            
+            // Build citation line
+            const citationParts = [];
+            if (authors) citationParts.push(authors);
+            if (year) citationParts.push(`(${year})`);
+            if (journal) citationParts.push(journal);
+            const citation = citationParts.join(' · ');
+            // Use paperUrl from API (already generated server-side)
+            const paperLink = r.paperUrl || null;
+            
+            // Build APA citation
+            const apaCitation = buildApaCitation(authors, year, title, journal, paperLink);
+            
+            html += `
+                <div class="result-card source-card" id="source-${i + 1}" 
+                     data-source="${escapeHtml(sourcePath)}"
+                     data-year="${year || 0}"
+                     data-journal="${escapeHtml(journal)}"
+                     data-apa="${escapeHtml(apaCitation)}">
+                    <div class="result-header">
+                        <span class="result-rank">Source ${i + 1}</span>
+                        <div>
+                            <button class="copy-citation-btn" onclick="copyCitation(this, '${escapeHtml(apaCitation).replace(/'/g, "\\'")}')">Copy APA</button>
+                            <span class="result-score">${score}%</span>
+                        </div>
+                    </div>
+                    <h4 class="source-title">${escapeHtml(title)}</h4>
+                    ${citation ? `<p class="source-meta">${escapeHtml(citation)}</p>` : ''}
+                    <div class="result-footer">
+                        <div class="source-actions">
+                            <button class="summarize-btn" onclick="summarizePaper('${escapeHtml(sourcePath)}', this)">Summary</button>
+                            <button class="summarize-btn" onclick="findSimilar('${escapeHtml(sourcePath)}', this)">Find Similar</button>
+                            ${paperLink ? `<a href="${paperLink}" target="_blank" class="result-link">View Paper</a>` : ''}
+                        </div>
+                    </div>
+                    <div class="paper-summary" style="display:none;"></div>
+                </div>
+            `;
+        });
+        html += '</div>';
+
+        html += `<p class="result-stats">Synthesized from ${data.sources.length} sources</p>`;
+        
+        // Store context for follow-ups
+        lastQuery = query;
+        lastAnswer = data.answer;
+        lastSources = data.sources;
+
+        results.innerHTML = html;
+        results.classList.add('active');
+        
+        // Populate filters and sort by newest
+        populateFilters(data.sources);
+        currentSortNewest = true;
+        toggleSort(); // Sort by newest
+        
+        // Draw citation network
+        drawNetwork(data.sources);
+
+    } catch (err) {
+        error.textContent = `Error: ${err.message}`;
+        error.classList.add('active');
+    } finally {
+        loading.classList.remove('active');
+        btn.disabled = false;
+    }
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Build APA 7 citation
+function buildApaCitation(authors, year, title, journal, url) {
+    let citation = '';
+    if (authors) citation += authors;
+    if (year) citation += ` (${year}).`;
+    if (title) citation += ` ${title}.`;
+    if (journal) citation += ` ${journal}.`;
+    if (url) citation += ` ${url}`;
+    return citation.trim();
+}
+
+// Copy single citation
+function copyCitation(btn, citation) {
+    navigator.clipboard.writeText(citation).then(() => {
+        btn.classList.add('copied');
+        btn.textContent = 'Copied!';
+        setTimeout(() => {
+            btn.classList.remove('copied');
+            btn.textContent = 'Copy APA';
+        }, 2000);
+    });
+}
+
+// Copy all citations
+function copyAllCitations() {
+    const cards = document.querySelectorAll('.source-card');
+    const citations = Array.from(cards)
+        .filter(card => card.style.display !== 'none')
+        .map(card => card.dataset.apa)
+        .join('\n\n');
+    
+    navigator.clipboard.writeText(citations).then(() => {
+        showToast('All citations copied to clipboard');
+    });
+}
+
+// Export results
+function exportResults() {
+    const query = lastQuery;
+    const answer = lastAnswer;
+    const cards = document.querySelectorAll('.source-card');
+    
+    let markdown = `# Research Query: ${query}\n\n`;
+    markdown += `## AI Overview\n\n${answer}\n\n`;
+    markdown += `## Sources\n\n`;
+    
+    cards.forEach((card, i) => {
+        if (card.style.display !== 'none') {
+            const title = card.querySelector('.source-title')?.textContent || '';
+            const meta = card.querySelector('.source-meta')?.textContent || '';
+            const apa = card.dataset.apa;
+            markdown += `### ${i + 1}. ${title}\n${meta}\n\n**APA Citation:** ${apa}\n\n---\n\n`;
+        }
+    });
+    
+    const blob = new Blob([markdown], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `research-${query.substring(0, 30).replace(/\s+/g, '-')}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Results exported');
+}
+
+// Filter sources
+let currentSortNewest = true;
+function filterSources() {
+    const journalFilter = document.getElementById('journal-filter').value;
+    const yearFilter = document.getElementById('year-filter').value;
+    const cards = document.querySelectorAll('.source-card');
+    
+    cards.forEach(card => {
+        const journal = card.dataset.journal;
+        const year = card.dataset.year;
+        const matchJournal = !journalFilter || journal === journalFilter;
+        const matchYear = !yearFilter || year === yearFilter;
+        card.style.display = (matchJournal && matchYear) ? '' : 'none';
+    });
+}
+
+// Toggle sort
+function toggleSort() {
+    currentSortNewest = !currentSortNewest;
+    const btn = document.getElementById('sort-btn');
+    btn.textContent = currentSortNewest ? 'Newest first' : 'Oldest first';
+    
+    const list = document.getElementById('sources-list');
+    const cards = Array.from(list.querySelectorAll('.source-card'));
+    
+    cards.sort((a, b) => {
+        const yearA = parseInt(a.dataset.year) || 0;
+        const yearB = parseInt(b.dataset.year) || 0;
+        return currentSortNewest ? yearB - yearA : yearA - yearB;
+    });
+    
+    cards.forEach(card => list.appendChild(card));
+}
+
+// Populate filters
+function populateFilters(sources) {
+    const journals = new Set();
+    const years = new Set();
+    
+    sources.forEach(s => {
+        if (s.journal) journals.add(s.journal);
+        if (s.year) years.add(s.year);
+    });
+    
+    const journalSelect = document.getElementById('journal-filter');
+    const yearSelect = document.getElementById('year-filter');
+    
+    // Clear existing options except "All"
+    journalSelect.innerHTML = '<option value="">All</option>';
+    yearSelect.innerHTML = '<option value="">All</option>';
+    
+    Array.from(journals).sort().forEach(j => {
+        journalSelect.innerHTML += `<option value="${escapeHtml(j)}">${escapeHtml(j)}</option>`;
+    });
+    
+    Array.from(years).sort((a, b) => b - a).forEach(y => {
+        yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
+    });
+}
+
+// Generate follow-up questions
+async function generateFollowups(query, answer) {
+    const chips = document.getElementById('followup-chips');
+    
+    // Simple heuristic follow-ups based on query
+    const followups = [
+        `What are common implementation challenges?`,
+        `Show me case studies`,
+        `What does the research say about maintenance?`,
+    ];
+    
+    chips.innerHTML = followups.map(q => 
+        `<button class="followup-chip" onclick="setFollowup('${escapeHtml(q)}')">${escapeHtml(q)}</button>`
+    ).join('');
+}
+
+function setFollowup(q) {
+    document.getElementById('query').value = q;
+    search();
+}
+
+function askFollowup() {
+    const input = document.getElementById('followup-input');
+    const q = input.value.trim();
+    if (q) {
+        document.getElementById('query').value = q;
+        input.value = '';
+        search();
+    }
+}
+
+// Find similar papers
+async function findSimilar(sourcePath, btn) {
+    btn.textContent = 'Finding...';
+    btn.disabled = true;
+    
+    try {
+        const result = await convexClient.action("researchCorpus:findSimilar", {
+            sourcePdf: sourcePath,
+            limit: 5
+        });
+        
+        if (result.sources.length === 0) {
+            showToast('No similar papers found');
+            btn.textContent = 'Find Similar';
+            btn.disabled = false;
+            return;
+        }
+        
+        // Build modal content
+        let modalHtml = '<div class="similar-papers-modal">';
+        modalHtml += '<div class="modal-header"><h3>Similar Papers</h3><button onclick="closeModal()">×</button></div>';
+        modalHtml += '<div class="modal-content">';
+        
+        result.sources.forEach((s, i) => {
+            const title = s.paperTitle || 'Research Paper';
+            const authors = s.authors || '';
+            const year = s.year || '';
+            const journal = s.journal || '';
+            const score = s.score ? (s.score * 100).toFixed(0) : '?';
+            const paperLink = s.paperUrl || '';
+            const apa = buildApaCitation(authors, year, title, journal, paperLink);
+            
+            modalHtml += `
+                <div class="similar-paper">
+                    <div class="similar-header">
+                        <span class="similar-score">${score}% match</span>
+                        <button class="copy-citation-btn" onclick="copyCitation(this, '${escapeHtml(apa).replace(/'/g, "\\'")}')">Copy APA</button>
+                    </div>
+                    <h4>${escapeHtml(title)}</h4>
+                    <p class="similar-meta">${escapeHtml(authors)} ${year ? `(${year})` : ''} ${journal ? `· ${journal}` : ''}</p>
+                    ${paperLink ? `<a href="${paperLink}" target="_blank" class="result-link">View Paper</a>` : ''}
+                </div>
+            `;
+        });
+        
+        modalHtml += '</div></div>';
+        
+        // Show modal
+        let modal = document.getElementById('similar-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'similar-modal';
+            modal.className = 'modal-overlay';
+            document.body.appendChild(modal);
+        }
+        modal.innerHTML = modalHtml;
+        modal.style.display = 'flex';
+        
+    } catch (err) {
+        showToast('Error finding similar papers: ' + err.message);
+    }
+    
+    btn.textContent = 'Find Similar';
+    btn.disabled = false;
+}
+
+function closeModal() {
+    const modal = document.getElementById('similar-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+// Toast notification
+function showToast(message) {
+    let toast = document.querySelector('.toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.className = 'toast';
+        document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// View toggle
+function showView(view) {
+    const btns = document.querySelectorAll('.view-btn');
+    btns.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    const networkSection = document.querySelector('.network-section');
+    const sourcesList = document.getElementById('sources-list');
+    const sourceControls = document.querySelector('.source-controls');
+    
+    if (view === 'network') {
+        document.getElementById('network-container').style.display = 'block';
+        document.querySelector('.network-legend').style.display = 'flex';
+    } else {
+        document.getElementById('network-container').style.display = 'none';
+        document.querySelector('.network-legend').style.display = 'none';
+    }
+}
+
+// Draw citation network
+function drawNetwork(sources) {
+    const container = document.getElementById('network-container');
+    const width = container.offsetWidth;
+    const height = 400;
+    
+    // Create SVG
+    container.innerHTML = `<svg width="${width}" height="${height}" id="network-svg"></svg>`;
+    const svg = document.getElementById('network-svg');
+    
+    // Create nodes from sources
+    const nodes = sources.map((s, i) => ({
+        id: i,
+        title: s.paperTitle || 'Paper ' + (i + 1),
+        authors: s.authors || '',
+        year: s.year || '',
+        journal: s.journal || '',
+        score: s.score || 0.5,
+        x: width/2 + (Math.random() - 0.5) * 200,
+        y: height/2 + (Math.random() - 0.5) * 200,
+        vx: 0,
+        vy: 0
+    }));
+    
+    // Create edges based on shared journals/years (co-citation proxy)
+    const edges = [];
+    for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+            const shared = (nodes[i].journal === nodes[j].journal && nodes[i].journal) ||
+                          (Math.abs((nodes[i].year || 0) - (nodes[j].year || 0)) <= 2);
+            if (shared) {
+                edges.push({ source: i, target: j });
+            }
+        }
+    }
+    
+    // Simple force simulation
+    function simulate() {
+        // Repulsion between nodes
+        for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+                const dx = nodes[j].x - nodes[i].x;
+                const dy = nodes[j].y - nodes[i].y;
+                const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+                const force = 2000 / (dist * dist);
+                nodes[i].vx -= dx/dist * force;
+                nodes[i].vy -= dy/dist * force;
+                nodes[j].vx += dx/dist * force;
+                nodes[j].vy += dy/dist * force;
+            }
+        }
+        
+        // Attraction along edges
+        edges.forEach(e => {
+            const source = nodes[e.source];
+            const target = nodes[e.target];
+            const dx = target.x - source.x;
+            const dy = target.y - source.y;
+            const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+            const force = (dist - 100) * 0.01;
+            source.vx += dx/dist * force;
+            source.vy += dy/dist * force;
+            target.vx -= dx/dist * force;
+            target.vy -= dy/dist * force;
+        });
+        
+        // Center gravity
+        nodes.forEach(n => {
+            n.vx += (width/2 - n.x) * 0.001;
+            n.vy += (height/2 - n.y) * 0.001;
+            n.vx *= 0.9;
+            n.vy *= 0.9;
+            n.x += n.vx;
+            n.y += n.vy;
+            // Bounds
+            n.x = Math.max(40, Math.min(width - 40, n.x));
+            n.y = Math.max(40, Math.min(height - 40, n.y));
+        });
+    }
+    
+    // Run simulation
+    for (let i = 0; i < 100; i++) simulate();
+    
+    // Draw edges
+    let edgesHtml = '';
+    edges.forEach(e => {
+        const s = nodes[e.source];
+        const t = nodes[e.target];
+        edgesHtml += `<line x1="${s.x}" y1="${s.y}" x2="${t.x}" y2="${t.y}" stroke="#e2e8f0" stroke-width="1"/>`;
+    });
+    
+    // Draw nodes
+    let nodesHtml = '';
+    nodes.forEach((n, i) => {
+        const radius = 10 + (n.score || 0.5) * 15;
+        let color = '#94a3b8';
+        if (n.score > 0.7) color = '#1f4d3f';
+        else if (n.score > 0.5) color = '#4ade80';
+        
+        nodesHtml += `
+            <g class="network-node" data-index="${i}" style="cursor:pointer">
+                <circle cx="${n.x}" cy="${n.y}" r="${radius}" fill="${color}" stroke="white" stroke-width="2"/>
+                <text x="${n.x}" y="${n.y + radius + 14}" text-anchor="middle" font-size="10" fill="#374151">
+                    ${n.year || ''}
+                </text>
+            </g>
+        `;
+    });
+    
+    svg.innerHTML = edgesHtml + nodesHtml;
+    
+    // Add hover interactions
+    const tooltip = document.getElementById('network-tooltip');
+    svg.querySelectorAll('.network-node').forEach(node => {
+        node.addEventListener('mouseenter', (e) => {
+            const idx = parseInt(node.dataset.index);
+            const n = nodes[idx];
+            tooltip.innerHTML = `
+                <strong>${n.title}</strong><br>
+                <span style="color:#64748b">${n.authors} ${n.year ? '(' + n.year + ')' : ''}</span><br>
+                <span style="color:#64748b">${n.journal || ''}</span>
+            `;
+            tooltip.style.left = (e.clientX - container.getBoundingClientRect().left + 10) + 'px';
+            tooltip.style.top = (e.clientY - container.getBoundingClientRect().top - 60) + 'px';
+            tooltip.classList.add('show');
+        });
+        node.addEventListener('mouseleave', () => {
+            tooltip.classList.remove('show');
+        });
+        node.addEventListener('click', () => {
+            const idx = parseInt(node.dataset.index);
+            document.getElementById('source-' + (idx + 1)).scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+}
+
+function toggleSources() {
+    const list = document.getElementById('sources-list');
+    const btn = document.querySelector('.toggle-sources');
+    if (list.classList.contains('expanded')) {
+        list.classList.remove('expanded');
+        btn.textContent = 'Show All';
+    } else {
+        list.classList.add('expanded');
+        btn.textContent = 'Show Less';
+    }
+}
+
+async function summarizePaper(sourcePath, btn) {
+    const card = btn.closest('.source-card');
+    const summaryDiv = card.querySelector('.paper-summary');
+    
+    // Toggle if already loaded
+    if (summaryDiv.innerHTML && summaryDiv.style.display !== 'none') {
+        summaryDiv.style.display = 'none';
+        btn.textContent = 'Get Summary';
+        return;
+    }
+    
+    if (summaryDiv.innerHTML) {
+        summaryDiv.style.display = 'block';
+        btn.textContent = 'Hide Summary';
+        return;
+    }
+    
+    btn.textContent = 'Loading...';
+    btn.disabled = true;
+    
+    try {
+        const result = await convexClient.action("researchCorpus:summarizePaper", {
+            sourcePdf: sourcePath
+        });
+        
+        const meta = result.metadata;
+        summaryDiv.innerHTML = `
+            <div class="summary-content">
+                <p class="summary-citation"><strong>${escapeHtml(meta.title)}</strong></p>
+                <p class="summary-meta">${escapeHtml(meta.authors)} (${escapeHtml(meta.year)}). <em>${escapeHtml(meta.journal)}</em></p>
+                <p class="summary-text">${escapeHtml(result.summary)}</p>
+            </div>
+        `;
+        summaryDiv.style.display = 'block';
+        btn.textContent = 'Hide Summary';
+    } catch (err) {
+        summaryDiv.innerHTML = `<p class="summary-error">Error loading summary: ${escapeHtml(err.message)}</p>`;
+        summaryDiv.style.display = 'block';
+        btn.textContent = 'Get Summary';
+    }
+    
+    btn.disabled = false;
+}
+
+
+
+// Generate BIP Language
+async function generateBipLanguage() {
+    const btn = event.target.closest('.ai-action-btn');
+    btn.disabled = true;
+    btn.innerHTML = 'Generating...';
+    
+    try {
+        const result = await convexClient.action("researchCorpus:generateBipLanguage", {
+            query: lastQuery,
+            answer: lastAnswer,
+        });
+        
+        showModal('BIP Language', result.bipText);
+    } catch (err) {
+        showToast('Error generating BIP language');
+    }
+    
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg> Generate BIP Language`;
+}
+
+// Show Visually
+async function showVisually() {
+    const btn = event.target.closest('.ai-action-btn');
+    btn.disabled = true;
+    btn.innerHTML = 'Creating visual...';
+    
+    try {
+        const result = await convexClient.action("researchCorpus:generateVisual", {
+            query: lastQuery,
+            answer: lastAnswer,
+        });
+        
+        showVisualModal(result);
+    } catch (err) {
+        showToast('Error generating visual');
+    }
+    
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg> Show Me Visually`;
+}
+
+// Show modal
+function showModal(title, content) {
+    let modal = document.getElementById('bip-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'bip-modal';
+        modal.className = 'modal-overlay';
+        document.body.appendChild(modal);
+    }
+    
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>${escapeHtml(title)}</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">${content}</div>
+            <div class="modal-actions">
+                <button class="ai-action-btn" onclick="copyModalContent()">Copy to Clipboard</button>
+                <button class="ai-action-btn" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    `;
+    
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+// Show visual modal
+function showVisualModal(result) {
+    let modal = document.getElementById('bip-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'bip-modal';
+        modal.className = 'modal-overlay';
+        document.body.appendChild(modal);
+    }
+    
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Visual Explanation</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="visual-section">
+                <div class="visual-container" id="visual-chart"></div>
+                <div class="visual-summary">${escapeHtml(result.summary)}</div>
+            </div>
+            <div class="modal-actions">
+                <button class="ai-action-btn" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    `;
+    
+    setTimeout(() => {
+        modal.classList.add('show');
+        drawVisualChart(result.chartData);
+    }, 10);
+}
+
+// Draw visual chart
+function drawVisualChart(data) {
+    const container = document.getElementById('visual-chart');
+    if (!container || !data) return;
+    
+    const width = container.offsetWidth;
+    const height = 250;
+    
+    if (data.type === 'flowchart') {
+        // Draw flowchart
+        let html = '<svg width="' + width + '" height="' + height + '">';
+        const steps = data.steps || [];
+        const stepWidth = (width - 40) / steps.length;
+        
+        steps.forEach((step, i) => {
+            const x = 20 + i * stepWidth;
+            const y = height / 2;
+            
+            // Box
+            html += `<rect x="${x}" y="${y - 30}" width="${stepWidth - 20}" height="60" rx="8" fill="#f0f5f3" stroke="#1f4d3f" stroke-width="2"/>`;
+            
+            // Text
+            html += `<text x="${x + (stepWidth - 20) / 2}" y="${y}" text-anchor="middle" font-size="12" fill="#1e293b">${step.label}</text>`;
+            
+            // Arrow
+            if (i < steps.length - 1) {
+                html += `<path d="M${x + stepWidth - 20} ${y} L${x + stepWidth - 5} ${y}" stroke="#1f4d3f" stroke-width="2" marker-end="url(#arrowhead)"/>`;
+            }
+        });
+        
+        html += '<defs><marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#1f4d3f"/></marker></defs>';
+        html += '</svg>';
+        container.innerHTML = html;
+        
+    } else if (data.type === 'comparison') {
+        // Draw comparison bars
+        let html = '<svg width="' + width + '" height="' + height + '">';
+        const items = data.items || [];
+        const barHeight = 30;
+        const maxVal = Math.max(...items.map(i => i.value));
+        
+        items.forEach((item, i) => {
+            const y = 30 + i * (barHeight + 20);
+            const barWidth = (item.value / maxVal) * (width - 150);
+            
+            html += `<text x="10" y="${y + 20}" font-size="12" fill="#374151">${item.label}</text>`;
+            html += `<rect x="120" y="${y}" width="${barWidth}" height="${barHeight}" rx="4" fill="#1f4d3f"/>`;
+            html += `<text x="${125 + barWidth}" y="${y + 20}" font-size="12" fill="#64748b">${item.value}%</text>`;
+        });
+        
+        html += '</svg>';
+        container.innerHTML = html;
+        
+    } else {
+        // Default: key points
+        const points = data.points || ['Point 1', 'Point 2', 'Point 3'];
+        let html = '<div style="padding: 1rem;">';
+        points.forEach((p, i) => {
+            html += `<div style="display: flex; gap: 0.75rem; margin-bottom: 1rem; align-items: flex-start;">
+                <span style="background: #1f4d3f; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0;">${i + 1}</span>
+                <span style="color: #374151; line-height: 1.5;">${p}</span>
+            </div>`;
+        });
+        html += '</div>';
+        container.innerHTML = html;
+    }
+}
+
+function closeModal() {
+    const modal = document.getElementById('bip-modal');
+    if (modal) {
+        modal.classList.remove('show');
+    }
+}
+
+function copyModalContent() {
+    const body = document.querySelector('.modal-body');
+    if (body) {
+        navigator.clipboard.writeText(body.innerText).then(() => {
+            showToast('Copied to clipboard');
+        });
+    }
+}
+
+// Initialize on load
+initConvex();
+</script>

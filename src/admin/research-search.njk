@@ -1496,8 +1496,10 @@ async function findSimilar(sourcePath, btn) {
 }
 
 function closeModal() {
-    const modal = document.getElementById('similar-modal');
-    if (modal) modal.style.display = 'none';
+    const similar = document.getElementById('similar-modal');
+    if (similar) similar.style.display = 'none';
+    const bip = document.getElementById('bip-modal');
+    if (bip) bip.classList.remove('show');
 }
 
 // Toast notification
@@ -1895,12 +1897,7 @@ function drawVisualChart(data) {
     }
 }
 
-function closeModal() {
-    const modal = document.getElementById('bip-modal');
-    if (modal) {
-        modal.classList.remove('show');
-    }
-}
+
 
 function copyModalContent() {
     const body = document.querySelector('.modal-body');

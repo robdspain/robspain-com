@@ -6,7 +6,11 @@
 set -e
 
 SITE_URL="${SITE_URL:-https://robspain.com}"
-ADMIN_TOKEN="8ebd24bbfa5d0c4fb2cc069c475ee1b80c42368292ea269346ff7060fa09109b"
+ADMIN_TOKEN="${ADMIN_TOKEN:-}"
+if [ -z "$ADMIN_TOKEN" ]; then
+  echo "Error: ADMIN_TOKEN environment variable not set"
+  exit 1
+fi
 
 if [ -z "$1" ] || [ -z "$2" ]; then
   echo "Usage: $0 <agentId> <message> [instructionId]"

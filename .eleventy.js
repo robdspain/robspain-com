@@ -54,6 +54,9 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy("src/_redirects");
   eleventyConfig.addPassthroughCopy("src/robots.txt");
   eleventyConfig.addPassthroughCopy("src/sitemap.xml");
+  
+  // Ignore drafts
+  eleventyConfig.ignores.add("src/_drafts/**");
 
   // Image optimization shortcode - converts to WebP with responsive sizes
   eleventyConfig.addNunjucksAsyncShortcode("image", imageShortcode);

@@ -2,6 +2,9 @@
 (function() {
   'use strict';
   
+  // Skip on admin pages
+  if (window.location.pathname.startsWith('/admin')) return;
+  
   // Check if user already signed up
   const hasSignedUp = localStorage.getItem('robspain_email_signup');
   

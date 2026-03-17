@@ -1251,7 +1251,7 @@ async function search() {
             for (const line of lines) {
                 if (!line.startsWith('data: ')) continue;
                 let evt;
-                try { evt = JSON.parse(line.slice(6)); } catch { continue; }
+                try { evt = JSON.parse(line.slice(6)); } catch (e) { continue; }
 
                 if (evt.type === 'answer') {
                     fullAnswer += evt.text;
@@ -1282,9 +1282,13 @@ async function search() {
             }
         }
 
-        return;
-
-
+    } catch (err) {
+        console.error("Search error:", err);
+        error.textContent = `Search failed: ${err.message || err}`;
+        error.classList.add('active');
+        loading.classList.remove('active');
+        btn.disabled = false;
+    }
 }
 
 function escapeHtml(text) {

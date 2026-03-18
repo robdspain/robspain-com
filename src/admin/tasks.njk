@@ -703,17 +703,18 @@ permalink: /admin/tasks/
     {
       id: 4,
       category: 'urgent',
-      title: 'Set up app.behaviorschool.com DNS',
+      title: '⚠️ GoDaddy CNAME: app.behaviorschool.com',
       platform: 'behaviorschool.com',
-      time: '3 min',
+      time: '2 min',
       dueDate: null,
       status: 'not-started',
       priority: true,
       instructions: [
-        'All signup buttons on <a href="https://behaviorschool.com/pro" target="_blank">behaviorschool.com/pro</a> point to app.behaviorschool.com (dead link!)',
-        'Go to <a href="https://dcc.godaddy.com/manage/behaviorschool.com/dns" target="_blank">GoDaddy DNS Manager</a> → behaviorschool.com',
-        'Add CNAME record: Name = app, Value = cname.vercel-dns.com, TTL default',
-        'Tell Neo when done'
+        '🚨 CRITICAL: CalABA promo links are DEAD without this!',
+        'All signup buttons on behaviorschool.com/pro point to app.behaviorschool.com',
+        'Go to <a href="https://dcc.godaddy.com/manage/behaviorschool.com/dns" target="_blank">GoDaddy DNS Manager</a>',
+        'Add CNAME: Name = <b>app</b>, Value = <b>behaviorschool-pro.netlify.app</b>',
+        'Tell Neo when done — will verify within 60 seconds'
       ]
     },
     
@@ -1205,18 +1206,87 @@ permalink: /admin/tasks/
     {
       id: 33,
       category: 'urgent',
-      title: 'Get Free Google AI Studio API Key (Blog Images)',
+      title: 'Get Paid Google AI Studio API Key (Image Gen)',
       platform: 'behaviorschool.com',
-      time: '1 min',
+      time: '3 min',
       dueDate: null,
       status: 'not-started',
       priority: true,
       instructions: [
-        'Needed to generate blog featured images (free, no billing required)',
+        'Free tier hit quota limit — need paid tier for blog image generation',
         'Go to <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a>',
-        'Sign in with any Google account',
-        'Click "Create API key"',
-        'Copy key and send to Neo — will generate 2 blog images immediately'
+        'Enable billing on your Google Cloud project',
+        'Or upgrade to Google AI Studio paid tier',
+        'Alternative: Neo is setting up ComfyUI for FREE local image gen (no API needed)'
+      ]
+    },
+    {
+      id: 100,
+      category: 'urgent',
+      title: 'X/Twitter API Credentials for Neo',
+      platform: 'Social Media',
+      time: '10 min',
+      dueDate: null,
+      status: 'not-started',
+      priority: true,
+      instructions: [
+        'Neo has xurl CLI installed but no auth',
+        'Go to <a href="https://developer.x.com/en/portal/dashboard" target="_blank">X Developer Portal</a>',
+        'Create a project/app if you don\'t have one',
+        'Get: API Key, API Secret, Access Token, Access Token Secret',
+        'Run: <code>xurl auth</code> on Mac mini and paste credentials',
+        'Unlocks: auto-posting content, responding to mentions, analytics'
+      ]
+    },
+    {
+      id: 101,
+      category: 'urgent',
+      title: 'LinkedIn Login for Neo',
+      platform: 'Social Media',
+      time: '5 min',
+      dueDate: null,
+      status: 'not-started',
+      priority: true,
+      instructions: [
+        'Neo needs browser access to post on LinkedIn',
+        'Option 1: Share login credentials (store in Bitwarden Agent HQ folder)',
+        'Option 2: Add Neo\'s Mac mini as a trusted device',
+        'Unlocks: posting content, engaging with comments, scheduling posts',
+        'Nothing posts without your approval!'
+      ]
+    },
+    {
+      id: 102,
+      category: 'urgent',
+      title: 'Instagram/Facebook Business Access',
+      platform: 'Social Media',
+      time: '10 min',
+      dueDate: null,
+      status: 'not-started',
+      priority: true,
+      instructions: [
+        'For posting reels/stories to Instagram and Facebook',
+        'Option 1: Meta Business Suite API access (preferred)',
+        'Option 2: Share login credentials (Bitwarden Agent HQ)',
+        'Go to <a href="https://business.facebook.com" target="_blank">Meta Business Suite</a> → Settings → Integrations',
+        'Unlocks: auto-posting, story scheduling, analytics'
+      ]
+    },
+    {
+      id: 103,
+      category: 'money',
+      title: 'Resend Pro Upgrade ($20/mo)',
+      platform: 'Email Marketing',
+      time: '2 min',
+      dueDate: null,
+      status: 'not-started',
+      priority: true,
+      instructions: [
+        'Current: Free tier (100 emails/day limit) — blocked 388 emails today',
+        'Pro tier unlocks: unlimited emails, open/click tracking, analytics',
+        'Go to <a href="https://resend.com/settings/billing" target="_blank">Resend Billing</a>',
+        'Upgrade to Pro ($20/mo)',
+        'Tell Neo when done — will resend transformation emails to remaining 388 contacts'
       ]
     },
     {

@@ -1,3 +1,6 @@
+# API routes
+/api/newsletter  /.netlify/functions/newsletter  200
+
 # Block admin pages from public access
 /admin/*  https://robspain.com/ 302
 

@@ -1867,7 +1867,10 @@ async function summarizePaper(sourcePath, btn) {
 async function generateBipLanguage(evt) {
     const btn = (evt?.target && evt.target.closest('.ai-action-btn')) || document.querySelector('.ai-action-btn[onclick*="generateBipLanguage"]');
     if (!lastQuery && !lastAnswer) {
-        showToast('Run a search first');
+        showModal('BIP Language (Quick Draft)', `<p><strong>Behavior to address:</strong> Define the target behavior in observable terms.</p>
+        <p><strong>Replacement behavior:</strong> Teach a functional communication response that is easier and faster than the problem behavior.</p>
+        <p><strong>Antecedent supports:</strong></p><ul><li>Preview expectations before transitions</li><li>Offer choices and visual supports</li><li>Use prompting before escalation</li></ul>
+        <p><strong>Consequence strategy:</strong> Reinforce replacement behavior immediately and consistently.</p>`);
         return;
     }
     if (btn) {
@@ -1901,7 +1904,18 @@ async function generateBipLanguage(evt) {
 async function showVisually(evt) {
     const btn = (evt?.target && evt.target.closest('.ai-action-btn')) || document.querySelector('.ai-action-btn[onclick*="showVisually"]');
     if (!lastQuery && !lastAnswer) {
-        showToast('Run a search first');
+        showVisualModal({
+            summary: 'Quick visual plan (no active search context yet).',
+            chartData: {
+                type: 'flowchart',
+                steps: [
+                    { label: 'Define Behavior' },
+                    { label: 'Identify Trigger' },
+                    { label: 'Teach Replacement' },
+                    { label: 'Reinforce + Track' },
+                ]
+            }
+        });
         return;
     }
     if (btn) {

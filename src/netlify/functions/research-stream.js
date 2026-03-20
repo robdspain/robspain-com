@@ -13,8 +13,7 @@ export default async (req, context) => {
   const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY;
   const BACKUP_GEMINI_API_KEY = process.env.GEMINI_API_KEY_BACKUP;
   const BACKUP_GEMINI_API_KEY_2 = process.env.GEMINI_API_KEY_BACKUP_2;
-  const CLAUDE_FALLBACK_URL = process.env.CLAUDE_FALLBACK_URL || 'http://127.0.0.1:8787/v1/fallback/summary';
-  const CLAUDE_FALLBACK_TOKEN = process.env.CLAUDE_FALLBACK_TOKEN || '';
+  const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
   if (!GOOGLE_API_KEY) return new Response('Missing GOOGLE_API_KEY/GEMINI_API_KEY', { status: 500 });
 
@@ -157,25 +156,47 @@ Rules:
         if (!geminiRes.ok) {
           const status = geminiRes.status;
 
-          // 4th fallback: local Claude Opus API on Mac mini
-          if (CLAUDE_FALLBACK_TOKEN) {
+          // 4th fallback: Groq Llama3
+          if (GROQ_API_KEY) {
             try {
-              const claudeRes = await fetch(CLAUDE_FALLBACK_URL, {
+              const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${CLAUDE_FALLBACK_TOKEN}`,
+                  'Authorization': `Bearer ${GROQ_API_KEY}`,
                 },
                 body: JSON.stringify({
-                  query,
-                  context: contextText,
+                  model: 'llama3-8b-8192',
+                  messages: [
+                    {
+                      role: 'system',
+                      content: `You are an expert research assistant for a school-based BCBA. Your task is to create a concise evidence summary based on the provided context.
+
+Format your response exactly like this:
+1.  **Direct Answer:** A one-paragraph summary directly answering the user's question.
+2.  **Key Findings:** A bulleted list of 3-5 key findings from the source text.
+3.  **Practical Implications:** A bulleted list of 2-4 actionable implications for a school setting.
+
+Rules:
+-   Use only the provided context.
+-   Do not invent information.
+-   If the context is insufficient, state that and explain what's missing.`
+                    },
+                    {
+                      role: 'user',
+                      content: `Question: ${query}\n\nContext:\n${contextText}`
+                    }
+                  ],
+                  temperature: 0.1,
+                  max_tokens: 1024,
                 }),
               });
 
-              if (claudeRes.ok) {
-                const cj = await claudeRes.json();
-                if (cj?.ok && cj?.summary) {
-                  send({ type: 'answer', text: cj.summary });
+              if (groqRes.ok) {
+                const gj = await groqRes.json();
+                const summary = gj?.choices?.[0]?.message?.content?.trim();
+                if (summary) {
+                  send({ type: 'answer', text: summary });
                   send({
                     type: 'sources',
                     sources: sources.map((s) => ({

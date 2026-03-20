@@ -107,8 +107,14 @@ Rules:
       const send = (obj) => controller.enqueue(encoder.encode(`data: ${JSON.stringify(obj)}\n\n`));
 
       try {
-        const makeGeminiRequest = (apiKey) => fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:streamGenerateContent?alt=sse&key=${apiKey}`,
+        const modelCandidates = [
+          'gemini-2.0-flash',
+          'gemini-1.5-flash',
+          'gemini-1.5-pro',
+        ];
+
+        const makeGeminiRequest = (apiKey, model) => fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${apiKey}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -120,14 +126,30 @@ Rules:
           }
         );
 
-        let geminiRes = await makeGeminiRequest(GOOGLE_API_KEY);
+        const keyCandidates = [GOOGLE_API_KEY, BACKUP_GEMINI_API_KEY, BACKUP_GEMINI_API_KEY_2].filter(Boolean);
+        let geminiRes = null;
+        let lastStatus = null;
 
-        // Automatic backup-key failover on rate limit
-        if (geminiRes.status === 429 && BACKUP_GEMINI_API_KEY) {
-          geminiRes = await makeGeminiRequest(BACKUP_GEMINI_API_KEY);
+        // Try each key with multiple model fallbacks
+        outer:
+        for (const key of keyCandidates) {
+          for (const model of modelCandidates) {
+            const res = await makeGeminiRequest(key, model);
+            lastStatus = res.status;
+            if (res.ok) {
+              geminiRes = res;
+              break outer;
+            }
+            // continue trying models/keys on 404/429/5xx
+            if (![404, 429, 500, 502, 503].includes(res.status)) {
+              geminiRes = res;
+              break outer;
+            }
+          }
         }
-        if (geminiRes.status === 429 && BACKUP_GEMINI_API_KEY_2) {
-          geminiRes = await makeGeminiRequest(BACKUP_GEMINI_API_KEY_2);
+
+        if (!geminiRes) {
+          geminiRes = { ok: false, status: lastStatus || 500 };
         }
 
         if (!geminiRes.ok) {

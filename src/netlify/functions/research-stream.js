@@ -12,6 +12,7 @@ export default async (req, context) => {
   const CONVEX_DEPLOY_KEY = process.env.CONVEX_DEPLOY_KEY;
   const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY;
   const BACKUP_GEMINI_API_KEY = process.env.GEMINI_API_KEY_BACKUP;
+  const BACKUP_GEMINI_API_KEY_2 = process.env.GEMINI_API_KEY_BACKUP_2;
 
   if (!GOOGLE_API_KEY) return new Response('Missing GOOGLE_API_KEY/GEMINI_API_KEY', { status: 500 });
 
@@ -124,6 +125,9 @@ Rules:
         // Automatic backup-key failover on rate limit
         if (geminiRes.status === 429 && BACKUP_GEMINI_API_KEY) {
           geminiRes = await makeGeminiRequest(BACKUP_GEMINI_API_KEY);
+        }
+        if (geminiRes.status === 429 && BACKUP_GEMINI_API_KEY_2) {
+          geminiRes = await makeGeminiRequest(BACKUP_GEMINI_API_KEY_2);
         }
 
         if (!geminiRes.ok) {

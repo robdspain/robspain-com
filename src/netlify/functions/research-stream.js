@@ -109,9 +109,8 @@ Rules:
 
       try {
         const modelCandidates = [
-          'gemini-2.0-flash',
-          'gemini-1.5-flash',
-          'gemini-1.5-pro',
+          'gemini-1.5-flash-latest',
+          'gemini-1.5-pro-latest',
         ];
 
         const makeGeminiRequest = (apiKey, model) => fetch(
@@ -133,17 +132,20 @@ Rules:
 
         // Try each key with multiple model fallbacks
         outer:
-        for (const key of keyCandidates) {
-          for (const model of modelCandidates) {
+        for (const [keyIndex, key] of keyCandidates.entries()) {
+          for (const [modelIndex, model] of modelCandidates.entries()) {
+            console.log(`[Fallback] Attempting Gemini. Key #${keyIndex + 1}, Model: ${model}`);
             const res = await makeGeminiRequest(key, model);
             lastStatus = res.status;
             if (res.ok) {
+              console.log(`[Fallback] Gemini succeeded. Key #${keyIndex + 1}, Model: ${model}`);
               geminiRes = res;
               break outer;
             }
+            console.log(`[Fallback] Gemini failed. Key #${keyIndex + 1}, Model: ${model}, Status: ${lastStatus}`);
             // continue trying models/keys on 404/429/5xx
             if (![404, 429, 500, 502, 503].includes(res.status)) {
-              geminiRes = res;
+              geminiRes = res; // preserve non-retryable error
               break outer;
             }
           }
@@ -155,9 +157,11 @@ Rules:
 
         if (!geminiRes.ok) {
           const status = geminiRes.status;
+          console.log(`[Fallback] All Gemini attempts failed. Final status: ${status}.`);
 
           // 4th fallback: Groq Llama3
           if (GROQ_API_KEY) {
+            console.log('[Fallback] Attempting Groq Llama3...');
             try {
               const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                 method: 'POST',
@@ -193,6 +197,7 @@ Rules:
               });
 
               if (groqRes.ok) {
+                console.log('[Fallback] Groq succeeded.');
                 const gj = await groqRes.json();
                 const summary = gj?.choices?.[0]?.message?.content?.trim();
                 if (summary) {
@@ -214,10 +219,16 @@ Rules:
                   controller.close();
                   return;
                 }
+                console.log('[Fallback] Groq returned OK but no summary content.');
+              } else {
+                console.log(`[Fallback] Groq failed. Status: ${groqRes.status}`);
               }
-            } catch {}
+            } catch (e) {
+              console.log(`[Fallback] Groq threw an error: ${e.message}`);
+            }
           }
 
+          console.log('[Fallback] All fallbacks exhausted. Using final source-snippet display.');
           const fallbackText = status === 429
             ? 'AI summary is rate-limited right now (Gemini 429 after backup key failover). Showing source-backed fallback guidance below.'
             : `AI summary temporarily unavailable (Gemini ${status}). Showing source-backed fallback guidance below.`;

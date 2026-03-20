@@ -1455,42 +1455,34 @@ function askFollowup() {
 
 // Find similar papers
 async function findSimilar(sourcePath, btn) {
+    if (!btn) return;
     btn.textContent = 'Finding...';
     btn.disabled = true;
-    
-    try {
-        const result = await convexClient.action("researchCorpus:findSimilar", {
-            sourcePdf: sourcePath,
-            limit: 5
-        });
-        
-        if (result.sources.length === 0) {
+
+    const renderSimilarModal = (items) => {
+        if (!items || items.length === 0) {
             showToast('No similar papers found');
-            btn.textContent = 'Find Similar';
-            btn.disabled = false;
             return;
         }
-        
-        // Build modal content
         let modalHtml = '<div class="similar-papers-modal">';
         modalHtml += '<div class="modal-header"><h3>Similar Papers</h3><button onclick="closeModal()">×</button></div>';
         modalHtml += '<div class="modal-content">';
-        
-        result.sources.forEach((s, i) => {
+
+        items.forEach((s) => {
             const srcPath = s.sourcePdf || s.source_pdf || '';
             const isGen = !s.paperTitle || s.paperTitle === 'Behavior Analysis Research' || s.paperTitle === 'Research Paper';
             let title = s.paperTitle || '';
             if (isGen && srcPath) {
                 const base = srcPath.replace(/^.*\//, '').replace(/\.pdf$/i, '');
                 title = /^\d{2}\.\d{4}/.test(base) ? base.replace(/_/g, '/') : base.replace(/[-_]/g, ' ');
-            } else if (!title) { title = 'Research Paper'; }
+            } else if (!title) title = 'Research Paper';
             const authors = s.authors || '';
             const year = s.year || '';
             const journal = s.journal || s.venue || '';
             const score = s.score ? (s.score * 100).toFixed(0) : '?';
             const paperLink = s.paperUrl || '';
             const apa = buildApaCitation(authors, year, title, journal, paperLink);
-            
+
             modalHtml += `
                 <div class="similar-paper">
                     <div class="similar-header">
@@ -1503,10 +1495,8 @@ async function findSimilar(sourcePath, btn) {
                 </div>
             `;
         });
-        
+
         modalHtml += '</div></div>';
-        
-        // Show modal
         let modal = document.getElementById('similar-modal');
         if (!modal) {
             modal = document.createElement('div');
@@ -1516,9 +1506,33 @@ async function findSimilar(sourcePath, btn) {
         }
         modal.innerHTML = modalHtml;
         modal.style.display = 'flex';
-        
+    };
+    
+    try {
+        const result = await convexClient.action("researchCorpus:findSimilar", {
+            sourcePdf: sourcePath,
+            limit: 5
+        });
+        renderSimilarModal(result.sources || []);
     } catch (err) {
-        showToast('Error finding similar papers: ' + err.message);
+        // Fallback: similarity from current result set by year/journal
+        const target = (lastSources || []).find(s => (s.sourcePdf || s.source_pdf || '') === sourcePath) || (lastSources || [])[0];
+        const tYear = Number(target?.year || 0);
+        const tJournal = (target?.journal || target?.venue || '').toLowerCase();
+        const fallback = (lastSources || [])
+            .filter(s => (s.sourcePdf || s.source_pdf || '') !== sourcePath)
+            .map(s => {
+                let score = 0.4;
+                const y = Number(s.year || 0);
+                const j = (s.journal || s.venue || '').toLowerCase();
+                if (tJournal && j && tJournal === j) score += 0.35;
+                if (tYear && y && Math.abs(tYear - y) <= 2) score += 0.2;
+                return { ...s, score: Math.min(0.95, score) };
+            })
+            .sort((a, b) => (b.score || 0) - (a.score || 0))
+            .slice(0, 5);
+        renderSimilarModal(fallback);
+        showToast('Using local similarity fallback');
     }
     
     btn.textContent = 'Find Similar';
@@ -1759,8 +1773,13 @@ function toggleSources() {
 }
 
 async function summarizePaper(sourcePath, btn) {
+    if (!btn) return;
     const card = btn.closest('.source-card');
-    const summaryDiv = card.querySelector('.paper-summary');
+    const summaryDiv = card?.querySelector('.paper-summary');
+    if (!summaryDiv) {
+        showToast('Summary container not found');
+        return;
+    }
     
     // Toggle if already loaded
     if (summaryDiv.innerHTML && summaryDiv.style.display !== 'none') {
@@ -1794,9 +1813,23 @@ async function summarizePaper(sourcePath, btn) {
         summaryDiv.style.display = 'block';
         btn.textContent = 'Hide Summary';
     } catch (err) {
-        summaryDiv.innerHTML = `<p class="summary-error">Error loading summary: ${escapeHtml(err.message)}</p>`;
+        // Fallback summary from source snippet already on card
+        const source = (lastSources || []).find(s => (s.sourcePdf || s.source_pdf || '') === sourcePath) || {};
+        const title = source.paperTitle || sourcePath?.split('/').pop()?.replace('.pdf','') || 'Research paper';
+        const authors = source.authors || 'Authors unavailable';
+        const year = source.year || 'n.d.';
+        const journal = source.journal || source.venue || 'Journal unavailable';
+        const snippet = (source.text || '').slice(0, 700) || 'No abstract/snippet available in cached results.';
+        summaryDiv.innerHTML = `
+            <div class="summary-content">
+                <p class="summary-citation"><strong>${escapeHtml(title)}</strong></p>
+                <p class="summary-meta">${escapeHtml(authors)} (${escapeHtml(String(year))}). <em>${escapeHtml(journal)}</em></p>
+                <p class="summary-text">${escapeHtml(snippet)}</p>
+            </div>
+        `;
         summaryDiv.style.display = 'block';
-        btn.textContent = 'Get Summary';
+        btn.textContent = 'Hide Summary';
+        showToast('Using local summary fallback');
     }
     
     btn.disabled = false;

@@ -11,6 +11,7 @@ export default async (req, context) => {
   const CONVEX_URL = process.env.CONVEX_URL || 'https://brilliant-guineapig-373.convex.cloud';
   const CONVEX_DEPLOY_KEY = process.env.CONVEX_DEPLOY_KEY;
   const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY;
+  const BACKUP_GEMINI_API_KEY = process.env.GEMINI_API_KEY_BACKUP;
 
   if (!GOOGLE_API_KEY) return new Response('Missing GOOGLE_API_KEY/GEMINI_API_KEY', { status: 500 });
 
@@ -97,8 +98,8 @@ Your role is to synthesize behavior analysis research and answer questions groun
       const send = (obj) => controller.enqueue(encoder.encode(`data: ${JSON.stringify(obj)}\n\n`));
 
       try {
-        const geminiRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse&key=${GOOGLE_API_KEY}`,
+        const makeGeminiRequest = (apiKey) => fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse&key=${apiKey}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -110,11 +111,17 @@ Your role is to synthesize behavior analysis research and answer questions groun
           }
         );
 
+        let geminiRes = await makeGeminiRequest(GOOGLE_API_KEY);
+
+        // Automatic backup-key failover on rate limit
+        if (geminiRes.status === 429 && BACKUP_GEMINI_API_KEY) {
+          geminiRes = await makeGeminiRequest(BACKUP_GEMINI_API_KEY);
+        }
+
         if (!geminiRes.ok) {
-          // Graceful fallback when Gemini is rate-limited/unavailable
           const status = geminiRes.status;
           const fallbackText = status === 429
-            ? 'AI summary is rate-limited right now (Gemini 429). Showing source-backed fallback guidance below.'
+            ? 'AI summary is rate-limited right now (Gemini 429 after backup key failover). Showing source-backed fallback guidance below.'
             : `AI summary temporarily unavailable (Gemini ${status}). Showing source-backed fallback guidance below.`;
 
           const top = sources.slice(0, 3);

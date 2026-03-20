@@ -111,7 +111,38 @@ Your role is to synthesize behavior analysis research and answer questions groun
         );
 
         if (!geminiRes.ok) {
-          send({ type: 'error', text: `Gemini error ${geminiRes.status}` });
+          // Graceful fallback when Gemini is rate-limited/unavailable
+          const status = geminiRes.status;
+          const fallbackText = status === 429
+            ? 'AI summary is rate-limited right now (Gemini 429). Showing source-backed fallback guidance below.'
+            : `AI summary temporarily unavailable (Gemini ${status}). Showing source-backed fallback guidance below.`;
+
+          const top = sources.slice(0, 3);
+          const fallbackGuidance = top.length
+            ? top
+                .map((s, i) => {
+                  const t = cleanTitle(s);
+                  const snippet = (s.text || '').slice(0, 220).trim();
+                  return `- ${t}${snippet ? `: ${snippet}` : ''} [Source ${i + 1}]`;
+                })
+                .join('\n')
+            : '- No source snippets available in this response.';
+
+          send({ type: 'answer', text: `${fallbackText}\n\nKey points from available sources:\n${fallbackGuidance}` });
+          send({
+            type: 'sources',
+            sources: sources.map((s) => ({
+              paperTitle: cleanTitle(s),
+              authors: s.authors || '',
+              year: s.year || '',
+              journal: s.journal || s.venue || '',
+              score: s.score,
+              sourcePdf: s.sourcePdf || s.source_pdf || '',
+              paperUrl: s.doi ? `https://doi.org/${s.doi}` : null,
+              text: s.text || '',
+            })),
+          });
+          send({ type: 'done' });
           controller.close();
           return;
         }

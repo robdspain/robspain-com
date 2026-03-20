@@ -79,21 +79,31 @@ export default async (req, context) => {
   // ── Step 2: Vector search in Convex ─────────────────────────────────────────
   let sources = [];
   try {
-    const convexRes = await fetch(`${CONVEX_URL}/api/action`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(CONVEX_DEPLOY_KEY ? { 'Authorization': `Convex ${CONVEX_DEPLOY_KEY}` } : {}),
-      },
-      body: JSON.stringify({
-        path: 'researchCorpus:search',
-        args: { query, limit },
-        format: 'json',
-      }),
-    });
-    const convexData = await convexRes.json();
-    const cv = convexData.value || {};
-    sources = cv.results || cv.sources || [];
+    const runSearch = async (q) => {
+      const convexRes = await fetch(`${CONVEX_URL}/api/action`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(CONVEX_DEPLOY_KEY ? { 'Authorization': `Convex ${CONVEX_DEPLOY_KEY}` } : {}),
+        },
+        body: JSON.stringify({
+          path: 'researchCorpus:search',
+          args: { query: q, limit },
+          format: 'json',
+        }),
+      });
+      const convexData = await convexRes.json();
+      const cv = convexData.value || {};
+      return cv.results || cv.sources || [];
+    };
+
+    sources = await runSearch(query);
+
+    // Second-pass expansion for plain-language school behavior queries
+    if (!sources.length) {
+      const expanded = `${query} behavior intervention school aba feeding selective eating functional communication`;
+      sources = await runSearch(expanded);
+    }
   } catch (e) {
     return new Response(`Convex error: ${e.message}`, { status: 500 });
   }

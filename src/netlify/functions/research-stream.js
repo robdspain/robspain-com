@@ -7,7 +7,7 @@ export default async (req, context) => {
   const { query, limit = 8 } = await req.json();
   if (!query) return new Response('Missing query', { status: 400 });
 
-  const CONVEX_URL = process.env.CONVEX_URL || 'https://brilliant-guineapig-373.convex.cloud';
+  const CONVEX_URL = process.env.CONVEX_URL || 'https://lovely-manatee-270.convex.cloud';
   const CONVEX_DEPLOY_KEY = process.env.CONVEX_DEPLOY_KEY;
   const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 

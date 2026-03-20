@@ -1,7 +1,7 @@
 import { ConvexClient } from "convex/browser";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const CONVEX_URL = process.env.CONVEX_URL || "https://third-loris-453.convex.cloud";
+const CONVEX_URL = process.env.CONVEX_URL || "https://lovely-manatee-270.convex.cloud";
 const convex = new ConvexClient(CONVEX_URL);
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
 

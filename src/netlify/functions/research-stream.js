@@ -273,9 +273,23 @@ function extractDoi(source) {
   ].filter(Boolean).map(String);
 
   for (const c of candidates) {
-    const decoded = c.replace(/_/g, '/');
-    const m = decoded.match(/10\.\d{4,9}\/[\w.()\-;/:]+/i);
+    const decoded = c.replace(/_/g, '/').replace(/https?:\s*\/\/\s*doi\.org\s*/ig, '').replace(/https\s+doi\.org\s*/ig, '').trim();
+
+    // Proper DOI form already present
+    let m = decoded.match(/10\.\d{4,9}\/[\w.()\-;/:]+/i);
     if (m) return m[0].replace(/[)>\].,]+$/, '');
+
+    // Loose DOI with spaces, e.g. "10.1007 s40616 018 0109 y"
+    m = decoded.match(/(10\.\d{4,9})\s+([A-Za-z0-9]+(?:[\s-]+[A-Za-z0-9]+){1,8})/i);
+    if (m) {
+      const prefix = m[1];
+      const rest = m[2].trim().split(/[\s]+/).filter(Boolean);
+      if (rest.length) {
+        const first = rest.shift();
+        const suffix = [first, ...rest].join('-');
+        return `${prefix}/${suffix}`;
+      }
+    }
   }
   return null;
 }

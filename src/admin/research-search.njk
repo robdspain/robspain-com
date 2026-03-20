@@ -1054,6 +1054,43 @@ window.findSimilar = findSimilar;
 window.closeModal = closeModal;
 window.copyCitation = copyCitation;
 
+// Robust click delegation (works even if inline onclick is blocked by CSP)
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+
+    if (btn.matches('.view-btn')) {
+        const view = btn.getAttribute('data-view') || (btn.textContent || '').trim().toLowerCase();
+        if (view === 'network' || view === 'list') {
+            e.preventDefault();
+            showView(view, { target: btn });
+        }
+    }
+
+    if (btn.matches('.ai-action-btn')) {
+        const action = btn.getAttribute('data-action') || '';
+        if (action === 'generate-bip') {
+            e.preventDefault();
+            generateBipLanguage({ target: btn });
+        } else if (action === 'show-visual') {
+            e.preventDefault();
+            showVisually({ target: btn });
+        }
+    }
+
+    if (btn.matches('.summarize-btn')) {
+        const action = btn.getAttribute('data-action');
+        const sourcePath = btn.getAttribute('data-source-path') || '';
+        if (action === 'summary') {
+            e.preventDefault();
+            summarizePaper(sourcePath, btn);
+        } else if (action === 'similar') {
+            e.preventDefault();
+            findSimilar(sourcePath, btn);
+        }
+    }
+});
+
 // Initialize Convex
 async function initConvex() {
     const statusBar = document.getElementById('status-bar');
@@ -1147,8 +1184,8 @@ async function search() {
                     <div class="network-header">
                         <h3>Citation Network</h3>
                         <div class="network-toggle">
-                            <button class="view-btn active" onclick="showView('network', event)">Network</button>
-                            <button class="view-btn" onclick="showView('list', event)">List</button>
+                            <button class="view-btn active" data-view="network">Network</button>
+                            <button class="view-btn" data-view="list">List</button>
                         </div>
                     </div>
                     <div id="network-container"></div>
@@ -1234,8 +1271,8 @@ async function search() {
                     ${citation ? `<p class="source-meta">${escapeHtml(citation)}</p>` : ''}
                     <div class="result-footer">
                         <div class="source-actions">
-                            <button class="summarize-btn" onclick="summarizePaper('${escapeHtml(srcPath)}', this)">Summary</button>
-                            <button class="summarize-btn" onclick="findSimilar('${escapeHtml(srcPath)}', this)">Find Similar</button>
+                            <button class="summarize-btn" data-action="summary" data-source-path="${escapeHtml(srcPath)}">Summary</button>
+                            <button class="summarize-btn" data-action="similar" data-source-path="${escapeHtml(srcPath)}">Find Similar</button>
                             ${paperLink ? `<a href="${paperLink}" target="_blank" class="result-link">View Paper</a>` : ''}
                         </div>
                     </div>
@@ -2089,5 +2126,8 @@ function copyModalContent() {
 }
 
 // Initialize on load
+initConvex();
+</script>
+ load
 initConvex();
 </script>

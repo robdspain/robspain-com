@@ -1091,6 +1091,17 @@ document.addEventListener('click', (e) => {
     }
 });
 
+// Prevent Enter in follow-up box from triggering native page jump/submit
+document.addEventListener('keydown', (e) => {
+    const target = e.target;
+    if (!target || target.id !== 'followup-input') return;
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        e.stopPropagation();
+        askFollowup();
+    }
+});
+
 // Initialize Convex
 async function initConvex() {
     const statusBar = document.getElementById('status-bar');
@@ -1175,7 +1186,7 @@ async function search() {
                     </button>
                 </div>
                 <div class="followup-inline" style="display:none" id="followup-block">
-                    <input type="text" class="followup-input" id="followup-input" placeholder="Ask a follow-up question..." onkeypress="if(event.key==='Enter')askFollowup()">
+                    <input type="text" class="followup-input" id="followup-input" placeholder="Ask a follow-up question...">
                     <button class="followup-ask-btn" onclick="askFollowup()">Ask</button>
                 </div>
             </div>

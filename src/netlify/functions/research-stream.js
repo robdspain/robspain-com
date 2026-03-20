@@ -62,6 +62,9 @@ export default async (req, context) => {
     return new Response(`Convex error: ${e.message}`, { status: 500 });
   }
 
+  // Enrich sparse PMC-only metadata (title/authors/year/journal)
+  sources = await enrichSourcesMetadata(sources);
+
   const encoder = new TextEncoder();
 
   if (!sources.length) {
@@ -209,6 +212,69 @@ function cleanTitle(s) {
     return /^\d{2}\.\d{4}/.test(base) ? base.replace(/_/g, '/') : base.replace(/[-_]/g, ' ');
   }
   return 'Research Paper';
+}
+
+function extractPmcId(source) {
+  const candidates = [
+    source.paperTitle,
+    source.sourcePdf,
+    source.source_pdf,
+    source.chunkId,
+    source.chunk_id,
+  ].filter(Boolean);
+
+  for (const c of candidates) {
+    const m = String(c).match(/\b(PMC\d{5,})\b/i);
+    if (m) return m[1].toUpperCase();
+  }
+  return null;
+}
+
+async function fetchEuropePmcMetadata(pmcId) {
+  const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=PMCID:${pmcId}&format=json&pageSize=1`;
+  const res = await fetch(url);
+  if (!res.ok) return null;
+  const json = await res.json();
+  const item = json?.resultList?.result?.[0];
+  if (!item) return null;
+  return {
+    paperTitle: item.title || null,
+    authors: item.authorString || null,
+    year: item.pubYear || null,
+    journal: item.journalTitle || item.journal || null,
+    doi: item.doi || null,
+    sourcePdf: item.pmcid ? `https://pmc.ncbi.nlm.nih.gov/articles/${item.pmcid}/` : null,
+  };
+}
+
+async function enrichSourcesMetadata(sources) {
+  const out = [...sources];
+  for (let i = 0; i < out.length; i++) {
+    const s = out[i] || {};
+    const titleLooksPmc = /^PMC\d{5,}$/i.test((s.paperTitle || '').trim());
+    const missingMeta = !s.authors || !s.year || !s.journal || titleLooksPmc;
+    if (!missingMeta) continue;
+
+    const pmcId = extractPmcId(s);
+    if (!pmcId) continue;
+
+    try {
+      const meta = await fetchEuropePmcMetadata(pmcId);
+      if (!meta) continue;
+      out[i] = {
+        ...s,
+        paperTitle: meta.paperTitle || s.paperTitle,
+        authors: meta.authors || s.authors,
+        year: meta.year || s.year,
+        journal: meta.journal || s.journal || s.venue,
+        doi: meta.doi || s.doi,
+        sourcePdf: meta.sourcePdf || s.sourcePdf || s.source_pdf,
+      };
+    } catch {
+      // keep original source if metadata fetch fails
+    }
+  }
+  return out;
 }
 
 function sseHeaders() {

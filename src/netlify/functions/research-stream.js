@@ -9,9 +9,49 @@ export default async (req, context) => {
 
   const CONVEX_URL = process.env.CONVEX_URL || 'https://lovely-manatee-270.convex.cloud';
   const CONVEX_DEPLOY_KEY = process.env.CONVEX_DEPLOY_KEY;
-  const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
+  const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY;
 
-  if (!GOOGLE_API_KEY) return new Response('Missing GOOGLE_API_KEY', { status: 500 });
+  // If Gemini key is missing, gracefully fall back to corpus search without AI synthesis
+  if (!GOOGLE_API_KEY) {
+    try {
+      const convexRes = await fetch(`${CONVEX_URL}/api/action`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(CONVEX_DEPLOY_KEY ? { 'Authorization': `Convex ${CONVEX_DEPLOY_KEY}` } : {}),
+        },
+        body: JSON.stringify({
+          path: 'researchCorpus:search',
+          args: { query, limit },
+          format: 'json',
+        }),
+      });
+
+      const convexData = await convexRes.json();
+      const cv = convexData.value || {};
+      const fallbackSources = cv.results || cv.sources || [];
+
+      const encoder = new TextEncoder();
+      const stream = new ReadableStream({
+        start(controller) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+            type: 'answer',
+            text: 'AI overview is temporarily unavailable (missing Gemini API key). Showing top research sources only.'
+          })}\n\n`));
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+            type: 'sources',
+            sources: fallbackSources,
+          })}\n\n`));
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'done' })}\n\n`));
+          controller.close();
+        }
+      });
+
+      return new Response(stream, { headers: sseHeaders() });
+    } catch (e) {
+      return new Response(`Fallback search error: ${e.message}`, { status: 500 });
+    }
+  }
 
   // ── Step 1: Embed the query with Gemini ──────────────────────────────────────
   let queryEmbedding;

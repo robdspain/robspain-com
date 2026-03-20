@@ -13,6 +13,8 @@ export default async (req, context) => {
   const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY;
   const BACKUP_GEMINI_API_KEY = process.env.GEMINI_API_KEY_BACKUP;
   const BACKUP_GEMINI_API_KEY_2 = process.env.GEMINI_API_KEY_BACKUP_2;
+  const CLAUDE_FALLBACK_URL = process.env.CLAUDE_FALLBACK_URL || 'http://127.0.0.1:8787/v1/fallback/summary';
+  const CLAUDE_FALLBACK_TOKEN = process.env.CLAUDE_FALLBACK_TOKEN || '';
 
   if (!GOOGLE_API_KEY) return new Response('Missing GOOGLE_API_KEY/GEMINI_API_KEY', { status: 500 });
 
@@ -154,6 +156,47 @@ Rules:
 
         if (!geminiRes.ok) {
           const status = geminiRes.status;
+
+          // 4th fallback: local Claude Opus API on Mac mini
+          if (CLAUDE_FALLBACK_TOKEN) {
+            try {
+              const claudeRes = await fetch(CLAUDE_FALLBACK_URL, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${CLAUDE_FALLBACK_TOKEN}`,
+                },
+                body: JSON.stringify({
+                  query,
+                  context: contextText,
+                }),
+              });
+
+              if (claudeRes.ok) {
+                const cj = await claudeRes.json();
+                if (cj?.ok && cj?.summary) {
+                  send({ type: 'answer', text: cj.summary });
+                  send({
+                    type: 'sources',
+                    sources: sources.map((s) => ({
+                      paperTitle: cleanTitle(s),
+                      authors: s.authors || '',
+                      year: s.year || '',
+                      journal: s.journal || s.venue || '',
+                      score: s.score,
+                      sourcePdf: s.sourcePdf || s.source_pdf || '',
+                      paperUrl: s.doi ? `https://doi.org/${s.doi}` : null,
+                      text: s.text || '',
+                    })),
+                  });
+                  send({ type: 'done' });
+                  controller.close();
+                  return;
+                }
+              }
+            } catch {}
+          }
+
           const fallbackText = status === 429
             ? 'AI summary is rate-limited right now (Gemini 429 after backup key failover). Showing source-backed fallback guidance below.'
             : `AI summary temporarily unavailable (Gemini ${status}). Showing source-backed fallback guidance below.`;

@@ -104,8 +104,37 @@ export default async (req, context) => {
       const expanded = `${query} behavior intervention school aba feeding selective eating functional communication`;
       sources = await runSearch(expanded);
     }
+
+    // Third-pass fallback: OpenAlex scholarly search for relevance coverage
+    if (!sources.length) {
+      const oa = await fetch(`https://api.openalex.org/works?search=${encodeURIComponent(query + ' behavior analysis school intervention')}&per-page=${Math.min(limit, 8)}`);
+      if (oa.ok) {
+        const data = await oa.json();
+        const works = data?.results || [];
+        sources = works.map((w) => {
+          const abs = w.abstract_inverted_index
+            ? Object.entries(w.abstract_inverted_index)
+                .flatMap(([word, positions]) => positions.map((p) => [Number(p), word]))
+                .sort((a, b) => a[0] - b[0])
+                .map((x) => x[1])
+                .join(' ')
+            : '';
+          return {
+            paperTitle: w.title || 'Research Paper',
+            authors: (w.authorships || []).slice(0, 3).map(a => a.author?.display_name).filter(Boolean).join(', '),
+            year: w.publication_year || '',
+            journal: w.primary_location?.source?.display_name || '',
+            score: 0.6,
+            sourcePdf: w.primary_location?.pdf_url || w.id || '',
+            doi: w.doi ? w.doi.replace('https://doi.org/', '') : '',
+            text: (abs || w.title || '').slice(0, 1200),
+            externalFallback: true,
+          };
+        });
+      }
+    }
   } catch (e) {
-    return new Response(`Convex error: ${e.message}`, { status: 500 });
+    return new Response(`Convex/OpenAlex error: ${e.message}`, { status: 500 });
   }
 
   const encoder = new TextEncoder();

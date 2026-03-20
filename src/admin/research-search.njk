@@ -1753,9 +1753,23 @@ function drawNetwork(sources) {
         node.addEventListener('mouseleave', () => {
             tooltip.classList.remove('show');
         });
-        node.addEventListener('click', () => {
+        node.addEventListener('click', (e) => {
             const idx = parseInt(node.dataset.index);
-            document.getElementById('source-' + (idx + 1)).scrollIntoView({ behavior: 'smooth' });
+            const n = nodes[idx];
+            const authors = n.authors && n.authors.trim() ? n.authors : 'Author(s) unavailable';
+            const date = n.year ? String(n.year) : 'Date unavailable';
+            const journal = n.journal && n.journal.trim() ? n.journal : 'Journal unavailable';
+            tooltip.innerHTML = `
+                <div style="font-weight:700; margin-bottom:6px;">${escapeHtml(n.title || 'Untitled article')}</div>
+                <div style="color:#334155; font-size:12px; line-height:1.4;">Author(s): ${escapeHtml(authors)}</div>
+                <div style="color:#334155; font-size:12px; line-height:1.4;">Date: ${escapeHtml(date)}</div>
+                <div style="color:#334155; font-size:12px; line-height:1.4;">Journal: ${escapeHtml(journal)}</div>
+            `;
+            placeTooltip(e);
+            tooltip.classList.add('show');
+            // keep previous behavior: jump to source card
+            const target = document.getElementById('source-' + (idx + 1));
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
         });
     });
 }

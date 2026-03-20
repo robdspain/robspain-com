@@ -239,6 +239,25 @@ function extractPmcId(source) {
   return null;
 }
 
+function extractDoi(source) {
+  const candidates = [
+    source.doi,
+    source.paperUrl,
+    source.sourcePdf,
+    source.source_pdf,
+    source.chunkId,
+    source.chunk_id,
+    source.paperTitle,
+  ].filter(Boolean).map(String);
+
+  for (const c of candidates) {
+    const decoded = c.replace(/_/g, '/');
+    const m = decoded.match(/10\.\d{4,9}\/[\w.()\-;/:]+/i);
+    if (m) return m[0].replace(/[)>\].,]+$/, '');
+  }
+  return null;
+}
+
 async function fetchEuropePmcMetadata(pmcId) {
   const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=PMCID:${pmcId}&format=json&pageSize=1`;
   const res = await fetch(url);
@@ -256,6 +275,28 @@ async function fetchEuropePmcMetadata(pmcId) {
   };
 }
 
+async function fetchCrossrefMetadata(doi) {
+  const res = await fetch(`https://api.crossref.org/works/${encodeURIComponent(doi)}`);
+  if (!res.ok) return null;
+  const item = (await res.json())?.message;
+  if (!item) return null;
+  const authors = (item.author || [])
+    .map(a => [a.given, a.family].filter(Boolean).join(' ').trim())
+    .filter(Boolean)
+    .slice(0, 6)
+    .join(', ');
+  const year = item?.published?.['date-parts']?.[0]?.[0] || item?.issued?.['date-parts']?.[0]?.[0] || null;
+  const journal = Array.isArray(item['container-title']) ? item['container-title'][0] : item['container-title'];
+  return {
+    paperTitle: Array.isArray(item.title) ? item.title[0] : item.title,
+    authors: authors || null,
+    year: year ? String(year) : null,
+    journal: journal || null,
+    doi: item.DOI || doi,
+    sourcePdf: item.URL || null,
+  };
+}
+
 async function enrichSourcesMetadata(sources) {
   const out = [...sources];
   for (let i = 0; i < out.length; i++) {
@@ -264,23 +305,43 @@ async function enrichSourcesMetadata(sources) {
     const missingMeta = !s.authors || !s.year || !s.journal || titleLooksPmc;
     if (!missingMeta) continue;
 
+    // 1) Try PMC enrichment first
     const pmcId = extractPmcId(s);
-    if (!pmcId) continue;
+    if (pmcId) {
+      try {
+        const meta = await fetchEuropePmcMetadata(pmcId);
+        if (meta) {
+          out[i] = {
+            ...s,
+            paperTitle: meta.paperTitle || s.paperTitle,
+            authors: meta.authors || s.authors,
+            year: meta.year || s.year,
+            journal: meta.journal || s.journal || s.venue,
+            doi: meta.doi || s.doi,
+            sourcePdf: meta.sourcePdf || s.sourcePdf || s.source_pdf,
+          };
+          continue;
+        }
+      } catch {}
+    }
 
-    try {
-      const meta = await fetchEuropePmcMetadata(pmcId);
-      if (!meta) continue;
-      out[i] = {
-        ...s,
-        paperTitle: meta.paperTitle || s.paperTitle,
-        authors: meta.authors || s.authors,
-        year: meta.year || s.year,
-        journal: meta.journal || s.journal || s.venue,
-        doi: meta.doi || s.doi,
-        sourcePdf: meta.sourcePdf || s.sourcePdf || s.source_pdf,
-      };
-    } catch {
-      // keep original source if metadata fetch fails
+    // 2) Fallback DOI -> Crossref
+    const doi = extractDoi(s);
+    if (doi) {
+      try {
+        const meta = await fetchCrossrefMetadata(doi);
+        if (meta) {
+          out[i] = {
+            ...s,
+            paperTitle: meta.paperTitle || s.paperTitle,
+            authors: meta.authors || s.authors,
+            year: meta.year || s.year,
+            journal: meta.journal || s.journal || s.venue,
+            doi: meta.doi || s.doi || doi,
+            sourcePdf: s.sourcePdf || s.source_pdf || meta.sourcePdf,
+          };
+        }
+      } catch {}
     }
   }
   return out;

@@ -14,6 +14,7 @@ export default async (req, context) => {
   const BACKUP_GEMINI_API_KEY = process.env.GEMINI_API_KEY_BACKUP;
   const BACKUP_GEMINI_API_KEY_2 = process.env.GEMINI_API_KEY_BACKUP_2;
   const GROQ_API_KEY = process.env.GROQ_API_KEY;
+  const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
   if (!GOOGLE_API_KEY) return new Response('Missing GOOGLE_API_KEY/GEMINI_API_KEY', { status: 500 });
 
@@ -225,6 +226,70 @@ Rules:
               }
             } catch (e) {
               console.log(`[Fallback] Groq threw an error: ${e.message}`);
+            }
+          }
+
+          // 5th fallback: OpenRouter free models only
+          if (OPENROUTER_API_KEY) {
+            console.log('[Fallback] Attempting OpenRouter free model fallback...');
+            const modelCandidates = [
+              'google/gemma-2-9b-it:free',
+              'meta-llama/llama-3.1-8b-instruct:free',
+              'mistralai/mistral-7b-instruct:free',
+            ];
+
+            for (const model of modelCandidates) {
+              try {
+                const orRes = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+                  },
+                  body: JSON.stringify({
+                    model,
+                    messages: [
+                      { role: 'system', content: systemPrompt },
+                      { role: 'user', content: userPrompt },
+                    ],
+                    temperature: 0.2,
+                    max_tokens: 1024,
+                  }),
+                });
+
+                if (!orRes.ok) {
+                  console.log(`[Fallback] OpenRouter model failed: ${model}, status ${orRes.status}`);
+                  continue;
+                }
+
+                const oj = await orRes.json();
+                const summary = oj?.choices?.[0]?.message?.content?.trim();
+                if (!summary) {
+                  console.log(`[Fallback] OpenRouter model returned no summary: ${model}`);
+                  continue;
+                }
+
+                console.log(`[Fallback] OpenRouter succeeded with ${model}`);
+                send({ type: 'answer', text: summary });
+                send({
+                  type: 'sources',
+                  sources: sources.map((s) => ({
+                    paperTitle: cleanTitle(s),
+                    authors: s.authors || '',
+                    year: s.year || '',
+                    journal: s.journal || s.venue || '',
+                    score: s.score,
+                    sourcePdf: s.sourcePdf || s.source_pdf || '',
+                    paperUrl: s.doi ? `https://doi.org/${s.doi}` : null,
+                    text: s.text || '',
+                  })),
+                });
+                send({ type: 'done' });
+                controller.close();
+                return;
+              } catch (e) {
+                console.log(`[Fallback] OpenRouter threw error for ${model}: ${e.message}`);
+              }
             }
           }
 

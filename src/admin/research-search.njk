@@ -1861,22 +1861,52 @@ async function summarizePaper(sourcePath, btn) {
     btn.disabled = true;
     
     try {
-        const result = await convexClient.action("researchCorpus:summarizePaper", {
-            sourcePdf: sourcePath
+        const source = (lastSources || []).find(s => (s.sourcePdf || s.source_pdf || '') === sourcePath) || {};
+        const payload = {
+            title: source.paperTitle || sourcePath?.split('/').pop()?.replace('.pdf','') || 'Research paper',
+            authors: source.authors || '',
+            year: source.year || '',
+            journal: source.journal || source.venue || '',
+            text: source.text || source.snippet || '',
+        };
+
+        // Primary: dedicated server-side summarizer
+        const aiRes = await fetch('/api/summarize-paper', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
         });
-        
-        const meta = result.metadata;
+
+        if (aiRes.ok) {
+            const ai = await aiRes.json();
+            if (ai?.ok && ai?.summary) {
+                summaryDiv.innerHTML = `
+                    <div class="summary-content">
+                        <p class="summary-citation"><strong>${escapeHtml(payload.title)}</strong></p>
+                        <p class="summary-meta">${escapeHtml(payload.authors || 'Authors unavailable')} (${escapeHtml(String(payload.year || 'n.d.'))}). <em>${escapeHtml(payload.journal || 'Journal unavailable')}</em></p>
+                        <p class="summary-text">${escapeHtml(ai.summary)}</p>
+                    </div>
+                `;
+                summaryDiv.style.display = 'block';
+                btn.textContent = 'Hide Summary';
+                btn.disabled = false;
+                return;
+            }
+        }
+
+        // Secondary: old Convex summarizer if available
+        const result = await convexClient.action("researchCorpus:summarizePaper", { sourcePdf: sourcePath });
+        const meta = result.metadata || {};
         summaryDiv.innerHTML = `
             <div class="summary-content">
-                <p class="summary-citation"><strong>${escapeHtml(meta.title)}</strong></p>
-                <p class="summary-meta">${escapeHtml(meta.authors)} (${escapeHtml(meta.year)}). <em>${escapeHtml(meta.journal)}</em></p>
-                <p class="summary-text">${escapeHtml(result.summary)}</p>
+                <p class="summary-citation"><strong>${escapeHtml(meta.title || payload.title)}</strong></p>
+                <p class="summary-meta">${escapeHtml(meta.authors || payload.authors || 'Authors unavailable')} (${escapeHtml(String(meta.year || payload.year || 'n.d.'))}). <em>${escapeHtml(meta.journal || payload.journal || 'Journal unavailable')}</em></p>
+                <p class="summary-text">${escapeHtml(result.summary || 'No summary returned.')}</p>
             </div>
         `;
         summaryDiv.style.display = 'block';
         btn.textContent = 'Hide Summary';
     } catch (err) {
-        // Fallback summary from source snippet already on card
         const source = (lastSources || []).find(s => (s.sourcePdf || s.source_pdf || '') === sourcePath) || {};
         const title = source.paperTitle || sourcePath?.split('/').pop()?.replace('.pdf','') || 'Research paper';
         const authors = source.authors || 'Authors unavailable';

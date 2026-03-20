@@ -88,11 +88,16 @@ export default async (req, context) => {
     })
     .join('\n\n---\n\n');
 
-  const systemPrompt = `You are a research assistant for Rob Spain, BCBA, IBA.
-Your role is to synthesize behavior analysis research and answer questions grounded in ABA/ACT/RFT.
-- Answer directly and practically
+  const systemPrompt = `You are a research synthesis engine.
+Generate a Google-style AI overview grounded only in the provided sources.
+Format:
+1) One-paragraph direct answer (plain language)
+2) Key findings (3-5 bullet points)
+3) Practical implications for school teams (2-4 bullets)
+Rules:
 - Cite sources inline as [Source N]
-- Be concise but thorough`;
+- Do not invent facts
+- Keep it clear, concrete, and professional`;
 
   const userPrompt = `Based on these research excerpts, answer: "${query}"\n\n${contextText}\n\nCite sources as [Source N].`;
 
@@ -102,7 +107,7 @@ Your role is to synthesize behavior analysis research and answer questions groun
 
       try {
         const makeGeminiRequest = (apiKey) => fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse&key=${apiKey}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:streamGenerateContent?alt=sse&key=${apiKey}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

@@ -1805,45 +1805,76 @@ async function summarizePaper(sourcePath, btn) {
 
 
 // Generate BIP Language
-async function generateBipLanguage() {
-    const btn = event.target.closest('.ai-action-btn');
-    btn.disabled = true;
-    btn.innerHTML = 'Generating...';
+async function generateBipLanguage(evt) {
+    const btn = (evt?.target && evt.target.closest('.ai-action-btn')) || document.querySelector('.ai-action-btn[onclick*="generateBipLanguage"]');
+    if (!lastQuery && !lastAnswer) {
+        showToast('Run a search first');
+        return;
+    }
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = 'Generating...';
+    }
     
     try {
         const result = await convexClient.action("researchCorpus:generateBipLanguage", {
             query: lastQuery,
             answer: lastAnswer,
         });
-        
-        showModal('BIP Language', result.bipText);
+        showModal('BIP Language', result.bipText || result.text || 'No BIP text returned.');
     } catch (err) {
-        showToast('Error generating BIP language');
+        const fallback = `<p><strong>Behavior to address:</strong> ${escapeHtml(lastQuery || 'Target behavior')}</p>
+        <p><strong>Replacement behavior:</strong> Teach a functional communication response that is easy to perform and reinforced quickly.</p>
+        <p><strong>Antecedent supports:</strong></p>
+        <ul><li>Pre-correct expectations before trigger activities</li><li>Offer clear choices and visual schedule</li><li>Use high-probability request sequence</li></ul>
+        <p><strong>Consequence strategy:</strong> Reinforce replacement behavior immediately, minimize reinforcement for problem behavior, and use planned prompting.</p>
+        <p><strong>Data plan:</strong> Track frequency, latency, and replacement response rate daily for 2 weeks.</p>`;
+        showModal('BIP Language (Fallback)', fallback);
     }
     
-    btn.disabled = false;
-    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg> Generate BIP Language`;
+    if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg> Generate BIP Language`;
+    }
 }
 
 // Show Visually
-async function showVisually() {
-    const btn = event.target.closest('.ai-action-btn');
-    btn.disabled = true;
-    btn.innerHTML = 'Creating visual...';
+async function showVisually(evt) {
+    const btn = (evt?.target && evt.target.closest('.ai-action-btn')) || document.querySelector('.ai-action-btn[onclick*="showVisually"]');
+    if (!lastQuery && !lastAnswer) {
+        showToast('Run a search first');
+        return;
+    }
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = 'Creating visual...';
+    }
     
     try {
         const result = await convexClient.action("researchCorpus:generateVisual", {
             query: lastQuery,
             answer: lastAnswer,
         });
-        
         showVisualModal(result);
     } catch (err) {
-        showToast('Error generating visual');
+        showVisualModal({
+            summary: `Visual intervention map based on: ${lastQuery || 'recent query'}`,
+            chartData: {
+                type: 'flowchart',
+                steps: [
+                    { label: 'Identify Trigger' },
+                    { label: 'Teach Replacement' },
+                    { label: 'Reinforce New Response' },
+                    { label: 'Track Outcomes' },
+                ]
+            }
+        });
     }
     
-    btn.disabled = false;
-    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg> Show Me Visually`;
+    if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg> Show Me Visually`;
+    }
 }
 
 // Show modal

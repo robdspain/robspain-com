@@ -1709,18 +1709,32 @@ function drawNetwork(sources) {
     
     // Add hover interactions
     const tooltip = document.getElementById('network-tooltip');
+    function placeTooltip(e) {
+        const rect = container.getBoundingClientRect();
+        const x = Math.min(rect.width - 320, Math.max(8, e.clientX - rect.left + 12));
+        const y = Math.min(rect.height - 140, Math.max(8, e.clientY - rect.top + 12));
+        tooltip.style.left = x + 'px';
+        tooltip.style.top = y + 'px';
+    }
+
     svg.querySelectorAll('.network-node').forEach(node => {
         node.addEventListener('mouseenter', (e) => {
             const idx = parseInt(node.dataset.index);
             const n = nodes[idx];
+            const authors = n.authors && n.authors.trim() ? n.authors : 'Author(s) unavailable';
+            const date = n.year ? String(n.year) : 'Date unavailable';
+            const journal = n.journal && n.journal.trim() ? n.journal : 'Journal unavailable';
             tooltip.innerHTML = `
-                <strong>${n.title}</strong><br>
-                <span style="color:#64748b">${n.authors} ${n.year ? '(' + n.year + ')' : ''}</span><br>
-                <span style="color:#64748b">${n.journal || ''}</span>
+                <div style="font-weight:700; margin-bottom:6px;">${escapeHtml(n.title || 'Untitled article')}</div>
+                <div style="color:#334155; font-size:12px; line-height:1.4;">Author(s): ${escapeHtml(authors)}</div>
+                <div style="color:#334155; font-size:12px; line-height:1.4;">Date: ${escapeHtml(date)}</div>
+                <div style="color:#334155; font-size:12px; line-height:1.4;">Journal: ${escapeHtml(journal)}</div>
             `;
-            tooltip.style.left = (e.clientX - container.getBoundingClientRect().left + 10) + 'px';
-            tooltip.style.top = (e.clientY - container.getBoundingClientRect().top - 60) + 'px';
+            placeTooltip(e);
             tooltip.classList.add('show');
+        });
+        node.addEventListener('mousemove', (e) => {
+            if (tooltip.classList.contains('show')) placeTooltip(e);
         });
         node.addEventListener('mouseleave', () => {
             tooltip.classList.remove('show');

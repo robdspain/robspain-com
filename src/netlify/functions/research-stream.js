@@ -1,5 +1,5 @@
 // research-stream.js — SSE streaming for AI Overview on research search
-// 1. Embeds query with Gemini → 2. Vector search in Convex → 3. Streams Gemini synthesis
+// Restored working flow: Gemini embedding -> Convex chunks:search -> Gemini synthesis
 
 export default async (req, context) => {
   if (req.method !== 'POST') return new Response('Method not allowed', { status: 405 });
@@ -7,53 +7,14 @@ export default async (req, context) => {
   const { query, limit = 8 } = await req.json();
   if (!query) return new Response('Missing query', { status: 400 });
 
-  const CONVEX_URL = process.env.CONVEX_URL || 'https://lovely-manatee-270.convex.cloud';
+  // Previous working corpus deployment
+  const CONVEX_URL = process.env.CONVEX_URL || 'https://brilliant-guineapig-373.convex.cloud';
   const CONVEX_DEPLOY_KEY = process.env.CONVEX_DEPLOY_KEY;
   const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY;
 
-  // If Gemini key is missing, gracefully fall back to corpus search without AI synthesis
-  if (!GOOGLE_API_KEY) {
-    try {
-      const convexRes = await fetch(`${CONVEX_URL}/api/action`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(CONVEX_DEPLOY_KEY ? { 'Authorization': `Convex ${CONVEX_DEPLOY_KEY}` } : {}),
-        },
-        body: JSON.stringify({
-          path: 'researchCorpus:search',
-          args: { query, limit },
-          format: 'json',
-        }),
-      });
+  if (!GOOGLE_API_KEY) return new Response('Missing GOOGLE_API_KEY/GEMINI_API_KEY', { status: 500 });
 
-      const convexData = await convexRes.json();
-      const cv = convexData.value || {};
-      const fallbackSources = cv.results || cv.sources || [];
-
-      const encoder = new TextEncoder();
-      const stream = new ReadableStream({
-        start(controller) {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({
-            type: 'answer',
-            text: 'AI overview is temporarily unavailable (missing Gemini API key). Showing top research sources only.'
-          })}\n\n`));
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({
-            type: 'sources',
-            sources: fallbackSources,
-          })}\n\n`));
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'done' })}\n\n`));
-          controller.close();
-        }
-      });
-
-      return new Response(stream, { headers: sseHeaders() });
-    } catch (e) {
-      return new Response(`Fallback search error: ${e.message}`, { status: 500 });
-    }
-  }
-
-  // ── Step 1: Embed the query with Gemini ──────────────────────────────────────
+  // Step 1: Embed query
   let queryEmbedding;
   try {
     const embedRes = await fetch(
@@ -68,6 +29,7 @@ export default async (req, context) => {
         }),
       }
     );
+
     if (!embedRes.ok) throw new Error(`Gemini embed ${embedRes.status}: ${await embedRes.text()}`);
     const embedData = await embedRes.json();
     queryEmbedding = embedData.embedding?.values;
@@ -76,65 +38,27 @@ export default async (req, context) => {
     return new Response(`Embedding error: ${e.message}`, { status: 500 });
   }
 
-  // ── Step 2: Vector search in Convex ─────────────────────────────────────────
+  // Step 2: Vector search via chunks:search
   let sources = [];
   try {
-    const runSearch = async (q) => {
-      const convexRes = await fetch(`${CONVEX_URL}/api/action`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(CONVEX_DEPLOY_KEY ? { 'Authorization': `Convex ${CONVEX_DEPLOY_KEY}` } : {}),
-        },
-        body: JSON.stringify({
-          path: 'researchCorpus:search',
-          args: { query: q, limit },
-          format: 'json',
-        }),
-      });
-      const convexData = await convexRes.json();
-      const cv = convexData.value || {};
-      return cv.results || cv.sources || [];
-    };
+    const convexRes = await fetch(`${CONVEX_URL}/api/action`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(CONVEX_DEPLOY_KEY ? { 'Authorization': `Convex ${CONVEX_DEPLOY_KEY}` } : {}),
+      },
+      body: JSON.stringify({
+        path: 'chunks:search',
+        args: { queryEmbedding, limit },
+        format: 'json',
+      }),
+    });
 
-    sources = await runSearch(query);
-
-    // Second-pass expansion for plain-language school behavior queries
-    if (!sources.length) {
-      const expanded = `${query} behavior intervention school aba feeding selective eating functional communication`;
-      sources = await runSearch(expanded);
-    }
-
-    // Third-pass fallback: OpenAlex scholarly search for relevance coverage
-    if (!sources.length) {
-      const oa = await fetch(`https://api.openalex.org/works?search=${encodeURIComponent(query + ' behavior analysis school intervention')}&per-page=${Math.min(limit, 8)}`);
-      if (oa.ok) {
-        const data = await oa.json();
-        const works = data?.results || [];
-        sources = works.map((w) => {
-          const abs = w.abstract_inverted_index
-            ? Object.entries(w.abstract_inverted_index)
-                .flatMap(([word, positions]) => positions.map((p) => [Number(p), word]))
-                .sort((a, b) => a[0] - b[0])
-                .map((x) => x[1])
-                .join(' ')
-            : '';
-          return {
-            paperTitle: w.title || 'Research Paper',
-            authors: (w.authorships || []).slice(0, 3).map(a => a.author?.display_name).filter(Boolean).join(', '),
-            year: w.publication_year || '',
-            journal: w.primary_location?.source?.display_name || '',
-            score: 0.6,
-            sourcePdf: w.primary_location?.pdf_url || w.id || '',
-            doi: w.doi ? w.doi.replace('https://doi.org/', '') : '',
-            text: (abs || w.title || '').slice(0, 1200),
-            externalFallback: true,
-          };
-        });
-      }
-    }
+    const convexData = await convexRes.json();
+    const cv = convexData.value || {};
+    sources = cv.results || cv.sources || [];
   } catch (e) {
-    return new Response(`Convex/OpenAlex error: ${e.message}`, { status: 500 });
+    return new Response(`Convex error: ${e.message}`, { status: 500 });
   }
 
   const encoder = new TextEncoder();
@@ -146,25 +70,25 @@ export default async (req, context) => {
         c.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'sources', sources: [] })}\n\n`));
         c.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'done' })}\n\n`));
         c.close();
-      }
+      },
     });
     return new Response(stream, { headers: sseHeaders() });
   }
 
-  // ── Step 3: Stream Gemini synthesis ─────────────────────────────────────────
-  const contextText = sources.map((s, i) => {
-    const title = cleanTitle(s);
-    const authors = s.authors || '';
-    const year = s.year || '';
-    return `[Source ${i + 1}] ${title}${authors ? ' — ' + authors : ''}${year ? ' (' + year + ')' : ''}\n${s.text || ''}`;
-  }).join('\n\n---\n\n');
+  const contextText = sources
+    .map((s, i) => {
+      const title = cleanTitle(s);
+      const authors = s.authors || '';
+      const year = s.year || '';
+      return `[Source ${i + 1}] ${title}${authors ? ' — ' + authors : ''}${year ? ' (' + year + ')' : ''}\n${s.text || ''}`;
+    })
+    .join('\n\n---\n\n');
 
-  const systemPrompt = `You are a research assistant for Rob Spain, BCBA, IBA — a school-based behavior analyst with 25+ years of experience.
-Your role is to synthesize behavior analysis research and answer questions grounded in ABA, ACT, RFT, and related evidence-based practices. Your scope includes student behavior, teacher/staff behavior, and school-wide systems.
+  const systemPrompt = `You are a research assistant for Rob Spain, BCBA, IBA.
+Your role is to synthesize behavior analysis research and answer questions grounded in ABA/ACT/RFT.
 - Answer directly and practically
 - Cite sources inline as [Source N]
-- Be concise but thorough
-- Do not refuse questions about adult/staff behavior`;
+- Be concise but thorough`;
 
   const userPrompt = `Based on these research excerpts, answer: "${query}"\n\n${contextText}\n\nCite sources as [Source N].`;
 
@@ -209,14 +133,13 @@ Your role is to synthesize behavior analysis research and answer questions groun
             try {
               const text = JSON.parse(raw)?.candidates?.[0]?.content?.parts?.[0]?.text;
               if (text) send({ type: 'answer', text });
-            } catch { /* skip */ }
+            } catch {}
           }
         }
 
-        // Send clean sources payload
         send({
           type: 'sources',
-          sources: sources.map(s => ({
+          sources: sources.map((s) => ({
             paperTitle: cleanTitle(s),
             authors: s.authors || '',
             year: s.year || '',
@@ -232,7 +155,7 @@ Your role is to synthesize behavior analysis research and answer questions groun
         send({ type: 'error', text: e.message });
       }
       controller.close();
-    }
+    },
   });
 
   return new Response(sseStream, { headers: sseHeaders() });

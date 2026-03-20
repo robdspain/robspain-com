@@ -86,8 +86,8 @@ export default async (req, context) => {
         ...(CONVEX_DEPLOY_KEY ? { 'Authorization': `Convex ${CONVEX_DEPLOY_KEY}` } : {}),
       },
       body: JSON.stringify({
-        path: 'chunks:search',
-        args: { queryEmbedding, limit },
+        path: 'researchCorpus:search',
+        args: { query, limit },
         format: 'json',
       }),
     });

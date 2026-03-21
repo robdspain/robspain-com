@@ -1,0 +1,89 @@
+---
+layout: base.njk
+title: KPI Dashboard - Rob Spain
+permalink: /admin/kpi/
+---
+
+<div class="admin-dashboard-premium">
+    <div class="container">
+        <div class="section-header-premium animate-fade-up">
+            <div class="section-badge-premium">Analytics</div>
+            <h2 class="section-title-premium">
+                Weekly <span class="text-gradient">KPI Dashboard</span>
+            </h2>
+            <p class="section-description-premium">
+                Track marketing and sales pipeline metrics week over week.
+            </p>
+        </div>
+
+        {% set latestWeek = kpiWeekly.weeks[kpiWeekly.weeks.length - 1] %}
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;" class="animate-fade-up stagger-1">
+
+            <div class="dashboard-card-premium" style="padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: #1e293b;">{{ latestWeek.contactsAdded }}</div>
+                <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">Contacts Added</div>
+            </div>
+
+            <div class="dashboard-card-premium" style="padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: #1e293b;">{{ latestWeek.emailsSent }}</div>
+                <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">Emails Sent</div>
+            </div>
+
+            <div class="dashboard-card-premium" style="padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: #1e293b;">{{ latestWeek.openRate }}%</div>
+                <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">Open Rate</div>
+            </div>
+
+            <div class="dashboard-card-premium" style="padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: #1e293b;">{{ latestWeek.clickRate }}%</div>
+                <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">Click Rate</div>
+            </div>
+
+            <div class="dashboard-card-premium" style="padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: #1e293b;">{{ latestWeek.discoveryCalls }}</div>
+                <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">Discovery Calls</div>
+            </div>
+
+            <div class="dashboard-card-premium" style="padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: #1e293b;">{{ latestWeek.demos }}</div>
+                <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">Demos</div>
+            </div>
+
+            <div class="dashboard-card-premium" style="padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: #1e293b;">{{ latestWeek.proposals }}</div>
+                <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">Proposals Sent</div>
+            </div>
+
+            <div class="dashboard-card-premium" style="padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: #1e293b;">{{ latestWeek.pilotsStarted }}</div>
+                <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">Pilots Started</div>
+            </div>
+
+            <div class="dashboard-card-premium" style="padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: #1e293b;">{{ latestWeek.contractsSigned }}</div>
+                <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">Contracts Signed</div>
+            </div>
+
+        </div>
+
+        <div style="padding: 1.5rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.75rem;">
+            <h3 style="color: #1e293b; font-size: 1.1rem; font-weight: 600; margin: 0 0 0.75rem 0;">Week of {{ latestWeek.weekOf }}</h3>
+            <p style="color: #64748b; font-size: 0.9rem; margin: 0 0 1rem 0;">
+                Update metrics by editing <code>_data/kpiWeekly.json</code>. Add a new week object to the <code>weeks</code> array.
+            </p>
+            <pre style="background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 0.5rem; font-size: 0.8rem; overflow-x: auto;">{
+  "weekOf": "2026-03-31",
+  "contactsAdded": 0,
+  "emailsSent": 0,
+  "openRate": 0,
+  "clickRate": 0,
+  "discoveryCalls": 0,
+  "demos": 0,
+  "proposals": 0,
+  "pilotsStarted": 0,
+  "contractsSigned": 0
+}</pre>
+        </div>
+    </div>
+</div>

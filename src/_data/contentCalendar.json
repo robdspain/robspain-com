@@ -1,0 +1,54 @@
+[
+  {
+    "week": "2026-03-24",
+    "items": [
+      { "platform": "email", "project": "BehaviorSchool", "title": "3 Papers Every School BCBA Should Read This Month", "status": "scheduled", "date": "2026-03-24", "notes": "Newsletter to 89 subscribers. Cron job fires Mon 7 AM PT." },
+      { "platform": "linkedin", "project": "Rob Spain", "title": "Origin story: Why I built BehaviorSchool Pro after 25 years as a school BCBA", "status": "draft", "date": "2026-03-24", "notes": "Personal narrative. No AI filler. Talk about the paperwork problem." },
+      { "platform": "email", "project": "BehaviorSchool", "title": "The 5-Minute BIP", "status": "draft", "date": "2026-03-26", "notes": "Campaign #1 from GTM plan. Time savings angle for practitioners." },
+      { "platform": "blog", "project": "behaviorschool.com", "title": "Failed the BCBA Exam? Here's What to Do Next", "status": "draft", "date": "2026-03-27", "notes": "SEO draft ready. Needs Rob approval before publishing." },
+      { "platform": "linkedin", "project": "Rob Spain", "title": "Districts are building next year's budgets RIGHT NOW. Here's what that means for behavior tools.", "status": "draft", "date": "2026-03-26", "notes": "Urgency + district purchasing cycle angle." }
+    ]
+  },
+  {
+    "week": "2026-03-31",
+    "items": [
+      { "platform": "email", "project": "BehaviorSchool", "title": "Is BIP Quality a Concern in Your District?", "status": "draft", "date": "2026-03-31", "notes": "Campaign #2. Target BCBA leads and SPED directors." },
+      { "platform": "email", "project": "BehaviorSchool", "title": "Budget Now for Next School Year", "status": "draft", "date": "2026-04-02", "notes": "Campaign #4. District urgency play." },
+      { "platform": "blog", "project": "behaviorschool.com", "title": "BDS Modules Alternative: Why BCBAs Are Switching", "status": "published", "date": "2026-03-31", "notes": "SEO page already live. Monitor GSC for rankings." },
+      { "platform": "linkedin", "project": "Rob Spain", "title": "What I learned building AI tools for school behavior teams", "status": "draft", "date": "2026-04-01", "notes": "Thought leadership. Feature BehaviorSchool Pro naturally." },
+      { "platform": "youtube", "project": "Rob Spain", "title": "How to Write an FBA in 15 Minutes (Live Demo)", "status": "planned", "date": "2026-04-03", "notes": "Screen recording of BehaviorSchool Pro FBA workflow. Lead magnet." },
+      { "platform": "app-store", "project": "study.behaviorschool.com", "title": "Behavior Study Tools iOS app submission", "status": "in-progress", "date": "2026-03-31", "notes": "Capacitor build ready. Needs Apple Developer signing." }
+    ]
+  },
+  {
+    "week": "2026-04-07",
+    "items": [
+      { "platform": "email", "project": "BehaviorSchool", "title": "From Burnout to Breakthrough (Webinar Invite)", "status": "draft", "date": "2026-04-07", "notes": "Campaign #3. Supporting teachers with better behavior plans." },
+      { "platform": "email", "project": "BehaviorSchool", "title": "Your District Will Probably Pay for This", "status": "draft", "date": "2026-04-09", "notes": "Campaign #5. Reimbursement angle." },
+      { "platform": "linkedin", "project": "Rob Spain", "title": "3 questions every SPED director should ask before buying behavior tools", "status": "draft", "date": "2026-04-08", "notes": "Position as advisor, not salesperson." },
+      { "platform": "youtube", "project": "Rob Spain", "title": "ObservationPro: Better Than BehaviorSnap (Here's Why)", "status": "planned", "date": "2026-04-10", "notes": "Competitor comparison video. Honest, not aggressive." },
+      { "platform": "webinar", "project": "BehaviorSchool", "title": "Live Demo: BehaviorSchool Pro for District Teams", "status": "planned", "date": "2026-04-10", "notes": "First live demo session. Open registration." },
+      { "platform": "app-store", "project": "ObservationPro", "title": "ObservationPro iOS app submission", "status": "planned", "date": "2026-04-07", "notes": "Target: feature parity with BehaviorSnap + AI analysis." }
+    ]
+  },
+  {
+    "week": "2026-04-14",
+    "items": [
+      { "platform": "email", "project": "BehaviorSchool", "title": "Case Study: How One District Transformed BIP Quality", "status": "draft", "date": "2026-04-14", "notes": "Campaign #6. Need real data or Rob's KCUSD experience." },
+      { "platform": "email", "project": "BehaviorSchool", "title": "Free 90-Day Pilot for Your School", "status": "draft", "date": "2026-04-16", "notes": "Campaign #8. Pilot conversion play." },
+      { "platform": "linkedin", "project": "Rob Spain", "title": "The school BCBA paperwork crisis is real. Here are the numbers.", "status": "draft", "date": "2026-04-15", "notes": "Data-driven post. Reference ICA research findings." },
+      { "platform": "youtube", "project": "Rob Spain", "title": "IEP Goal Writing: AI vs Manual (Side by Side)", "status": "planned", "date": "2026-04-17", "notes": "Show IEP Goal Generator in action. Goalbook comparison." },
+      { "platform": "blog", "project": "behaviorschool.com", "title": "PassBehavior Alternative: Modern BCBA Exam Prep", "status": "published", "date": "2026-04-14", "notes": "SEO page already live." }
+    ]
+  },
+  {
+    "week": "2026-04-21",
+    "items": [
+      { "platform": "email", "project": "BehaviorSchool", "title": "Last Call: Secure Implementation for Fall 2026", "status": "draft", "date": "2026-04-21", "notes": "Campaign #7. Urgency close." },
+      { "platform": "email", "project": "BehaviorSchool", "title": "Meet BehaviorSchool Pro: Live Demo This Week", "status": "draft", "date": "2026-04-23", "notes": "Campaign #10. Demo push." },
+      { "platform": "email", "project": "BehaviorSchool", "title": "What 3 Research Papers Tell Us About BIP Failures", "status": "draft", "date": "2026-04-25", "notes": "Campaign #9. Research-backed credibility." },
+      { "platform": "linkedin", "project": "Rob Spain", "title": "We launched a free IEP Goal Generator. Here's why it's free.", "status": "draft", "date": "2026-04-22", "notes": "Announce standalone goal tool. Lead gen play." },
+      { "platform": "webinar", "project": "BehaviorSchool", "title": "Demo Day: Open walkthrough of BehaviorSchool Pro", "status": "planned", "date": "2026-04-24", "notes": "Second demo. Target districts from SELPA contact list." }
+    ]
+  }
+]

@@ -1,6 +1,32 @@
 {
   "weeks": [
     {
+      "weekOf": "2026-03-10",
+      "contactsAdded": 0,
+      "emailsSent": 89,
+      "openRate": 0,
+      "clickRate": 0,
+      "discoveryCalls": 0,
+      "demos": 0,
+      "proposals": 0,
+      "pilotsStarted": 0,
+      "contractsSigned": 0,
+      "notes": "First email blast sent Mar 17 (89 recipients). No tracking data yet."
+    },
+    {
+      "weekOf": "2026-03-17",
+      "contactsAdded": 45,
+      "emailsSent": 89,
+      "openRate": 0,
+      "clickRate": 0,
+      "discoveryCalls": 0,
+      "demos": 0,
+      "proposals": 0,
+      "pilotsStarted": 0,
+      "contractsSigned": 0,
+      "notes": "45 CA SELPA contacts added to CRM. Email #1 sent to 89. Newsletter #2 scheduled Mon 7AM. Stripe live on plan.behaviorschool.com."
+    },
+    {
       "weekOf": "2026-03-24",
       "contactsAdded": 0,
       "emailsSent": 0,
@@ -10,7 +36,8 @@
       "demos": 0,
       "proposals": 0,
       "pilotsStarted": 0,
-      "contractsSigned": 0
+      "contractsSigned": 0,
+      "notes": "Newsletter '3 papers' scheduled Mon 7AM. 10 campaign drafts ready in admin. District GTM plan active."
     }
   ]
 }

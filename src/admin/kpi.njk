@@ -4,6 +4,19 @@ title: KPI Dashboard - Rob Spain
 permalink: /admin/kpi/
 ---
 
+<style>
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+.kpi-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 1.25rem; text-align: center; transition: box-shadow 0.2s; }
+.kpi-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.kpi-value { font-size: 2.25rem; font-weight: 800; color: #1e293b; line-height: 1; }
+.kpi-value.highlight { color: #059669; }
+.kpi-label { font-size: 0.8rem; color: #64748b; margin-top: 0.35rem; }
+.week-tab { display: inline-block; padding: 0.5rem 1rem; border-radius: 0.5rem 0.5rem 0 0; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; border-bottom: none; background: #f8fafc; color: #64748b; margin-right: 0.25rem; }
+.week-tab.active { background: #fff; color: #1e293b; border-bottom: 2px solid #fff; position: relative; z-index: 1; }
+.week-content { border: 1px solid #e2e8f0; border-radius: 0 0.75rem 0.75rem 0.75rem; padding: 1.5rem; background: #fff; margin-top: -1px; }
+.notes-box { margin-top: 1rem; padding: 1rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 0.5rem; font-size: 0.9rem; color: #166534; }
+</style>
+
 <div class="admin-dashboard-premium">
     <div class="container">
         <div class="section-header-premium animate-fade-up">
@@ -16,74 +29,92 @@ permalink: /admin/kpi/
             </p>
         </div>
 
-        {% set latestWeek = kpiWeekly.weeks[kpiWeekly.weeks.length - 1] %}
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;" class="animate-fade-up stagger-1">
-
-            <div class="dashboard-card-premium" style="padding: 1.25rem; text-align: center;">
-                <div style="font-size: 2rem; font-weight: 800; color: #1e293b;">{{ latestWeek.contactsAdded }}</div>
-                <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">Contacts Added</div>
-            </div>
-
-            <div class="dashboard-card-premium" style="padding: 1.25rem; text-align: center;">
-                <div style="font-size: 2rem; font-weight: 800; color: #1e293b;">{{ latestWeek.emailsSent }}</div>
-                <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">Emails Sent</div>
-            </div>
-
-            <div class="dashboard-card-premium" style="padding: 1.25rem; text-align: center;">
-                <div style="font-size: 2rem; font-weight: 800; color: #1e293b;">{{ latestWeek.openRate }}%</div>
-                <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">Open Rate</div>
-            </div>
-
-            <div class="dashboard-card-premium" style="padding: 1.25rem; text-align: center;">
-                <div style="font-size: 2rem; font-weight: 800; color: #1e293b;">{{ latestWeek.clickRate }}%</div>
-                <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">Click Rate</div>
-            </div>
-
-            <div class="dashboard-card-premium" style="padding: 1.25rem; text-align: center;">
-                <div style="font-size: 2rem; font-weight: 800; color: #1e293b;">{{ latestWeek.discoveryCalls }}</div>
-                <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">Discovery Calls</div>
-            </div>
-
-            <div class="dashboard-card-premium" style="padding: 1.25rem; text-align: center;">
-                <div style="font-size: 2rem; font-weight: 800; color: #1e293b;">{{ latestWeek.demos }}</div>
-                <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">Demos</div>
-            </div>
-
-            <div class="dashboard-card-premium" style="padding: 1.25rem; text-align: center;">
-                <div style="font-size: 2rem; font-weight: 800; color: #1e293b;">{{ latestWeek.proposals }}</div>
-                <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">Proposals Sent</div>
-            </div>
-
-            <div class="dashboard-card-premium" style="padding: 1.25rem; text-align: center;">
-                <div style="font-size: 2rem; font-weight: 800; color: #1e293b;">{{ latestWeek.pilotsStarted }}</div>
-                <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">Pilots Started</div>
-            </div>
-
-            <div class="dashboard-card-premium" style="padding: 1.25rem; text-align: center;">
-                <div style="font-size: 2rem; font-weight: 800; color: #1e293b;">{{ latestWeek.contractsSigned }}</div>
-                <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">Contracts Signed</div>
-            </div>
-
+        <!-- Week tabs -->
+        <div class="animate-fade-up stagger-1">
+            {% for week in kpiWeekly.weeks %}
+            <span class="week-tab {% if loop.last %}active{% endif %}" onclick="showWeek({{ loop.index0 }})">
+                Week of {{ week.weekOf }}
+            </span>
+            {% endfor %}
         </div>
 
-        <div style="padding: 1.5rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.75rem;">
-            <h3 style="color: #1e293b; font-size: 1.1rem; font-weight: 600; margin: 0 0 0.75rem 0;">Week of {{ latestWeek.weekOf }}</h3>
-            <p style="color: #64748b; font-size: 0.9rem; margin: 0 0 1rem 0;">
-                Update metrics by editing <code>_data/kpiWeekly.json</code>. Add a new week object to the <code>weeks</code> array.
-            </p>
-            <pre style="background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 0.5rem; font-size: 0.8rem; overflow-x: auto;">{
-  "weekOf": "2026-03-31",
-  "contactsAdded": 0,
-  "emailsSent": 0,
-  "openRate": 0,
-  "clickRate": 0,
-  "discoveryCalls": 0,
-  "demos": 0,
-  "proposals": 0,
-  "pilotsStarted": 0,
-  "contractsSigned": 0
-}</pre>
+        {% for week in kpiWeekly.weeks %}
+        <div class="week-content animate-fade-up" id="week-{{ loop.index0 }}" style="{% if not loop.last %}display:none;{% endif %}">
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-value {% if week.contactsAdded > 0 %}highlight{% endif %}">{{ week.contactsAdded }}</div>
+                    <div class="kpi-label">Contacts Added</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value {% if week.emailsSent > 0 %}highlight{% endif %}">{{ week.emailsSent }}</div>
+                    <div class="kpi-label">Emails Sent</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">{{ week.openRate }}%</div>
+                    <div class="kpi-label">Open Rate</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">{{ week.clickRate }}%</div>
+                    <div class="kpi-label">Click Rate</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">{{ week.discoveryCalls }}</div>
+                    <div class="kpi-label">Discovery Calls</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">{{ week.demos }}</div>
+                    <div class="kpi-label">Demos</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">{{ week.proposals }}</div>
+                    <div class="kpi-label">Proposals Sent</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">{{ week.pilotsStarted }}</div>
+                    <div class="kpi-label">Pilots Started</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">{{ week.contractsSigned }}</div>
+                    <div class="kpi-label">Contracts Signed</div>
+                </div>
+            </div>
+
+            {% if week.notes %}
+            <div class="notes-box">
+                {{ week.notes }}
+            </div>
+            {% endif %}
+
+        </div>
+        {% endfor %}
+
+        <div style="margin-top: 2rem; padding: 1.25rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.75rem;">
+            <h4 style="color: #1e293b; margin: 0 0 0.5rem;">Pipeline Summary</h4>
+            <table style="width: 100%; font-size: 0.85rem; border-collapse: collapse;">
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                    <th style="text-align: left; padding: 0.5rem 0; color: #64748b;">Metric</th>
+                    {% for week in kpiWeekly.weeks %}
+                    <th style="text-align: center; padding: 0.5rem; color: #64748b;">{{ week.weekOf }}</th>
+                    {% endfor %}
+                </tr>
+                <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 0.4rem 0;">Contacts</td>{% for w in kpiWeekly.weeks %}<td style="text-align:center;">{{ w.contactsAdded }}</td>{% endfor %}</tr>
+                <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 0.4rem 0;">Emails</td>{% for w in kpiWeekly.weeks %}<td style="text-align:center;">{{ w.emailsSent }}</td>{% endfor %}</tr>
+                <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 0.4rem 0;">Open %</td>{% for w in kpiWeekly.weeks %}<td style="text-align:center;">{{ w.openRate }}%</td>{% endfor %}</tr>
+                <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 0.4rem 0;">Calls</td>{% for w in kpiWeekly.weeks %}<td style="text-align:center;">{{ w.discoveryCalls }}</td>{% endfor %}</tr>
+                <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 0.4rem 0;">Demos</td>{% for w in kpiWeekly.weeks %}<td style="text-align:center;">{{ w.demos }}</td>{% endfor %}</tr>
+                <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 0.4rem 0;">Proposals</td>{% for w in kpiWeekly.weeks %}<td style="text-align:center;">{{ w.proposals }}</td>{% endfor %}</tr>
+                <tr><td style="padding: 0.4rem 0; font-weight: 700;">Contracts</td>{% for w in kpiWeekly.weeks %}<td style="text-align:center; font-weight: 700;">{{ w.contractsSigned }}</td>{% endfor %}</tr>
+            </table>
         </div>
     </div>
 </div>
+
+<script>
+function showWeek(idx) {
+    var tabs = document.querySelectorAll('.week-tab');
+    var panels = document.querySelectorAll('.week-content');
+    tabs.forEach(function(t, i) { t.classList.toggle('active', i === idx); });
+    panels.forEach(function(p, i) { p.style.display = i === idx ? 'block' : 'none'; });
+}
+</script>

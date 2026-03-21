@@ -17,7 +17,7 @@ permalink: /admin/email-campaigns/
         </div>
 
         <div id="campaigns-container" class="animate-fade-up stagger-1">
-            {% for filename, campaign in emailCampaigns %}
+            {% for campaign in campaigns %}
             <div class="dashboard-card-premium" style="margin-bottom: 1.5rem; padding: 1.5rem;" data-status="{{ campaign.status | default('draft') }}">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
                     <div style="flex: 1; min-width: 280px;">
@@ -40,10 +40,10 @@ permalink: /admin/email-campaigns/
                         <p style="color: #64748b; font-size: 0.9rem; margin: 0 0 1rem 0;">{{ campaign.previewText }}</p>
                     </div>
                     <div style="display: flex; gap: 0.5rem; flex-shrink: 0;">
-                        <button onclick="toggleBody('{{ filename }}')" style="padding: 0.5rem 1rem; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem;">Preview</button>
+                        <button onclick="toggleBody('{{ campaign.id }}')" style="padding: 0.5rem 1rem; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem;">Preview</button>
                     </div>
                 </div>
-                <div id="body-{{ filename }}" style="display: none; margin-top: 1rem; padding: 1rem; background: #f8fafc; border-radius: 0.5rem; border: 1px solid #e2e8f0;">
+                <div id="body-{{ campaign.id }}" style="display: none; margin-top: 1rem; padding: 1rem; background: #f8fafc; border-radius: 0.5rem; border: 1px solid #e2e8f0;">
                     <pre style="white-space: pre-wrap; font-family: inherit; font-size: 0.9rem; color: #334155; margin: 0;">{{ campaign.body }}</pre>
                 </div>
             </div>

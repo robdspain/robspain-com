@@ -4,6 +4,38 @@ title: Email Campaigns - Rob Spain
 permalink: /admin/email-campaigns/
 ---
 
+<style>
+.campaign-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 1.5rem; margin-bottom: 1.25rem; transition: box-shadow 0.2s; }
+.campaign-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.badge { padding: 0.2rem 0.7rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+.badge-draft { background: #fef3c7; color: #92400e; }
+.badge-approved { background: #d1fae5; color: #065f46; }
+.badge-scheduled { background: #dbeafe; color: #1e40af; }
+.badge-sent { background: #e0e7ff; color: #3730a3; }
+.btn { padding: 0.45rem 0.9rem; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+.btn-preview { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+.btn-preview:hover { background: #e2e8f0; }
+.btn-approve { background: #059669; color: #fff; }
+.btn-approve:hover { background: #047857; }
+.btn-schedule { background: #2563eb; color: #fff; }
+.btn-schedule:hover { background: #1d4ed8; }
+.btn-edit { background: #f59e0b; color: #fff; }
+.btn-edit:hover { background: #d97706; }
+.btn-sent { background: #6366f1; color: #fff; }
+.btn-sent:hover { background: #4f46e5; }
+.btn-save { background: #059669; color: #fff; padding: 0.5rem 1.5rem; font-size: 0.9rem; }
+.btn-save:hover { background: #047857; }
+.btn-cancel { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+.edit-area { width: 100%; min-height: 300px; padding: 1rem; font-family: inherit; font-size: 0.9rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; resize: vertical; line-height: 1.6; color: #334155; }
+.edit-subject { width: 100%; padding: 0.6rem 0.8rem; font-size: 1rem; font-weight: 600; border: 1px solid #cbd5e1; border-radius: 0.5rem; color: #1e293b; }
+.edit-preview-text { width: 100%; padding: 0.5rem 0.8rem; font-size: 0.9rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; color: #64748b; }
+.schedule-input { padding: 0.4rem 0.6rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.85rem; }
+.body-preview { white-space: pre-wrap; font-family: inherit; font-size: 0.9rem; color: #334155; line-height: 1.7; }
+.panel { margin-top: 1rem; padding: 1rem; background: #f8fafc; border-radius: 0.5rem; border: 1px solid #e2e8f0; }
+.toast { position: fixed; bottom: 2rem; right: 2rem; background: #059669; color: #fff; padding: 0.75rem 1.5rem; border-radius: 0.75rem; font-weight: 600; font-size: 0.9rem; z-index: 9999; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.toast.show { opacity: 1; }
+</style>
+
 <div class="admin-dashboard-premium">
     <div class="container">
         <div class="section-header-premium animate-fade-up">
@@ -12,60 +44,150 @@ permalink: /admin/email-campaigns/
                 Email <span class="text-gradient">Campaigns</span>
             </h2>
             <p class="section-description-premium">
-                Review, approve, and schedule district outreach emails one by one.
+                Approve, edit, and schedule district outreach emails one by one.
             </p>
         </div>
 
         <div id="campaigns-container" class="animate-fade-up stagger-1">
             {% for campaign in campaigns %}
-            <div class="dashboard-card-premium" style="margin-bottom: 1.5rem; padding: 1.5rem;" data-status="{{ campaign.status | default('draft') }}">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
-                    <div style="flex: 1; min-width: 280px;">
-                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
-                            {% set status = campaign.status | default('draft') %}
-                            {% if status == 'draft' %}
-                            <span style="background: #fef3c7; color: #92400e; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;">DRAFT</span>
-                            {% elif status == 'approved' %}
-                            <span style="background: #d1fae5; color: #065f46; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;">APPROVED</span>
-                            {% elif status == 'scheduled' %}
-                            <span style="background: #dbeafe; color: #1e40af; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;">SCHEDULED</span>
-                            {% elif status == 'sent' %}
-                            <span style="background: #e0e7ff; color: #3730a3; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;">SENT</span>
-                            {% endif %}
-                            {% if campaign.scheduledDate %}
-                            <span style="color: #64748b; font-size: 0.8rem;">{{ campaign.scheduledDate }}</span>
-                            {% endif %}
+            <div class="campaign-card" id="card-{{ campaign.id }}" data-id="{{ campaign.id }}" data-idx="{{ loop.index0 }}">
+                <!-- VIEW MODE -->
+                <div class="view-mode" id="view-{{ campaign.id }}">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+                        <div style="flex: 1; min-width: 250px;">
+                            <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+                                <span class="badge badge-{{ campaign.status | default('draft') }}" id="badge-{{ campaign.id }}">{{ campaign.status | default('draft') | upper }}</span>
+                                <span id="sched-{{ campaign.id }}" style="color: #64748b; font-size: 0.8rem;">{% if campaign.scheduledDate %}{{ campaign.scheduledDate }}{% endif %}</span>
+                            </div>
+                            <h3 id="title-{{ campaign.id }}" style="font-size: 1.2rem; font-weight: 700; color: #1e293b; margin: 0 0 0.35rem 0;">{{ campaign.subject }}</h3>
+                            <p id="preview-{{ campaign.id }}" style="color: #64748b; font-size: 0.85rem; margin: 0;">{{ campaign.previewText }}</p>
                         </div>
-                        <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin: 0 0 0.5rem 0;">{{ campaign.subject }}</h3>
-                        <p style="color: #64748b; font-size: 0.9rem; margin: 0 0 1rem 0;">{{ campaign.previewText }}</p>
+                        <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; flex-shrink: 0;">
+                            <button class="btn btn-preview" onclick="toggleBody('{{ campaign.id }}')">Preview</button>
+                            <button class="btn btn-edit" onclick="startEdit('{{ campaign.id }}')">Edit</button>
+                            <button class="btn btn-approve" onclick="setStatus('{{ campaign.id }}','approved')">Approve</button>
+                            <button class="btn btn-schedule" onclick="showSchedule('{{ campaign.id }}')">Schedule</button>
+                            <button class="btn btn-sent" onclick="setStatus('{{ campaign.id }}','sent')">Mark Sent</button>
+                        </div>
                     </div>
-                    <div style="display: flex; gap: 0.5rem; flex-shrink: 0;">
-                        <button onclick="toggleBody('{{ campaign.id }}')" style="padding: 0.5rem 1rem; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem;">Preview</button>
+                    <!-- Schedule inline -->
+                    <div id="sched-panel-{{ campaign.id }}" style="display:none; margin-top: 0.75rem; display: none; align-items: center; gap: 0.5rem;">
+                        <input type="datetime-local" class="schedule-input" id="sched-input-{{ campaign.id }}">
+                        <button class="btn btn-schedule" onclick="confirmSchedule('{{ campaign.id }}')">Confirm Schedule</button>
+                        <button class="btn btn-cancel" onclick="hideSchedule('{{ campaign.id }}')">Cancel</button>
+                    </div>
+                    <!-- Body preview -->
+                    <div id="body-{{ campaign.id }}" class="panel" style="display: none;">
+                        <div class="body-preview">{{ campaign.body }}</div>
                     </div>
                 </div>
-                <div id="body-{{ campaign.id }}" style="display: none; margin-top: 1rem; padding: 1rem; background: #f8fafc; border-radius: 0.5rem; border: 1px solid #e2e8f0;">
-                    <pre style="white-space: pre-wrap; font-family: inherit; font-size: 0.9rem; color: #334155; margin: 0;">{{ campaign.body }}</pre>
+
+                <!-- EDIT MODE -->
+                <div class="edit-mode" id="edit-{{ campaign.id }}" style="display: none;">
+                    <label style="font-size: 0.8rem; font-weight: 600; color: #64748b; display: block; margin-bottom: 0.25rem;">Subject</label>
+                    <input class="edit-subject" id="edit-subject-{{ campaign.id }}" value="{{ campaign.subject }}">
+                    <label style="font-size: 0.8rem; font-weight: 600; color: #64748b; display: block; margin: 0.75rem 0 0.25rem;">Preview Text</label>
+                    <input class="edit-preview-text" id="edit-preview-{{ campaign.id }}" value="{{ campaign.previewText }}">
+                    <label style="font-size: 0.8rem; font-weight: 600; color: #64748b; display: block; margin: 0.75rem 0 0.25rem;">Email Body</label>
+                    <textarea class="edit-area" id="edit-body-{{ campaign.id }}">{{ campaign.body }}</textarea>
+                    <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
+                        <button class="btn btn-save" onclick="saveEdit('{{ campaign.id }}')">Save Changes</button>
+                        <button class="btn btn-cancel" onclick="cancelEdit('{{ campaign.id }}')">Cancel</button>
+                    </div>
                 </div>
             </div>
             {% endfor %}
         </div>
-
-        <div style="margin-top: 2rem; padding: 1.5rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 0.75rem;">
-            <h3 style="color: #166534; font-size: 1.1rem; font-weight: 600; margin: 0 0 0.5rem 0;">How to use</h3>
-            <ul style="color: #15803d; font-size: 0.9rem; margin: 0; padding-left: 1.25rem;">
-                <li>Click <strong>Preview</strong> to expand the full email body</li>
-                <li>Edit the JSON files in <code>_data/emailCampaigns/</code> to rewrite copy</li>
-                <li>Change <code>"status"</code> to <code>"approved"</code>, <code>"scheduled"</code>, or <code>"sent"</code></li>
-                <li>Add <code>"scheduledDate": "2026-03-24 7:00 AM PT"</code> to set a send time</li>
-                <li>Rebuild + deploy after edits: <code>npx @11ty/eleventy && netlify deploy --prod --dir=_site</code></li>
-            </ul>
-        </div>
     </div>
 </div>
 
+<div class="toast" id="toast">Saved!</div>
+
 <script>
+// In-memory campaign state (loaded from 11ty data, editable in browser)
+var campaigns = {{ campaigns | dump | safe }};
+
+function toast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg || 'Saved!';
+    t.classList.add('show');
+    setTimeout(function(){ t.classList.remove('show'); }, 2000);
+}
+
 function toggleBody(id) {
     var el = document.getElementById('body-' + id);
     el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function setStatus(id, status) {
+    var c = campaigns.find(function(x){ return x.id === id; });
+    if (c) c.status = status;
+    var badge = document.getElementById('badge-' + id);
+    badge.textContent = status.toUpperCase();
+    badge.className = 'badge badge-' + status;
+    toast(status === 'approved' ? 'Approved!' : status === 'sent' ? 'Marked as sent' : 'Status updated');
+    saveToServer(id, c);
+}
+
+function showSchedule(id) {
+    document.getElementById('sched-panel-' + id).style.display = 'flex';
+}
+
+function hideSchedule(id) {
+    document.getElementById('sched-panel-' + id).style.display = 'none';
+}
+
+function confirmSchedule(id) {
+    var input = document.getElementById('sched-input-' + id);
+    if (!input.value) { alert('Pick a date and time'); return; }
+    var dt = new Date(input.value);
+    var formatted = dt.toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+    var c = campaigns.find(function(x){ return x.id === id; });
+    if (c) { c.status = 'scheduled'; c.scheduledDate = formatted; }
+    var badge = document.getElementById('badge-' + id);
+    badge.textContent = 'SCHEDULED';
+    badge.className = 'badge badge-scheduled';
+    document.getElementById('sched-' + id).textContent = formatted;
+    hideSchedule(id);
+    toast('Scheduled for ' + formatted);
+    saveToServer(id, c);
+}
+
+function startEdit(id) {
+    document.getElementById('view-' + id).style.display = 'none';
+    document.getElementById('edit-' + id).style.display = 'block';
+}
+
+function cancelEdit(id) {
+    document.getElementById('edit-' + id).style.display = 'none';
+    document.getElementById('view-' + id).style.display = 'block';
+}
+
+function saveEdit(id) {
+    var subject = document.getElementById('edit-subject-' + id).value;
+    var preview = document.getElementById('edit-preview-' + id).value;
+    var body = document.getElementById('edit-body-' + id).value;
+    // Update in-memory
+    var c = campaigns.find(function(x){ return x.id === id; });
+    if (c) { c.subject = subject; c.previewText = preview; c.body = body; }
+    // Update DOM
+    document.getElementById('title-' + id).textContent = subject;
+    document.getElementById('preview-' + id).textContent = preview;
+    var bodyEl = document.getElementById('body-' + id);
+    bodyEl.querySelector('.body-preview').textContent = body;
+    cancelEdit(id);
+    toast('Changes saved!');
+    saveToServer(id, c);
+}
+
+function saveToServer(id, data) {
+    // POST to Netlify function to persist changes
+    fetch('/.netlify/functions/save-campaign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: id, data: data })
+    }).catch(function(err) {
+        console.log('Server save pending - changes saved locally. Deploy to persist.');
+    });
 }
 </script>

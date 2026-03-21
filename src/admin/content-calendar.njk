@@ -5,108 +5,402 @@ permalink: /admin/content-calendar/
 ---
 
 <style>
-.cal { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
-.cal-header { background: linear-gradient(135deg, #1f4d3f, #123628); color: #fff; padding: 2rem; border-radius: 0.75rem; margin-bottom: 1.5rem; }
-.cal-header h1 { margin: 0; font-size: 1.75rem; font-weight: 800; }
-.cal-header p { opacity: 0.85; margin: 0.5rem 0 0; font-size: 0.9rem; }
-.week-block { background: #fff; border: 1px solid #e2e8f0; border-radius: 0.75rem; margin-bottom: 1.25rem; overflow: hidden; }
-.week-header { background: #f8fafc; padding: 0.75rem 1.25rem; border-bottom: 1px solid #e2e8f0; font-weight: 700; font-size: 1rem; color: #1e293b; display: flex; justify-content: space-between; align-items: center; }
-.week-count { font-size: 0.8rem; font-weight: 500; color: #64748b; }
-.cal-item { display: grid; grid-template-columns: 90px 70px 1fr auto; gap: 0.75rem; align-items: center; padding: 0.75rem 1.25rem; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; }
-.cal-item:last-child { border-bottom: none; }
-.cal-date { color: #64748b; font-size: 0.8rem; }
-.platform { padding: 0.2rem 0.5rem; border-radius: 0.25rem; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; text-align: center; }
-.p-email { background: #fef3c7; color: #92400e; }
-.p-linkedin { background: #dbeafe; color: #1e40af; }
-.p-blog { background: #e0e7ff; color: #3730a3; }
-.p-youtube { background: #fee2e2; color: #991b1b; }
-.p-webinar { background: #d1fae5; color: #065f46; }
-.p-app-store { background: #f3e8ff; color: #6b21a8; }
-.cal-title { color: #1e293b; font-weight: 600; }
-.cal-project { font-size: 0.75rem; color: #94a3b8; margin-top: 0.15rem; }
-.cal-notes { font-size: 0.8rem; color: #64748b; margin-top: 0.15rem; }
-.status { padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; }
-.s-draft { background: #fef3c7; color: #92400e; }
-.s-scheduled { background: #dbeafe; color: #1e40af; }
-.s-published { background: #d1fae5; color: #065f46; }
-.s-in-progress { background: #fed7aa; color: #9a3412; }
-.s-planned { background: #f1f5f9; color: #475569; }
-.legend { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; font-size: 0.8rem; }
-.legend span { display: flex; align-items: center; gap: 0.3rem; }
-.summary { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; }
-.sum-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 0.75rem; text-align: center; }
-.sum-val { font-size: 1.5rem; font-weight: 800; color: #1e293b; }
-.sum-lbl { font-size: 0.7rem; color: #64748b; margin-top: 0.15rem; }
-@media (max-width: 640px) {
-  .cal-item { grid-template-columns: 1fr; gap: 0.25rem; }
+.cal { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+.cal-header { background: linear-gradient(135deg, #1f4d3f, #123628); color: #fff; padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1rem; }
+.cal-header h1 { margin: 0; font-size: 1.6rem; }
+.cal-header p { margin: 0.4rem 0 0; opacity: 0.9; }
+
+.filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.6rem; margin-bottom: 1rem; }
+.filters select { width: 100%; padding: 0.55rem 0.7rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; background: #fff; color: #1e293b; }
+
+.queue, .all-items { background: #fff; border: 1px solid #e2e8f0; border-radius: 0.75rem; margin-bottom: 1rem; overflow: hidden; }
+.section-header { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.9rem 1rem; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
+.section-header h2 { margin: 0; font-size: 1rem; color: #1e293b; }
+.section-header .count { color: #475569; font-size: 0.82rem; }
+
+.item-list { display: grid; gap: 0.55rem; padding: 0.8rem; }
+.item { border: 1px solid #e2e8f0; border-radius: 0.6rem; padding: 0.75rem; display: grid; grid-template-columns: 1fr auto; gap: 0.6rem; }
+.item-main { min-width: 0; }
+.item-top { display: flex; align-items: center; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 0.35rem; }
+.item-title { color: #0f172a; font-size: 0.95rem; font-weight: 700; margin: 0; }
+.item-meta { color: #64748b; font-size: 0.78rem; margin-top: 0.2rem; }
+
+.chip { font-size: 0.68rem; font-weight: 700; border-radius: 9999px; padding: 0.2rem 0.55rem; text-transform: uppercase; letter-spacing: 0.02em; }
+.ch-email { background: #fef3c7; color: #92400e; }
+.ch-linkedin { background: #dbeafe; color: #1e40af; }
+.ch-blog { background: #dcfce7; color: #166534; }
+.ch-x { background: #e2e8f0; color: #0f172a; }
+
+.st-draft { background: #fff7ed; color: #9a3412; }
+.st-pending-approval { background: #fef9c3; color: #854d0e; }
+.st-approved { background: #dcfce7; color: #166534; }
+.st-scheduled { background: #dbeafe; color: #1e40af; }
+.st-sent-published { background: #e2e8f0; color: #334155; }
+
+.item-actions { display: flex; gap: 0.45rem; align-items: start; flex-wrap: wrap; justify-content: flex-end; }
+.btn { border: 1px solid transparent; border-radius: 0.45rem; padding: 0.42rem 0.62rem; font-size: 0.78rem; font-weight: 600; cursor: pointer; }
+.btn-secondary { background: #f8fafc; border-color: #cbd5e1; color: #334155; }
+.btn-edit { background: #0f766e; color: #fff; }
+.btn-approve { background: #15803d; color: #fff; }
+.btn-reject { background: #b91c1c; color: #fff; }
+
+.empty { color: #64748b; font-size: 0.85rem; padding: 0.6rem; }
+
+.modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.48); display: none; align-items: center; justify-content: center; padding: 1rem; z-index: 1000; }
+.modal { width: min(760px, 100%); max-height: 90vh; overflow: auto; background: #fff; border-radius: 0.75rem; border: 1px solid #cbd5e1; }
+.modal-header { padding: 0.85rem 1rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+.modal-body { padding: 0.85rem 1rem 1rem; }
+.form-grid { display: grid; gap: 0.65rem; }
+.form-grid input, .form-grid textarea, .form-grid select { width: 100%; border: 1px solid #cbd5e1; border-radius: 0.45rem; padding: 0.5rem 0.6rem; font-size: 0.86rem; }
+.form-grid textarea { min-height: 140px; resize: vertical; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+.modal-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.8rem; }
+
+.toast { position: fixed; right: 1rem; bottom: 1rem; background: #123628; color: #fff; padding: 0.6rem 0.9rem; border-radius: 0.5rem; opacity: 0; transition: opacity 0.2s; z-index: 1200; }
+.toast.show { opacity: 1; }
+
+@media (max-width: 760px) {
+  .item { grid-template-columns: 1fr; }
+  .item-actions { justify-content: flex-start; }
+  .two-col { grid-template-columns: 1fr; }
 }
 </style>
 
 <div class="cal">
-    <div class="cal-header">
-        <h1>Content Calendar</h1>
-        <p>All projects. All platforms. 5-week view.</p>
-    </div>
+  <div class="cal-header">
+    <h1>Content Calendar</h1>
+    <p>Unified approval queue + editing workflow for Email, LinkedIn, Blog, and X.com content.</p>
+  </div>
 
-    <!-- Summary -->
-    <div class="summary">
-        {% set totalItems = 0 %}{% set emailCount = 0 %}{% set linkedinCount = 0 %}{% set blogCount = 0 %}{% set youtubeCount = 0 %}{% set webinarCount = 0 %}{% set appCount = 0 %}
-        {% for week in contentCalendar %}{% for item in week.items %}
-            {% set totalItems = totalItems + 1 %}
-            {% if item.platform == "email" %}{% set emailCount = emailCount + 1 %}{% endif %}
-            {% if item.platform == "linkedin" %}{% set linkedinCount = linkedinCount + 1 %}{% endif %}
-            {% if item.platform == "blog" %}{% set blogCount = blogCount + 1 %}{% endif %}
-            {% if item.platform == "youtube" %}{% set youtubeCount = youtubeCount + 1 %}{% endif %}
-            {% if item.platform == "webinar" %}{% set webinarCount = webinarCount + 1 %}{% endif %}
-            {% if item.platform == "app-store" %}{% set appCount = appCount + 1 %}{% endif %}
-        {% endfor %}{% endfor %}
-        <div class="sum-card"><div class="sum-val">{{ totalItems }}</div><div class="sum-lbl">Total Items</div></div>
-        <div class="sum-card"><div class="sum-val">{{ emailCount }}</div><div class="sum-lbl">Emails</div></div>
-        <div class="sum-card"><div class="sum-val">{{ linkedinCount }}</div><div class="sum-lbl">LinkedIn</div></div>
-        <div class="sum-card"><div class="sum-val">{{ youtubeCount }}</div><div class="sum-lbl">YouTube</div></div>
-        <div class="sum-card"><div class="sum-val">{{ blogCount }}</div><div class="sum-lbl">Blog Posts</div></div>
-        <div class="sum-card"><div class="sum-val">{{ webinarCount }}</div><div class="sum-lbl">Webinars</div></div>
-        <div class="sum-card"><div class="sum-val">{{ appCount }}</div><div class="sum-lbl">App Releases</div></div>
-    </div>
+  <div class="filters">
+    <select id="channel-filter">
+      <option value="all">All channels</option>
+      <option value="email">Email</option>
+      <option value="linkedin">LinkedIn</option>
+      <option value="blog">Blog</option>
+      <option value="x">X.com</option>
+    </select>
+    <select id="status-filter">
+      <option value="all">All statuses</option>
+      <option value="draft">Draft</option>
+      <option value="pending-approval">Pending approval</option>
+      <option value="approved">Approved</option>
+      <option value="scheduled">Scheduled</option>
+      <option value="sent-published">Sent/published</option>
+    </select>
+  </div>
 
-    <!-- Legend -->
-    <div class="legend">
-        <span><span class="platform p-email">Email</span></span>
-        <span><span class="platform p-linkedin">LinkedIn</span></span>
-        <span><span class="platform p-blog">Blog</span></span>
-        <span><span class="platform p-youtube">YouTube</span></span>
-        <span><span class="platform p-webinar">Webinar</span></span>
-        <span><span class="platform p-app-store">App</span></span>
-        <span style="margin-left: 1rem;"><span class="status s-draft">Draft</span></span>
-        <span><span class="status s-scheduled">Scheduled</span></span>
-        <span><span class="status s-in-progress">In Progress</span></span>
-        <span><span class="status s-planned">Planned</span></span>
-        <span><span class="status s-published">Published</span></span>
+  <section class="queue">
+    <div class="section-header">
+      <h2>Approval Queue</h2>
+      <div class="count" id="queue-count">0 pending items</div>
     </div>
+    <div id="queue-list" class="item-list"></div>
+  </section>
 
-    <!-- Weeks -->
-    {% for week in contentCalendar %}
-    <div class="week-block">
-        <div class="week-header">
-            Week of {{ week.week }}
-            <span class="week-count">{{ week.items.length }} items</span>
-        </div>
-        {% for item in week.items %}
-        <div class="cal-item">
-            <div class="cal-date">{{ item.date }}</div>
-            <div><span class="platform p-{{ item.platform }}">{{ item.platform }}</span></div>
-            <div>
-                <div class="cal-title">{{ item.title }}</div>
-                <div class="cal-project">{{ item.project }}</div>
-                {% if item.notes %}<div class="cal-notes">{{ item.notes }}</div>{% endif %}
-            </div>
-            <div><span class="status s-{{ item.status }}">{{ item.status }}</span></div>
-        </div>
-        {% endfor %}
+  <section class="all-items">
+    <div class="section-header">
+      <h2>All Content Items</h2>
+      <div class="count" id="all-count">0 items</div>
     </div>
-    {% endfor %}
+    <div id="all-list" class="item-list"></div>
+  </section>
 
-    <div style="text-align: center; padding: 2rem; color: #94a3b8; font-size: 0.85rem;">
-        <a href="/admin/" style="color: #1f4d3f;">Back to Admin</a>
-    </div>
+  <div style="text-align:center; margin: 1.4rem 0 2rem;">
+    <a href="/admin/" style="color:#1f4d3f; font-size:0.9rem;">Back to Admin</a>
+  </div>
 </div>
+
+<div class="modal-backdrop" id="item-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div id="modal-title" style="font-weight:700; color:#1e293b;">Preview</div>
+      <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div>
+          <label for="m-title">Title</label>
+          <input id="m-title" type="text">
+        </div>
+        <div class="two-col">
+          <div>
+            <label for="m-channel">Channel</label>
+            <select id="m-channel">
+              <option value="email">Email</option>
+              <option value="linkedin">LinkedIn</option>
+              <option value="blog">Blog</option>
+              <option value="x">X.com</option>
+            </select>
+          </div>
+          <div>
+            <label for="m-status">Status</label>
+            <select id="m-status">
+              <option value="draft">Draft</option>
+              <option value="pending-approval">Pending approval</option>
+              <option value="approved">Approved</option>
+              <option value="scheduled">Scheduled</option>
+              <option value="sent-published">Sent/published</option>
+            </select>
+          </div>
+        </div>
+        <div class="two-col">
+          <div>
+            <label for="m-date">Date</label>
+            <input id="m-date" type="date">
+          </div>
+          <div>
+            <label for="m-project">Project</label>
+            <input id="m-project" type="text">
+          </div>
+        </div>
+        <div>
+          <label for="m-body">Body</label>
+          <textarea id="m-body"></textarea>
+        </div>
+        <div>
+          <label for="m-metadata">Metadata (JSON)</label>
+          <textarea id="m-metadata"></textarea>
+        </div>
+        <div>
+          <label for="m-reject-notes">Reject notes (optional)</label>
+          <textarea id="m-reject-notes"></textarea>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-edit" onclick="saveItemEdits()">Save Changes</button>
+        <button class="btn btn-approve" onclick="approveCurrent()">Approve</button>
+        <button class="btn btn-reject" onclick="rejectCurrent()">Reject</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Saved</div>
+
+<script>
+const staticCalendar = {{ contentCalendar | dump | safe }};
+let state = { weeks: JSON.parse(JSON.stringify(staticCalendar)) };
+let activeId = null;
+
+function normalizeItems(weeks) {
+  return weeks.flatMap((week) => (week.items || []).map((item, idx) => {
+    if (!item.id) item.id = `${week.week}-${item.channel || item.platform || 'item'}-${idx}`;
+    if (!item.channel) item.channel = item.platform || 'email';
+    if (!item.status) item.status = 'draft';
+    if (!item.body) item.body = item.notes || '';
+    if (!item.metadata) item.metadata = { owner: 'Rob', tags: [], audience: '' };
+    return { ...item, week: week.week };
+  }));
+}
+
+function chipClass(prefix, value) {
+  return `${prefix}-${value}`;
+}
+
+function statusLabel(status) {
+  if (status === 'pending-approval') return 'Pending approval';
+  if (status === 'sent-published') return 'Sent/published';
+  return status;
+}
+
+function escapeHtml(text) {
+  return (text || '').replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+}
+
+function render() {
+  const channelFilter = document.getElementById('channel-filter').value;
+  const statusFilter = document.getElementById('status-filter').value;
+  const allItems = normalizeItems(state.weeks).sort((a,b) => a.date.localeCompare(b.date));
+
+  const filtered = allItems.filter((item) => {
+    const channelOk = channelFilter === 'all' || item.channel === channelFilter;
+    const statusOk = statusFilter === 'all' || item.status === statusFilter;
+    return channelOk && statusOk;
+  });
+
+  const queue = filtered.filter((item) => item.status === 'pending-approval' && ['email', 'linkedin', 'blog', 'x'].includes(item.channel));
+  drawList(document.getElementById('queue-list'), queue);
+  drawList(document.getElementById('all-list'), filtered);
+
+  document.getElementById('queue-count').textContent = `${queue.length} pending items`;
+  document.getElementById('all-count').textContent = `${filtered.length} items`;
+}
+
+function drawList(container, items) {
+  if (!items.length) {
+    container.innerHTML = '<div class="empty">No items match current filters.</div>';
+    return;
+  }
+
+  container.innerHTML = items.map((item) => `
+    <article class="item">
+      <div class="item-main">
+        <div class="item-top">
+          <span class="chip ${chipClass('ch', item.channel)}">${escapeHtml(item.channel)}</span>
+          <span class="chip ${chipClass('st', item.status)}">${escapeHtml(statusLabel(item.status))}</span>
+        </div>
+        <h3 class="item-title">${escapeHtml(item.title)}</h3>
+        <div class="item-meta">${escapeHtml(item.project || '')} • ${escapeHtml(item.date || '')}</div>
+      </div>
+      <div class="item-actions">
+        <button class="btn btn-secondary" onclick="openPreview('${item.id}')">Preview</button>
+        <button class="btn btn-edit" onclick="openEdit('${item.id}')">Edit</button>
+        <button class="btn btn-approve" onclick="quickApprove('${item.id}')">Approve</button>
+        <button class="btn btn-reject" onclick="quickReject('${item.id}')">Reject</button>
+      </div>
+    </article>
+  `).join('');
+}
+
+function findItem(id) {
+  for (const week of state.weeks) {
+    const idx = (week.items || []).findIndex((item) => item.id === id);
+    if (idx >= 0) return { week, item: week.items[idx], idx };
+  }
+  return null;
+}
+
+function openPreview(id) { openEdit(id); }
+
+function openEdit(id) {
+  const found = findItem(id);
+  if (!found) return;
+  activeId = id;
+  const item = found.item;
+
+  document.getElementById('modal-title').textContent = `Edit: ${item.title}`;
+  document.getElementById('m-title').value = item.title || '';
+  document.getElementById('m-channel').value = item.channel || 'email';
+  document.getElementById('m-status').value = item.status || 'draft';
+  document.getElementById('m-date').value = item.date || '';
+  document.getElementById('m-project').value = item.project || '';
+  document.getElementById('m-body').value = item.body || '';
+  document.getElementById('m-reject-notes').value = item.rejectionNotes || '';
+  document.getElementById('m-metadata').value = JSON.stringify(item.metadata || {}, null, 2);
+
+  document.getElementById('item-modal').style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('item-modal').style.display = 'none';
+  activeId = null;
+}
+
+function saveItemEdits() {
+  if (!activeId) return;
+  const found = findItem(activeId);
+  if (!found) return;
+
+  let metadata = {};
+  try {
+    metadata = JSON.parse(document.getElementById('m-metadata').value || '{}');
+  } catch (err) {
+    alert('Metadata must be valid JSON.');
+    return;
+  }
+
+  found.item.title = document.getElementById('m-title').value.trim();
+  found.item.channel = document.getElementById('m-channel').value;
+  found.item.status = document.getElementById('m-status').value;
+  found.item.date = document.getElementById('m-date').value;
+  found.item.project = document.getElementById('m-project').value.trim();
+  found.item.body = document.getElementById('m-body').value;
+  found.item.metadata = metadata;
+  found.item.rejectionNotes = document.getElementById('m-reject-notes').value.trim();
+
+  persistAndRender('Changes saved');
+}
+
+function quickApprove(id) {
+  const found = findItem(id);
+  if (!found) return;
+  found.item.status = 'approved';
+  found.item.rejectionNotes = '';
+  persistAndRender('Item approved');
+}
+
+function quickReject(id) {
+  const found = findItem(id);
+  if (!found) return;
+  const note = window.prompt('Optional reject note:', found.item.rejectionNotes || '');
+  found.item.status = 'draft';
+  found.item.rejectionNotes = note || '';
+  persistAndRender('Item rejected to draft');
+}
+
+function approveCurrent() {
+  if (!activeId) return;
+  const found = findItem(activeId);
+  if (!found) return;
+  found.item.status = 'approved';
+  found.item.rejectionNotes = '';
+  persistAndRender('Item approved');
+  closeModal();
+}
+
+function rejectCurrent() {
+  if (!activeId) return;
+  const found = findItem(activeId);
+  if (!found) return;
+  found.item.status = 'draft';
+  found.item.rejectionNotes = document.getElementById('m-reject-notes').value.trim();
+  persistAndRender('Item rejected to draft');
+  closeModal();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+async function saveState() {
+  localStorage.setItem('content-calendar-state-v1', JSON.stringify(state));
+  try {
+    await fetch('/.netlify/functions/content-calendar-data', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(state)
+    });
+  } catch (err) {
+    console.warn('Remote persistence unavailable, kept local copy.', err);
+  }
+}
+
+function persistAndRender(msg) {
+  saveState();
+  render();
+  showToast(msg || 'Saved');
+}
+
+async function hydrate() {
+  const local = localStorage.getItem('content-calendar-state-v1');
+  if (local) {
+    try { state = JSON.parse(local); } catch (e) { console.warn(e); }
+  }
+
+  try {
+    const res = await fetch('/.netlify/functions/content-calendar-data');
+    if (res.ok) {
+      const data = await res.json();
+      if (data && Array.isArray(data.weeks)) {
+        state = data;
+      }
+    }
+  } catch (err) {
+    console.warn('Using local/static calendar state', err);
+  }
+
+  render();
+}
+
+document.getElementById('channel-filter').addEventListener('change', render);
+document.getElementById('status-filter').addEventListener('change', render);
+document.getElementById('item-modal').addEventListener('click', function(e){
+  if (e.target.id === 'item-modal') closeModal();
+});
+
+hydrate();
+</script>

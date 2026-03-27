@@ -1,5 +1,5 @@
 // summarize-paper.js
-// Generates a concise AI summary for a single paper card using server-side Gemini keys.
+// Generates a concise AI summary for a single paper card using Groq + OpenRouter free fallbacks.
 
 export default async (req) => {
   if (req.method !== 'POST') return new Response('Method not allowed', { status: 405 });
@@ -11,19 +11,6 @@ export default async (req) => {
     if (!title && !snippet) {
       return json({ ok: false, error: 'Missing paper content' }, 400);
     }
-
-    const keyCandidates = [
-      process.env.GOOGLE_API_KEY,
-      process.env.GEMINI_API_KEY,
-      process.env.GEMINI_API_KEY_BACKUP,
-      process.env.GEMINI_API_KEY_BACKUP_2,
-    ].filter(Boolean);
-
-    if (!keyCandidates.length) {
-      return json({ ok: false, error: 'No Gemini API key configured' }, 500);
-    }
-
-    const modelCandidates = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
 
     const prompt = `Summarize this behavior-analytic paper for a busy school BCBA.
 
@@ -41,32 +28,70 @@ Journal: ${journal || 'Unknown'}
 Excerpt:
 ${snippet || 'No excerpt available.'}`;
 
-    for (const key of keyCandidates) {
-      for (const model of modelCandidates) {
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
+    const GROQ_API_KEY = process.env.GROQ_API_KEY;
+    if (GROQ_API_KEY) {
+      try {
+        const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${GROQ_API_KEY}`,
+          },
           body: JSON.stringify({
-            contents: [{ role: 'user', parts: [{ text: prompt }] }],
-            generationConfig: { temperature: 0.2, maxOutputTokens: 500 },
+            model: 'llama-3.3-70b-versatile',
+            messages: [
+              { role: 'system', content: 'You are a concise research summarizer for school-based behavior analysts.' },
+              { role: 'user', content: prompt },
+            ],
+            temperature: 0.2,
+            max_tokens: 500,
           }),
         });
-
-        if (!res.ok) {
-          if ([404, 429, 500, 502, 503].includes(res.status)) continue;
-          const errText = await res.text();
-          return json({ ok: false, error: `Gemini error ${res.status}: ${errText}` }, 500);
+        if (groqRes.ok) {
+          const gj = await groqRes.json();
+          const summary = gj?.choices?.[0]?.message?.content?.trim();
+          if (summary) return json({ ok: true, summary });
         }
+      } catch {}
+    }
 
-        const data = await res.json();
-        const summary = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-        if (summary) {
-          return json({ ok: true, summary });
-        }
+    const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+    if (OPENROUTER_API_KEY) {
+      const orModels = [
+        'meta-llama/llama-3.1-8b-instruct:free',
+        'google/gemma-2-9b-it:free',
+        'mistralai/mistral-7b-instruct:free',
+      ];
+      for (const model of orModels) {
+        try {
+          const orRes = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+              'HTTP-Referer': process.env.OPENROUTER_SITE_URL || 'https://robspain.com',
+              'X-Title': 'Behavior School',
+            },
+            body: JSON.stringify({
+              model,
+              messages: [
+                { role: 'system', content: 'You are a concise research summarizer for school-based behavior analysts.' },
+                { role: 'user', content: prompt },
+              ],
+              temperature: 0.2,
+              max_tokens: 500,
+            }),
+          });
+          if (orRes.ok) {
+            const oj = await orRes.json();
+            const summary = oj?.choices?.[0]?.message?.content?.trim();
+            if (summary) return json({ ok: true, summary });
+          }
+        } catch {}
       }
     }
 
-    return json({ ok: false, error: 'All Gemini model/key combinations failed' }, 500);
+    return json({ ok: false, error: 'All AI model fallbacks exhausted' }, 500);
   } catch (e) {
     return json({ ok: false, error: e.message || 'Unknown error' }, 500);
   }

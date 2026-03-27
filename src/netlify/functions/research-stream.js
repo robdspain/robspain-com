@@ -1,5 +1,5 @@
 // research-stream.js — SSE streaming for AI Overview on research search
-// Restored working flow: Gemini embedding -> Convex chunks:search -> Gemini synthesis
+// Flow: OpenRouter embedding -> Convex chunks:search -> Groq/OpenRouter synthesis
 
 export default async (req, context) => {
   if (req.method !== 'POST') return new Response('Method not allowed', { status: 405 });
@@ -10,36 +10,48 @@ export default async (req, context) => {
   // Previous working corpus deployment
   const CONVEX_URL = process.env.CONVEX_URL || 'https://brilliant-guineapig-373.convex.cloud';
   const CONVEX_DEPLOY_KEY = process.env.CONVEX_DEPLOY_KEY;
-  const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY;
-  const BACKUP_GEMINI_API_KEY = process.env.GEMINI_API_KEY_BACKUP;
-  const BACKUP_GEMINI_API_KEY_2 = process.env.GEMINI_API_KEY_BACKUP_2;
   const GROQ_API_KEY = process.env.GROQ_API_KEY;
   const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
-  if (!GOOGLE_API_KEY) return new Response('Missing GOOGLE_API_KEY/GEMINI_API_KEY', { status: 500 });
+  if (!OPENROUTER_API_KEY) return new Response('Missing OPENROUTER_API_KEY', { status: 500 });
 
-  // Step 1: Embed query
+  const openRouterHeaders = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+    'HTTP-Referer': process.env.OPENROUTER_SITE_URL || 'https://robspain.com',
+    'X-Title': 'Behavior School',
+  };
+
+  // Step 1: Embed query via OpenRouter embeddings
   let queryEmbedding;
-  try {
-    const embedRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key=${GOOGLE_API_KEY}`,
-      {
+  const embedModels = ['nomic-ai/nomic-embed-text-v1', 'BAAI/bge-small-en-v1.5'];
+  for (const embedModel of embedModels) {
+    try {
+      const embedRes = await fetch('https://openrouter.ai/api/v1/embeddings', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: openRouterHeaders,
         body: JSON.stringify({
-          model: 'models/gemini-embedding-001',
-          content: { parts: [{ text: query }] },
-          outputDimensionality: 768,
+          model: embedModel,
+          input: query,
         }),
-      }
-    );
+      });
 
-    if (!embedRes.ok) throw new Error(`Gemini embed ${embedRes.status}: ${await embedRes.text()}`);
-    const embedData = await embedRes.json();
-    queryEmbedding = embedData.embedding?.values;
-    if (!queryEmbedding?.length) throw new Error('Empty embedding returned');
-  } catch (e) {
-    return new Response(`Embedding error: ${e.message}`, { status: 500 });
+      if (!embedRes.ok) {
+        console.log(`[Embed] OpenRouter ${embedModel} failed: ${embedRes.status}`);
+        continue;
+      }
+      const embedData = await embedRes.json();
+      queryEmbedding = embedData.data?.[0]?.embedding;
+      if (queryEmbedding?.length) {
+        console.log(`[Embed] Succeeded with ${embedModel}`);
+        break;
+      }
+    } catch (e) {
+      console.log(`[Embed] OpenRouter ${embedModel} threw: ${e.message}`);
+    }
+  }
+  if (!queryEmbedding?.length) {
+    return new Response('Embedding error: all OpenRouter embedding models failed', { status: 500 });
   }
 
   // Step 2: Vector search via chunks:search
@@ -109,167 +121,29 @@ Rules:
       const send = (obj) => controller.enqueue(encoder.encode(`data: ${JSON.stringify(obj)}\n\n`));
 
       try {
-        const modelCandidates = [
-          'gemini-1.5-flash-latest',
-          'gemini-1.5-pro-latest',
-        ];
+        if (GROQ_API_KEY) {
+          try {
+            const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${GROQ_API_KEY}`,
+              },
+              body: JSON.stringify({
+                model: 'llama-3.3-70b-versatile',
+                messages: [
+                  { role: 'system', content: systemPrompt },
+                  { role: 'user', content: userPrompt },
+                ],
+                temperature: 0.2,
+                max_tokens: 1024,
+              }),
+            });
 
-        const makeGeminiRequest = (apiKey, model) => fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${apiKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              system_instruction: { parts: [{ text: systemPrompt }] },
-              contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
-              generationConfig: { temperature: 0.3, maxOutputTokens: 1024 },
-            }),
-          }
-        );
-
-        const keyCandidates = [GOOGLE_API_KEY, BACKUP_GEMINI_API_KEY, BACKUP_GEMINI_API_KEY_2].filter(Boolean);
-        let geminiRes = null;
-        let lastStatus = null;
-
-        // Try each key with multiple model fallbacks
-        outer:
-        for (const [keyIndex, key] of keyCandidates.entries()) {
-          for (const [modelIndex, model] of modelCandidates.entries()) {
-            console.log(`[Fallback] Attempting Gemini. Key #${keyIndex + 1}, Model: ${model}`);
-            const res = await makeGeminiRequest(key, model);
-            lastStatus = res.status;
-            if (res.ok) {
-              console.log(`[Fallback] Gemini succeeded. Key #${keyIndex + 1}, Model: ${model}`);
-              geminiRes = res;
-              break outer;
-            }
-            console.log(`[Fallback] Gemini failed. Key #${keyIndex + 1}, Model: ${model}, Status: ${lastStatus}`);
-            // continue trying models/keys on 404/429/5xx
-            if (![404, 429, 500, 502, 503].includes(res.status)) {
-              geminiRes = res; // preserve non-retryable error
-              break outer;
-            }
-          }
-        }
-
-        if (!geminiRes) {
-          geminiRes = { ok: false, status: lastStatus || 500 };
-        }
-
-        if (!geminiRes.ok) {
-          const status = geminiRes.status;
-          console.log(`[Fallback] All Gemini attempts failed. Final status: ${status}.`);
-
-          // 4th fallback: Groq Llama3
-          if (GROQ_API_KEY) {
-            console.log('[Fallback] Attempting Groq Llama3...');
-            try {
-              const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${GROQ_API_KEY}`,
-                },
-                body: JSON.stringify({
-                  model: 'llama3-8b-8192',
-                  messages: [
-                    {
-                      role: 'system',
-                      content: `You are an expert research assistant for a school-based BCBA. Your task is to create a concise evidence summary based on the provided context.
-
-Format your response exactly like this:
-1.  **Direct Answer:** A one-paragraph summary directly answering the user's question.
-2.  **Key Findings:** A bulleted list of 3-5 key findings from the source text.
-3.  **Practical Implications:** A bulleted list of 2-4 actionable implications for a school setting.
-
-Rules:
--   Use only the provided context.
--   Do not invent information.
--   If the context is insufficient, state that and explain what's missing.`
-                    },
-                    {
-                      role: 'user',
-                      content: `Question: ${query}\n\nContext:\n${contextText}`
-                    }
-                  ],
-                  temperature: 0.1,
-                  max_tokens: 1024,
-                }),
-              });
-
-              if (groqRes.ok) {
-                console.log('[Fallback] Groq succeeded.');
-                const gj = await groqRes.json();
-                const summary = gj?.choices?.[0]?.message?.content?.trim();
-                if (summary) {
-                  send({ type: 'answer', text: summary });
-                  send({
-                    type: 'sources',
-                    sources: sources.map((s) => ({
-                      paperTitle: cleanTitle(s),
-                      authors: s.authors || '',
-                      year: s.year || '',
-                      journal: s.journal || s.venue || '',
-                      score: s.score,
-                      sourcePdf: s.sourcePdf || s.source_pdf || '',
-                      paperUrl: s.doi ? `https://doi.org/${s.doi}` : null,
-                      text: s.text || '',
-                    })),
-                  });
-                  send({ type: 'done' });
-                  controller.close();
-                  return;
-                }
-                console.log('[Fallback] Groq returned OK but no summary content.');
-              } else {
-                console.log(`[Fallback] Groq failed. Status: ${groqRes.status}`);
-              }
-            } catch (e) {
-              console.log(`[Fallback] Groq threw an error: ${e.message}`);
-            }
-          }
-
-          // 5th fallback: OpenRouter free models only
-          if (OPENROUTER_API_KEY) {
-            console.log('[Fallback] Attempting OpenRouter free model fallback...');
-            const modelCandidates = [
-              'google/gemma-2-9b-it:free',
-              'meta-llama/llama-3.1-8b-instruct:free',
-              'mistralai/mistral-7b-instruct:free',
-            ];
-
-            for (const model of modelCandidates) {
-              try {
-                const orRes = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-                  },
-                  body: JSON.stringify({
-                    model,
-                    messages: [
-                      { role: 'system', content: systemPrompt },
-                      { role: 'user', content: userPrompt },
-                    ],
-                    temperature: 0.2,
-                    max_tokens: 1024,
-                  }),
-                });
-
-                if (!orRes.ok) {
-                  console.log(`[Fallback] OpenRouter model failed: ${model}, status ${orRes.status}`);
-                  continue;
-                }
-
-                const oj = await orRes.json();
-                const summary = oj?.choices?.[0]?.message?.content?.trim();
-                if (!summary) {
-                  console.log(`[Fallback] OpenRouter model returned no summary: ${model}`);
-                  continue;
-                }
-
-                console.log(`[Fallback] OpenRouter succeeded with ${model}`);
+            if (groqRes.ok) {
+              const gj = await groqRes.json();
+              const summary = gj?.choices?.[0]?.message?.content?.trim();
+              if (summary) {
                 send({ type: 'answer', text: summary });
                 send({
                   type: 'sources',
@@ -287,68 +161,95 @@ Rules:
                 send({ type: 'done' });
                 controller.close();
                 return;
-              } catch (e) {
-                console.log(`[Fallback] OpenRouter threw error for ${model}: ${e.message}`);
               }
+            } else {
+              console.log(`[Fallback] Groq failed. Status: ${groqRes.status}`);
+            }
+          } catch (e) {
+            console.log(`[Fallback] Groq threw an error: ${e.message}`);
+          }
+        }
+
+        if (OPENROUTER_API_KEY) {
+          console.log('[Fallback] Attempting OpenRouter free model fallback...');
+          const modelCandidates = [
+            'meta-llama/llama-3.1-8b-instruct:free',
+            'google/gemma-2-9b-it:free',
+            'mistralai/mistral-7b-instruct:free',
+          ];
+
+          for (const model of modelCandidates) {
+            try {
+              const orRes = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+                  'HTTP-Referer': process.env.OPENROUTER_SITE_URL || 'https://robspain.com',
+                  'X-Title': 'Behavior School',
+                },
+                body: JSON.stringify({
+                  model,
+                  messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: userPrompt },
+                  ],
+                  temperature: 0.2,
+                  max_tokens: 1024,
+                }),
+              });
+
+              if (!orRes.ok) {
+                console.log(`[Fallback] OpenRouter model failed: ${model}, status ${orRes.status}`);
+                continue;
+              }
+
+              const oj = await orRes.json();
+              const summary = oj?.choices?.[0]?.message?.content?.trim();
+              if (!summary) {
+                console.log(`[Fallback] OpenRouter model returned no summary: ${model}`);
+                continue;
+              }
+
+              console.log(`[Fallback] OpenRouter succeeded with ${model}`);
+              send({ type: 'answer', text: summary });
+              send({
+                type: 'sources',
+                sources: sources.map((s) => ({
+                  paperTitle: cleanTitle(s),
+                  authors: s.authors || '',
+                  year: s.year || '',
+                  journal: s.journal || s.venue || '',
+                  score: s.score,
+                  sourcePdf: s.sourcePdf || s.source_pdf || '',
+                  paperUrl: s.doi ? `https://doi.org/${s.doi}` : null,
+                  text: s.text || '',
+                })),
+              });
+              send({ type: 'done' });
+              controller.close();
+              return;
+            } catch (e) {
+              console.log(`[Fallback] OpenRouter threw error for ${model}: ${e.message}`);
             }
           }
-
-          console.log('[Fallback] All fallbacks exhausted. Using final source-snippet display.');
-          const fallbackText = status === 429
-            ? 'AI summary is rate-limited right now (Gemini 429 after backup key failover). Showing source-backed fallback guidance below.'
-            : `AI summary temporarily unavailable (Gemini ${status}). Showing source-backed fallback guidance below.`;
-
-          const top = sources.slice(0, 3);
-          const fallbackGuidance = top.length
-            ? top
-                .map((s, i) => {
-                  const t = cleanTitle(s);
-                  const snippet = (s.text || '').slice(0, 220).trim();
-                  return `- ${t}${snippet ? `: ${snippet}` : ''} [Source ${i + 1}]`;
-                })
-                .join('\n')
-            : '- No source snippets available in this response.';
-
-          send({ type: 'answer', text: `${fallbackText}\n\nKey points from available sources:\n${fallbackGuidance}` });
-          send({
-            type: 'sources',
-            sources: sources.map((s) => ({
-              paperTitle: cleanTitle(s),
-              authors: s.authors || '',
-              year: s.year || '',
-              journal: s.journal || s.venue || '',
-              score: s.score,
-              sourcePdf: s.sourcePdf || s.source_pdf || '',
-              paperUrl: s.doi ? `https://doi.org/${s.doi}` : null,
-              text: s.text || '',
-            })),
-          });
-          send({ type: 'done' });
-          controller.close();
-          return;
         }
 
-        const reader = geminiRes.body.getReader();
-        const dec = new TextDecoder();
-        let buf = '';
+        console.log('[Fallback] All fallbacks exhausted. Using final source-snippet display.');
+        const fallbackText = 'AI summary temporarily unavailable. Showing source-backed fallback guidance below.';
 
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          buf += dec.decode(value, { stream: true });
-          const lines = buf.split('\n');
-          buf = lines.pop();
-          for (const line of lines) {
-            if (!line.startsWith('data: ')) continue;
-            const raw = line.slice(6).trim();
-            if (!raw || raw === '[DONE]') continue;
-            try {
-              const text = JSON.parse(raw)?.candidates?.[0]?.content?.parts?.[0]?.text;
-              if (text) send({ type: 'answer', text });
-            } catch {}
-          }
-        }
+        const top = sources.slice(0, 3);
+        const fallbackGuidance = top.length
+          ? top
+              .map((s, i) => {
+                const t = cleanTitle(s);
+                const snippet = (s.text || '').slice(0, 220).trim();
+                return `- ${t}${snippet ? `: ${snippet}` : ''} [Source ${i + 1}]`;
+              })
+              .join('\n')
+          : '- No source snippets available in this response.';
 
+        send({ type: 'answer', text: `${fallbackText}\n\nKey points from available sources:\n${fallbackGuidance}` });
         send({
           type: 'sources',
           sources: sources.map((s) => ({
@@ -363,6 +264,8 @@ Rules:
           })),
         });
         send({ type: 'done' });
+        controller.close();
+        return;
       } catch (e) {
         send({ type: 'error', text: e.message });
       }

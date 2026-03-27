@@ -651,140 +651,122 @@ permalink: /admin/tasks/
     {
       id: 1,
       category: 'urgent',
-      title: 'Review CALABA Symposium: "Beyond Observable Behavior"',
-      platform: 'behaviorschool.com',
-      time: '25 min',
-      dueDate: '2026-03-07',
-      status: 'not-started',
+      title: 'KCUSD build failure, fix before next push',
+      platform: 'kcusd-behavior-team',
+      time: '30 min',
+      dueDate: null,
+      status: 'blocked',
       priority: true,
       instructions: [
-        'Go to <a href="https://behaviorschool.com/admin/presentations" target="_blank">behaviorschool.com/admin/presentations</a>',
-        'Find "Beyond Observable Behavior" in Library',
-        'Symposium team: you (Chair+Presenter), Cristal Lopez, Megan Caluza (Discussant)',
-        'Click "Present" to preview',
-        'Verify all content is accurate',
-        'Export PPTX backup',
-        'Practice your section (5-10 min talk track)'
+        'Netlify build failed with exit code 2 for commit cd0333b6',
+        'Local build error: missing export getStudentLevel3Bips in level3BipService.ts',
+        'Fix import or export, then run npm run build locally',
+        'Push when build passes'
       ]
     },
     {
       id: 2,
       category: 'urgent',
-      title: 'Review PBIS Presentation: "BCBAs in PBIS"',
-      platform: 'behaviorschool.com',
-      time: '20 min',
-      dueDate: '2026-03-05',
-      status: 'not-started',
+      title: 'Plan.behaviorschool.com, port Tier 1-4 behavior plans from KCUSD',
+      platform: 'plan.behaviorschool.com',
+      time: '2-4 hrs',
+      dueDate: null,
+      status: 'in-progress',
       priority: true,
       instructions: [
-        'Go to <a href="https://behaviorschool.com/admin/presentations" target="_blank">behaviorschool.com/admin/presentations</a>',
-        'Find "BCBAs in PBIS" in the Library',
-        'Panel with Megan Caluza, Holly Northcross, Katie Turner',
-        'Click "Present" to preview — check content accuracy',
-        'Export PPTX backup'
+        'Finish KCUSD Tier plan templates and logic',
+        'Port to plan.behaviorschool.com once stable',
+        'Verify all levels generate correctly and save'
       ]
     },
     {
       id: 3,
       category: 'urgent',
-      title: 'Review 9 Writer Drafts',
-      platform: 'Both sites',
-      time: '30 min',
+      title: 'GoDaddy CNAME app.behaviorschool.com',
+      platform: 'behaviorschool.com',
+      time: '5 min',
       dueDate: null,
       status: 'not-started',
       priority: true,
       instructions: [
-        'Ask Neo on Telegram to send preview links',
-        '9 drafts ready: Grad School, Mock Scores, Burnout Series, Supervision posts, LinkedIn, YouTube script, more',
-        'Sort each into robspain.com (thought leadership) or behaviorschool.com (SEO/products)',
-        'Reply "approved" or send feedback per draft'
+        'GoDaddy DNS, add CNAME app → behaviorschool-pro.netlify.app',
+        'Verify app.behaviorschool.com resolves'
       ]
     },
+
+    // 🟡 MAKES MONEY
     {
       id: 4,
-      category: 'urgent',
-      title: '⚠️ GoDaddy CNAME: app.behaviorschool.com',
-      platform: 'behaviorschool.com',
-      time: '2 min',
+      category: 'money',
+      title: 'SchoolRBT DNS CNAME rbtstudy.behaviorschool.com',
+      platform: 'schoolrbt.com',
+      time: '10 min',
       dueDate: null,
       status: 'not-started',
       priority: true,
       instructions: [
-        '🚨 CRITICAL: CalABA promo links are DEAD without this!',
-        'All signup buttons on behaviorschool.com/pro point to app.behaviorschool.com',
-        'Go to <a href="https://dcc.godaddy.com/manage/behaviorschool.com/dns" target="_blank">GoDaddy DNS Manager</a>',
-        'Add CNAME: Name = <b>app</b>, Value = <b>behaviorschool-pro.netlify.app</b>',
-        'Tell Neo when done — will verify within 60 seconds'
+        'GoDaddy DNS, add CNAME rbtstudy → rbt-study-app.netlify.app',
+        'Verify rbtstudy.behaviorschool.com resolves'
       ]
     },
-    
-    // 🟡 MAKES MONEY
     {
       id: 5,
       category: 'money',
-      title: 'Apple Sign-In Setup (App Store Blocker)',
-      platform: 'iOS App',
-      time: '15 min',
+      title: 'Learning.behaviorschool.com QA and bug fixes',
+      platform: 'learning.behaviorschool.com',
+      time: '1-2 hrs',
       dueDate: null,
-      status: 'not-started',
+      status: 'in-progress',
       priority: true,
       instructions: [
-        'Go to <a href="https://developer.apple.com/account/resources/identifiers/list/serviceId" target="_blank">developer.apple.com Service IDs</a>',
-        'Click + → Description: "Behavior Study Tools Sign In"',
-        'Identifier: "com.behaviorschool.studytools.signin"',
-        'Enable "Sign In with Apple" → Configure',
-        'Add domain: study.behaviorschool.com',
-        'Add return URL: https://study.behaviorschool.com/auth/callback → Save',
-        'Go to <a href="https://developer.apple.com/account/resources/authkeys/list" target="_blank">Keys</a> → New key → Enable "Sign In with Apple"',
-        'Download .p8 file → Send Neo: Team ID, Service ID, Key ID, and .p8 file'
+        'Rob working locally on MacBook Air',
+        'Confirm uploads, course playback, and purchase flow',
+        'Fix any UI or data issues discovered'
       ]
     },
     {
       id: 6,
       category: 'money',
-      title: 'Get PayPal Link from Liz (Raffle Go-Live)',
-      platform: 'BAE SIG',
-      time: '2 min',
+      title: 'Study.behaviorschool.com redesign and AI advantage',
+      platform: 'study.behaviorschool.com',
+      time: '4-6 hrs',
       dueDate: null,
       status: 'not-started',
       priority: true,
       instructions: [
-        'Text or email Liz Flaherty',
-        'Ask for the PayPal QR/link earmarked "SIG Reception Donation"',
-        'Send the link to Neo — raffle site goes live immediately',
-        'Current site: <a href="https://calaba-sig-raffle.vercel.app" target="_blank">calaba-sig-raffle.vercel.app</a>'
+        'Modernize UI and onboarding',
+        'Add citation aware explanations and evidence callouts',
+        'Verify payment and trial flow'
       ]
     },
     {
       id: 7,
       category: 'money',
-      title: 'Gmail App Password for BAE SIG Email',
-      platform: 'BAE SIG',
-      time: '3 min',
+      title: 'Supervision.behaviorschool.com AI session generator',
+      platform: 'supervision.behaviorschool.com',
+      time: '2-3 hrs',
       dueDate: null,
-      status: 'not-started',
-      priority: false,
+      status: 'in-progress',
+      priority: true,
       instructions: [
-        'Go to <a href="https://myaccount.google.com/apppasswords" target="_blank">Google App Passwords</a>',
-        'Sign in as california.bae.sig@gmail.com',
-        'Generate an app password',
-        'Send it to Neo — enables auto-emailing raffle tickets'
+        'Use Gemini OpenRouter fallback pipeline',
+        'Generate agenda, goals, and prompts from trainee data',
+        'Confirm output quality and save flow'
       ]
     },
     {
       id: 8,
       category: 'money',
-      title: 'Auth Gmail for Neo (Email + Calendar Access)',
-      platform: 'robspain.com',
-      time: '3 min',
+      title: 'Plan.behaviorschool.com, add demo video and FAQ',
+      platform: 'plan.behaviorschool.com',
+      time: '1-2 hrs',
       dueDate: null,
       status: 'not-started',
       priority: false,
       instructions: [
-        'When home at Mac mini, open Terminal',
-        'Run: <code>GOG_KEYRING_BACKEND=file gog auth add robspain@gmail.com --services gmail,calendar,drive,contacts,docs,sheets</code>',
-        'Browser will open — sign in and approve',
-        'Unlocks: email monitoring, calendar checks, custody project, email campaigns'
+        'Add demo video section',
+        'Add FAQ and district pricing',
+        'Verify CTA paths'
       ]
     },
 
@@ -792,553 +774,45 @@ permalink: /admin/tasks/
     {
       id: 9,
       category: 'later',
-      title: 'Record Video #1: "5 Ethics Questions That Trip Everyone Up"',
+      title: 'Behaviorschool.com SEO content refresh',
       platform: 'behaviorschool.com',
-      time: '30 min',
+      time: '2-3 hrs',
       dueDate: null,
       status: 'not-started',
       priority: false,
       instructions: [
-        'Script ready — ask Neo for it or view at behaviorschool.com/admin/videos',
-        'Record on phone (vertical = social, horizontal = YouTube)',
-        'Upload to behaviorschool.com/admin/videos',
-        'Neo cuts it into short clips automatically'
+        'Review BDS alternative and PassBehavior alternative pages',
+        'Update internal links and CTAs'
       ]
     },
     {
       id: 10,
       category: 'later',
-      title: 'Record Videos #2-5 (Reinforcement, Design, FBA, Study Strategy)',
-      platform: 'behaviorschool.com',
-      time: '2 hrs',
+      title: 'Robspain.com admin tasks dashboard refresh',
+      platform: 'robspain.com',
+      time: '20 min',
       dueDate: null,
-      status: 'not-started',
+      status: 'in-progress',
       priority: false,
       instructions: [
-        '4 more scripts ready — all at behaviorschool.com/admin/videos',
-        'Record when you have creative energy',
-        'Neo handles editing + social clips'
-      ]
-    },
-    {
-      id: 11,
-      category: 'later',
-      title: 'Review Marketing Calendar',
-      platform: 'behaviorschool.com',
-      time: '15 min',
-      dueDate: null,
-      status: 'not-started',
-      priority: false,
-      instructions: [
-        'Go to <a href="https://behaviorschool.com/admin/content-calendar" target="_blank">behaviorschool.com/admin/content-calendar</a>',
-        'Review 13 draft posts (pre-scheduled)',
-        'Approve, edit, or reschedule as needed'
-      ]
-    },
-    {
-      id: 12,
-      category: 'later',
-      title: 'Add Testimonials to Both Sites',
-      platform: 'Both sites',
-      time: '15 min',
-      dueDate: null,
-      status: 'not-started',
-      priority: false,
-      instructions: [
-        'Think of 3-5 people who\'ve used your tools or training',
-        'Get permission for quotes',
-        'Send Neo: name, role, quote — he adds them to both sites'
-      ]
-    },
-    {
-      id: 13,
-      category: 'later',
-      title: 'Share Social Media Logins',
-      platform: 'Both sites',
-      time: '5 min',
-      dueDate: null,
-      status: 'not-started',
-      priority: false,
-      instructions: [
-        'Share Instagram, LinkedIn, Facebook, YouTube logins with Neo',
-        'Enables agents to post approved content directly',
-        'Nothing goes out without your approval'
-      ]
-    },
-    {
-      id: 14,
-      category: 'later',
-      title: 'Share Ahrefs Login',
-      platform: 'SEO',
-      time: '2 min',
-      dueDate: null,
-      status: 'not-started',
-      priority: false,
-      instructions: [
-        'Share Ahrefs credentials with Neo',
-        'SEO agent will run keyword gap analysis + competitor tracking',
-        'First target: IEP Goal Writer page optimization'
+        'Update task list with current blockers',
+        'Deploy to production'
       ]
     },
 
     // ⚪ NICE
     {
-      id: 15,
+      id: 11,
       category: 'nice',
-      title: 'Tell Me About Email Auth Bug',
-      platform: 'study.behaviorschool.com',
-      time: '5 min',
+      title: 'Audit Stripe checkout on plan.behaviorschool.com',
+      platform: 'plan.behaviorschool.com',
+      time: '20 min',
       dueDate: null,
       status: 'not-started',
       priority: false,
       instructions: [
-        'What happens when users try to log in with email on study.behaviorschool.com?',
-        'Not receiving emails? Redirect loop? Error message?',
-        'Screenshot if possible — message Neo the details'
-      ]
-    },
-    {
-      id: 16,
-      category: 'nice',
-      title: 'Set Cloudflare R2 Environment Variables',
-      platform: 'behaviorschool.com',
-      time: '5 min',
-      dueDate: null,
-      status: 'not-started',
-      priority: false,
-      instructions: [
-        'Go to <a href="https://app.netlify.com" target="_blank">Netlify Dashboard</a> → behaviorschool.com → Site Settings → Environment Variables',
-        'Copy R2 keys from learning platform: CF_R2_ACCESS_KEY_ID, CF_R2_SECRET_ACCESS_KEY, CF_R2_BUCKET_NAME, CF_R2_PUBLIC_BASE_URL, CF_R2_ACCOUNT_ID'
-      ]
-    },
-    {
-      id: 17,
-      category: 'nice',
-      title: 'Record Training Videos for robspain.com',
-      platform: 'robspain.com',
-      time: '2 hrs',
-      dueDate: null,
-      status: 'not-started',
-      priority: false,
-      instructions: [
-        '"Crisis Manager to Systems Leader" 10-part series',
-        'Each video 5-10 minutes — record at your own pace',
-        'Upload to admin panel when ready'
-      ]
-    },
-
-    // ═══════════════════════════════════════════════════════════════════
-    // NEO TASKS - Added 2026-02-20
-    // ═══════════════════════════════════════════════════════════════════
-    
-    // 🔴 URGENT - Rob manual tasks
-    {
-      id: 18,
-      category: 'urgent',
-      title: 'Connect Convex Backend for Learning Platform',
-      platform: 'learning.behaviorschool.com',
-      time: '15 min',
-      dueDate: null,
-      status: 'not-started',
-      priority: true,
-      instructions: [
-        'Site is 85% complete — just needs Convex backend connection',
-        'cd to /Volumes/Fast Storage/00-Organized/Work/Neo AI/neo_code_repos/learning-behaviorschool',
-        'Run: <code>./QUICK_MARKETPLACE_SETUP.sh</code>',
-        'Follow browser prompts to create Convex deployment',
-        'Copy VITE_CONVEX_URL to .env.local',
-        'Run: <code>npx convex deploy</code>',
-        'Rebuild and redeploy to Netlify'
-      ]
-    },
-    {
-      id: 19,
-      category: 'urgent',
-      title: 'Add GEMINI_API_KEY to Netlify',
-      platform: 'behaviorschool.com',
-      time: '3 min',
-      dueDate: null,
-      status: 'not-started',
-      priority: true,
-      instructions: [
-        'Fusion FA tool needs Gemini API for AI script generation',
-        'Go to <a href="https://app.netlify.com" target="_blank">Netlify Dashboard</a> → behaviorschool.com',
-        'Site Settings → Environment Variables',
-        'Add: GEMINI_API_KEY = [your Gemini API key]',
-        'Trigger redeploy'
-      ]
-    },
-
-    // 🟢 LATER - Neo PRD tracking  
-    {
-      id: 20,
-      category: 'later',
-      title: '[NEO] PRD: ObservationPro iOS App',
-      platform: 'iOS App',
-      time: 'Multi-day',
-      dueDate: null,
-      status: 'not-started',
-      priority: false,
-      instructions: [
-        '📍 Location: /Volumes/Fast Storage/.../ObservationPro/PRD.md',
-        'iOS Swift app for behavior observation data collection',
-        'Features: 6 recording methods, Apple Watch stealth mode, AI ABC parser',
-        '⚠️ BLOCKED: Needs Xcode IDE for iOS development',
-        'Some Swift code exists but needs full implementation'
-      ]
-    },
-    {
-      id: 21,
-      category: 'later',
-      title: '[NEO] PRD: Caseload App',
-      platform: 'TBD',
-      time: 'TBD',
-      dueDate: null,
-      status: 'not-started',
-      priority: false,
-      instructions: [
-        '📍 Location: /Volumes/Fast Storage/.../Caseload-App/PRD-Behavior-Team-Management-System.md',
-        '⚠️ PRD FILE IS EMPTY - needs content',
-        'Rob needs to define requirements before Neo can build'
-      ]
-    },
-
-    // ✅ DONE - Completed PRDs (Feb 20, 2026)
-    {
-      id: 22,
-      category: 'later',
-      title: '[NEO] ✅ PRD: IEP Goal Writer',
-      platform: 'behaviorschool.com',
-      time: 'Done',
-      dueDate: null,
-      status: 'done',
-      priority: false,
-      instructions: [
-        'Completed by sub-agent 2026-02-20',
-        'Values Wizard 5-step workflow',
-        'Quality meter (1-5 levels)',
-        'PDF download functionality',
-        '4 goal templates added',
-        'Commit: 2301483'
-      ]
-    },
-    {
-      id: 23,
-      category: 'later',
-      title: '[NEO] ✅ PRD: ACT Interactive Tools',
-      platform: 'behaviorschool.com',
-      time: 'Done',
-      dueDate: null,
-      status: 'done',
-      priority: false,
-      instructions: [
-        'Completed by sub-agent 2026-02-20',
-        '18 metaphors (added 5 Committed Action)',
-        '44 values cards (expanded from 12)',
-        'Reflection prompts added',
-        'Commit: 2b28b96'
-      ]
-    },
-    {
-      id: 24,
-      category: 'later',
-      title: '[NEO] ✅ PRD: Neo Dashboard v2',
-      platform: 'behaviorschool.com',
-      time: 'Done',
-      dueDate: null,
-      status: 'done',
-      priority: false,
-      instructions: [
-        'Completed by sub-agent 2026-02-20',
-        'Project cards with progress bars',
-        'Quick wins section',
-        'Content calendar with channel icons',
-        'API endpoints for syncing',
-        'Commit: e33c52f'
-      ]
-    },
-    {
-      id: 25,
-      category: 'later',
-      title: '[NEO] ✅ PRD: ACE CEU Platform Enhancement',
-      platform: 'behaviorschool.com',
-      time: 'Done',
-      dueDate: null,
-      status: 'done',
-      priority: false,
-      instructions: [
-        'Enhanced by Neo main session 2026-02-20',
-        'Added event detail page (/ce-events/[id])',
-        'Registration API with credential validation',
-        'CE for BCBAs, PD for RBTs enforcement',
-        'Commit: 302430b'
-      ]
-    },
-    {
-      id: 26,
-      category: 'later',
-      title: '[NEO] ✅ PRD: Toolchest Auth System',
-      platform: 'behaviorschool-toolchest',
-      time: 'Done',
-      dueDate: null,
-      status: 'done',
-      priority: false,
-      instructions: [
-        'Already 95% complete (found during audit)',
-        'Full auth UI, usage tracking, trials, settings page',
-        'Just needs Stripe webhook integration for payments'
-      ]
-    },
-
-    // ═══════════════════════════════════════════════════════════════════
-    // COMPLETED TODAY - Feb 24, 2026
-    // ═══════════════════════════════════════════════════════════════════
-    {
-      id: 27,
-      category: 'money',
-      title: '[NEO] ✅ Supervision Hour Tracker MVP',
-      platform: 'behaviorschool-supervision',
-      time: 'Done',
-      dueDate: null,
-      status: 'done',
-      priority: false,
-      instructions: [
-        'Completed 2026-02-24',
-        'New Convex schema: hourEntries + monthlyForms tables',
-        'RBT Log Hours page (/rbt/log-hours)',
-        'Monthly Form page with supervisor signoff (/rbt/monthly-form)',
-        'Supervisor stub dashboard (/rbt/supervisor)',
-        'Lint + TypeScript clean. Commits: 45f8c6b → 1aa6ac9'
-      ]
-    },
-    {
-      id: 28,
-      category: 'money',
-      title: '[NEO] ✅ AI Study Plan Generator',
-      platform: 'schoolrbt-com',
-      time: 'Done',
-      dueDate: null,
-      status: 'done',
-      priority: false,
-      instructions: [
-        'Completed 2026-02-24',
-        'Netlify function: generate-ai-set.js (Gemini 2.0 Flash)',
-        'Supabase migration: ai_study_sets + ai_study_questions tables',
-        'UI components: AIStudyGenerator, AIStudyDeck, AIStudyCard',
-        'Dashboard integration with AI Study Sets tab',
-        'Fixed critical syntax error in questions-rbt.ts',
-        'Commits: 25cedc4 → a290d3d'
-      ]
-    },
-    {
-      id: 29,
-      category: 'money',
-      title: '[NEO] ✅ AI FBA/BIP Drafting Assistant',
-      platform: 'behaviorschool-app',
-      time: 'Done',
-      dueDate: null,
-      status: 'done',
-      priority: false,
-      instructions: [
-        'Completed 2026-02-24',
-        'Convex action: draftDocumentWithAI (Gemini 2.0 Flash)',
-        'AIDraftingModal: student context form, section display, copy buttons',
-        'FBAToBIPWizard: AI Draft button, field pre-population, yellow AI highlights',
-        'HIPAA disclaimer on all AI-generated content',
-        'Commits: 1f57f59 → e263aa2 → d3de830'
-      ]
-    },
-    {
-      id: 30,
-      category: 'money',
-      title: '[NEO] ✅ behaviorstudytools.com Redesign',
-      platform: 'behaviorstudytools.com',
-      time: 'Done',
-      dueDate: null,
-      status: 'done',
-      priority: false,
-      instructions: [
-        'Completed 2026-02-24',
-        'Dual landing page: BCBA + RBT app sections',
-        'Hero, product cards, value props, social proof, footer',
-        'Brand colors: --quiz-primary: #1f4d3f / --quiz-secondary: #e4b63d',
-        'TODO: Replace placeholder screenshot divs with real app screenshots',
-        'Commit: 3071775'
-      ]
-    },
-    {
-      id: 31,
-      category: 'urgent',
-      title: '[NEO] ✅ plan.behaviorschool.com Crash Fixed',
-      platform: 'behaviorschool-app',
-      time: 'Done',
-      dueDate: null,
-      status: 'done',
-      priority: false,
-      instructions: [
-        'Fixed 2026-02-24',
-        'Root cause: Convex had zero env vars — Better Auth threw on missing BETTER_AUTH_SECRET',
-        'Set 5 Convex env vars via dashboard',
-        'Site returns HTTP 200 ✅',
-        'Still needs: AUTH_GOOGLE_ID, AUTH_GOOGLE_SECRET, STRIPE_WEBHOOK_SECRET, 4 Stripe price IDs'
-      ]
-    },
-
-    // ═══════════════════════════════════════════════════════════════════
-    // NEW ROB TASKS - Feb 24, 2026
-    // ═══════════════════════════════════════════════════════════════════
-    {
-      id: 32,
-      category: 'urgent',
-      title: 'Add GoDaddy CNAME for rbtstudy.behaviorschool.com',
-      platform: 'schoolrbt-com',
-      time: '2 min',
-      dueDate: '2026-02-25',
-      status: 'not-started',
-      priority: true,
-      instructions: [
-        'SchoolRBT.com is live but DNS is broken — site unreachable at rbtstudy.behaviorschool.com',
-        'Go to GoDaddy → DNS Manager → behaviorschool.com',
-        'Add CNAME record: Name = rbtstudy, Value = rbt-study-app.netlify.app, TTL = default',
-        'Tell Neo when done — will verify propagation'
-      ]
-    },
-    {
-      id: 33,
-      category: 'urgent',
-      title: 'Get Paid Google AI Studio API Key (Image Gen)',
-      platform: 'behaviorschool.com',
-      time: '3 min',
-      dueDate: null,
-      status: 'not-started',
-      priority: true,
-      instructions: [
-        'Free tier hit quota limit — need paid tier for blog image generation',
-        'Go to <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a>',
-        'Enable billing on your Google Cloud project',
-        'Or upgrade to Google AI Studio paid tier',
-        'Alternative: Neo is setting up ComfyUI for FREE local image gen (no API needed)'
-      ]
-    },
-    {
-      id: 100,
-      category: 'urgent',
-      title: 'X/Twitter API Credentials for Neo',
-      platform: 'Social Media',
-      time: '10 min',
-      dueDate: null,
-      status: 'not-started',
-      priority: true,
-      instructions: [
-        'Neo has xurl CLI installed but no auth',
-        'Go to <a href="https://developer.x.com/en/portal/dashboard" target="_blank">X Developer Portal</a>',
-        'Create a project/app if you don\'t have one',
-        'Get: API Key, API Secret, Access Token, Access Token Secret',
-        'Run: <code>xurl auth</code> on Mac mini and paste credentials',
-        'Unlocks: auto-posting content, responding to mentions, analytics'
-      ]
-    },
-    {
-      id: 101,
-      category: 'urgent',
-      title: 'LinkedIn Login for Neo',
-      platform: 'Social Media',
-      time: '5 min',
-      dueDate: null,
-      status: 'not-started',
-      priority: true,
-      instructions: [
-        'Neo needs browser access to post on LinkedIn',
-        'Option 1: Share login credentials (store in Bitwarden Agent HQ folder)',
-        'Option 2: Add Neo\'s Mac mini as a trusted device',
-        'Unlocks: posting content, engaging with comments, scheduling posts',
-        'Nothing posts without your approval!'
-      ]
-    },
-    {
-      id: 102,
-      category: 'urgent',
-      title: 'Instagram/Facebook Business Access',
-      platform: 'Social Media',
-      time: '10 min',
-      dueDate: null,
-      status: 'not-started',
-      priority: true,
-      instructions: [
-        'For posting reels/stories to Instagram and Facebook',
-        'Option 1: Meta Business Suite API access (preferred)',
-        'Option 2: Share login credentials (Bitwarden Agent HQ)',
-        'Go to <a href="https://business.facebook.com" target="_blank">Meta Business Suite</a> → Settings → Integrations',
-        'Unlocks: auto-posting, story scheduling, analytics'
-      ]
-    },
-    {
-      id: 103,
-      category: 'money',
-      title: 'Resend Pro Upgrade ($20/mo)',
-      platform: 'Email Marketing',
-      time: '2 min',
-      dueDate: null,
-      status: 'not-started',
-      priority: true,
-      instructions: [
-        'Current: Free tier (100 emails/day limit) — blocked 388 emails today',
-        'Pro tier unlocks: unlimited emails, open/click tracking, analytics',
-        'Go to <a href="https://resend.com/settings/billing" target="_blank">Resend Billing</a>',
-        'Upgrade to Pro ($20/mo)',
-        'Tell Neo when done — will resend transformation emails to remaining 388 contacts'
-      ]
-    },
-    {
-      id: 34,
-      category: 'money',
-      title: 'Set Convex Env Vars for plan.behaviorschool.com',
-      platform: 'behaviorschool-app',
-      time: '10 min',
-      dueDate: null,
-      status: 'not-started',
-      priority: true,
-      instructions: [
-        'Go to <a href="https://dashboard.convex.dev" target="_blank">Convex Dashboard</a> → quixotic-fox-157 → Settings → Environment Variables',
-        'Add: AUTH_GOOGLE_ID (from Google Cloud Console OAuth credentials)',
-        'Add: AUTH_GOOGLE_SECRET (from Google Cloud Console OAuth credentials)',
-        'Add: STRIPE_WEBHOOK_SECRET (from Stripe Dashboard → Webhooks)',
-        'Add: STRIPE_BASIC_PRICE_ID (price_xxx from Stripe → Products)',
-        'Add: STRIPE_PRO_PRICE_ID, STRIPE_TEAM_PRICE_ID, STRIPE_ENTERPRISE_PRICE_ID',
-        'These unlock Google OAuth login and Stripe billing on plan.behaviorschool.com'
-      ]
-    },
-    {
-      id: 35,
-      category: 'money',
-      title: 'Share Raffle Purchases Sheet (Google Sheets)',
-      platform: 'BAE SIG',
-      time: '1 min',
-      dueDate: null,
-      status: 'not-started',
-      priority: false,
-      instructions: [
-        'PayPal purchases auto-log but Neo needs read access to confirm it working',
-        'Open Google Sheet ID: 1umiLYHYtszRFaInsq17RJR2XpzLs1v9H89yBOP8cjLI',
-        'Share → Anyone with link → Viewer',
-        'Tell Neo when done'
-      ]
-    },
-    {
-      id: 36,
-      category: 'money',
-      title: 'Confirm Resend Pro Upgrade (Email Campaign)',
-      platform: 'BAE SIG',
-      time: '2 min',
-      dueDate: '2026-02-25',
-      status: 'not-started',
-      priority: true,
-      instructions: [
-        'BAE SIG Email 2 (Mellanie Page spotlight) sends Feb 25',
-        'Verify Resend Pro is active on robspain@gmail.com account',
-        'Go to <a href="https://resend.com/settings/billing" target="_blank">resend.com/settings/billing</a>',
-        'Confirm plan is Pro (not free tier — 100/day limit)',
-        'Tell Neo if any issues — email sends at 9AM tomorrow'
+        'Run a live test checkout and confirm success email',
+        'Confirm subscription appears in Stripe dashboard'
       ]
     }
   ];

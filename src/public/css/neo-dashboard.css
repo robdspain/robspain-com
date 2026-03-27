@@ -304,13 +304,37 @@
   border-top: 2px dashed #fed7aa;
 }
 
-.blocked-section h3 {
+.blocked-toggle {
+  background: none;
+  border: none;
   font-size: 0.9rem;
+  font-weight: 600;
   color: #b45309;
-  margin: 0 0 0.75rem;
+  cursor: pointer;
+  padding: 0.4rem 0;
   display: flex;
   align-items: center;
   gap: 0.4rem;
+  width: 100%;
+  text-align: left;
+}
+
+.blocked-toggle:hover {
+  color: #92400e;
+}
+
+.blocked-toggle-arrow {
+  font-size: 0.7rem;
+  display: inline-block;
+  transition: transform 0.2s;
+}
+
+.blocked-list {
+  margin-top: 0.75rem;
+}
+
+.blocked-list.collapsed {
+  display: none;
 }
 
 .blocked-item {

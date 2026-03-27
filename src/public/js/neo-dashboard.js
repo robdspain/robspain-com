@@ -242,23 +242,46 @@ function saveData(data) {
   store.save(data);
 }
 
+// Revenue potential ranking: lower number = higher revenue potential
+const REVENUE_RANK = {
+  'iep-goal-writer': 1,
+  'ace-ceu': 2,
+  'behavior-school-pro': 3,
+  'observationpro': 4,
+  'schoolrbt': 5,
+  'reunifyscience': 6,
+  'kcusd-hub': 7
+};
+
+function getRevenueRank(project) {
+  return REVENUE_RANK[project.id] || 999;
+}
+
 // ===== PROJECTS RENDERING =====
 function renderProjects(data) {
   const container = document.getElementById('project-grid');
   if (!container) return;
-  
+
   container.innerHTML = '';
-  
-  // Separate active/done from blocked
-  const activeProjects = data.projects.filter(p => p.status !== 'blocked');
-  const blockedProjects = data.projects.filter(p => p.status === 'blocked');
-  
+
+  // Remove any existing blocked section from a previous render
+  const existingBlocked = container.parentElement.querySelector('.blocked-section');
+  if (existingBlocked) existingBlocked.remove();
+
+  // Separate active/done from blocked, sort both by revenue rank
+  const activeProjects = data.projects
+    .filter(p => p.status !== 'blocked')
+    .sort((a, b) => getRevenueRank(a) - getRevenueRank(b));
+  const blockedProjects = data.projects
+    .filter(p => p.status === 'blocked')
+    .sort((a, b) => getRevenueRank(a) - getRevenueRank(b));
+
   // Render active projects
   activeProjects.forEach((project) => {
     const card = createProjectCard(project, data);
     container.appendChild(card);
   });
-  
+
   // Render blocked section if any
   if (blockedProjects.length > 0) {
     renderBlockedSection(blockedProjects, data, container);
@@ -343,19 +366,27 @@ function createProjectCard(project, data) {
 function renderBlockedSection(blockedProjects, data, container) {
   const section = document.createElement('div');
   section.className = 'blocked-section';
-  section.innerHTML = `<h3>⏸️ Blocked / Waiting on Rob</h3>`;
-  
+
+  const toggle = document.createElement('button');
+  toggle.type = 'button';
+  toggle.className = 'blocked-toggle';
+  toggle.innerHTML = `<span class="blocked-toggle-arrow">&#9654;</span> Blocked / Waiting on Rob (${blockedProjects.length})`;
+  section.appendChild(toggle);
+
+  const list = document.createElement('div');
+  list.className = 'blocked-list collapsed';
+
   blockedProjects.forEach(project => {
     const item = document.createElement('div');
     item.className = 'blocked-item';
     item.innerHTML = `
       <div class="blocked-info">
-        <div class="blocked-title">${project.emoji} ${project.name}</div>
-        <div class="blocked-reason">${project.blockedReason || 'No reason specified'}</div>
+        <div class="blocked-title">${escapeHtml(project.name)}</div>
+        <div class="blocked-reason">${escapeHtml(project.blockedReason || 'No reason specified')}</div>
       </div>
       <button type="button" data-project-id="${project.id}">Unblock</button>
     `;
-    
+
     item.querySelector('button').addEventListener('click', () => {
       project.status = 'active';
       project.blockedReason = '';
@@ -363,10 +394,17 @@ function renderBlockedSection(blockedProjects, data, container) {
       saveData(data);
       renderProjects(data);
     });
-    
-    section.appendChild(item);
+
+    list.appendChild(item);
   });
-  
+
+  section.appendChild(list);
+
+  toggle.addEventListener('click', () => {
+    const isCollapsed = list.classList.toggle('collapsed');
+    toggle.querySelector('.blocked-toggle-arrow').innerHTML = isCollapsed ? '&#9654;' : '&#9660;';
+  });
+
   // Add to parent of project grid
   container.parentElement.appendChild(section);
 }

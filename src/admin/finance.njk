@@ -1,0 +1,258 @@
+---
+layout: base.njk
+title: Household Finance Dashboard - Rob Spain
+permalink: /admin/finance/
+---
+
+<style>
+  .fin-dash { max-width: 1200px; margin: 0 auto; padding: 20px; }
+  .fin-dash * { box-sizing: border-box; }
+  .fin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #334155; }
+  .fin-header h2 { font-size: 24px; font-weight: 700; color: #e2e8f0; margin: 0; }
+  .fin-header .updated { color: #94a3b8; font-size: 13px; }
+  .fin-grid { display: grid; gap: 16px; }
+  .fin-grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .fin-grid-2 { grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); }
+  .fin-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; }
+  .fin-card h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; margin: 0 0 12px 0; font-weight: 500; }
+  .fin-stat { font-size: 28px; font-weight: 700; }
+  .fin-stat.green { color: #22c55e; }
+  .fin-stat.red { color: #ef4444; }
+  .fin-stat.yellow { color: #eab308; }
+  .fin-stat.blue { color: #3b82f6; }
+  .fin-sub { font-size: 13px; color: #94a3b8; margin-top: 4px; }
+  .fin-table { width: 100%; border-collapse: collapse; font-size: 14px; color: #e2e8f0; }
+  .fin-table th { text-align: left; padding: 8px 12px; color: #94a3b8; font-weight: 500; font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #334155; }
+  .fin-table td { padding: 10px 12px; border-bottom: 1px solid #334155; }
+  .fin-table tr:last-child td { border-bottom: none; }
+  .fin-table .amt { text-align: right; font-variant-numeric: tabular-nums; }
+  .fin-badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+  .fin-badge.overdue { background: rgba(239,68,68,0.15); color: #ef4444; }
+  .fin-badge.current { background: rgba(34,197,94,0.15); color: #22c55e; }
+  .fin-badge.upcoming { background: rgba(59,130,246,0.15); color: #3b82f6; }
+  .fin-badge.autopay { background: rgba(168,85,247,0.15); color: #a855f7; }
+  .fin-alert { border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 14px; color: #e2e8f0; }
+  .fin-alert.danger { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); }
+  .fin-alert.warn { background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.3); }
+  .fin-section { margin-top: 24px; }
+  .fin-bar-bg { height: 8px; background: #334155; border-radius: 4px; overflow: hidden; margin-top: 8px; }
+  .fin-bar { height: 100%; border-radius: 4px; }
+  .fin-bar.green { background: #22c55e; }
+  .fin-bar.red { background: #ef4444; }
+  .fin-bar.yellow { background: #eab308; }
+  .fin-deficit { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 12px; padding: 20px; margin-top: 24px; text-align: center; }
+  .fin-deficit .label { font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; margin-bottom: 8px; }
+  .fin-deficit .amount { font-size: 36px; font-weight: 700; color: #ef4444; }
+  .fin-deficit .note { font-size: 13px; color: #94a3b8; margin-top: 8px; }
+  @media (max-width: 600px) { .fin-grid-4 { grid-template-columns: 1fr 1fr; } .fin-grid-2 { grid-template-columns: 1fr; } }
+</style>
+
+<div class="fin-dash">
+  <div class="fin-header">
+    <h2>Household Finance</h2>
+    <span class="updated">Updated: Mar 29, 2026</span>
+  </div>
+
+  <!-- Alerts -->
+  <div class="fin-alert danger">
+    <strong>Structural deficit:</strong> Fixed expenses ($6,450/mo) exceed income ($5,726/mo) before any variable spending.
+  </div>
+  <div class="fin-alert warn">
+    <strong>Low cash:</strong> ~$220 in checking + $87 in savings. Paycheck expected Monday 3/30.
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="fin-grid fin-grid-4">
+    <div class="fin-card">
+      <h3>Cash Available</h3>
+      <div class="fin-stat red">$306</div>
+      <div class="fin-sub">Checking + Savings</div>
+    </div>
+    <div class="fin-card">
+      <h3>LOC Available</h3>
+      <div class="fin-stat blue">$9,596</div>
+      <div class="fin-sub">$404 used</div>
+    </div>
+    <div class="fin-card">
+      <h3>Total Debt</h3>
+      <div class="fin-stat red">$31,727</div>
+      <div class="fin-sub">Apple Card + Auto + LOC + Discover</div>
+    </div>
+    <div class="fin-card">
+      <h3>Monthly Deficit</h3>
+      <div class="fin-stat red">-$1,295</div>
+      <div class="fin-sub">After proposed cuts</div>
+    </div>
+  </div>
+
+  <!-- Bills + Accounts -->
+  <div class="fin-section">
+    <div class="fin-grid fin-grid-2">
+      <div class="fin-card">
+        <h3>Bills &amp; Due Dates</h3>
+        <table class="fin-table">
+          <thead><tr><th>Bill</th><th>Due</th><th class="amt">Amount</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Valley Vista (Rent)</td><td>1st</td><td class="amt">$2,445</td><td><span class="fin-badge upcoming">Upcoming</span></td></tr>
+            <tr><td>Supporting Hands</td><td>Monthly</td><td class="amt">$1,800</td><td><span class="fin-badge current">On Card</span></td></tr>
+            <tr><td>EECU Auto Loan</td><td>5th</td><td class="amt">$499</td><td><span class="fin-badge autopay">Autopay</span></td></tr>
+            <tr><td>Apple Card Min</td><td>~27th</td><td class="amt">$374</td><td><span class="fin-badge upcoming">Upcoming</span></td></tr>
+            <tr><td>Phillip M. Collier</td><td>2-3x/mo</td><td class="amt">$300-450</td><td><span class="fin-badge current">Unknown</span></td></tr>
+            <tr><td>Toggle Insurance</td><td>Monthly</td><td class="amt">$202</td><td><span class="fin-badge current">Paid 3/29</span></td></tr>
+            <tr><td>PG&amp;E</td><td>14th</td><td class="amt">$200</td><td><span class="fin-badge upcoming">Payment Plan</span></td></tr>
+            <tr><td>AT&amp;T Wireless</td><td>Monthly</td><td class="amt">$129</td><td><span class="fin-badge current">On Card</span></td></tr>
+            <tr><td>City of Fresno</td><td>1st</td><td class="amt">$121</td><td><span class="fin-badge overdue">Overdue</span></td></tr>
+            <tr><td>Xfinity</td><td>1st</td><td class="amt">$95</td><td><span class="fin-badge current">Paid 3/29</span></td></tr>
+            <tr><td>Discover Min</td><td>~18th</td><td class="amt">$83</td><td><span class="fin-badge upcoming">Upcoming</span></td></tr>
+            <tr><td>EECU LOC Min</td><td>26th</td><td class="amt">$75</td><td><span class="fin-badge upcoming">Upcoming</span></td></tr>
+            <tr><td>Principal Insurance</td><td>Monthly</td><td class="amt">$35</td><td><span class="fin-badge current">Active</span></td></tr>
+            <tr><td>Allstate Insurance</td><td>Monthly</td><td class="amt">$25</td><td><span class="fin-badge current">Active</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="fin-card">
+        <h3>Account Balances</h3>
+        <table class="fin-table">
+          <thead><tr><th>Account</th><th class="amt">Balance</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>EECU Checking</td><td class="amt">$220</td><td style="color:#94a3b8">Available</td></tr>
+            <tr><td>EECU Savings</td><td class="amt">$87</td><td style="color:#94a3b8">Available</td></tr>
+            <tr><td>Line of Credit</td><td class="amt" style="color:#3b82f6">$9,596</td><td style="color:#94a3b8">$404 used</td></tr>
+            <tr><td>Auto Loan</td><td class="amt" style="color:#ef4444">-$16,354</td><td style="color:#94a3b8">Due 04/05 autopay</td></tr>
+            <tr><td>Apple Card</td><td class="amt" style="color:#ef4444">-$14,173</td><td style="color:#94a3b8">Min $374/mo</td></tr>
+            <tr><td>Discover</td><td class="amt" style="color:#ef4444">-$1,000 est</td><td style="color:#94a3b8">Min $83/mo</td></tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #334155;">
+          <h3>Debt Breakdown</h3>
+          <div style="margin-top: 12px;">
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+              <span>Apple Card</span><span style="color:#94a3b8">$14,173 (45%)</span>
+            </div>
+            <div class="fin-bar-bg"><div class="fin-bar red" style="width:45%"></div></div>
+          </div>
+          <div style="margin-top: 12px;">
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+              <span>Auto Loan</span><span style="color:#94a3b8">$16,354 (52%)</span>
+            </div>
+            <div class="fin-bar-bg"><div class="fin-bar yellow" style="width:52%"></div></div>
+          </div>
+          <div style="margin-top: 12px;">
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+              <span>Discover + LOC</span><span style="color:#94a3b8">$1,200 (3%)</span>
+            </div>
+            <div class="fin-bar-bg"><div class="fin-bar green" style="width:3%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Budget + Income -->
+  <div class="fin-section">
+    <div class="fin-grid fin-grid-2">
+      <div class="fin-card">
+        <h3>Monthly Budget Breakdown</h3>
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+            <span>Housing (Rent)</span><span style="color:#94a3b8">$2,445 — 43%</span>
+          </div>
+          <div class="fin-bar-bg"><div class="fin-bar red" style="width:43%"></div></div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+            <span>Supporting Hands (Childcare)</span><span style="color:#94a3b8">$1,800 — 31%</span>
+          </div>
+          <div class="fin-bar-bg"><div class="fin-bar red" style="width:31%"></div></div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+            <span>Debt Payments</span><span style="color:#94a3b8">$1,031 — 18%</span>
+          </div>
+          <div class="fin-bar-bg"><div class="fin-bar yellow" style="width:18%"></div></div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+            <span>Auto Loan</span><span style="color:#94a3b8">$499 — 9%</span>
+          </div>
+          <div class="fin-bar-bg"><div class="fin-bar yellow" style="width:9%"></div></div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+            <span>Utilities (PG&E, Water, Internet, AT&T)</span><span style="color:#94a3b8">$545 — 10%</span>
+          </div>
+          <div class="fin-bar-bg"><div class="fin-bar green" style="width:10%"></div></div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+            <span>Insurance (Toggle, Allstate, Principal)</span><span style="color:#94a3b8">$262 — 5%</span>
+          </div>
+          <div class="fin-bar-bg"><div class="fin-bar green" style="width:5%"></div></div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+            <span>Variable (Groceries, Gas, Pharmacy)</span><span style="color:#94a3b8">$340 — 6%</span>
+          </div>
+          <div class="fin-bar-bg"><div class="fin-bar green" style="width:6%"></div></div>
+        </div>
+        <div style="margin-top:16px;padding-top:12px;border-top:1px solid #334155;display:flex;justify-content:space-between;font-weight:600;">
+          <span>Total Recurring</span>
+          <span style="color:#ef4444">$7,021/mo (after cuts)</span>
+        </div>
+      </div>
+      <div class="fin-card">
+        <h3>Income Sources</h3>
+        <table class="fin-table">
+          <thead><tr><th>Source</th><th class="amt">Amount</th><th>Frequency</th></tr></thead>
+          <tbody>
+            <tr><td>Kings Canyon USD</td><td class="amt">$4,361</td><td style="color:#94a3b8">Biweekly</td></tr>
+            <tr><td>FPU Payroll</td><td class="amt">$1,093</td><td style="color:#94a3b8">Monthly</td></tr>
+            <tr><td>Behavior School</td><td class="amt">$272</td><td style="color:#94a3b8">Irregular</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:16px;padding-top:12px;border-top:1px solid #334155;display:flex;justify-content:space-between;font-weight:600;">
+          <span>Total Monthly Income</span>
+          <span class="fin-stat green" style="font-size:20px;">$5,726</span>
+        </div>
+
+        <div style="margin-top:24px;">
+          <h3>Proposed Subscription Cuts</h3>
+          <table class="fin-table" style="margin-top:12px;">
+            <thead><tr><th>Item</th><th class="amt">Cost</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td>ButcherBox</td><td class="amt">$154</td><td style="color:#ef4444;font-weight:600;">CANCEL</td></tr>
+              <tr><td>DoorDash/DashPass</td><td class="amt">$62</td><td style="color:#ef4444;font-weight:600;">CANCEL</td></tr>
+              <tr><td>Rocket Money</td><td class="amt">$6</td><td style="color:#ef4444;font-weight:600;">CANCEL</td></tr>
+              <tr><td>Google Cloud</td><td class="amt">$23</td><td style="color:#eab308;font-weight:600;">REVIEW</td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid #334155;display:flex;justify-content:space-between;font-weight:600;">
+            <span>Potential Savings</span>
+            <span style="color:#22c55e">$222-245/mo</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Deficit Summary -->
+  <div class="fin-deficit">
+    <div class="label">Monthly Structural Deficit</div>
+    <div class="amount">-$1,295/mo</div>
+    <div class="note">After all proposed subscription cuts. True gap may be larger (~$4,000+/mo with irregular expenses).</div>
+    <div style="margin-top: 16px; font-size: 13px; color: #94a3b8; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
+      <strong style="color:#e2e8f0;">Biggest levers to close the gap:</strong>
+      <ol style="margin-top: 8px; padding-left: 20px; line-height: 1.8;">
+        <li><strong>Supporting Hands funding</strong> — if IHSS/insurance covers 50%, saves ~$900/mo</li>
+        <li><strong>Increase behavior school income</strong> — currently $272/mo avg</li>
+        <li><strong>Move Supporting Hands off Apple Card</strong> — stop interest compounding on $1,800/mo</li>
+        <li><strong>AT&amp;T plan review</strong> — $129/mo may be reducible</li>
+      </ol>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:24px;font-size:12px;color:#64748b;">
+    Data: EECU checking (557 txns, Mar 2025–Mar 2026) + Apple Card statements (Jan–Dec 2025). Managed by Paperclip CTO agent.
+  </div>
+</div>

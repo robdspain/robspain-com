@@ -147,15 +147,15 @@ permalink: /admin/finance/
       <strong>Structural deficit:</strong> Fixed expenses ($6,450/mo) exceed income ($5,726/mo) before any variable spending.
     </div>
     <div class="fin-alert warn">
-      <strong>Low cash:</strong> ~$220 in checking + $87 in savings. Paycheck expected Monday 3/30.
+      <strong>Post-paycheck:</strong> ~$4,009 in checking after Apple Card payment ($960) and OFW renewal ($110). Next paycheck ~Apr 13.
     </div>
 
     <!-- Summary Cards -->
     <div class="fin-grid fin-grid-4">
       <div class="fin-card">
         <h3>Cash Available</h3>
-        <div class="fin-stat red">$306</div>
-        <div class="fin-sub">Checking + Savings</div>
+        <div class="fin-stat yellow">$4,096</div>
+        <div class="fin-sub">Checking $4,009 + Savings $87</div>
       </div>
       <div class="fin-card">
         <h3>LOC Available</h3>
@@ -189,11 +189,11 @@ permalink: /admin/finance/
           <table class="fin-table">
             <thead><tr><th>Account</th><th class="amt">Balance</th><th>Notes</th></tr></thead>
             <tbody>
-              <tr><td>EECU Checking</td><td class="amt">$220</td><td style="color:#64748b">Available</td></tr>
+              <tr><td>EECU Checking</td><td class="amt">$4,009</td><td style="color:#64748b">After paycheck + payments</td></tr>
               <tr><td>EECU Savings</td><td class="amt">$87</td><td style="color:#64748b">Available</td></tr>
               <tr><td>Line of Credit</td><td class="amt" style="color:#3b82f6">$9,596</td><td style="color:#64748b">$404 used</td></tr>
               <tr><td>Auto Loan</td><td class="amt" style="color:#ef4444">-$16,354</td><td style="color:#64748b">Due 04/05 autopay</td></tr>
-              <tr><td>Apple Card</td><td class="amt" style="color:#ef4444">-$17,049</td><td style="color:#64748b">Min $366/mo</td></tr>
+              <tr><td>Apple Card</td><td class="amt" style="color:#ef4444">-$16,199</td><td style="color:#64748b">Paid $960 on 3/30</td></tr>
               <tr><td>Discover</td><td class="amt" style="color:#ef4444">-$1,000 est</td><td style="color:#64748b">Min $83/mo</td></tr>
             </tbody>
           </table>
@@ -729,7 +729,7 @@ const DEFAULT_BILLS = [
   { id:'rent', name:'Valley Vista (Rent)', due:'1st', amount:'$2,445', status:'upcoming' },
   { id:'support', name:'Supporting Hands', due:'Monthly', amount:'$1,800', status:'current' },
   { id:'auto', name:'EECU Auto Loan', due:'5th', amount:'$499', status:'autopay' },
-  { id:'apple', name:'Apple Card Min', due:'~27th', amount:'$366', status:'upcoming' },
+  { id:'apple', name:'Apple Card Min', due:'~27th', amount:'$366', status:'paid' },
   { id:'collier', name:'Phillip M. Collier', due:'2-3x/mo', amount:'$300-450', status:'current' },
   { id:'toggle', name:'Toggle Insurance', due:'Monthly', amount:'$202', status:'paid' },
   { id:'pge', name:'PG&E', due:'14th', amount:'$200', status:'upcoming' },

@@ -33,11 +33,20 @@ permalink: /admin/finance/
   .fin-table td { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; }
   .fin-table tr:last-child td { border-bottom: none; }
   .fin-table .amt { text-align: right; font-variant-numeric: tabular-nums; }
-  .fin-badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+  .fin-badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: all 0.15s; user-select: none; }
+  .fin-badge:hover { transform: scale(1.08); filter: brightness(0.9); }
+  .fin-badge:active { transform: scale(0.95); }
   .fin-badge.overdue { background: rgba(239,68,68,0.15); color: #ef4444; }
   .fin-badge.current { background: rgba(34,197,94,0.15); color: #22c55e; }
   .fin-badge.upcoming { background: rgba(59,130,246,0.15); color: #3b82f6; }
   .fin-badge.autopay { background: rgba(168,85,247,0.15); color: #a855f7; }
+  .fin-badge.paid { background: rgba(34,197,94,0.25); color: #16a34a; }
+  .sync-bar { display: none; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 10px 16px; margin-bottom: 16px; font-size: 13px; color: #1e40af; align-items: center; justify-content: space-between; }
+  .sync-bar.visible { display: flex; }
+  .sync-bar button { padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; background: #3b82f6; color: #fff; }
+  .sync-bar button:hover { background: #2563eb; }
+  .toast-msg { position: fixed; bottom: 20px; right: 20px; background: #16a34a; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; opacity: 0; transition: opacity 0.3s; z-index: 100; }
+  .toast-msg.show { opacity: 1; }
   .fin-alert { border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 14px; color: #1e293b; }
   .fin-alert.danger { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); }
   .fin-alert.warn { background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.3); }
@@ -127,6 +136,12 @@ permalink: /admin/finance/
   <!-- ═══════════════════════ OVERVIEW TAB ═══════════════════════ -->
   <div id="panel-overview" class="fin-panel active">
 
+    <!-- Sync Bar -->
+    <div class="sync-bar" id="syncBar">
+      <span id="syncMsg">You have unsaved status changes.</span>
+      <button onclick="sendUpdate()">Send Update to CTO</button>
+    </div>
+
     <!-- Alerts -->
     <div class="fin-alert danger">
       <strong>Structural deficit:</strong> Fixed expenses ($6,450/mo) exceed income ($5,726/mo) before any variable spending.
@@ -165,23 +180,8 @@ permalink: /admin/finance/
         <div class="fin-card">
           <h3>Bills &amp; Due Dates</h3>
           <table class="fin-table">
-            <thead><tr><th>Bill</th><th>Due</th><th class="amt">Amount</th><th>Status</th></tr></thead>
-            <tbody>
-              <tr><td>Valley Vista (Rent)</td><td>1st</td><td class="amt">$2,445</td><td><span class="fin-badge upcoming">Upcoming</span></td></tr>
-              <tr><td>Supporting Hands</td><td>Monthly</td><td class="amt">$1,800</td><td><span class="fin-badge current">On Card</span></td></tr>
-              <tr><td>EECU Auto Loan</td><td>5th</td><td class="amt">$499</td><td><span class="fin-badge autopay">Autopay</span></td></tr>
-              <tr><td>Apple Card Min</td><td>~27th</td><td class="amt">$366</td><td><span class="fin-badge upcoming">Upcoming</span></td></tr>
-              <tr><td>Phillip M. Collier</td><td>2-3x/mo</td><td class="amt">$300-450</td><td><span class="fin-badge current">Unknown</span></td></tr>
-              <tr><td>Toggle Insurance</td><td>Monthly</td><td class="amt">$202</td><td><span class="fin-badge current">Paid 3/29</span></td></tr>
-              <tr><td>PG&amp;E</td><td>14th</td><td class="amt">$200</td><td><span class="fin-badge upcoming">Payment Plan</span></td></tr>
-              <tr><td>AT&amp;T Wireless</td><td>Monthly</td><td class="amt">$129</td><td><span class="fin-badge current">On Card</span></td></tr>
-              <tr><td>City of Fresno</td><td>1st</td><td class="amt">$121</td><td><span class="fin-badge overdue">Overdue</span></td></tr>
-              <tr><td>Xfinity</td><td>1st</td><td class="amt">$95</td><td><span class="fin-badge current">Paid 3/29</span></td></tr>
-              <tr><td>Discover Min</td><td>~18th</td><td class="amt">$83</td><td><span class="fin-badge upcoming">Upcoming</span></td></tr>
-              <tr><td>EECU LOC Min</td><td>26th</td><td class="amt">$75</td><td><span class="fin-badge upcoming">Upcoming</span></td></tr>
-              <tr><td>Principal Insurance</td><td>Monthly</td><td class="amt">$35</td><td><span class="fin-badge current">Active</span></td></tr>
-              <tr><td>Allstate Insurance</td><td>Monthly</td><td class="amt">$25</td><td><span class="fin-badge current">Active</span></td></tr>
-            </tbody>
+            <thead><tr><th>Bill</th><th>Due</th><th class="amt">Amount</th><th>Status <span style="font-size:10px;font-weight:400;color:#64748b;">(click to change)</span></th></tr></thead>
+            <tbody id="billsBody"></tbody>
           </table>
         </div>
         <div class="fin-card">
@@ -721,7 +721,84 @@ permalink: /admin/finance/
   </div>
 </div>
 
+<div class="toast-msg" id="toast"></div>
+
 <script>
+// ═══════════ INTERACTIVE BILLS ═══════════
+const DEFAULT_BILLS = [
+  { id:'rent', name:'Valley Vista (Rent)', due:'1st', amount:'$2,445', status:'upcoming' },
+  { id:'support', name:'Supporting Hands', due:'Monthly', amount:'$1,800', status:'current' },
+  { id:'auto', name:'EECU Auto Loan', due:'5th', amount:'$499', status:'autopay' },
+  { id:'apple', name:'Apple Card Min', due:'~27th', amount:'$366', status:'upcoming' },
+  { id:'collier', name:'Phillip M. Collier', due:'2-3x/mo', amount:'$300-450', status:'current' },
+  { id:'toggle', name:'Toggle Insurance', due:'Monthly', amount:'$202', status:'paid' },
+  { id:'pge', name:'PG&E', due:'14th', amount:'$200', status:'upcoming' },
+  { id:'att', name:'AT&T Wireless', due:'Monthly', amount:'$129', status:'current' },
+  { id:'fresno', name:'City of Fresno', due:'1st', amount:'$121', status:'overdue' },
+  { id:'xfinity', name:'Xfinity', due:'1st', amount:'$95', status:'paid' },
+  { id:'discover', name:'Discover Min', due:'~18th', amount:'$83', status:'upcoming' },
+  { id:'loc', name:'EECU LOC Min', due:'26th', amount:'$75', status:'upcoming' },
+  { id:'principal', name:'Principal Insurance', due:'Monthly', amount:'$35', status:'current' },
+  { id:'allstate', name:'Allstate Insurance', due:'Monthly', amount:'$25', status:'current' },
+];
+const STATUS_CYCLE = ['overdue','upcoming','current','autopay','paid'];
+const STATUS_LABELS = {overdue:'Overdue',upcoming:'Upcoming',current:'Active',autopay:'Autopay',paid:'Paid'};
+const STORAGE_KEY = 'spain-finance-bills';
+let changes = {};
+
+function loadBills() {
+  try { const s = localStorage.getItem(STORAGE_KEY); if(s){const o=JSON.parse(s);return DEFAULT_BILLS.map(b=>({...b,status:o[b.id]||b.status}));} } catch(e){}
+  return DEFAULT_BILLS.map(b=>({...b}));
+}
+function saveBills(bills) { const o={}; bills.forEach(b=>{o[b.id]=b.status;}); localStorage.setItem(STORAGE_KEY,JSON.stringify(o)); }
+
+function renderBills() {
+  const bills = loadBills();
+  const tbody = document.getElementById('billsBody');
+  if(!tbody) return;
+  tbody.innerHTML = bills.map(b =>
+    '<tr><td>'+b.name+'</td><td>'+b.due+'</td><td class="amt">'+b.amount+'</td>'+
+    '<td><span class="fin-badge '+b.status+'" onclick="cycleBill(\''+b.id+'\')" title="Click to change">'+(STATUS_LABELS[b.status]||b.status)+'</span></td></tr>'
+  ).join('');
+}
+
+function cycleBill(id) {
+  const bills = loadBills(), bill = bills.find(b=>b.id===id);
+  if(!bill) return;
+  const idx = STATUS_CYCLE.indexOf(bill.status);
+  bill.status = STATUS_CYCLE[(idx+1)%STATUS_CYCLE.length];
+  saveBills(bills);
+  renderBills();
+  const orig = DEFAULT_BILLS.find(b=>b.id===id);
+  if(bill.status !== orig.status) { changes[id] = {name:bill.name, from:orig.status, to:bill.status}; } else { delete changes[id]; }
+  updateSyncBar();
+  showToast(bill.name+' → '+(STATUS_LABELS[bill.status]||bill.status));
+}
+
+function updateSyncBar() {
+  const bar = document.getElementById('syncBar'), n = Object.keys(changes).length;
+  if(n>0){bar.classList.add('visible');document.getElementById('syncMsg').textContent=n+' change'+(n>1?'s':'')+' unsent.';}
+  else{bar.classList.remove('visible');}
+}
+
+function sendUpdate() {
+  const entries = Object.values(changes);
+  if(!entries.length) return;
+  const lines = entries.map(c=>'- **'+c.name+'**: '+c.from+' → '+c.to);
+  const msg = '## Bill status update from dashboard\n\n'+lines.join('\n')+'\n\n_Sent from robspain.com/admin/finance/_';
+  navigator.clipboard.writeText(msg).then(()=>{
+    showToast('Update copied! Paste in Paperclip SPA-2.');
+    changes={}; updateSyncBar();
+  }).catch(()=>{ prompt('Copy this update:',msg); changes={}; updateSyncBar(); });
+}
+
+function showToast(text) {
+  const t=document.getElementById('toast'); t.textContent=text; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+renderBills();
+
 // Tab switching
 function showPanel(name) {
   document.querySelectorAll('.fin-panel').forEach(p => p.classList.remove('active'));

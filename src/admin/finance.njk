@@ -7,12 +7,12 @@ permalink: /admin/finance/
 <style>
   .fin-dash { max-width: 1200px; margin: 0 auto; padding: 20px; }
   .fin-dash * { box-sizing: border-box; }
-  .fin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #334155; flex-wrap: wrap; gap: 8px; }
-  .fin-header h2 { font-size: 24px; font-weight: 700; color: #e2e8f0; margin: 0; }
-  .fin-header .updated { color: #94a3b8; font-size: 13px; }
+  .fin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; gap: 8px; }
+  .fin-header h2 { font-size: 24px; font-weight: 700; color: #1e293b; margin: 0; }
+  .fin-header .updated { color: #64748b; font-size: 13px; }
   .fin-tabs { display: flex; gap: 4px; margin-bottom: 20px; flex-wrap: wrap; }
-  .fin-tab { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid #334155; background: #1e293b; color: #94a3b8; transition: all 0.2s; }
-  .fin-tab:hover { border-color: #64748b; color: #e2e8f0; }
+  .fin-tab { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; background: #f8fafc; color: #64748b; transition: all 0.2s; }
+  .fin-tab:hover { border-color: #64748b; color: #1e293b; }
   .fin-tab.active { background: #3b82f6; border-color: #3b82f6; color: #fff; }
   .fin-panel { display: none; }
   .fin-panel.active { display: block; }
@@ -20,17 +20,17 @@ permalink: /admin/finance/
   .fin-grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
   .fin-grid-2 { grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); }
   .fin-grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
-  .fin-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; }
-  .fin-card h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; margin: 0 0 12px 0; font-weight: 500; }
+  .fin-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; }
+  .fin-card h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin: 0 0 12px 0; font-weight: 500; }
   .fin-stat { font-size: 28px; font-weight: 700; }
   .fin-stat.green { color: #22c55e; }
   .fin-stat.red { color: #ef4444; }
   .fin-stat.yellow { color: #eab308; }
   .fin-stat.blue { color: #3b82f6; }
-  .fin-sub { font-size: 13px; color: #94a3b8; margin-top: 4px; }
-  .fin-table { width: 100%; border-collapse: collapse; font-size: 14px; color: #e2e8f0; }
-  .fin-table th { text-align: left; padding: 8px 12px; color: #94a3b8; font-weight: 500; font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #334155; }
-  .fin-table td { padding: 10px 12px; border-bottom: 1px solid #334155; }
+  .fin-sub { font-size: 13px; color: #64748b; margin-top: 4px; }
+  .fin-table { width: 100%; border-collapse: collapse; font-size: 14px; color: #1e293b; }
+  .fin-table th { text-align: left; padding: 8px 12px; color: #64748b; font-weight: 500; font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; }
+  .fin-table td { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; }
   .fin-table tr:last-child td { border-bottom: none; }
   .fin-table .amt { text-align: right; font-variant-numeric: tabular-nums; }
   .fin-badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
@@ -38,12 +38,12 @@ permalink: /admin/finance/
   .fin-badge.current { background: rgba(34,197,94,0.15); color: #22c55e; }
   .fin-badge.upcoming { background: rgba(59,130,246,0.15); color: #3b82f6; }
   .fin-badge.autopay { background: rgba(168,85,247,0.15); color: #a855f7; }
-  .fin-alert { border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 14px; color: #e2e8f0; }
+  .fin-alert { border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 14px; color: #1e293b; }
   .fin-alert.danger { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); }
   .fin-alert.warn { background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.3); }
   .fin-alert.info { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); }
   .fin-section { margin-top: 24px; }
-  .fin-bar-bg { height: 8px; background: #334155; border-radius: 4px; overflow: hidden; margin-top: 8px; }
+  .fin-bar-bg { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-top: 8px; }
   .fin-bar { height: 100%; border-radius: 4px; }
   .fin-bar.green { background: #22c55e; }
   .fin-bar.red { background: #ef4444; }
@@ -51,11 +51,11 @@ permalink: /admin/finance/
   .fin-bar.blue { background: #3b82f6; }
   .fin-bar.purple { background: #a855f7; }
   .fin-deficit { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 12px; padding: 20px; margin-top: 24px; text-align: center; }
-  .fin-deficit .label { font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; margin-bottom: 8px; }
+  .fin-deficit .label { font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 8px; }
   .fin-deficit .amount { font-size: 36px; font-weight: 700; color: #ef4444; }
-  .fin-deficit .note { font-size: 13px; color: #94a3b8; margin-top: 8px; }
+  .fin-deficit .note { font-size: 13px; color: #64748b; margin-top: 8px; }
   /* Envelope styles */
-  .envelope { border: 1px solid #334155; border-radius: 8px; padding: 12px 16px; margin-bottom: 8px; position: relative; overflow: hidden; }
+  .envelope { border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; margin-bottom: 8px; position: relative; overflow: hidden; }
   .envelope::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; border-radius: 8px 0 0 8px; }
   .envelope.p1::before { width: 4px; background: #ef4444; }
   .envelope.p2::before { width: 4px; background: #eab308; }
@@ -65,15 +65,15 @@ permalink: /admin/finance/
   .envelope .env-row { display: flex; justify-content: space-between; align-items: center; }
   .envelope .env-name { font-size: 14px; font-weight: 500; padding-left: 8px; }
   .envelope .env-amt { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
-  .envelope .env-bar { height: 4px; background: #334155; border-radius: 2px; margin-top: 6px; margin-left: 8px; overflow: hidden; }
+  .envelope .env-bar { height: 4px; background: #e2e8f0; border-radius: 2px; margin-top: 6px; margin-left: 8px; overflow: hidden; }
   .envelope .env-fill { height: 100%; border-radius: 2px; }
-  .env-priority { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin: 16px 0 8px; padding-bottom: 4px; border-bottom: 1px solid #1e293b; }
+  .env-priority { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin: 16px 0 8px; padding-bottom: 4px; border-bottom: 1px solid #e2e8f0; }
   .env-priority.p1 { color: #ef4444; }
   .env-priority.p2 { color: #eab308; }
   .env-priority.p3 { color: #3b82f6; }
   .env-priority.p4 { color: #22c55e; }
   /* Calendar styles */
-  .cal-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #1e293b; }
+  .cal-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #e2e8f0; }
   .cal-row:last-child { border-bottom: none; }
   .cal-day { width: 48px; height: 48px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
   .cal-day .month { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
@@ -84,7 +84,7 @@ permalink: /admin/finance/
   .cal-day.done { background: rgba(34,197,94,0.15); color: #22c55e; }
   .cal-info { flex: 1; }
   .cal-info .name { font-size: 14px; font-weight: 500; }
-  .cal-info .detail { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+  .cal-info .detail { font-size: 12px; color: #64748b; margin-top: 2px; }
   .cal-amt { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
   /* Net worth chart */
   .nw-chart { display: flex; align-items: flex-end; gap: 2px; height: 120px; padding: 0 4px; }
@@ -92,20 +92,20 @@ permalink: /admin/finance/
   .nw-bar { width: 100%; border-radius: 3px 3px 0 0; min-height: 2px; transition: height 0.3s; }
   .nw-label { font-size: 10px; color: #64748b; margin-top: 4px; text-align: center; }
   /* Import area */
-  .import-zone { border: 2px dashed #334155; border-radius: 12px; padding: 32px; text-align: center; cursor: pointer; transition: all 0.2s; }
+  .import-zone { border: 2px dashed #e2e8f0; border-radius: 12px; padding: 32px; text-align: center; cursor: pointer; transition: all 0.2s; }
   .import-zone:hover { border-color: #3b82f6; background: rgba(59,130,246,0.05); }
   .import-zone.dragover { border-color: #22c55e; background: rgba(34,197,94,0.05); }
-  .import-zone h4 { color: #e2e8f0; margin: 0 0 8px; font-size: 16px; }
+  .import-zone h4 { color: #1e293b; margin: 0 0 8px; font-size: 16px; }
   .import-zone p { color: #64748b; margin: 0; font-size: 13px; }
   .txn-list { max-height: 300px; overflow-y: auto; margin-top: 12px; }
-  .txn-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #1e293b; font-size: 13px; }
+  .txn-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #e2e8f0; font-size: 13px; }
   .txn-row .txn-date { color: #64748b; width: 80px; flex-shrink: 0; }
   .txn-row .txn-desc { flex: 1; padding: 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .txn-row .txn-amt { font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; width: 80px; flex-shrink: 0; }
   .txn-row .txn-amt.debit { color: #ef4444; }
   .txn-row .txn-amt.credit { color: #22c55e; }
-  .txn-summary { display: flex; gap: 16px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #334155; font-size: 13px; }
-  .txn-summary span { color: #94a3b8; }
+  .txn-summary { display: flex; gap: 16px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 13px; }
+  .txn-summary span { color: #64748b; }
   @media (max-width: 600px) { .fin-grid-4 { grid-template-columns: 1fr 1fr; } .fin-grid-2, .fin-grid-3 { grid-template-columns: 1fr; } .fin-tabs { gap: 2px; } .fin-tab { padding: 6px 10px; font-size: 12px; } }
 </style>
 
@@ -189,31 +189,31 @@ permalink: /admin/finance/
           <table class="fin-table">
             <thead><tr><th>Account</th><th class="amt">Balance</th><th>Notes</th></tr></thead>
             <tbody>
-              <tr><td>EECU Checking</td><td class="amt">$220</td><td style="color:#94a3b8">Available</td></tr>
-              <tr><td>EECU Savings</td><td class="amt">$87</td><td style="color:#94a3b8">Available</td></tr>
-              <tr><td>Line of Credit</td><td class="amt" style="color:#3b82f6">$9,596</td><td style="color:#94a3b8">$404 used</td></tr>
-              <tr><td>Auto Loan</td><td class="amt" style="color:#ef4444">-$16,354</td><td style="color:#94a3b8">Due 04/05 autopay</td></tr>
-              <tr><td>Apple Card</td><td class="amt" style="color:#ef4444">-$17,049</td><td style="color:#94a3b8">Min $366/mo</td></tr>
-              <tr><td>Discover</td><td class="amt" style="color:#ef4444">-$1,000 est</td><td style="color:#94a3b8">Min $83/mo</td></tr>
+              <tr><td>EECU Checking</td><td class="amt">$220</td><td style="color:#64748b">Available</td></tr>
+              <tr><td>EECU Savings</td><td class="amt">$87</td><td style="color:#64748b">Available</td></tr>
+              <tr><td>Line of Credit</td><td class="amt" style="color:#3b82f6">$9,596</td><td style="color:#64748b">$404 used</td></tr>
+              <tr><td>Auto Loan</td><td class="amt" style="color:#ef4444">-$16,354</td><td style="color:#64748b">Due 04/05 autopay</td></tr>
+              <tr><td>Apple Card</td><td class="amt" style="color:#ef4444">-$17,049</td><td style="color:#64748b">Min $366/mo</td></tr>
+              <tr><td>Discover</td><td class="amt" style="color:#ef4444">-$1,000 est</td><td style="color:#64748b">Min $83/mo</td></tr>
             </tbody>
           </table>
-          <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #334155;">
+          <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #e2e8f0;">
             <h3>Debt Breakdown</h3>
             <div style="margin-top: 12px;">
               <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-                <span>Apple Card</span><span style="color:#94a3b8">$17,049 (49%)</span>
+                <span>Apple Card</span><span style="color:#64748b">$17,049 (49%)</span>
               </div>
               <div class="fin-bar-bg"><div class="fin-bar red" style="width:49%"></div></div>
             </div>
             <div style="margin-top: 12px;">
               <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-                <span>Auto Loan</span><span style="color:#94a3b8">$16,354 (47%)</span>
+                <span>Auto Loan</span><span style="color:#64748b">$16,354 (47%)</span>
               </div>
               <div class="fin-bar-bg"><div class="fin-bar yellow" style="width:52%"></div></div>
             </div>
             <div style="margin-top: 12px;">
               <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-                <span>Discover + LOC</span><span style="color:#94a3b8">$1,200 (3%)</span>
+                <span>Discover + LOC</span><span style="color:#64748b">$1,200 (3%)</span>
               </div>
               <div class="fin-bar-bg"><div class="fin-bar green" style="width:3%"></div></div>
             </div>
@@ -229,47 +229,47 @@ permalink: /admin/finance/
           <h3>Monthly Budget Breakdown</h3>
           <div style="margin-bottom:12px;">
             <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-              <span>Housing (Rent)</span><span style="color:#94a3b8">$2,445 — 43%</span>
+              <span>Housing (Rent)</span><span style="color:#64748b">$2,445 — 43%</span>
             </div>
             <div class="fin-bar-bg"><div class="fin-bar red" style="width:43%"></div></div>
           </div>
           <div style="margin-bottom:12px;">
             <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-              <span>Supporting Hands (Childcare)</span><span style="color:#94a3b8">$1,800 — 31%</span>
+              <span>Supporting Hands (Childcare)</span><span style="color:#64748b">$1,800 — 31%</span>
             </div>
             <div class="fin-bar-bg"><div class="fin-bar red" style="width:31%"></div></div>
           </div>
           <div style="margin-bottom:12px;">
             <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-              <span>Debt Payments</span><span style="color:#94a3b8">$1,031 — 18%</span>
+              <span>Debt Payments</span><span style="color:#64748b">$1,031 — 18%</span>
             </div>
             <div class="fin-bar-bg"><div class="fin-bar yellow" style="width:18%"></div></div>
           </div>
           <div style="margin-bottom:12px;">
             <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-              <span>Auto Loan</span><span style="color:#94a3b8">$499 — 9%</span>
+              <span>Auto Loan</span><span style="color:#64748b">$499 — 9%</span>
             </div>
             <div class="fin-bar-bg"><div class="fin-bar yellow" style="width:9%"></div></div>
           </div>
           <div style="margin-bottom:12px;">
             <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-              <span>Utilities (PG&E, Water, Internet, AT&T)</span><span style="color:#94a3b8">$545 — 10%</span>
+              <span>Utilities (PG&E, Water, Internet, AT&T)</span><span style="color:#64748b">$545 — 10%</span>
             </div>
             <div class="fin-bar-bg"><div class="fin-bar green" style="width:10%"></div></div>
           </div>
           <div style="margin-bottom:12px;">
             <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-              <span>Insurance (Toggle, Allstate, Principal)</span><span style="color:#94a3b8">$262 — 5%</span>
+              <span>Insurance (Toggle, Allstate, Principal)</span><span style="color:#64748b">$262 — 5%</span>
             </div>
             <div class="fin-bar-bg"><div class="fin-bar green" style="width:5%"></div></div>
           </div>
           <div style="margin-bottom:12px;">
             <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-              <span>Variable (Groceries, Gas, Pharmacy)</span><span style="color:#94a3b8">$340 — 6%</span>
+              <span>Variable (Groceries, Gas, Pharmacy)</span><span style="color:#64748b">$340 — 6%</span>
             </div>
             <div class="fin-bar-bg"><div class="fin-bar green" style="width:6%"></div></div>
           </div>
-          <div style="margin-top:16px;padding-top:12px;border-top:1px solid #334155;display:flex;justify-content:space-between;font-weight:600;">
+          <div style="margin-top:16px;padding-top:12px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-weight:600;">
             <span>Total Recurring</span>
             <span style="color:#ef4444">$6,998/mo (after cuts)</span>
           </div>
@@ -279,12 +279,12 @@ permalink: /admin/finance/
           <table class="fin-table">
             <thead><tr><th>Source</th><th class="amt">Amount</th><th>Frequency</th></tr></thead>
             <tbody>
-              <tr><td>Kings Canyon USD</td><td class="amt">$4,361</td><td style="color:#94a3b8">Biweekly</td></tr>
-              <tr><td>FPU Payroll</td><td class="amt">$1,093</td><td style="color:#94a3b8">Monthly</td></tr>
-              <tr><td>Behavior School</td><td class="amt">$272</td><td style="color:#94a3b8">Irregular</td></tr>
+              <tr><td>Kings Canyon USD</td><td class="amt">$4,361</td><td style="color:#64748b">Biweekly</td></tr>
+              <tr><td>FPU Payroll</td><td class="amt">$1,093</td><td style="color:#64748b">Monthly</td></tr>
+              <tr><td>Behavior School</td><td class="amt">$272</td><td style="color:#64748b">Irregular</td></tr>
             </tbody>
           </table>
-          <div style="margin-top:16px;padding-top:12px;border-top:1px solid #334155;display:flex;justify-content:space-between;font-weight:600;">
+          <div style="margin-top:16px;padding-top:12px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-weight:600;">
             <span>Total Monthly Income</span>
             <span class="fin-stat green" style="font-size:20px;">$5,726</span>
           </div>
@@ -299,7 +299,7 @@ permalink: /admin/finance/
                 <tr><td><s>Google Cloud</s></td><td class="amt"><s>$23</s></td><td style="color:#22c55e;font-weight:600;">BUSINESS (removed)</td></tr>
               </tbody>
             </table>
-            <div style="margin-top:12px;padding-top:12px;border-top:1px solid #334155;display:flex;justify-content:space-between;font-weight:600;">
+            <div style="margin-top:12px;padding-top:12px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-weight:600;">
               <span>Potential Savings</span>
               <span style="color:#22c55e">$245/mo</span>
             </div>
@@ -313,8 +313,8 @@ permalink: /admin/finance/
       <div class="label">Monthly Structural Deficit</div>
       <div class="amount">-$1,272/mo</div>
       <div class="note">After all proposed subscription cuts. True gap may be larger (~$4,000+/mo with irregular expenses).</div>
-      <div style="margin-top: 16px; font-size: 13px; color: #94a3b8; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
-        <strong style="color:#e2e8f0;">Biggest levers to close the gap:</strong>
+      <div style="margin-top: 16px; font-size: 13px; color: #64748b; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
+        <strong style="color:#1e293b;">Biggest levers to close the gap:</strong>
         <ol style="margin-top: 8px; padding-left: 20px; line-height: 1.8;">
           <li><strong>Supporting Hands funding</strong> — if IHSS/insurance covers 50%, saves ~$900/mo</li>
           <li><strong>Increase behavior school income</strong> — currently $272/mo avg</li>
@@ -357,7 +357,7 @@ permalink: /admin/finance/
           <div class="env-row"><span class="env-name">Xfinity Internet</span><span class="env-amt" style="color:#22c55e">$95</span></div>
           <div class="env-bar"><div class="env-fill" style="width:100%;background:#22c55e;"></div></div>
         </div>
-        <div style="display:flex;justify-content:space-between;font-size:12px;color:#94a3b8;margin:8px 0 4px 8px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin:8px 0 4px 8px;">
           <span>P1 Total: $3,360</span><span style="color:#22c55e">Remaining: $2,366</span>
         </div>
 
@@ -390,7 +390,7 @@ permalink: /admin/finance/
           <div class="env-row"><span class="env-name">Allstate Insurance</span><span class="env-amt" style="color:#22c55e">$25</span></div>
           <div class="env-bar"><div class="env-fill" style="width:100%;background:#22c55e;"></div></div>
         </div>
-        <div style="display:flex;justify-content:space-between;font-size:12px;color:#94a3b8;margin:8px 0 4px 8px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin:8px 0 4px 8px;">
           <span>P2 Total: $923</span><span style="color:#22c55e">Remaining: $1,443</span>
         </div>
 
@@ -419,7 +419,7 @@ permalink: /admin/finance/
           <div class="env-row"><span class="env-name">Subscriptions (Netflix, Apple, Google One)</span><span class="env-amt" style="color:#22c55e">$58</span></div>
           <div class="env-bar"><div class="env-fill" style="width:100%;background:#22c55e;"></div></div>
         </div>
-        <div style="display:flex;justify-content:space-between;font-size:12px;color:#94a3b8;margin:8px 0 4px 8px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin:8px 0 4px 8px;">
           <span>P3 Total: $398</span><span style="color:#22c55e">Remaining: $1,045</span>
         </div>
 
@@ -432,7 +432,7 @@ permalink: /admin/finance/
           <div class="env-row"><span class="env-name">Phillip M. Collier</span><span class="env-amt" style="color:#ef4444">$375 unfunded</span></div>
           <div class="env-bar"><div class="env-fill" style="width:0%;background:#ef4444;"></div></div>
         </div>
-        <div style="display:flex;justify-content:space-between;font-size:12px;color:#94a3b8;margin:8px 0 4px 8px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin:8px 0 4px 8px;">
           <span>On credit (adds to debt): $2,175</span><span style="color:#ef4444">This is why Apple Card grows</span>
         </div>
       </div>
@@ -462,16 +462,16 @@ permalink: /admin/finance/
 
         <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:16px;margin-bottom:16px;">
           <div style="font-size:13px;font-weight:600;color:#ef4444;margin-bottom:8px;">THE HIDDEN COST</div>
-          <div style="font-size:13px;color:#e2e8f0;line-height:1.6;">
+          <div style="font-size:13px;color:#1e293b;line-height:1.6;">
             $1,045 looks like a buffer, but <strong>$2,175/mo goes on Apple Card</strong> (Supporting Hands + Collier) — that's new debt every month. The real deficit is:<br>
             <span style="font-size:20px;font-weight:700;color:#ef4444;display:block;margin-top:8px;">-$1,130/mo net new debt</span>
-            <span style="font-size:12px;color:#94a3b8;">Plus interest compounding on the $14K balance</span>
+            <span style="font-size:12px;color:#64748b;">Plus interest compounding on the $14K balance</span>
           </div>
         </div>
 
-        <div style="border-top:1px solid #334155;padding-top:16px;">
+        <div style="border-top:1px solid #e2e8f0;padding-top:16px;">
           <h3>How Envelope Budgeting Helps</h3>
-          <ul style="font-size:13px;color:#94a3b8;line-height:1.8;padding-left:16px;">
+          <ul style="font-size:13px;color:#64748b;line-height:1.8;padding-left:16px;">
             <li>P1-P3 are <strong>fully funded</strong> from checking — these get paid first</li>
             <li>P4 items go on credit — they're <strong>visible as unfunded</strong></li>
             <li>If Supporting Hands gets insurance coverage, that $1,800 moves from P4 (unfunded/credit) to P1 (funded from income)</li>
@@ -597,13 +597,13 @@ permalink: /admin/finance/
           <span>Apr 2025</span>
           <span>Mar 2026</span>
         </div>
-        <div style="margin-top:16px;padding-top:12px;border-top:1px solid #334155;">
+        <div style="margin-top:16px;padding-top:12px;border-top:1px solid #e2e8f0;">
           <div style="display:flex;justify-content:space-between;font-size:13px;">
-            <span style="color:#94a3b8">Current Net Worth</span>
+            <span style="color:#64748b">Current Net Worth</span>
             <span style="font-weight:700;color:#ef4444;font-size:18px;">-$31,420</span>
           </div>
           <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:8px;">
-            <span style="color:#94a3b8">12-month change</span>
+            <span style="color:#64748b">12-month change</span>
             <span style="font-weight:600;color:#ef4444;">-$9,255 (worse)</span>
           </div>
         </div>
@@ -641,20 +641,20 @@ permalink: /admin/finance/
           </tbody>
         </table>
 
-        <div style="margin-top:20px;padding-top:16px;border-top:1px solid #334155;">
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid #e2e8f0;">
           <h3>Avalanche Strategy (save most interest)</h3>
-          <div style="font-size:13px;color:#94a3b8;margin-bottom:12px;">Pay minimums on everything, throw any extra at the highest-interest debt first.</div>
-          <ol style="font-size:13px;color:#e2e8f0;padding-left:20px;line-height:2;">
+          <div style="font-size:13px;color:#64748b;margin-bottom:12px;">Pay minimums on everything, throw any extra at the highest-interest debt first.</div>
+          <ol style="font-size:13px;color:#1e293b;padding-left:20px;line-height:2;">
             <li><strong style="color:#ef4444;">Apple Card</strong> — highest interest rate, balance growing</li>
             <li><strong style="color:#eab308;">Discover</strong> — likely high rate, small balance = quick win</li>
             <li><strong style="color:#3b82f6;">EECU LOC</strong> — small balance, LOC rate</li>
-            <li><strong style="color:#94a3b8;">Auto Loan</strong> — lowest rate, keep at minimum</li>
+            <li><strong style="color:#64748b;">Auto Loan</strong> — lowest rate, keep at minimum</li>
           </ol>
         </div>
 
         <div style="margin-top:16px;padding:12px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:8px;">
           <div style="font-size:13px;font-weight:600;color:#22c55e;margin-bottom:4px;">Quick win: Discover + LOC</div>
-          <div style="font-size:12px;color:#94a3b8;">Both can be eliminated within 14 months at current minimums. Frees up $158/mo that can attack the Apple Card balance. Combined with stopping new Apple Card charges ($2,175/mo), the balance starts shrinking instead of growing.</div>
+          <div style="font-size:12px;color:#64748b;">Both can be eliminated within 14 months at current minimums. Frees up $158/mo that can attack the Apple Card balance. Combined with stopping new Apple Card charges ($2,175/mo), the balance starts shrinking instead of growing.</div>
         </div>
       </div>
     </div>
@@ -678,7 +678,7 @@ permalink: /admin/finance/
         <div id="importResults" style="display:none;margin-top:16px;">
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <h3 id="importTitle">Imported Transactions</h3>
-            <span id="importCount" style="font-size:13px;color:#94a3b8;"></span>
+            <span id="importCount" style="font-size:13px;color:#64748b;"></span>
           </div>
           <div class="txn-summary" id="importSummary"></div>
           <div class="txn-list" id="txnList"></div>
@@ -688,8 +688,8 @@ permalink: /admin/finance/
       <div class="fin-card">
         <h3>How to Export Your Data</h3>
         <div style="margin-bottom:20px;">
-          <div style="font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:8px;">EECU Checking</div>
-          <ol style="font-size:13px;color:#94a3b8;padding-left:20px;line-height:1.8;">
+          <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:8px;">EECU Checking</div>
+          <ol style="font-size:13px;color:#64748b;padding-left:20px;line-height:1.8;">
             <li>Log into myeecu.org</li>
             <li>Go to Accounts > Checking</li>
             <li>Click "Export" or "Download transactions"</li>
@@ -698,8 +698,8 @@ permalink: /admin/finance/
           </ol>
         </div>
         <div style="margin-bottom:20px;">
-          <div style="font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:8px;">Apple Card</div>
-          <ol style="font-size:13px;color:#94a3b8;padding-left:20px;line-height:1.8;">
+          <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:8px;">Apple Card</div>
+          <ol style="font-size:13px;color:#64748b;padding-left:20px;line-height:1.8;">
             <li>Open Wallet app on iPhone</li>
             <li>Tap Apple Card > Card Balance</li>
             <li>Tap "Total Activity" for a month</li>
@@ -708,7 +708,7 @@ permalink: /admin/finance/
           </ol>
         </div>
         <div style="padding:12px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);border-radius:8px;">
-          <div style="font-size:12px;color:#94a3b8;">
+          <div style="font-size:12px;color:#64748b;">
             <strong style="color:#3b82f6;">Privacy:</strong> Files are parsed entirely in your browser using JavaScript. No data leaves your device. The Paperclip CTO agent updates this dashboard monthly from exported data.
           </div>
         </div>

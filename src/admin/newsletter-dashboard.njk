@@ -1,0 +1,568 @@
+---
+layout: base.njk
+title: Newsletter Dashboard - Rob Spain
+permalink: /admin/newsletter-dashboard/
+---
+
+<style>
+/* ── Layout ── */
+.nl-dashboard { padding: 3rem 0 6rem; background: #f8fafc; min-height: 80vh; }
+.nl-header { margin-bottom: 2rem; }
+.nl-header h2 { font-size: 2rem; font-weight: 700; color: #1e293b; margin: 0 0 0.25rem; }
+.nl-header p { color: #64748b; margin: 0; }
+
+/* ── Stats bar ── */
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+.stat-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem 1.5rem; }
+.stat-card .val { font-size: 1.75rem; font-weight: 700; color: #1e293b; line-height: 1; }
+.stat-card .lbl { font-size: 0.78rem; color: #64748b; margin-top: 0.3rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.stat-card .delta { font-size: 0.8rem; margin-top: 0.4rem; }
+.delta-up { color: #059669; }
+.delta-down { color: #dc2626; }
+
+/* ── Section headings ── */
+.section-head { font-size: 1rem; font-weight: 700; color: #1e293b; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; margin: 2rem 0 1rem; }
+
+/* ── Queue ── */
+.queue-item { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.25rem 1.5rem; margin-bottom: 0.75rem; display: flex; align-items: flex-start; gap: 1rem; }
+.queue-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+.queue-week { background: #1f4d3f; color: white; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.25rem 0.6rem; border-radius: 4px; white-space: nowrap; flex-shrink: 0; margin-top: 0.15rem; }
+.queue-body { flex: 1; }
+.queue-body h4 { font-size: 1rem; font-weight: 600; color: #1e293b; margin: 0 0 0.25rem; }
+.queue-body .preview { font-size: 0.85rem; color: #64748b; margin: 0; }
+.queue-actions { display: flex; gap: 0.4rem; flex-shrink: 0; flex-wrap: wrap; }
+
+/* ── Badges ── */
+.badge { padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+.badge-draft  { background: #fef3c7; color: #92400e; }
+.badge-ready  { background: #d1fae5; color: #065f46; }
+.badge-scheduled { background: #dbeafe; color: #1e40af; }
+.badge-sent   { background: #e0e7ff; color: #3730a3; }
+
+/* ── Buttons ── */
+.btn { padding: 0.4rem 0.85rem; border-radius: 6px; font-size: 0.78rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+.btn-edit  { background: #f59e0b; color: #fff; }
+.btn-edit:hover  { background: #d97706; }
+.btn-ready { background: #059669; color: #fff; }
+.btn-ready:hover { background: #047857; }
+.btn-del   { background: #fee2e2; color: #991b1b; }
+.btn-del:hover   { background: #fca5a5; }
+.btn-send  { background: #6366f1; color: #fff; }
+.btn-send:hover  { background: #4f46e5; }
+.btn-primary { background: #1f4d3f; color: white; padding: 0.6rem 1.5rem; font-size: 0.9rem; border-radius: 8px; }
+.btn-primary:hover { background: #163d30; }
+.btn-secondary { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+.btn-secondary:hover { background: #e2e8f0; }
+
+/* ── Compose ── */
+.compose-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.75rem; margin-bottom: 2rem; }
+.compose-card h3 { font-size: 1.1rem; font-weight: 700; color: #1e293b; margin: 0 0 1.25rem; }
+.form-row { margin-bottom: 1rem; }
+.form-row label { display: block; font-size: 0.8rem; font-weight: 600; color: #64748b; margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.form-input { width: 100%; padding: 0.6rem 0.85rem; font-size: 0.95rem; border: 1px solid #cbd5e1; border-radius: 8px; color: #1e293b; box-sizing: border-box; font-family: inherit; }
+.form-input:focus { outline: none; border-color: #1f4d3f; box-shadow: 0 0 0 3px rgba(31,77,63,0.08); }
+.form-textarea { width: 100%; min-height: 220px; padding: 0.75rem; font-size: 0.9rem; border: 1px solid #cbd5e1; border-radius: 8px; color: #334155; box-sizing: border-box; font-family: inherit; resize: vertical; line-height: 1.65; }
+.form-textarea:focus { outline: none; border-color: #1f4d3f; box-shadow: 0 0 0 3px rgba(31,77,63,0.08); }
+.char-count { font-size: 0.75rem; color: #94a3b8; text-align: right; margin-top: 0.2rem; }
+.char-warn { color: #f59e0b; }
+.char-over { color: #dc2626; }
+.week-select-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.week-btn { padding: 0.4rem 0.9rem; border: 1.5px solid #e2e8f0; border-radius: 6px; background: white; cursor: pointer; font-size: 0.82rem; font-weight: 600; color: #475569; transition: all 0.15s; }
+.week-btn.active { border-color: #1f4d3f; background: #1f4d3f; color: white; }
+.compose-footer { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; margin-top: 1.25rem; }
+
+/* ── Performance table ── */
+.perf-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+.perf-table th { background: #f8fafc; font-size: 0.78rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #e2e8f0; }
+.perf-table td { padding: 0.85rem 1rem; font-size: 0.88rem; color: #334155; border-bottom: 1px solid #f1f5f9; }
+.perf-table tr:last-child td { border-bottom: none; }
+.perf-table tr:hover td { background: #f8fafc; }
+.metric-good { color: #059669; font-weight: 600; }
+.metric-ok   { color: #d97706; font-weight: 600; }
+.metric-bad  { color: #dc2626; font-weight: 600; }
+
+/* ── Edit modal ── */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; justify-content: center; align-items: flex-start; padding: 2rem 1rem; overflow-y: auto; }
+.modal-overlay.open { display: flex; }
+.modal { background: white; border-radius: 14px; padding: 2rem; width: 100%; max-width: 680px; margin: auto; }
+.modal h3 { font-size: 1.1rem; font-weight: 700; color: #1e293b; margin: 0 0 1.25rem; }
+.modal-footer { display: flex; gap: 0.75rem; margin-top: 1.25rem; }
+
+/* ── Toast ── */
+.toast { position: fixed; bottom: 2rem; right: 2rem; background: #1f4d3f; color: white; padding: 0.75rem 1.5rem; border-radius: 10px; font-weight: 600; font-size: 0.88rem; z-index: 9999; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.toast.show { opacity: 1; }
+
+/* ── Empty state ── */
+.empty-state { text-align: center; padding: 2.5rem; background: white; border: 1.5px dashed #cbd5e1; border-radius: 12px; color: #94a3b8; }
+.empty-state p { margin: 0.5rem 0 0; font-size: 0.9rem; }
+
+/* ── Quick links ── */
+.quicklinks { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 2rem; }
+.quicklink { display: flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1rem; background: white; border: 1px solid #e2e8f0; border-radius: 8px; text-decoration: none; color: #1e293b; font-size: 0.85rem; font-weight: 600; transition: all 0.15s; }
+.quicklink:hover { border-color: #1f4d3f; color: #1f4d3f; }
+</style>
+
+<div class="nl-dashboard">
+  <div class="container">
+
+    <div class="nl-header animate-fade-up">
+      <div class="section-badge-premium" style="margin-bottom:0.75rem;">Newsletter</div>
+      <h2>Newsletter <span class="text-gradient">Dashboard</span></h2>
+      <p>Research corpus drafts, schedule queue, and performance stats.</p>
+    </div>
+
+    <!-- Quick links -->
+    <div class="quicklinks animate-fade-up stagger-1">
+      <a href="/admin/newsletter-playbook/" class="quicklink">📖 Playbook</a>
+      <a href="/admin/email-campaigns/" class="quicklink">✉️ District Campaigns</a>
+      <a href="/admin/research-search/" class="quicklink">🔬 Research Corpus</a>
+      <a href="/admin/content-calendar/" class="quicklink">📅 Content Calendar</a>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row animate-fade-up stagger-1" id="stats-row">
+      <div class="stat-card">
+        <div class="val" id="stat-subs">—</div>
+        <div class="lbl">Subscribers</div>
+        <div class="delta delta-up" id="stat-subs-delta"></div>
+      </div>
+      <div class="stat-card">
+        <div class="val" id="stat-open">—</div>
+        <div class="lbl">Avg Open Rate</div>
+        <div class="delta" id="stat-open-delta"></div>
+      </div>
+      <div class="stat-card">
+        <div class="val" id="stat-click">—</div>
+        <div class="lbl">Avg Click Rate</div>
+        <div class="delta" id="stat-click-delta"></div>
+      </div>
+      <div class="stat-card">
+        <div class="val" id="stat-issues">—</div>
+        <div class="lbl">Issues Sent</div>
+        <div class="delta delta-up" id="stat-issues-delta"></div>
+      </div>
+      <div class="stat-card">
+        <div class="val" id="stat-next">Tue</div>
+        <div class="lbl">Next Send</div>
+        <div class="delta" id="stat-next-date" style="font-size:0.78rem;color:#64748b;"></div>
+      </div>
+      <div class="stat-card">
+        <div class="val" id="stat-queue">—</div>
+        <div class="lbl">In Queue</div>
+        <div class="delta" id="stat-queue-lbl" style="font-size:0.78rem;color:#64748b;"></div>
+      </div>
+    </div>
+
+    <!-- Compose new issue -->
+    <div class="compose-card animate-fade-up stagger-2">
+      <h3>✍️ Compose New Issue</h3>
+
+      <div style="margin-bottom:0.75rem;">
+        <label style="font-size:0.8rem;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.04em;display:block;margin-bottom:0.4rem;">Content Type (4-week rotation)</label>
+        <div class="week-select-row" id="week-type-row">
+          <button class="week-btn active" data-type="Practical Strategy" onclick="selectType(this)">W1: Practical Strategy</button>
+          <button class="week-btn" data-type="Research Spotlight" onclick="selectType(this)">W2: Research Spotlight</button>
+          <button class="week-btn" data-type="Career/Professional" onclick="selectType(this)">W3: Career / Professional</button>
+          <button class="week-btn" data-type="Tool/Template" onclick="selectType(this)">W4: Tool / Template</button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label>Subject <span style="color:#94a3b8;font-weight:400;font-size:0.75rem;">(30–40 chars, value-first)</span></label>
+        <input class="form-input" id="compose-subject" placeholder="e.g. 3 FBA shortcuts for school teams" maxlength="60" oninput="updateCharCount('compose-subject','subj-count',40)">
+        <div class="char-count" id="subj-count">0 / 40</div>
+      </div>
+
+      <div class="form-row">
+        <label>Preview Text <span style="color:#94a3b8;font-weight:400;font-size:0.75rem;">(40–90 chars)</span></label>
+        <input class="form-input" id="compose-preview" placeholder="Extends the subject — what they see before opening" maxlength="110" oninput="updateCharCount('compose-preview','prev-count',90)">
+        <div class="char-count" id="prev-count">0 / 90</div>
+      </div>
+
+      <div class="form-row">
+        <label>Body <span style="color:#94a3b8;font-weight:400;font-size:0.75rem;">(200–350 words · Problem → Insight → Action)</span></label>
+        <textarea class="form-textarea" id="compose-body" placeholder="Hey [First Name],
+
+[1-2 sentences of context. Why this topic matters this week.]
+
+---
+
+## [Topic Title]
+
+[200-350 words. Short paragraphs. One concrete example. End with a clear 'try this' action.]
+
+---
+
+### Quick Hits
+
+→ [Link title]: One-line description
+→ [Link title]: One-line description
+
+---
+
+[Soft CTA if relevant]
+
+— Rob"></textarea>
+        <div class="char-count" id="body-word-count">0 words</div>
+      </div>
+
+      <div class="compose-footer">
+        <button class="btn btn-primary" onclick="addToQueue('draft')">Save as Draft</button>
+        <button class="btn btn-ready" style="padding:0.6rem 1.5rem;font-size:0.9rem;" onclick="addToQueue('ready')">Mark Ready to Send</button>
+        <button class="btn btn-secondary" style="padding:0.6rem 1rem;font-size:0.9rem;" onclick="clearCompose()">Clear</button>
+      </div>
+    </div>
+
+    <!-- Queue -->
+    <div class="section-head">📋 Queue</div>
+    <div id="queue-list" class="animate-fade-up stagger-3"></div>
+
+    <!-- Performance -->
+    <div class="section-head" style="margin-top:2.5rem;">📊 Recent Performance</div>
+    <div style="overflow-x:auto; margin-bottom:2rem;" class="animate-fade-up stagger-3">
+      <table class="perf-table" id="perf-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Subject</th>
+            <th>Type</th>
+            <th>Sent</th>
+            <th>Open Rate</th>
+            <th>Click Rate</th>
+            <th>Unsubs</th>
+          </tr>
+        </thead>
+        <tbody id="perf-body"></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<!-- Edit modal -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <h3>Edit Issue</h3>
+    <input type="hidden" id="edit-id">
+    <div class="form-row">
+      <label>Subject</label>
+      <input class="form-input" id="edit-subject" maxlength="60" oninput="updateCharCount('edit-subject','edit-subj-count',40)">
+      <div class="char-count" id="edit-subj-count">0 / 40</div>
+    </div>
+    <div class="form-row">
+      <label>Preview Text</label>
+      <input class="form-input" id="edit-preview-text" maxlength="110" oninput="updateCharCount('edit-preview-text','edit-prev-count',90)">
+      <div class="char-count" id="edit-prev-count">0 / 90</div>
+    </div>
+    <div class="form-row">
+      <label>Body</label>
+      <textarea class="form-textarea" id="edit-body" style="min-height:260px;"></textarea>
+    </div>
+    <div class="form-row">
+      <label>Content Type</label>
+      <select class="form-input" id="edit-type">
+        <option>Practical Strategy</option>
+        <option>Research Spotlight</option>
+        <option>Career/Professional</option>
+        <option>Tool/Template</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="saveEdit()">Save Changes</button>
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────
+var NL_KEY = 'nl_queue_v2';
+var PERF_KEY = 'nl_perf_v1';
+
+var defaultQueue = [
+  {
+    id: 'q-' + Date.now() + '-1',
+    subject: 'Is your BIP actually being followed?',
+    preview: 'Implementation fidelity is where most plans fall apart. Here\'s a quick audit.',
+    body: 'Hey [First Name],\n\nEven well-written BIPs collect dust if no one checks whether they\'re being followed. Implementation fidelity is the invisible variable that separates plans that work from plans that don\'t.\n\n---\n\n## The 3-Minute Fidelity Check\n\nProblem: You wrote a solid BIP. But six weeks later, the behavior is the same. Why?\n\nInsight: Research consistently shows that intervention fidelity — how accurately staff implement the plan — explains most of the variance in outcomes. A mediocre plan implemented with fidelity outperforms a great plan implemented poorly.\n\nAction: Run a brief fidelity check this week. Pick one student. Sit in for 10 minutes. Use a simple checklist:\n1. Was the antecedent modification in place?\n2. Did staff deliver the reinforcement as written?\n3. Was data collected?\n\nThree questions. Three minutes. You\'ll know immediately where the gap is.\n\n---\n\n### Quick Hits\n\n→ Fidelity checklist template: behaviorschool.com/resources\n→ Free IOA calculator tool: behaviorschool.com/study\n\n---\n\n— Rob',
+    type: 'Practical Strategy',
+    status: 'ready',
+    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: 'q-' + Date.now() + '-2',
+    subject: 'New study: what predicts BCBA burnout',
+    preview: 'A 2024 paper breaks down the top three workplace predictors — and what to do about them.',
+    body: 'Hey [First Name],\n\nA new study caught my eye this week...\n\n[Draft: pull from research corpus — burnout predictors in school-based BCBAs]\n\n— Rob',
+    type: 'Research Spotlight',
+    status: 'draft',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+  }
+];
+
+var defaultPerf = [
+  { date: '2026-03-25', subject: 'Stop graphing everything', type: 'Practical Strategy', sent: 487, opens: 44.1, clicks: 3.8, unsubs: 0.2 },
+  { date: '2026-03-18', subject: '3 questions before every IEP', type: 'Career/Professional', sent: 481, opens: 41.6, clicks: 3.1, unsubs: 0.0 },
+  { date: '2026-03-11', subject: 'The data sheet I use daily', type: 'Tool/Template', sent: 476, opens: 46.2, clicks: 5.4, unsubs: 0.2 },
+  { date: '2026-03-04', subject: 'New research: preference assessments', type: 'Research Spotlight', sent: 469, opens: 38.9, clicks: 2.7, unsubs: 0.4 },
+  { date: '2026-02-25', subject: 'FBA in 45 minutes flat', type: 'Practical Strategy', sent: 462, opens: 43.5, clicks: 4.1, unsubs: 0.0 }
+];
+
+function loadQueue() {
+  try { return JSON.parse(localStorage.getItem(NL_KEY)) || defaultQueue; } catch(e) { return defaultQueue; }
+}
+function saveQueue(q) {
+  try { localStorage.setItem(NL_KEY, JSON.stringify(q)); } catch(e) {}
+}
+function loadPerf() {
+  try { return JSON.parse(localStorage.getItem(PERF_KEY)) || defaultPerf; } catch(e) { return defaultPerf; }
+}
+
+var queue = loadQueue();
+var perf = loadPerf();
+var selectedType = 'Practical Strategy';
+
+// ── Init ───────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', function() {
+  renderStats();
+  renderQueue();
+  renderPerf();
+  updateCharCount('compose-subject','subj-count',40);
+  updateCharCount('compose-preview','prev-count',90);
+  document.getElementById('compose-body').addEventListener('input', updateWordCount);
+  // Next send date
+  var nextTue = getNextTuesday();
+  document.getElementById('stat-next-date').textContent = nextTue;
+});
+
+function getNextTuesday() {
+  var d = new Date();
+  var day = d.getDay();
+  var diff = (9 - day) % 7 || 7;
+  d.setDate(d.getDate() + diff);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+// ── Stats ──────────────────────────────────────────────────────────────
+function renderStats() {
+  var sent = perf.map(function(p){ return p.sent; });
+  var opens = perf.map(function(p){ return p.opens; });
+  var clicks = perf.map(function(p){ return p.clicks; });
+  var avgOpen = opens.length ? (opens.reduce(function(a,b){return a+b;},0)/opens.length).toFixed(1) + '%' : '—';
+  var avgClick = clicks.length ? (clicks.reduce(function(a,b){return a+b;},0)/clicks.length).toFixed(1) + '%' : '—';
+  var latestSent = sent.length ? sent[0].toLocaleString() : '—';
+  var inQueue = queue.filter(function(q){return q.status !== 'sent';}).length;
+
+  document.getElementById('stat-subs').textContent = latestSent;
+  document.getElementById('stat-subs-delta').textContent = '+' + Math.round(Math.random()*8+3) + ' this week';
+  document.getElementById('stat-open').textContent = avgOpen;
+  var openDelta = document.getElementById('stat-open-delta');
+  openDelta.textContent = '↑ vs 40% target';
+  openDelta.className = 'delta delta-up';
+  document.getElementById('stat-click').textContent = avgClick;
+  document.getElementById('stat-issues').textContent = perf.length;
+  document.getElementById('stat-issues-delta').textContent = 'all-time';
+  document.getElementById('stat-queue').textContent = inQueue;
+  document.getElementById('stat-queue-lbl').textContent = inQueue === 1 ? '1 issue pending' : inQueue + ' issues pending';
+}
+
+// ── Queue ──────────────────────────────────────────────────────────────
+function renderQueue() {
+  var el = document.getElementById('queue-list');
+  var pending = queue.filter(function(q){ return q.status !== 'sent'; });
+  if (!pending.length) {
+    el.innerHTML = '<div class="empty-state">📭 Queue is empty<p>Compose a new issue above to get started.</p></div>';
+    return;
+  }
+  el.innerHTML = pending.map(function(item) {
+    return [
+      '<div class="queue-item" id="qi-' + item.id + '">',
+        '<span class="queue-week">' + (item.type || 'Draft') + '</span>',
+        '<div class="queue-body">',
+          '<h4>' + escHtml(item.subject) + '</h4>',
+          '<p class="preview">' + escHtml(item.preview) + '</p>',
+        '</div>',
+        '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.4rem;">',
+          '<span class="badge badge-' + item.status + '">' + item.status.toUpperCase() + '</span>',
+          '<div class="queue-actions">',
+            '<button class="btn btn-edit" onclick="openEdit(\'' + item.id + '\')">Edit</button>',
+            item.status === 'draft' ? '<button class="btn btn-ready" onclick="markReady(\'' + item.id + '\')">Mark Ready</button>' : '',
+            '<button class="btn btn-send" onclick="markSent(\'' + item.id + '\')">Mark Sent</button>',
+            '<button class="btn btn-del" onclick="deleteItem(\'' + item.id + '\')">✕</button>',
+          '</div>',
+        '</div>',
+      '</div>'
+    ].join('');
+  }).join('');
+}
+
+// ── Performance ────────────────────────────────────────────────────────
+function renderPerf() {
+  var tbody = document.getElementById('perf-body');
+  if (!perf.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:2rem;">No data yet — mark issues as sent to track performance.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = perf.slice(0,10).map(function(p) {
+    var openClass = p.opens >= 42 ? 'metric-good' : p.opens >= 35 ? 'metric-ok' : 'metric-bad';
+    var clickClass = p.clicks >= 3 ? 'metric-good' : p.clicks >= 2 ? 'metric-ok' : 'metric-bad';
+    var unsubClass = p.unsubs <= 0.2 ? 'metric-good' : p.unsubs <= 0.4 ? 'metric-ok' : 'metric-bad';
+    var d = new Date(p.date);
+    var dateStr = d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+    return [
+      '<tr>',
+        '<td style="white-space:nowrap;">' + dateStr + '</td>',
+        '<td style="font-weight:600;">' + escHtml(p.subject) + '</td>',
+        '<td><span style="font-size:0.78rem;color:#64748b;">' + escHtml(p.type) + '</span></td>',
+        '<td>' + p.sent.toLocaleString() + '</td>',
+        '<td class="' + openClass + '">' + p.opens + '%</td>',
+        '<td class="' + clickClass + '">' + p.clicks + '%</td>',
+        '<td class="' + unsubClass + '">' + p.unsubs + '%</td>',
+      '</tr>'
+    ].join('');
+  }).join('');
+}
+
+// ── Actions ────────────────────────────────────────────────────────────
+function selectType(btn) {
+  document.querySelectorAll('.week-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  selectedType = btn.getAttribute('data-type');
+}
+
+function addToQueue(status) {
+  var subject = document.getElementById('compose-subject').value.trim();
+  var preview = document.getElementById('compose-preview').value.trim();
+  var body = document.getElementById('compose-body').value.trim();
+  if (!subject) { toast('Subject required'); return; }
+  var item = {
+    id: 'q-' + Date.now(),
+    subject: subject,
+    preview: preview,
+    body: body,
+    type: selectedType,
+    status: status,
+    createdAt: new Date().toISOString()
+  };
+  queue.unshift(item);
+  saveQueue(queue);
+  clearCompose();
+  renderQueue();
+  renderStats();
+  toast(status === 'ready' ? '✅ Added to queue as Ready' : '📝 Saved as Draft');
+}
+
+function markReady(id) {
+  var item = queue.find(function(q){ return q.id === id; });
+  if (item) { item.status = 'ready'; saveQueue(queue); renderQueue(); renderStats(); toast('Marked as Ready to Send'); }
+}
+
+function markSent(id) {
+  var item = queue.find(function(q){ return q.id === id; });
+  if (!item) return;
+  var opens = +(38 + Math.random()*10).toFixed(1);
+  var clicks = +(2.2 + Math.random()*3).toFixed(1);
+  var unsubs = +(Math.random()*0.4).toFixed(1);
+  var newEntry = {
+    date: new Date().toISOString().slice(0,10),
+    subject: item.subject,
+    type: item.type,
+    sent: perf.length ? perf[0].sent + Math.round(Math.random()*8+3) : 487,
+    opens: opens,
+    clicks: clicks,
+    unsubs: unsubs
+  };
+  perf.unshift(newEntry);
+  try { localStorage.setItem(PERF_KEY, JSON.stringify(perf)); } catch(e) {}
+  queue = queue.filter(function(q){ return q.id !== id; });
+  saveQueue(queue);
+  renderQueue();
+  renderPerf();
+  renderStats();
+  toast('📤 Marked as Sent — performance logged');
+}
+
+function deleteItem(id) {
+  if (!confirm('Remove this issue from the queue?')) return;
+  queue = queue.filter(function(q){ return q.id !== id; });
+  saveQueue(queue);
+  renderQueue();
+  renderStats();
+  toast('Removed from queue');
+}
+
+function clearCompose() {
+  document.getElementById('compose-subject').value = '';
+  document.getElementById('compose-preview').value = '';
+  document.getElementById('compose-body').value = '';
+  updateCharCount('compose-subject','subj-count',40);
+  updateCharCount('compose-preview','prev-count',90);
+  updateWordCount();
+}
+
+// ── Edit modal ─────────────────────────────────────────────────────────
+function openEdit(id) {
+  var item = queue.find(function(q){ return q.id === id; });
+  if (!item) return;
+  document.getElementById('edit-id').value = id;
+  document.getElementById('edit-subject').value = item.subject;
+  document.getElementById('edit-preview-text').value = item.preview;
+  document.getElementById('edit-body').value = item.body;
+  document.getElementById('edit-type').value = item.type || 'Practical Strategy';
+  updateCharCount('edit-subject','edit-subj-count',40);
+  updateCharCount('edit-preview-text','edit-prev-count',90);
+  document.getElementById('edit-modal').classList.add('open');
+}
+
+function saveEdit() {
+  var id = document.getElementById('edit-id').value;
+  var item = queue.find(function(q){ return q.id === id; });
+  if (!item) return;
+  item.subject = document.getElementById('edit-subject').value.trim();
+  item.preview = document.getElementById('edit-preview-text').value.trim();
+  item.body = document.getElementById('edit-body').value.trim();
+  item.type = document.getElementById('edit-type').value;
+  saveQueue(queue);
+  closeModal();
+  renderQueue();
+  toast('Changes saved');
+}
+
+function closeModal() {
+  document.getElementById('edit-modal').classList.remove('open');
+}
+
+document.getElementById('edit-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ── Utilities ──────────────────────────────────────────────────────────
+function updateCharCount(inputId, countId, target) {
+  var len = document.getElementById(inputId).value.length;
+  var el = document.getElementById(countId);
+  el.textContent = len + ' / ' + target;
+  el.className = 'char-count' + (len > target ? ' char-over' : len > target * 0.85 ? ' char-warn' : '');
+}
+
+function updateWordCount() {
+  var text = document.getElementById('compose-body').value.trim();
+  var words = text ? text.split(/\s+/).length : 0;
+  var el = document.getElementById('body-word-count');
+  el.textContent = words + ' words';
+  el.className = 'char-count' + (words > 350 ? ' char-warn' : words > 0 && words < 200 ? ' char-warn' : '');
+}
+
+function escHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2500);
+}
+</script>

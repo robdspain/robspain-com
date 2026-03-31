@@ -1,9 +1,6 @@
 # API routes
 /api/newsletter  /.netlify/functions/newsletter  200
 
-# Block admin pages from public access
-/admin/*  https://robspain.com/ 302
-
 # CalABA 2026 — redirect to BehaviorSchool
 /calaba-2026  https://behaviorschool.com/calaba-2026 302
 /calaba-2026/  https://behaviorschool.com/calaba-2026 302

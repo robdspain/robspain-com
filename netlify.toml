@@ -147,3 +147,13 @@
   from = "/api/sync"
   to = "/.netlify/functions/dashboard-api"
   status = 200
+
+[[redirects]]
+  from = "/api/home-search"
+  to = "/.netlify/functions/home-search"
+  status = 200
+
+[[redirects]]
+  from = "/api/home-search/*"
+  to = "/.netlify/functions/home-search"
+  status = 200

@@ -1,0 +1,363 @@
+---
+layout: base.njk
+title: Home Search - Rob Spain
+permalink: /admin/home-search/
+---
+
+<style>
+  .hs { max-width: 1300px; margin: 0 auto; padding: 20px; }
+  .hs * { box-sizing: border-box; }
+  .hs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; gap: 8px; }
+  .hs-header h2 { font-size: 24px; font-weight: 700; color: #1e293b; margin: 0; }
+  .hs-header .meta { color: #64748b; font-size: 13px; }
+  .hs-controls { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+  .hs-controls select, .hs-controls input { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 13px; color: #1e293b; background: #fff; }
+  .hs-controls select:focus, .hs-controls input:focus { outline: none; border-color: #3b82f6; }
+  .hs-btn { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+  .hs-btn-primary { background: #3b82f6; color: #fff; }
+  .hs-btn-primary:hover { background: #2563eb; }
+  .hs-btn-green { background: #22c55e; color: #fff; }
+  .hs-btn-green:hover { background: #16a34a; }
+  .hs-btn-outline { background: #fff; color: #64748b; border: 1px solid #e2e8f0; }
+  .hs-btn-outline:hover { border-color: #64748b; color: #1e293b; }
+  .hs-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .hs-stat-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; text-align: center; }
+  .hs-stat-card .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 4px; }
+  .hs-stat-card .value { font-size: 24px; font-weight: 700; color: #1e293b; }
+  .hs-stat-card .value.blue { color: #3b82f6; }
+  .hs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+  .hs-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; transition: box-shadow 0.2s, transform 0.2s; position: relative; }
+  .hs-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); transform: translateY(-2px); }
+  .hs-card.favorited { border-color: #f59e0b; }
+  .hs-card-img { width: 100%; height: 200px; object-fit: cover; background: #f1f5f9; display: block; }
+  .hs-card-img-placeholder { width: 100%; height: 200px; background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 14px; }
+  .hs-card-body { padding: 16px; }
+  .hs-card-price { font-size: 22px; font-weight: 700; color: #1e293b; margin-bottom: 4px; }
+  .hs-card-address { font-size: 14px; color: #475569; margin-bottom: 8px; line-height: 1.4; }
+  .hs-card-details { display: flex; gap: 16px; font-size: 13px; color: #64748b; margin-bottom: 8px; }
+  .hs-card-details span { display: flex; align-items: center; gap: 4px; }
+  .hs-card-desc { font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 12px; max-height: 60px; overflow: hidden; text-overflow: ellipsis; }
+  .hs-card-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
+  .hs-tag { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; background: rgba(59,130,246,0.1); color: #3b82f6; }
+  .hs-tag.pool { background: rgba(6,182,212,0.1); color: #0891b2; }
+  .hs-tag.fixer { background: rgba(234,179,8,0.1); color: #ca8a04; }
+  .hs-tag.rural { background: rgba(34,197,94,0.1); color: #16a34a; }
+  .hs-card-actions { display: flex; gap: 8px; }
+  .hs-card-actions a, .hs-card-actions button { flex: 1; text-align: center; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; transition: all 0.15s; }
+  .hs-card-actions .view-link { background: rgba(59,130,246,0.1); color: #3b82f6; }
+  .hs-card-actions .view-link:hover { background: rgba(59,130,246,0.2); }
+  .hs-card-actions .share-btn { background: rgba(34,197,94,0.1); color: #16a34a; }
+  .hs-card-actions .share-btn:hover { background: rgba(34,197,94,0.2); }
+  .hs-card-actions .fav-btn { background: rgba(234,179,8,0.1); color: #ca8a04; }
+  .hs-card-actions .fav-btn:hover { background: rgba(234,179,8,0.2); }
+  .hs-card-actions .fav-btn.active { background: #f59e0b; color: #fff; }
+  .hs-empty { text-align: center; padding: 60px 20px; color: #64748b; }
+  .hs-empty h3 { font-size: 18px; color: #1e293b; margin-bottom: 8px; }
+  .hs-loading { text-align: center; padding: 40px; color: #64748b; font-size: 14px; }
+  .hs-toast { position: fixed; bottom: 20px; right: 20px; background: #16a34a; color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; opacity: 0; transition: opacity 0.3s; z-index: 100; pointer-events: none; }
+  .hs-toast.show { opacity: 1; }
+  .hs-share-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; }
+  .hs-share-modal.open { display: flex; }
+  .hs-share-content { background: #fff; border-radius: 12px; padding: 24px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
+  .hs-share-content h3 { margin: 0 0 12px; font-size: 18px; }
+  .hs-share-content textarea { width: 100%; height: 200px; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; font-size: 13px; font-family: inherit; resize: vertical; }
+  .hs-share-actions { display: flex; gap: 8px; margin-top: 12px; }
+  .hs-area-badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; background: rgba(139,92,246,0.1); color: #7c3aed; }
+  .hs-new-badge { position: absolute; top: 12px; right: 12px; background: #ef4444; color: #fff; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 700; z-index: 1; }
+  @media (max-width: 600px) {
+    .hs-grid { grid-template-columns: 1fr; }
+    .hs-controls { flex-direction: column; }
+    .hs-stats { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+
+<div class="hs">
+  <div class="hs-header">
+    <div>
+      <h2>Home Search <span style="font-size:14px;color:#64748b;font-weight:400;">Fresno County</span></h2>
+      <div class="meta">Fixer-uppers with pool &bull; Old Fig, Sunnyside, Rural areas &bull; Mid-century &amp; farmhouse style</div>
+    </div>
+    <div style="text-align:right;">
+      <div class="meta" id="lastSearched">Loading...</div>
+      <div class="meta" id="searchCount"></div>
+    </div>
+  </div>
+
+  <!-- Summary Stats -->
+  <div class="hs-stats" id="statsRow">
+    <div class="hs-stat-card"><div class="label">Listings</div><div class="value" id="statTotal">--</div></div>
+    <div class="hs-stat-card"><div class="label">Price Range</div><div class="value blue" id="statRange" style="font-size:16px;">--</div></div>
+    <div class="hs-stat-card"><div class="label">Avg Sq Ft</div><div class="value" id="statSqft">--</div></div>
+    <div class="hs-stat-card"><div class="label">Favorites</div><div class="value" style="color:#f59e0b;" id="statFavs">0</div></div>
+    <div class="hs-stat-card"><div class="label">New Today</div><div class="value" style="color:#22c55e;" id="statNew">0</div></div>
+  </div>
+
+  <!-- Controls -->
+  <div class="hs-controls">
+    <select id="sortBy" onchange="renderListings()">
+      <option value="price-asc">Price: Low to High</option>
+      <option value="price-desc">Price: High to Low</option>
+      <option value="sqft-desc">Sq Ft: Largest</option>
+      <option value="beds-desc">Beds: Most</option>
+      <option value="date-desc">Newest First</option>
+    </select>
+    <select id="filterArea" onchange="renderListings()">
+      <option value="all">All Areas</option>
+      <option value="old-fig">Old Fig</option>
+      <option value="sunnyside">Sunnyside</option>
+      <option value="rural">Rural / Country</option>
+      <option value="other">Other</option>
+    </select>
+    <select id="filterView" onchange="renderListings()">
+      <option value="all">All Listings</option>
+      <option value="favorites">Favorites Only</option>
+      <option value="new">New Today</option>
+    </select>
+    <input type="text" id="searchBox" placeholder="Search address..." oninput="renderListings()" style="flex:1;min-width:120px;">
+    <div style="flex:1;"></div>
+    <button class="hs-btn hs-btn-green" onclick="openShareModal()">Share Favorites with Cristal</button>
+  </div>
+
+  <!-- Listing Grid -->
+  <div id="listingsContainer">
+    <div class="hs-loading">Loading listings...</div>
+  </div>
+</div>
+
+<!-- Share Modal -->
+<div class="hs-share-modal" id="shareModal">
+  <div class="hs-share-content">
+    <h3>Share with Cristal</h3>
+    <p style="font-size:13px;color:#64748b;margin:0 0 12px;">Review the message below, then copy or send via text/email.</p>
+    <textarea id="shareText" readonly></textarea>
+    <div class="hs-share-actions">
+      <button class="hs-btn hs-btn-primary" onclick="copyShareText()">Copy to Clipboard</button>
+      <button class="hs-btn hs-btn-green" onclick="emailShare()">Send via Email</button>
+      <button class="hs-btn hs-btn-outline" onclick="closeShareModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="hs-toast" id="toast"></div>
+
+<script>
+let allListings = [];
+let favorites = new Set();
+let searchMeta = {};
+
+async function loadData() {
+  try {
+    const res = await fetch('/api/home-search');
+    const data = await res.json();
+    allListings = data.listings || [];
+    searchMeta = data.meta || {};
+    (data.favorites || []).forEach(id => favorites.add(id));
+    updateMeta();
+    updateStats();
+    renderListings();
+  } catch (e) {
+    document.getElementById('listingsContainer').innerHTML =
+      '<div class="hs-empty"><h3>Could not load listings</h3><p>The listing data is not yet available. Check back soon.</p></div>';
+  }
+}
+
+function updateMeta() {
+  const el = document.getElementById('lastSearched');
+  if (searchMeta.lastSearched) {
+    const d = new Date(searchMeta.lastSearched);
+    el.textContent = 'Last searched: ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+  } else {
+    el.textContent = 'No searches yet';
+  }
+  const countEl = document.getElementById('searchCount');
+  if (searchMeta.searchCount) countEl.textContent = searchMeta.searchCount + ' searches total';
+}
+
+function updateStats() {
+  document.getElementById('statTotal').textContent = allListings.length;
+
+  if (allListings.length > 0) {
+    const prices = allListings.map(l => l.price).filter(p => p > 0).sort((a, b) => a - b);
+    if (prices.length > 0) {
+      const fmt = p => '$' + (p >= 1000000 ? (p / 1000000).toFixed(1) + 'M' : Math.round(p / 1000) + 'K');
+      document.getElementById('statRange').textContent = fmt(prices[0]) + ' - ' + fmt(prices[prices.length - 1]);
+    }
+    const sqfts = allListings.map(l => l.sqft).filter(s => s > 0);
+    if (sqfts.length > 0) {
+      document.getElementById('statSqft').textContent = Math.round(sqfts.reduce((a, b) => a + b, 0) / sqfts.length).toLocaleString();
+    }
+  }
+
+  document.getElementById('statFavs').textContent = favorites.size;
+
+  const today = new Date().toDateString();
+  const newCount = allListings.filter(l => l.addedAt && new Date(l.addedAt).toDateString() === today).length;
+  document.getElementById('statNew').textContent = newCount;
+}
+
+function renderListings() {
+  const sortBy = document.getElementById('sortBy').value;
+  const filterArea = document.getElementById('filterArea').value;
+  const filterView = document.getElementById('filterView').value;
+  const search = document.getElementById('searchBox').value.toLowerCase().trim();
+
+  let filtered = [...allListings];
+
+  // Filter by area
+  if (filterArea !== 'all') {
+    filtered = filtered.filter(l => (l.area || 'other') === filterArea);
+  }
+
+  // Filter by view
+  if (filterView === 'favorites') {
+    filtered = filtered.filter(l => favorites.has(l.id));
+  } else if (filterView === 'new') {
+    const today = new Date().toDateString();
+    filtered = filtered.filter(l => l.addedAt && new Date(l.addedAt).toDateString() === today);
+  }
+
+  // Search
+  if (search) {
+    filtered = filtered.filter(l =>
+      (l.address || '').toLowerCase().includes(search) ||
+      (l.description || '').toLowerCase().includes(search) ||
+      (l.area || '').toLowerCase().includes(search)
+    );
+  }
+
+  // Sort
+  const [field, dir] = sortBy.split('-');
+  filtered.sort((a, b) => {
+    let va = a[field] || 0, vb = b[field] || 0;
+    if (field === 'date') { va = new Date(a.addedAt || 0).getTime(); vb = new Date(b.addedAt || 0).getTime(); }
+    return dir === 'asc' ? va - vb : vb - va;
+  });
+
+  const container = document.getElementById('listingsContainer');
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="hs-empty"><h3>No listings found</h3><p>Try adjusting your filters or check back after the next search.</p></div>';
+    return;
+  }
+
+  const today = new Date().toDateString();
+  container.innerHTML = '<div class="hs-grid">' + filtered.map(l => {
+    const isFav = favorites.has(l.id);
+    const isNew = l.addedAt && new Date(l.addedAt).toDateString() === today;
+    const areaLabels = { 'old-fig': 'Old Fig', 'sunnyside': 'Sunnyside', 'rural': 'Rural', 'other': '' };
+
+    return `<div class="hs-card ${isFav ? 'favorited' : ''}">
+      ${isNew ? '<span class="hs-new-badge">NEW</span>' : ''}
+      ${l.imageUrl
+        ? `<img class="hs-card-img" src="${l.imageUrl}" alt="${l.address}" loading="lazy" onerror="this.outerHTML='<div class=hs-card-img-placeholder>No photo</div>'">`
+        : '<div class="hs-card-img-placeholder">No photo available</div>'}
+      <div class="hs-card-body">
+        <div class="hs-card-price">$${(l.price || 0).toLocaleString()}</div>
+        <div class="hs-card-address">${l.address || 'Address unavailable'}</div>
+        <div class="hs-card-details">
+          <span><strong>${l.beds || '?'}</strong> beds</span>
+          <span><strong>${l.baths || '?'}</strong> baths</span>
+          <span><strong>${l.sqft ? l.sqft.toLocaleString() : '?'}</strong> sq ft</span>
+        </div>
+        <div class="hs-card-tags">
+          ${l.area && l.area !== 'other' ? `<span class="hs-area-badge">${areaLabels[l.area] || l.area}</span>` : ''}
+          ${l.hasPool ? '<span class="hs-tag pool">Pool</span>' : ''}
+          ${l.isFixer ? '<span class="hs-tag fixer">Fixer</span>' : ''}
+          ${l.area === 'rural' ? '<span class="hs-tag rural">Rural</span>' : ''}
+        </div>
+        <div class="hs-card-desc">${l.description || ''}</div>
+        <div class="hs-card-actions">
+          ${l.listingUrl ? `<a class="view-link" href="${l.listingUrl}" target="_blank" rel="noopener">View Listing</a>` : '<span class="view-link" style="opacity:0.5">No link</span>'}
+          <button class="share-btn" onclick="shareSingle('${l.id}')">Send to Cristal</button>
+          <button class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFav('${l.id}')"> ${isFav ? '★' : '☆'}</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('') + '</div>';
+}
+
+function toggleFav(id) {
+  if (favorites.has(id)) favorites.delete(id);
+  else favorites.add(id);
+  updateStats();
+  renderListings();
+  saveFavorites();
+}
+
+async function saveFavorites() {
+  // Save to localStorage as fallback
+  localStorage.setItem('hs-favorites', JSON.stringify([...favorites]));
+}
+
+function shareSingle(id) {
+  const l = allListings.find(x => x.id === id);
+  if (!l) return;
+  const msg = composeShareMessage([l]);
+  document.getElementById('shareText').value = msg;
+  document.getElementById('shareModal').classList.add('open');
+}
+
+function openShareModal() {
+  const favListings = allListings.filter(l => favorites.has(l.id));
+  if (favListings.length === 0) {
+    showToast('No favorites selected! Star some listings first.');
+    return;
+  }
+  const msg = composeShareMessage(favListings);
+  document.getElementById('shareText').value = msg;
+  document.getElementById('shareModal').classList.add('open');
+}
+
+function closeShareModal() {
+  document.getElementById('shareModal').classList.remove('open');
+}
+
+function composeShareMessage(listings) {
+  let msg = `Hey Cristal! Found ${listings.length} home${listings.length > 1 ? 's' : ''} in Fresno County:\n\n`;
+  listings.forEach((l, i) => {
+    msg += `${i + 1}. ${l.address || 'Unknown address'}\n`;
+    msg += `   $${(l.price || 0).toLocaleString()} | ${l.beds || '?'} bed / ${l.baths || '?'} bath | ${l.sqft ? l.sqft.toLocaleString() + ' sq ft' : 'Sq ft N/A'}\n`;
+    if (l.description) msg += `   ${l.description.substring(0, 120)}\n`;
+    if (l.listingUrl) msg += `   ${l.listingUrl}\n`;
+    msg += '\n';
+  });
+  msg += 'What do you think? Let me know which ones you want to check out!';
+  return msg;
+}
+
+function copyShareText() {
+  const text = document.getElementById('shareText').value;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Copied to clipboard!');
+    closeShareModal();
+  }).catch(() => {
+    document.getElementById('shareText').select();
+    document.execCommand('copy');
+    showToast('Copied!');
+    closeShareModal();
+  });
+}
+
+function emailShare() {
+  const text = document.getElementById('shareText').value;
+  const subject = encodeURIComponent('Homes in Fresno County');
+  const body = encodeURIComponent(text);
+  window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
+}
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// Load favorites from localStorage on init
+const savedFavs = localStorage.getItem('hs-favorites');
+if (savedFavs) {
+  try { JSON.parse(savedFavs).forEach(id => favorites.add(id)); } catch (e) {}
+}
+
+loadData();
+</script>

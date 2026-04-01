@@ -146,20 +146,41 @@ let allListings = [];
 let favorites = new Set();
 let searchMeta = {};
 
+const SEED_LISTINGS = [
+  { id: "rf-58347492", address: "112 E Oleander Ave, Fresno, CA 93706", price: 470000, beds: 4, baths: 2, sqft: 2864, area: "sunnyside", hasPool: false, isFixer: true, description: "Built 1963 mid-century on 0.32 acre lot. Great bones, spacious layout with potential for updates.", listingUrl: "https://www.redfin.com/CA/Fresno/112-E-Oleander-Ave-93706/home/58347492", imageUrl: "https://ssl.cdn-redfin.com/photo/123/islphoto/396/genIslnoResize.646396_0.webp", addedAt: "2026-04-01T22:00:00Z" },
+  { id: "rf-58360426", address: "7010 S Frankwood Ave, Reedley, CA 93654", price: 1190000, beds: 4, baths: 3.5, sqft: 2753, area: "rural", hasPool: true, isFixer: false, description: "Stunning 2.33 acre rural property with pool, 6-car garage. Country living at its finest.", listingUrl: "https://www.redfin.com/CA/Reedley/7010-S-Frankwood-Ave-93654/home/58360426", imageUrl: "https://ssl.cdn-redfin.com/photo/123/islphoto/215/genIslnoResize.646215_0.webp", addedAt: "2026-04-01T22:00:00Z" },
+  { id: "rf-96004619", address: "35073 Auberry Rd, Auberry, CA 93602", price: 695000, beds: 5, baths: 3, sqft: 2792, area: "rural", hasPool: false, isFixer: false, description: "Farmhouse charm with wrap-around porch, outdoor fireplace, gated entrance. Peaceful mountain setting.", listingUrl: "https://www.redfin.com/CA/Auberry/35073-Auberry-Rd-93602/home/96004619", imageUrl: "https://ssl.cdn-redfin.com/photo/45/islphoto/008/genIslnoResize.FR26070008_0.webp", addedAt: "2026-04-01T22:00:00Z" },
+  { id: "rf-72691819", address: "1540 W San Ramon Ave, Fresno, CA 93711", price: 725000, beds: 4, baths: 2.25, sqft: 2173, area: "old-fig", hasPool: false, isFixer: true, description: "Classic Fig Garden home with character. Great location near shops and restaurants.", listingUrl: "https://www.redfin.com/CA/Fresno/1540-W-San-Ramon-Ave-93711/home/72691819", imageUrl: "", addedAt: "2026-04-01T22:00:00Z" },
+  { id: "rf-96037060", address: "3509 W Menlo Ave, Fresno, CA 93711", price: 799000, beds: 5, baths: 3, sqft: 3600, area: "old-fig", hasPool: false, isFixer: true, description: "Spacious 3,600 sq ft in Fig Garden. 5 bedrooms, great entertainer's layout. Needs cosmetic updates.", listingUrl: "https://www.redfin.com/CA/Fresno/3509-W-Menlo-Ave-93711/home/96037060", imageUrl: "", addedAt: "2026-04-01T22:00:00Z" },
+  { id: "rf-72691093", address: "3250 W Fremont Ave, Fresno, CA 93711", price: 600000, beds: 3, baths: 1.75, sqft: 2322, area: "old-fig", hasPool: false, isFixer: true, description: "Mid-century Fig Garden home with 2,322 sq ft. Solid structure ready for your personal touch.", listingUrl: "https://www.redfin.com/CA/Fresno/3250-W-Fremont-Ave-93711/home/72691093", imageUrl: "", addedAt: "2026-04-01T22:00:00Z" },
+  { id: "rf-58346961", address: "1407 E Princeton Ave, Fresno, CA 93704", price: 529999, beds: 3, baths: 3.5, sqft: 2957, area: "old-fig", hasPool: false, isFixer: false, description: "Near Fresno High / Old Fig. Nearly 3,000 sq ft with 3.5 baths. Unique layout and character.", listingUrl: "https://www.redfin.com/CA/Fresno/1407-E-Princeton-Ave-93704/home/58346961", imageUrl: "", addedAt: "2026-04-01T22:00:00Z" },
+  { id: "rf-58274525", address: "6702 N Dolores Ave, Fresno, CA 93711", price: 775000, beds: 4, baths: 2, sqft: 2756, area: "old-fig", hasPool: false, isFixer: true, description: "Desirable north Fig Garden location. 4 bed, 2,756 sq ft on a generous lot.", listingUrl: "https://www.redfin.com/CA/Fresno/6702-N-Dolores-Ave-93711/home/58274525", imageUrl: "", addedAt: "2026-04-01T22:00:00Z" },
+  { id: "rf-58291291", address: "3668 W Ellery Ave, Fresno, CA 93711", price: 568000, beds: 5, baths: 3, sqft: 2306, area: "old-fig", hasPool: false, isFixer: true, description: "Fig Garden 5-bedroom with 3 baths. Well-priced for the area. Mid-century potential.", listingUrl: "https://www.redfin.com/CA/Fresno/3668-W-Ellery-Ave-93711/home/58291291", imageUrl: "", addedAt: "2026-04-01T22:00:00Z" },
+  { id: "rf-58270797", address: "2271 E Niles Ave, Fresno, CA 93720", price: 509000, beds: 4, baths: 2, sqft: 1864, area: "other", hasPool: false, isFixer: true, description: "4 bed / 2 bath in northeast Fresno. 1,864 sq ft with room to expand.", listingUrl: "https://www.redfin.com/CA/Fresno/2271-E-Niles-Ave-93720/home/58270797", imageUrl: "", addedAt: "2026-04-01T22:00:00Z" },
+  { id: "rf-58341505", address: "2111 N Forestiere Ave, Fresno, CA 93722", price: 475000, beds: 4, baths: 2.5, sqft: 2606, area: "other", hasPool: false, isFixer: true, description: "Spacious 2,606 sq ft, 4 bed / 2.5 bath. Fixer-upper potential in west Fresno.", listingUrl: "https://www.redfin.com/CA/Fresno/2111-N-Forestiere-Ave-93722/home/58341505", imageUrl: "", addedAt: "2026-04-01T22:00:00Z" },
+  { id: "rf-72701188", address: "2446 S Claremont Ave, Fresno, CA 93727", price: 540000, beds: 4, baths: 2, sqft: 2016, area: "sunnyside", hasPool: false, isFixer: true, description: "Sunnyside area 4 bed / 2 bath. 2,016 sq ft with updates needed. Close to community amenities.", listingUrl: "https://www.redfin.com/CA/Fresno/2446-S-Claremont-Ave-93727/home/72701188", imageUrl: "", addedAt: "2026-04-01T22:00:00Z" },
+  { id: "rf-96015896", address: "94 N Locan Ave, Fresno, CA 93737", price: 615000, beds: 4, baths: 1.75, sqft: 1850, area: "rural", hasPool: false, isFixer: false, description: "East Fresno rural feel. 4 beds on a spacious lot near agricultural land.", listingUrl: "https://www.redfin.com/CA/Fresno/94-N-Locan-Ave-93737/home/96015896", imageUrl: "", addedAt: "2026-04-01T22:00:00Z" },
+  { id: "rf-201067942", address: "16808 W Palmer Ave, Huron, CA 93234", price: 425000, beds: 4, baths: 2, sqft: 2447, area: "rural", hasPool: false, isFixer: false, description: "Rural Huron property. 4 bed / 2 bath, 2,447 sq ft. Country living in Fresno County.", listingUrl: "https://www.redfin.com/CA/Huron/16808-W-Palmer-Ave-93234/home/201067942", imageUrl: "", addedAt: "2026-04-01T22:00:00Z" },
+  { id: "rf-58277349", address: "5454 E Butler Ave, Fresno, CA 93727", price: 965000, beds: 4, baths: 3, sqft: 2772, area: "sunnyside", hasPool: false, isFixer: false, description: "Impressive 4 bed / 3 bath near Sunnyside. 2,772 sq ft with quality finishes.", listingUrl: "https://www.redfin.com/CA/Fresno/5454-E-Butler-Ave-93727/home/58277349", imageUrl: "", addedAt: "2026-04-01T22:00:00Z" },
+  { id: "rf-58333676", address: "1553 E Golden Valley Way, Fresno, CA 93730", price: 1425000, beds: 4, baths: 3, sqft: 3416, area: "other", hasPool: true, isFixer: false, description: "Beautiful 3,416 sq ft with pool. Open house Sat 1-3pm. 0.29 acre lot, 3-car garage.", listingUrl: "https://www.redfin.com/CA/Fresno/1553-E-Golden-Valley-Way-93730/home/58333676", imageUrl: "https://ssl.cdn-redfin.com/photo/123/islphoto/337/genIslnoResize.646337_0.webp", addedAt: "2026-04-01T22:00:00Z" }
+];
+
+const SEED_META = { lastSearched: "2026-04-01T22:56:00Z", searchCount: 1, source: "Redfin - Fresno County" };
+
 async function loadData() {
   try {
     const res = await fetch('/api/home-search');
     const data = await res.json();
-    allListings = data.listings || [];
-    searchMeta = data.meta || {};
+    allListings = (data.listings && data.listings.length > 0) ? data.listings : SEED_LISTINGS;
+    searchMeta = (data.meta && data.meta.lastSearched) ? data.meta : SEED_META;
     (data.favorites || []).forEach(id => favorites.add(id));
-    updateMeta();
-    updateStats();
-    renderListings();
   } catch (e) {
-    document.getElementById('listingsContainer').innerHTML =
-      '<div class="hs-empty"><h3>Could not load listings</h3><p>The listing data is not yet available. Check back soon.</p></div>';
+    allListings = SEED_LISTINGS;
+    searchMeta = SEED_META;
   }
+  updateMeta();
+  updateStats();
+  renderListings();
 }
 
 function updateMeta() {

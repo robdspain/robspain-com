@@ -63,6 +63,37 @@ permalink: /admin/finance/
   .fin-deficit .label { font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 8px; }
   .fin-deficit .amount { font-size: 36px; font-weight: 700; color: #ef4444; }
   .fin-deficit .note { font-size: 13px; color: #64748b; margin-top: 8px; }
+  /* Editable cells */
+  .editable { cursor: pointer; position: relative; border-radius: 4px; padding: 2px 4px; margin: -2px -4px; }
+  .editable:hover { background: rgba(59,130,246,0.08); }
+  .editable input, .editable select { font: inherit; border: 1px solid #3b82f6; border-radius: 4px; padding: 2px 6px; width: 100%; background: #fff; outline: none; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
+  .editable input[type="number"] { width: 90px; text-align: right; }
+  /* Action buttons */
+  .btn-sm { padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+  .btn-add { background: #3b82f6; color: #fff; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; }
+  .btn-add:hover { background: #2563eb; }
+  .btn-pay { background: rgba(34,197,94,0.15); color: #16a34a; }
+  .btn-pay:hover { background: rgba(34,197,94,0.3); }
+  .btn-del { background: rgba(239,68,68,0.1); color: #ef4444; }
+  .btn-del:hover { background: rgba(239,68,68,0.2); }
+  .btn-edit { background: rgba(59,130,246,0.1); color: #3b82f6; }
+  .btn-edit:hover { background: rgba(59,130,246,0.2); }
+  /* Modal */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: #fff; border-radius: 16px; padding: 24px; width: 90%; max-width: 480px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+  .modal h3 { font-size: 18px; font-weight: 700; color: #1e293b; margin: 0 0 16px; }
+  .modal label { display: block; font-size: 13px; font-weight: 500; color: #64748b; margin-bottom: 4px; margin-top: 12px; }
+  .modal input, .modal select { width: 100%; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; color: #1e293b; }
+  .modal input:focus, .modal select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+  .modal-actions button { padding: 8px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+  .modal-actions .btn-cancel { background: #f1f5f9; color: #64748b; }
+  .modal-actions .btn-cancel:hover { background: #e2e8f0; }
+  .modal-actions .btn-save { background: #3b82f6; color: #fff; }
+  .modal-actions .btn-save:hover { background: #2563eb; }
+  .modal-actions .btn-danger { background: #ef4444; color: #fff; }
+  .modal-actions .btn-danger:hover { background: #dc2626; }
   /* Envelope styles */
   .envelope { border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; margin-bottom: 8px; position: relative; overflow: hidden; }
   .envelope::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; border-radius: 8px 0 0 8px; }
@@ -115,109 +146,64 @@ permalink: /admin/finance/
   .txn-row .txn-amt.credit { color: #22c55e; }
   .txn-summary { display: flex; gap: 16px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 13px; }
   .txn-summary span { color: #64748b; }
+  /* Payment history */
+  .payment-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #e2e8f0; font-size: 13px; }
+  .payment-row:last-child { border-bottom: none; }
+  .payment-row .pay-date { color: #64748b; width: 70px; flex-shrink: 0; }
+  .payment-row .pay-name { flex: 1; font-weight: 500; }
+  .payment-row .pay-amt { font-weight: 700; color: #22c55e; font-variant-numeric: tabular-nums; }
+  .payment-row .pay-from { font-size: 11px; color: #94a3b8; margin-left: 8px; }
   @media (max-width: 600px) { .fin-grid-4 { grid-template-columns: 1fr 1fr; } .fin-grid-2, .fin-grid-3 { grid-template-columns: 1fr; } .fin-tabs { gap: 2px; } .fin-tab { padding: 6px 10px; font-size: 12px; } }
 </style>
 
 <div class="fin-dash">
   <div class="fin-header">
     <h2>Household Finance</h2>
-    <span class="updated">Updated: Mar 30, 2026</span>
+    <span class="updated" id="lastUpdated">Updated: loading...</span>
   </div>
 
   <!-- Tab Navigation -->
   <div class="fin-tabs">
-    <div class="fin-tab active" onclick="showPanel('overview')">Overview</div>
-    <div class="fin-tab" onclick="showPanel('envelopes')">Envelopes</div>
-    <div class="fin-tab" onclick="showPanel('calendar')">Bill Calendar</div>
-    <div class="fin-tab" onclick="showPanel('networth')">Net Worth</div>
-    <div class="fin-tab" onclick="showPanel('import')">Import</div>
+    <div class="fin-tab active" onclick="showPanel('overview', this)">Overview</div>
+    <div class="fin-tab" onclick="showPanel('payments', this)">Payments</div>
+    <div class="fin-tab" onclick="showPanel('envelopes', this)">Envelopes</div>
+    <div class="fin-tab" onclick="showPanel('calendar', this)">Bill Calendar</div>
+    <div class="fin-tab" onclick="showPanel('networth', this)">Net Worth</div>
+    <div class="fin-tab" onclick="showPanel('import', this)">Import</div>
   </div>
 
   <!-- ═══════════════════════ OVERVIEW TAB ═══════════════════════ -->
   <div id="panel-overview" class="fin-panel active">
 
-    <!-- Sync Bar -->
-    <div class="sync-bar" id="syncBar">
-      <span id="syncMsg">You have unsaved status changes.</span>
-      <button onclick="sendUpdate()">Send Update to CTO</button>
-    </div>
-
     <!-- Alerts -->
-    <div class="fin-alert danger">
-      <strong>Structural deficit:</strong> Fixed expenses ($6,450/mo) exceed income ($5,726/mo) before any variable spending.
-    </div>
-    <div class="fin-alert warn">
-      <strong>Post-paycheck:</strong> ~$4,009 in checking after Apple Card payment ($960) and OFW renewal ($110). Next paycheck ~Apr 13.
-    </div>
+    <div id="alertsContainer"></div>
 
     <!-- Summary Cards -->
-    <div class="fin-grid fin-grid-4">
-      <div class="fin-card">
-        <h3>Cash Available</h3>
-        <div class="fin-stat yellow">$4,096</div>
-        <div class="fin-sub">Checking $4,009 + Savings $87</div>
-      </div>
-      <div class="fin-card">
-        <h3>LOC Available</h3>
-        <div class="fin-stat blue">$9,596</div>
-        <div class="fin-sub">$404 used</div>
-      </div>
-      <div class="fin-card">
-        <h3>Total Debt</h3>
-        <div class="fin-stat red">$34,603</div>
-        <div class="fin-sub">Apple Card + Auto + LOC + Discover</div>
-      </div>
-      <div class="fin-card">
-        <h3>Monthly Deficit</h3>
-        <div class="fin-stat red">-$1,272</div>
-        <div class="fin-sub">After proposed cuts</div>
-      </div>
-    </div>
+    <div class="fin-grid fin-grid-4" id="summaryCards"></div>
 
     <!-- Bills + Accounts -->
     <div class="fin-section">
       <div class="fin-grid fin-grid-2">
         <div class="fin-card">
-          <h3>Bills &amp; Due Dates</h3>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <h3 style="margin:0;">Bills &amp; Due Dates</h3>
+            <button class="btn-add" onclick="openAddBillModal()">+ Add Bill</button>
+          </div>
           <table class="fin-table">
-            <thead><tr><th>Bill</th><th>Due</th><th class="amt">Amount</th><th>Status <span style="font-size:10px;font-weight:400;color:#64748b;">(click to change)</span></th></tr></thead>
+            <thead><tr><th>Bill</th><th>Due</th><th class="amt">Amount</th><th>Status</th><th></th></tr></thead>
             <tbody id="billsBody"></tbody>
           </table>
         </div>
         <div class="fin-card">
-          <h3>Account Balances</h3>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <h3 style="margin:0;">Account Balances</h3>
+            <span style="font-size:11px;color:#94a3b8;">Click balance to edit</span>
+          </div>
           <table class="fin-table">
             <thead><tr><th>Account</th><th class="amt">Balance</th><th>Notes</th></tr></thead>
-            <tbody>
-              <tr><td>EECU Checking</td><td class="amt">$4,009</td><td style="color:#64748b">After paycheck + payments</td></tr>
-              <tr><td>EECU Savings</td><td class="amt">$87</td><td style="color:#64748b">Available</td></tr>
-              <tr><td>Line of Credit</td><td class="amt" style="color:#3b82f6">$9,596</td><td style="color:#64748b">$404 used</td></tr>
-              <tr><td>Auto Loan</td><td class="amt" style="color:#ef4444">-$16,354</td><td style="color:#64748b">Due 04/05 autopay</td></tr>
-              <tr><td>Apple Card</td><td class="amt" style="color:#ef4444">-$16,199</td><td style="color:#64748b">Paid $960 on 3/30</td></tr>
-              <tr><td>Discover</td><td class="amt" style="color:#ef4444">-$1,000 est</td><td style="color:#64748b">Min $83/mo</td></tr>
-            </tbody>
+            <tbody id="accountsBody"></tbody>
           </table>
-          <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #e2e8f0;">
-            <h3>Debt Breakdown</h3>
-            <div style="margin-top: 12px;">
-              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-                <span>Apple Card</span><span style="color:#64748b">$17,049 (49%)</span>
-              </div>
-              <div class="fin-bar-bg"><div class="fin-bar red" style="width:49%"></div></div>
-            </div>
-            <div style="margin-top: 12px;">
-              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-                <span>Auto Loan</span><span style="color:#64748b">$16,354 (47%)</span>
-              </div>
-              <div class="fin-bar-bg"><div class="fin-bar yellow" style="width:52%"></div></div>
-            </div>
-            <div style="margin-top: 12px;">
-              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-                <span>Discover + LOC</span><span style="color:#64748b">$1,200 (3%)</span>
-              </div>
-              <div class="fin-bar-bg"><div class="fin-bar green" style="width:3%"></div></div>
-            </div>
-          </div>
+          <div id="debtBreakdown" style="margin-top:20px;padding-top:16px;border-top:1px solid #e2e8f0;"></div>
         </div>
       </div>
     </div>
@@ -225,102 +211,41 @@ permalink: /admin/finance/
     <!-- Budget + Income -->
     <div class="fin-section">
       <div class="fin-grid fin-grid-2">
+        <div class="fin-card" id="budgetCard"></div>
         <div class="fin-card">
-          <h3>Monthly Budget Breakdown</h3>
-          <div style="margin-bottom:12px;">
-            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-              <span>Housing (Rent)</span><span style="color:#64748b">$2,445 — 43%</span>
-            </div>
-            <div class="fin-bar-bg"><div class="fin-bar red" style="width:43%"></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <h3 style="margin:0;">Income Sources</h3>
+            <span style="font-size:11px;color:#94a3b8;">Click amount to edit</span>
           </div>
-          <div style="margin-bottom:12px;">
-            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-              <span>Supporting Hands (Childcare)</span><span style="color:#64748b">$1,800 — 31%</span>
-            </div>
-            <div class="fin-bar-bg"><div class="fin-bar red" style="width:31%"></div></div>
-          </div>
-          <div style="margin-bottom:12px;">
-            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-              <span>Debt Payments</span><span style="color:#64748b">$1,031 — 18%</span>
-            </div>
-            <div class="fin-bar-bg"><div class="fin-bar yellow" style="width:18%"></div></div>
-          </div>
-          <div style="margin-bottom:12px;">
-            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-              <span>Auto Loan</span><span style="color:#64748b">$499 — 9%</span>
-            </div>
-            <div class="fin-bar-bg"><div class="fin-bar yellow" style="width:9%"></div></div>
-          </div>
-          <div style="margin-bottom:12px;">
-            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-              <span>Utilities (PG&E, Water, Internet, AT&T)</span><span style="color:#64748b">$545 — 10%</span>
-            </div>
-            <div class="fin-bar-bg"><div class="fin-bar green" style="width:10%"></div></div>
-          </div>
-          <div style="margin-bottom:12px;">
-            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-              <span>Insurance (Toggle, Allstate, Principal)</span><span style="color:#64748b">$262 — 5%</span>
-            </div>
-            <div class="fin-bar-bg"><div class="fin-bar green" style="width:5%"></div></div>
-          </div>
-          <div style="margin-bottom:12px;">
-            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-              <span>Variable (Groceries, Gas, Pharmacy)</span><span style="color:#64748b">$340 — 6%</span>
-            </div>
-            <div class="fin-bar-bg"><div class="fin-bar green" style="width:6%"></div></div>
-          </div>
-          <div style="margin-top:16px;padding-top:12px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-weight:600;">
-            <span>Total Recurring</span>
-            <span style="color:#ef4444">$6,998/mo (after cuts)</span>
-          </div>
-        </div>
-        <div class="fin-card">
-          <h3>Income Sources</h3>
           <table class="fin-table">
             <thead><tr><th>Source</th><th class="amt">Amount</th><th>Frequency</th></tr></thead>
-            <tbody>
-              <tr><td>Kings Canyon USD</td><td class="amt">$4,361</td><td style="color:#64748b">Biweekly</td></tr>
-              <tr><td>FPU Payroll</td><td class="amt">$1,093</td><td style="color:#64748b">Monthly</td></tr>
-              <tr><td>Behavior School</td><td class="amt">$272</td><td style="color:#64748b">Irregular</td></tr>
-            </tbody>
+            <tbody id="incomeBody"></tbody>
           </table>
-          <div style="margin-top:16px;padding-top:12px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-weight:600;">
-            <span>Total Monthly Income</span>
-            <span class="fin-stat green" style="font-size:20px;">$5,726</span>
-          </div>
-          <div style="margin-top:24px;">
-            <h3>Proposed Subscription Cuts</h3>
-            <table class="fin-table" style="margin-top:12px;">
-              <thead><tr><th>Item</th><th class="amt">Cost</th><th>Action</th></tr></thead>
-              <tbody>
-                <tr><td>ButcherBox</td><td class="amt">$154</td><td style="color:#ef4444;font-weight:600;">CANCEL</td></tr>
-                <tr><td>DoorDash/DashPass</td><td class="amt">$62</td><td style="color:#ef4444;font-weight:600;">CANCEL</td></tr>
-                <tr><td>Rocket Money</td><td class="amt">$6</td><td style="color:#ef4444;font-weight:600;">CANCEL</td></tr>
-                <tr><td><s>Google Cloud</s></td><td class="amt"><s>$23</s></td><td style="color:#22c55e;font-weight:600;">BUSINESS (removed)</td></tr>
-              </tbody>
-            </table>
-            <div style="margin-top:12px;padding-top:12px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-weight:600;">
-              <span>Potential Savings</span>
-              <span style="color:#22c55e">$245/mo</span>
-            </div>
-          </div>
+          <div id="incomeTotalRow" style="margin-top:16px;padding-top:12px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-weight:600;"></div>
         </div>
       </div>
     </div>
 
     <!-- Deficit Summary -->
-    <div class="fin-deficit">
-      <div class="label">Monthly Structural Deficit</div>
-      <div class="amount">-$1,272/mo</div>
-      <div class="note">After all proposed subscription cuts. True gap may be larger (~$4,000+/mo with irregular expenses).</div>
-      <div style="margin-top: 16px; font-size: 13px; color: #64748b; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
-        <strong style="color:#1e293b;">Biggest levers to close the gap:</strong>
-        <ol style="margin-top: 8px; padding-left: 20px; line-height: 1.8;">
-          <li><strong>Supporting Hands funding</strong> — if IHSS/insurance covers 50%, saves ~$900/mo</li>
-          <li><strong>Increase behavior school income</strong> — currently $272/mo avg</li>
-          <li><strong>Move Supporting Hands off Apple Card</strong> — stop interest compounding on $1,800/mo</li>
-          <li><strong>AT&amp;T plan review</strong> — $129/mo may be reducible</li>
-        </ol>
+    <div class="fin-deficit" id="deficitSummary"></div>
+  </div>
+
+  <!-- ═══════════════════════ PAYMENTS TAB ═══════════════════════ -->
+  <div id="panel-payments" class="fin-panel">
+    <div class="fin-alert info">
+      <strong>Payment history:</strong> Log payments as you make them. Click "Log Payment" on any bill, or use the button below.
+    </div>
+    <div style="margin-bottom:16px;">
+      <button class="btn-add" onclick="openPaymentModal()">+ Log Payment</button>
+    </div>
+    <div class="fin-grid fin-grid-2">
+      <div class="fin-card">
+        <h3>Recent Payments</h3>
+        <div id="paymentsListFull"></div>
+      </div>
+      <div class="fin-card">
+        <h3>Payment Summary</h3>
+        <div id="paymentSummary"></div>
       </div>
     </div>
   </div>
@@ -329,156 +254,12 @@ permalink: /admin/finance/
   <div id="panel-envelopes" class="fin-panel">
 
     <div class="fin-alert info">
-      <strong>Envelope budgeting:</strong> Every dollar of the $5,726 monthly income is assigned by priority. When money runs out, lower-priority envelopes go unfunded — making the deficit visible.
+      <strong>Envelope budgeting:</strong> Every dollar of monthly income is assigned by priority. When money runs out, lower-priority envelopes go unfunded — making the deficit visible.
     </div>
 
     <div class="fin-grid fin-grid-2">
-      <div class="fin-card">
-        <h3>April 2026 Envelopes</h3>
-
-        <div class="env-priority p1">Priority 1 — Survival (must pay or lose housing/services)</div>
-        <div class="envelope p1">
-          <div class="env-row"><span class="env-name">Rent (Valley Vista)</span><span class="env-amt" style="color:#22c55e">$2,445</span></div>
-          <div class="env-bar"><div class="env-fill" style="width:100%;background:#22c55e;"></div></div>
-        </div>
-        <div class="envelope p1">
-          <div class="env-row"><span class="env-name">Auto Loan (autopay)</span><span class="env-amt" style="color:#22c55e">$499</span></div>
-          <div class="env-bar"><div class="env-fill" style="width:100%;background:#22c55e;"></div></div>
-        </div>
-        <div class="envelope p1">
-          <div class="env-row"><span class="env-name">PG&E (payment plan)</span><span class="env-amt" style="color:#22c55e">$200</span></div>
-          <div class="env-bar"><div class="env-fill" style="width:100%;background:#22c55e;"></div></div>
-        </div>
-        <div class="envelope p1">
-          <div class="env-row"><span class="env-name">City of Fresno (water)</span><span class="env-amt" style="color:#22c55e">$121</span></div>
-          <div class="env-bar"><div class="env-fill" style="width:100%;background:#22c55e;"></div></div>
-        </div>
-        <div class="envelope p1">
-          <div class="env-row"><span class="env-name">Xfinity Internet</span><span class="env-amt" style="color:#22c55e">$95</span></div>
-          <div class="env-bar"><div class="env-fill" style="width:100%;background:#22c55e;"></div></div>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin:8px 0 4px 8px;">
-          <span>P1 Total: $3,360</span><span style="color:#22c55e">Remaining: $2,366</span>
-        </div>
-
-        <div class="env-priority p2">Priority 2 — Insurance &amp; Debt Minimums</div>
-        <div class="envelope p2">
-          <div class="env-row"><span class="env-name">Toggle Insurance (auto)</span><span class="env-amt" style="color:#22c55e">$202</span></div>
-          <div class="env-bar"><div class="env-fill" style="width:100%;background:#22c55e;"></div></div>
-        </div>
-        <div class="envelope p2">
-          <div class="env-row"><span class="env-name">Apple Card minimum</span><span class="env-amt" style="color:#22c55e">$366</span></div>
-          <div class="env-bar"><div class="env-fill" style="width:100%;background:#22c55e;"></div></div>
-        </div>
-        <div class="envelope p2">
-          <div class="env-row"><span class="env-name">AT&amp;T Wireless</span><span class="env-amt" style="color:#22c55e">$129</span></div>
-          <div class="env-bar"><div class="env-fill" style="width:100%;background:#22c55e;"></div></div>
-        </div>
-        <div class="envelope p2">
-          <div class="env-row"><span class="env-name">Discover minimum</span><span class="env-amt" style="color:#22c55e">$83</span></div>
-          <div class="env-bar"><div class="env-fill" style="width:100%;background:#22c55e;"></div></div>
-        </div>
-        <div class="envelope p2">
-          <div class="env-row"><span class="env-name">EECU LOC minimum</span><span class="env-amt" style="color:#22c55e">$75</span></div>
-          <div class="env-bar"><div class="env-fill" style="width:100%;background:#22c55e;"></div></div>
-        </div>
-        <div class="envelope p2">
-          <div class="env-row"><span class="env-name">Principal Insurance</span><span class="env-amt" style="color:#22c55e">$35</span></div>
-          <div class="env-bar"><div class="env-fill" style="width:100%;background:#22c55e;"></div></div>
-        </div>
-        <div class="envelope p2">
-          <div class="env-row"><span class="env-name">Allstate Insurance</span><span class="env-amt" style="color:#22c55e">$25</span></div>
-          <div class="env-bar"><div class="env-fill" style="width:100%;background:#22c55e;"></div></div>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin:8px 0 4px 8px;">
-          <span>P2 Total: $923</span><span style="color:#22c55e">Remaining: $1,443</span>
-        </div>
-
-        <div class="env-priority p3">Priority 3 — Necessities</div>
-        <div class="envelope p3">
-          <div class="env-row"><span class="env-name">Groceries</span><span class="env-amt" style="color:#22c55e">$120</span></div>
-          <div class="env-bar"><div class="env-fill" style="width:100%;background:#22c55e;"></div></div>
-        </div>
-        <div class="envelope p3">
-          <div class="env-row"><span class="env-name">Gas</span><span class="env-amt" style="color:#22c55e">$100</span></div>
-          <div class="env-bar"><div class="env-fill" style="width:100%;background:#22c55e;"></div></div>
-        </div>
-        <div class="envelope p3">
-          <div class="env-row"><span class="env-name">Pharmacy/Medical</span><span class="env-amt" style="color:#22c55e">$30</span></div>
-          <div class="env-bar"><div class="env-fill" style="width:100%;background:#22c55e;"></div></div>
-        </div>
-        <div class="envelope p3">
-          <div class="env-row"><span class="env-name">Household (Target)</span><span class="env-amt" style="color:#22c55e">$40</span></div>
-          <div class="env-bar"><div class="env-fill" style="width:100%;background:#22c55e;"></div></div>
-        </div>
-        <div class="envelope p3">
-          <div class="env-row"><span class="env-name">Amazon</span><span class="env-amt" style="color:#22c55e">$50</span></div>
-          <div class="env-bar"><div class="env-fill" style="width:100%;background:#22c55e;"></div></div>
-        </div>
-        <div class="envelope p3">
-          <div class="env-row"><span class="env-name">Subscriptions (Netflix, Apple, Google One)</span><span class="env-amt" style="color:#22c55e">$58</span></div>
-          <div class="env-bar"><div class="env-fill" style="width:100%;background:#22c55e;"></div></div>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin:8px 0 4px 8px;">
-          <span>P3 Total: $398</span><span style="color:#22c55e">Remaining: $1,045</span>
-        </div>
-
-        <div class="env-priority p4">Priority 4 — Apple Card Charges (on credit, not from checking)</div>
-        <div class="envelope p4 unfunded">
-          <div class="env-row"><span class="env-name">Supporting Hands (childcare)</span><span class="env-amt" style="color:#ef4444">$1,800 unfunded</span></div>
-          <div class="env-bar"><div class="env-fill" style="width:0%;background:#ef4444;"></div></div>
-        </div>
-        <div class="envelope p4 unfunded">
-          <div class="env-row"><span class="env-name">Phillip M. Collier</span><span class="env-amt" style="color:#ef4444">$375 unfunded</span></div>
-          <div class="env-bar"><div class="env-fill" style="width:0%;background:#ef4444;"></div></div>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin:8px 0 4px 8px;">
-          <span>On credit (adds to debt): $2,175</span><span style="color:#ef4444">This is why Apple Card grows</span>
-        </div>
-      </div>
-
-      <div class="fin-card">
-        <h3>Envelope Summary</h3>
-        <div style="margin-bottom:24px;">
-          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-            <span style="font-size:14px;">Monthly Income</span>
-            <span style="font-size:20px;font-weight:700;color:#22c55e;">$5,726</span>
-          </div>
-          <div class="fin-bar-bg" style="height:24px;border-radius:6px;">
-            <div style="height:100%;display:flex;border-radius:6px;overflow:hidden;">
-              <div style="width:58.7%;background:#ef4444;" title="P1: Housing & Utilities $3,360"></div>
-              <div style="width:16.1%;background:#eab308;" title="P2: Insurance & Debt $923"></div>
-              <div style="width:6.9%;background:#3b82f6;" title="P3: Necessities $398"></div>
-              <div style="width:18.3%;background:#22c55e;" title="Buffer $1,045"></div>
-            </div>
-          </div>
-          <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;font-size:11px;">
-            <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#ef4444;margin-right:4px;"></span>P1 Survival $3,360</span>
-            <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#eab308;margin-right:4px;"></span>P2 Insurance/Debt $923</span>
-            <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#3b82f6;margin-right:4px;"></span>P3 Necessities $398</span>
-            <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#22c55e;margin-right:4px;"></span>Buffer $1,045</span>
-          </div>
-        </div>
-
-        <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:16px;margin-bottom:16px;">
-          <div style="font-size:13px;font-weight:600;color:#ef4444;margin-bottom:8px;">THE HIDDEN COST</div>
-          <div style="font-size:13px;color:#1e293b;line-height:1.6;">
-            $1,045 looks like a buffer, but <strong>$2,175/mo goes on Apple Card</strong> (Supporting Hands + Collier) — that's new debt every month. The real deficit is:<br>
-            <span style="font-size:20px;font-weight:700;color:#ef4444;display:block;margin-top:8px;">-$1,130/mo net new debt</span>
-            <span style="font-size:12px;color:#64748b;">Plus interest compounding on the $14K balance</span>
-          </div>
-        </div>
-
-        <div style="border-top:1px solid #e2e8f0;padding-top:16px;">
-          <h3>How Envelope Budgeting Helps</h3>
-          <ul style="font-size:13px;color:#64748b;line-height:1.8;padding-left:16px;">
-            <li>P1-P3 are <strong>fully funded</strong> from checking — these get paid first</li>
-            <li>P4 items go on credit — they're <strong>visible as unfunded</strong></li>
-            <li>If Supporting Hands gets insurance coverage, that $1,800 moves from P4 (unfunded/credit) to P1 (funded from income)</li>
-            <li>The $1,045 buffer covers irregular expenses and prevents new LOC draws</li>
-          </ul>
-        </div>
-      </div>
+      <div class="fin-card" id="envelopesCard"></div>
+      <div class="fin-card" id="envelopeSummaryCard"></div>
     </div>
   </div>
 
@@ -486,100 +267,10 @@ permalink: /admin/finance/
   <div id="panel-calendar" class="fin-panel">
 
     <div class="fin-alert info">
-      <strong>Bill calendar:</strong> Next 30 days of upcoming payments, sorted by date. Overdue items shown first.
+      <strong>Bill calendar:</strong> Auto-generated from your bills. Sorted by due date, overdue items first.
     </div>
 
-    <div class="fin-grid fin-grid-2">
-      <div class="fin-card">
-        <h3>Overdue &amp; This Week</h3>
-
-        <div class="cal-row">
-          <div class="cal-day danger"><span class="month">Mar</span><span class="date">28</span></div>
-          <div class="cal-info"><div class="name">City of Fresno (water/sewer)</div><div class="detail">Apple Card declined — pay from checking</div></div>
-          <div class="cal-amt" style="color:#ef4444">$121</div>
-        </div>
-        <div class="cal-row">
-          <div class="cal-day done"><span class="month">Mar</span><span class="date">29</span></div>
-          <div class="cal-info"><div class="name">Toggle Insurance (auto)</div><div class="detail">Paid via EECU debit ending 2527</div></div>
-          <div class="cal-amt" style="color:#22c55e">$204 paid</div>
-        </div>
-        <div class="cal-row">
-          <div class="cal-day done"><span class="month">Mar</span><span class="date">29</span></div>
-          <div class="cal-info"><div class="name">Xfinity Internet</div><div class="detail">Paid via Wells Fargo</div></div>
-          <div class="cal-amt" style="color:#22c55e">$95 paid</div>
-        </div>
-        <div class="cal-row">
-          <div class="cal-day warn"><span class="month">Mar</span><span class="date">30</span></div>
-          <div class="cal-info"><div class="name">Paycheck — Kings Canyon USD</div><div class="detail">Biweekly payroll deposit to EECU checking</div></div>
-          <div class="cal-amt" style="color:#22c55e">+$2,180</div>
-        </div>
-      </div>
-
-      <div class="fin-card">
-        <h3>Coming Up (April 2026)</h3>
-
-        <div class="cal-row">
-          <div class="cal-day ok"><span class="month">Apr</span><span class="date">1</span></div>
-          <div class="cal-info"><div class="name">Valley Vista Pro (rent)</div><div class="detail">EECU checking — largest monthly expense</div></div>
-          <div class="cal-amt">$2,445</div>
-        </div>
-        <div class="cal-row">
-          <div class="cal-day ok"><span class="month">Apr</span><span class="date">5</span></div>
-          <div class="cal-info"><div class="name">EECU Auto Loan</div><div class="detail">Autopay from EECU checking</div></div>
-          <div class="cal-amt">$499</div>
-        </div>
-        <div class="cal-row">
-          <div class="cal-day ok"><span class="month">Apr</span><span class="date">14</span></div>
-          <div class="cal-info"><div class="name">PG&amp;E (payment plan)</div><div class="detail">Payment plan — next installment</div></div>
-          <div class="cal-amt">$200</div>
-        </div>
-        <div class="cal-row">
-          <div class="cal-day ok"><span class="month">Apr</span><span class="date">18</span></div>
-          <div class="cal-info"><div class="name">Discover card minimum</div><div class="detail">Estimated due date</div></div>
-          <div class="cal-amt">$83</div>
-        </div>
-        <div class="cal-row">
-          <div class="cal-day ok"><span class="month">Apr</span><span class="date">26</span></div>
-          <div class="cal-info"><div class="name">EECU LOC minimum</div><div class="detail">Line of credit payment</div></div>
-          <div class="cal-amt">$75</div>
-        </div>
-        <div class="cal-row">
-          <div class="cal-day ok"><span class="month">Apr</span><span class="date">26</span></div>
-          <div class="cal-info"><div class="name">Toggle Insurance (auto)</div><div class="detail">Auto insurance — EECU debit</div></div>
-          <div class="cal-amt">$199</div>
-        </div>
-        <div class="cal-row">
-          <div class="cal-day ok"><span class="month">Apr</span><span class="date">27</span></div>
-          <div class="cal-info"><div class="name">Apple Card minimum</div><div class="detail">Goldman Sachs — from EECU checking</div></div>
-          <div class="cal-amt">$366</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="fin-section">
-      <div class="fin-card">
-        <h3>April Cash Flow Timeline</h3>
-        <table class="fin-table">
-          <thead><tr><th>Date</th><th>Event</th><th class="amt">Amount</th><th class="amt">Running Balance</th></tr></thead>
-          <tbody>
-            <tr><td>Mar 30</td><td style="color:#22c55e">Paycheck (KCUSD)</td><td class="amt" style="color:#22c55e">+$2,180</td><td class="amt">$2,400</td></tr>
-            <tr><td>Mar 30</td><td style="color:#ef4444">City of Fresno (overdue)</td><td class="amt" style="color:#ef4444">-$121</td><td class="amt">$2,279</td></tr>
-            <tr><td>Apr 1</td><td style="color:#ef4444">Rent (Valley Vista)</td><td class="amt" style="color:#ef4444">-$2,445</td><td class="amt" style="color:#ef4444">-$166</td></tr>
-            <tr style="background:rgba(239,68,68,0.05);"><td colspan="4" style="color:#ef4444;font-size:12px;font-weight:600;text-align:center;">Need ~$166 from LOC or wait for next paycheck ~Apr 13</td></tr>
-            <tr><td>Apr 5</td><td style="color:#ef4444">Auto Loan (autopay)</td><td class="amt" style="color:#ef4444">-$499</td><td class="amt" style="color:#ef4444">-$665</td></tr>
-            <tr><td>~Apr 13</td><td style="color:#22c55e">Paycheck (KCUSD)</td><td class="amt" style="color:#22c55e">+$2,180</td><td class="amt">$1,515</td></tr>
-            <tr><td>Apr 14</td><td style="color:#ef4444">PG&amp;E</td><td class="amt" style="color:#ef4444">-$200</td><td class="amt">$1,315</td></tr>
-            <tr><td>~Apr 15</td><td style="color:#22c55e">FPU Payroll</td><td class="amt" style="color:#22c55e">+$1,093</td><td class="amt">$2,408</td></tr>
-            <tr><td>Apr 18</td><td style="color:#ef4444">Discover min</td><td class="amt" style="color:#ef4444">-$83</td><td class="amt">$2,325</td></tr>
-            <tr><td>Apr 26</td><td style="color:#ef4444">EECU LOC min</td><td class="amt" style="color:#ef4444">-$75</td><td class="amt">$2,250</td></tr>
-            <tr><td>Apr 26</td><td style="color:#ef4444">Toggle Insurance</td><td class="amt" style="color:#ef4444">-$199</td><td class="amt">$2,051</td></tr>
-            <tr><td>~Apr 27</td><td style="color:#22c55e">Paycheck (KCUSD)</td><td class="amt" style="color:#22c55e">+$2,180</td><td class="amt">$4,231</td></tr>
-            <tr><td>Apr 27</td><td style="color:#ef4444">Apple Card min</td><td class="amt" style="color:#ef4444">-$366</td><td class="amt">$3,857</td></tr>
-            <tr style="background:rgba(234,179,8,0.05);"><td colspan="4" style="color:#eab308;font-size:12px;text-align:center;">Remaining for groceries, gas, pharmacy, household: ~$857 (variable budget: $340)</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <div class="fin-grid fin-grid-2" id="calendarGrid"></div>
   </div>
 
   <!-- ═══════════════════════ NET WORTH TAB ═══════════════════════ -->
@@ -597,65 +288,12 @@ permalink: /admin/finance/
           <span>Apr 2025</span>
           <span>Mar 2026</span>
         </div>
-        <div style="margin-top:16px;padding-top:12px;border-top:1px solid #e2e8f0;">
-          <div style="display:flex;justify-content:space-between;font-size:13px;">
-            <span style="color:#64748b">Current Net Worth</span>
-            <span style="font-weight:700;color:#ef4444;font-size:18px;">-$31,420</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:8px;">
-            <span style="color:#64748b">12-month change</span>
-            <span style="font-weight:600;color:#ef4444;">-$9,255 (worse)</span>
-          </div>
-        </div>
+        <div id="nwSummary" style="margin-top:16px;padding-top:12px;border-top:1px solid #e2e8f0;"></div>
       </div>
 
       <div class="fin-card">
         <h3>Debt Payoff Projection</h3>
-        <table class="fin-table">
-          <thead><tr><th>Account</th><th class="amt">Balance</th><th class="amt">Min Pay</th><th>Payoff at Min</th></tr></thead>
-          <tbody>
-            <tr>
-              <td>Apple Card</td>
-              <td class="amt" style="color:#ef4444">$17,049</td>
-              <td class="amt">$366</td>
-              <td style="color:#ef4444;font-weight:600;">26+ years</td>
-            </tr>
-            <tr>
-              <td>Auto Loan</td>
-              <td class="amt" style="color:#ef4444">$16,354</td>
-              <td class="amt">$499</td>
-              <td style="color:#eab308;">~3 years</td>
-            </tr>
-            <tr>
-              <td>Discover</td>
-              <td class="amt" style="color:#ef4444">$1,000</td>
-              <td class="amt">$83</td>
-              <td style="color:#22c55e;">~14 months</td>
-            </tr>
-            <tr>
-              <td>EECU LOC</td>
-              <td class="amt" style="color:#ef4444">$404</td>
-              <td class="amt">$75</td>
-              <td style="color:#22c55e;">~6 months</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div style="margin-top:20px;padding-top:16px;border-top:1px solid #e2e8f0;">
-          <h3>Avalanche Strategy (save most interest)</h3>
-          <div style="font-size:13px;color:#64748b;margin-bottom:12px;">Pay minimums on everything, throw any extra at the highest-interest debt first.</div>
-          <ol style="font-size:13px;color:#1e293b;padding-left:20px;line-height:2;">
-            <li><strong style="color:#ef4444;">Apple Card</strong> — highest interest rate, balance growing</li>
-            <li><strong style="color:#eab308;">Discover</strong> — likely high rate, small balance = quick win</li>
-            <li><strong style="color:#3b82f6;">EECU LOC</strong> — small balance, LOC rate</li>
-            <li><strong style="color:#64748b;">Auto Loan</strong> — lowest rate, keep at minimum</li>
-          </ol>
-        </div>
-
-        <div style="margin-top:16px;padding:12px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:8px;">
-          <div style="font-size:13px;font-weight:600;color:#22c55e;margin-bottom:4px;">Quick win: Discover + LOC</div>
-          <div style="font-size:12px;color:#64748b;">Both can be eliminated within 14 months at current minimums. Frees up $158/mo that can attack the Apple Card balance. Combined with stopping new Apple Card charges ($2,175/mo), the balance starts shrinking instead of growing.</div>
-        </div>
+        <div id="debtPayoff"></div>
       </div>
     </div>
   </div>
@@ -709,7 +347,7 @@ permalink: /admin/finance/
         </div>
         <div style="padding:12px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);border-radius:8px;">
           <div style="font-size:12px;color:#64748b;">
-            <strong style="color:#3b82f6;">Privacy:</strong> Files are parsed entirely in your browser using JavaScript. No data leaves your device. The Paperclip CTO agent updates this dashboard monthly from exported data.
+            <strong style="color:#3b82f6;">Privacy:</strong> Files are parsed entirely in your browser using JavaScript. No data leaves your device.
           </div>
         </div>
       </div>
@@ -717,115 +355,542 @@ permalink: /admin/finance/
   </div>
 
   <div style="text-align:center;margin-top:24px;font-size:12px;color:#64748b;">
-    Data: EECU checking (557 txns, Mar 2025–Mar 2026) + Apple Card statements (Jan–Dec 2025). Managed by Paperclip CTO agent. Inspired by <a href="https://actualbudget.org" style="color:#3b82f6;">Actual Budget</a>.
+    Data managed by Paperclip CTO agent. All changes saved locally. <span id="convexStatus" style="color:#94a3b8;"></span>
   </div>
 </div>
 
 <div class="toast-msg" id="toast"></div>
 
+<!-- Add Bill Modal -->
+<div class="modal-overlay" id="addBillModal">
+  <div class="modal">
+    <h3 id="billModalTitle">Add New Bill</h3>
+    <input type="hidden" id="editBillId">
+    <label>Bill Name</label>
+    <input type="text" id="billName" placeholder="e.g. PG&E">
+    <label>Due Day (1-31, or leave blank)</label>
+    <input type="number" id="billDueDay" min="1" max="31" placeholder="14">
+    <label>Amount ($)</label>
+    <input type="number" id="billAmount" step="0.01" placeholder="200.00">
+    <label>Status</label>
+    <select id="billStatus">
+      <option value="upcoming">Upcoming</option>
+      <option value="current">Active</option>
+      <option value="overdue">Overdue</option>
+      <option value="autopay">Autopay</option>
+      <option value="paid">Paid</option>
+    </select>
+    <label>Priority</label>
+    <select id="billPriority">
+      <option value="1">P1 — Survival</option>
+      <option value="2">P2 — Insurance/Debt</option>
+      <option value="3">P3 — Necessities</option>
+      <option value="4">P4 — On Credit</option>
+    </select>
+    <label>Account (paid from)</label>
+    <input type="text" id="billAccount" placeholder="e.g. EECU Checking">
+    <label>Notes</label>
+    <input type="text" id="billNotes" placeholder="Optional notes">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('addBillModal')">Cancel</button>
+      <button class="btn-danger" id="deleteBillBtn" style="display:none" onclick="deleteBill()">Delete</button>
+      <button class="btn-save" onclick="saveBill()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Log Payment Modal -->
+<div class="modal-overlay" id="paymentModal">
+  <div class="modal">
+    <h3>Log Payment</h3>
+    <label>Bill</label>
+    <select id="payBill"></select>
+    <label>Amount ($)</label>
+    <input type="number" id="payAmount" step="0.01" placeholder="200.00">
+    <label>Date</label>
+    <input type="date" id="payDate">
+    <label>From Account</label>
+    <select id="payFrom">
+      <option value="EECU Checking">EECU Checking</option>
+      <option value="EECU Savings">EECU Savings</option>
+      <option value="EECU LOC">Line of Credit</option>
+      <option value="Apple Card">Apple Card</option>
+      <option value="Other">Other</option>
+    </select>
+    <label>Notes</label>
+    <input type="text" id="payNotes" placeholder="Optional notes">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('paymentModal')">Cancel</button>
+      <button class="btn-save" onclick="savePayment()">Log Payment</button>
+    </div>
+  </div>
+</div>
+
 <script>
-// ═══════════ INTERACTIVE BILLS ═══════════
-const DEFAULT_BILLS = [
-  { id:'rent', name:'Valley Vista (Rent)', due:'1st', amount:'$2,445', status:'upcoming' },
-  { id:'support', name:'Supporting Hands', due:'Monthly', amount:'$1,800', status:'current' },
-  { id:'auto', name:'EECU Auto Loan', due:'5th', amount:'$499', status:'autopay' },
-  { id:'apple', name:'Apple Card Min', due:'~27th', amount:'$366', status:'paid' },
-  { id:'collier', name:'Phillip M. Collier', due:'2-3x/mo', amount:'$300-450', status:'current' },
-  { id:'toggle', name:'Toggle Insurance', due:'Monthly', amount:'$202', status:'paid' },
-  { id:'pge', name:'PG&E', due:'14th', amount:'$200', status:'upcoming' },
-  { id:'att', name:'AT&T Wireless', due:'Monthly', amount:'$129', status:'current' },
-  { id:'fresno', name:'City of Fresno', due:'1st', amount:'$121', status:'overdue' },
-  { id:'xfinity', name:'Xfinity', due:'1st', amount:'$95', status:'paid' },
-  { id:'discover', name:'Discover Min', due:'~18th', amount:'$83', status:'upcoming' },
-  { id:'loc', name:'EECU LOC Min', due:'26th', amount:'$75', status:'upcoming' },
-  { id:'principal', name:'Principal Insurance', due:'Monthly', amount:'$35', status:'current' },
-  { id:'allstate', name:'Allstate Insurance', due:'Monthly', amount:'$25', status:'current' },
-];
+// ═══════════════════════════════════════════════════════════════
+// DATA STORE — localStorage now, Convex-ready structure
+// ═══════════════════════════════════════════════════════════════
+const STORE_KEY = 'spain-finance-v2';
 const STATUS_CYCLE = ['overdue','upcoming','current','autopay','paid'];
 const STATUS_LABELS = {overdue:'Overdue',upcoming:'Upcoming',current:'Active',autopay:'Autopay',paid:'Paid'};
-const STORAGE_KEY = 'spain-finance-bills';
-let changes = {};
+const PRIORITY_LABELS = {1:'P1 Survival',2:'P2 Insurance/Debt',3:'P3 Necessities',4:'P4 On Credit'};
 
-function loadBills() {
-  try { const s = localStorage.getItem(STORAGE_KEY); if(s){const o=JSON.parse(s);return DEFAULT_BILLS.map(b=>({...b,status:o[b.id]||b.status}));} } catch(e){}
-  return DEFAULT_BILLS.map(b=>({...b}));
+function defaultState() {
+  return {
+    bills: [
+      { id:'rent', name:'Valley Vista (Rent)', dueDay:1, amount:2445, status:'upcoming', priority:1, account:'EECU Checking', notes:'' },
+      { id:'support', name:'Supporting Hands', dueDay:null, amount:1800, status:'current', priority:4, account:'Apple Card', notes:'Childcare — on credit' },
+      { id:'auto', name:'EECU Auto Loan', dueDay:5, amount:499, status:'autopay', priority:1, account:'EECU Checking', notes:'' },
+      { id:'apple', name:'Apple Card Min', dueDay:27, amount:366, status:'paid', priority:2, account:'EECU Checking', notes:'' },
+      { id:'collier', name:'Phillip M. Collier', dueDay:null, amount:375, status:'current', priority:4, account:'Apple Card', notes:'2-3x/mo' },
+      { id:'toggle', name:'Toggle Insurance', dueDay:26, amount:202, status:'paid', priority:2, account:'EECU Debit', notes:'Car insurance' },
+      { id:'pge', name:'PG&E', dueDay:14, amount:200, status:'upcoming', priority:1, account:'EECU Checking', notes:'Payment plan' },
+      { id:'att', name:'AT&T Wireless', dueDay:null, amount:129, status:'current', priority:2, account:'EECU Checking', notes:'' },
+      { id:'fresno', name:'City of Fresno', dueDay:1, amount:121, status:'overdue', priority:1, account:'EECU Checking', notes:'Water/sewer — shutoff risk' },
+      { id:'xfinity', name:'Xfinity', dueDay:1, amount:95, status:'paid', priority:1, account:'EECU Checking', notes:'' },
+      { id:'discover', name:'Discover Min', dueDay:18, amount:83, status:'upcoming', priority:2, account:'EECU Checking', notes:'' },
+      { id:'loc', name:'EECU LOC Min', dueDay:26, amount:75, status:'upcoming', priority:2, account:'EECU Checking', notes:'' },
+      { id:'principal', name:'Principal Insurance', dueDay:null, amount:35, status:'current', priority:2, account:'Auto-deduct', notes:'' },
+      { id:'allstate', name:'Allstate Insurance', dueDay:null, amount:25, status:'current', priority:2, account:'Auto-deduct', notes:'' },
+    ],
+    accounts: [
+      { id:'checking', name:'EECU Checking', type:'checking', balance:4009, notes:'After paycheck + payments' },
+      { id:'savings', name:'EECU Savings', type:'savings', balance:87, notes:'Available' },
+      { id:'loc', name:'Line of Credit', type:'loc', balance:-404, notes:'$9,596 available' },
+      { id:'autoloan', name:'Auto Loan', type:'loan', balance:-16354, notes:'Due 04/05 autopay' },
+      { id:'applecard', name:'Apple Card', type:'credit', balance:-16199, notes:'Paid $960 on 3/30' },
+      { id:'discover', name:'Discover', type:'credit', balance:-1000, notes:'Min $83/mo' },
+    ],
+    income: [
+      { id:'kcusd', name:'Kings Canyon USD', amount:4361, frequency:'Biweekly' },
+      { id:'fpu', name:'FPU Payroll', amount:1093, frequency:'Monthly' },
+      { id:'behavior', name:'Behavior School', amount:272, frequency:'Irregular' },
+    ],
+    payments: [
+      { id:'p1', billName:'Toggle Insurance', amount:204, date:'2026-03-29', fromAccount:'EECU Debit', notes:'' },
+      { id:'p2', billName:'Xfinity', amount:95, date:'2026-03-29', fromAccount:'EECU Checking', notes:'' },
+      { id:'p3', billName:'Apple Card', amount:960, date:'2026-03-30', fromAccount:'EECU Checking', notes:'Exceeds $366 min' },
+      { id:'p4', billName:'OFW Basic Plan', amount:110, date:'2026-03-03', fromAccount:'EECU Checking', notes:'Renewed' },
+    ],
+    lastUpdated: '2026-04-01T00:00:00Z',
+  };
 }
-function saveBills(bills) { const o={}; bills.forEach(b=>{o[b.id]=b.status;}); localStorage.setItem(STORAGE_KEY,JSON.stringify(o)); }
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      // Merge with defaults to pick up new fields
+      const def = defaultState();
+      return {
+        bills: saved.bills || def.bills,
+        accounts: saved.accounts || def.accounts,
+        income: saved.income || def.income,
+        payments: saved.payments || def.payments,
+        lastUpdated: saved.lastUpdated || def.lastUpdated,
+      };
+    }
+  } catch(e) {}
+  // Migrate from v1 localStorage if present
+  try {
+    const v1 = localStorage.getItem('spain-finance-bills');
+    if (v1) {
+      const statuses = JSON.parse(v1);
+      const state = defaultState();
+      state.bills.forEach(b => { if (statuses[b.id]) b.status = statuses[b.id]; });
+      saveState(state);
+      return state;
+    }
+  } catch(e) {}
+  return defaultState();
+}
+
+function saveState(state) {
+  state.lastUpdated = new Date().toISOString();
+  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+}
+
+let STATE = loadState();
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER FUNCTIONS
+// ═══════════════════════════════════════════════════════════════
+
+function fmt(n) {
+  return '$' + Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+function fmtDate(d) {
+  if (!d) return '';
+  const parts = d.split('-');
+  return parts[1] + '/' + parts[2];
+}
+
+function renderAll() {
+  renderSummary();
+  renderAlerts();
+  renderBills();
+  renderAccounts();
+  renderIncome();
+  renderBudget();
+  renderDeficit();
+  renderPayments();
+  renderEnvelopes();
+  renderCalendar();
+  renderNetWorth();
+  renderDebtPayoff();
+  document.getElementById('lastUpdated').textContent = 'Updated: ' + new Date(STATE.lastUpdated).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+
+function renderSummary() {
+  const cash = STATE.accounts.filter(a => a.type === 'checking' || a.type === 'savings').reduce((s, a) => s + Math.max(0, a.balance), 0);
+  const locAcct = STATE.accounts.find(a => a.type === 'loc');
+  const locAvail = locAcct ? 10000 + locAcct.balance : 0;
+  const totalDebt = STATE.accounts.filter(a => a.balance < 0).reduce((s, a) => s + Math.abs(a.balance), 0);
+  const totalIncome = STATE.income.reduce((s, i) => s + i.amount, 0);
+  const totalBills = STATE.bills.reduce((s, b) => s + b.amount, 0);
+  const deficit = totalIncome - totalBills;
+
+  document.getElementById('summaryCards').innerHTML = `
+    <div class="fin-card">
+      <h3>Cash Available</h3>
+      <div class="fin-stat ${cash > 2000 ? 'yellow' : 'red'}">${fmt(cash)}</div>
+      <div class="fin-sub">${STATE.accounts.filter(a=>a.type==='checking'||a.type==='savings').map(a=>a.name+' '+fmt(a.balance)).join(' + ')}</div>
+    </div>
+    <div class="fin-card">
+      <h3>LOC Available</h3>
+      <div class="fin-stat blue">${fmt(locAvail)}</div>
+      <div class="fin-sub">${fmt(Math.abs(locAcct?.balance||0))} used</div>
+    </div>
+    <div class="fin-card">
+      <h3>Total Debt</h3>
+      <div class="fin-stat red">${fmt(totalDebt)}</div>
+      <div class="fin-sub">${STATE.accounts.filter(a=>a.balance<0).map(a=>a.name).join(', ')}</div>
+    </div>
+    <div class="fin-card">
+      <h3>Monthly ${deficit >= 0 ? 'Surplus' : 'Deficit'}</h3>
+      <div class="fin-stat ${deficit >= 0 ? 'green' : 'red'}">${deficit >= 0 ? '' : '-'}${fmt(Math.abs(deficit))}</div>
+      <div class="fin-sub">Income ${fmt(totalIncome)} vs Bills ${fmt(totalBills)}</div>
+    </div>
+  `;
+}
+
+function renderAlerts() {
+  const totalIncome = STATE.income.reduce((s, i) => s + i.amount, 0);
+  const totalBills = STATE.bills.reduce((s, b) => s + b.amount, 0);
+  const overdue = STATE.bills.filter(b => b.status === 'overdue');
+  let html = '';
+  if (totalBills > totalIncome) {
+    html += `<div class="fin-alert danger"><strong>Structural deficit:</strong> Fixed expenses (${fmt(totalBills)}/mo) exceed income (${fmt(totalIncome)}/mo).</div>`;
+  }
+  if (overdue.length > 0) {
+    html += `<div class="fin-alert danger"><strong>Overdue (${overdue.length}):</strong> ${overdue.map(b => b.name + ' ' + fmt(b.amount)).join(', ')}</div>`;
+  }
+  document.getElementById('alertsContainer').innerHTML = html;
+}
 
 function renderBills() {
-  const bills = loadBills();
   const tbody = document.getElementById('billsBody');
-  if(!tbody) return;
-  tbody.innerHTML = bills.map(b =>
-    '<tr><td>'+b.name+'</td><td>'+b.due+'</td><td class="amt">'+b.amount+'</td>'+
-    '<td><span class="fin-badge '+b.status+'" onclick="cycleBill(\''+b.id+'\')" title="Click to change">'+(STATUS_LABELS[b.status]||b.status)+'</span></td></tr>'
-  ).join('');
+  tbody.innerHTML = STATE.bills.map((b, i) => {
+    const dueStr = b.dueDay ? ordinal(b.dueDay) : 'Monthly';
+    return `<tr>
+      <td><span class="editable" onclick="editBill('${b.id}')" title="Click to edit">${esc(b.name)}</span></td>
+      <td>${dueStr}</td>
+      <td class="amt">${fmt(b.amount)}</td>
+      <td><span class="fin-badge ${b.status}" onclick="cycleBill('${b.id}')" title="Click to change status">${STATUS_LABELS[b.status]}</span></td>
+      <td style="white-space:nowrap;">
+        <button class="btn-sm btn-pay" onclick="openPaymentFor('${b.id}')" title="Log payment">$</button>
+        <button class="btn-sm btn-edit" onclick="editBill('${b.id}')" title="Edit">&#9998;</button>
+      </td>
+    </tr>`;
+  }).join('');
 }
 
-function cycleBill(id) {
-  const bills = loadBills(), bill = bills.find(b=>b.id===id);
-  if(!bill) return;
-  const idx = STATUS_CYCLE.indexOf(bill.status);
-  bill.status = STATUS_CYCLE[(idx+1)%STATUS_CYCLE.length];
-  saveBills(bills);
-  renderBills();
-  const orig = DEFAULT_BILLS.find(b=>b.id===id);
-  if(bill.status !== orig.status) { changes[id] = {name:bill.name, from:orig.status, to:bill.status}; } else { delete changes[id]; }
-  updateSyncBar();
-  showToast(bill.name+' → '+(STATUS_LABELS[bill.status]||bill.status));
+function renderAccounts() {
+  const tbody = document.getElementById('accountsBody');
+  tbody.innerHTML = STATE.accounts.map(a => {
+    const color = a.balance < 0 ? 'color:#ef4444' : a.type === 'loc' ? 'color:#3b82f6' : '';
+    return `<tr>
+      <td>${esc(a.name)}</td>
+      <td class="amt"><span class="editable" onclick="editAccountBalance('${a.id}')" style="${color}" title="Click to edit">${a.balance < 0 ? '-' : ''}${fmt(a.balance)}</span></td>
+      <td style="color:#64748b;font-size:13px;"><span class="editable" onclick="editAccountNotes('${a.id}')" title="Click to edit">${esc(a.notes || '—')}</span></td>
+    </tr>`;
+  }).join('');
+
+  // Debt breakdown
+  const debts = STATE.accounts.filter(a => a.balance < 0);
+  const totalDebt = debts.reduce((s, a) => s + Math.abs(a.balance), 0);
+  const colors = ['#ef4444','#eab308','#3b82f6','#22c55e','#a855f7'];
+  document.getElementById('debtBreakdown').innerHTML = debts.length ? `
+    <h3>Debt Breakdown</h3>
+    ${debts.map((a, i) => {
+      const pct = Math.round(Math.abs(a.balance) / totalDebt * 100);
+      return `<div style="margin-top:12px;">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+          <span>${esc(a.name)}</span><span style="color:#64748b">${fmt(Math.abs(a.balance))} (${pct}%)</span>
+        </div>
+        <div class="fin-bar-bg"><div class="fin-bar" style="width:${pct}%;background:${colors[i%colors.length]}"></div></div>
+      </div>`;
+    }).join('')}
+  ` : '';
 }
 
-function updateSyncBar() {
-  const bar = document.getElementById('syncBar'), n = Object.keys(changes).length;
-  if(n>0){bar.classList.add('visible');document.getElementById('syncMsg').textContent=n+' change'+(n>1?'s':'')+' unsent.';}
-  else{bar.classList.remove('visible');}
+function renderIncome() {
+  const tbody = document.getElementById('incomeBody');
+  tbody.innerHTML = STATE.income.map(inc => `<tr>
+    <td>${esc(inc.name)}</td>
+    <td class="amt"><span class="editable" onclick="editIncomeAmount('${inc.id}')" title="Click to edit">${fmt(inc.amount)}</span></td>
+    <td style="color:#64748b">${esc(inc.frequency)}</td>
+  </tr>`).join('');
+
+  const total = STATE.income.reduce((s, i) => s + i.amount, 0);
+  document.getElementById('incomeTotalRow').innerHTML = `
+    <span>Total Monthly Income</span>
+    <span class="fin-stat green" style="font-size:20px;">${fmt(total)}</span>
+  `;
 }
 
-function sendUpdate() {
-  const entries = Object.values(changes);
-  if(!entries.length) return;
-  const lines = entries.map(c=>'- **'+c.name+'**: '+c.from+' → '+c.to);
-  const msg = '## Bill status update from dashboard\n\n'+lines.join('\n')+'\n\n_Sent from robspain.com/admin/finance/_';
-  navigator.clipboard.writeText(msg).then(()=>{
-    showToast('Update copied! Paste in Paperclip SPA-2.');
-    changes={}; updateSyncBar();
-  }).catch(()=>{ prompt('Copy this update:',msg); changes={}; updateSyncBar(); });
+function renderBudget() {
+  const totalIncome = STATE.income.reduce((s, i) => s + i.amount, 0);
+  const categories = {};
+  STATE.bills.forEach(b => {
+    const cat = b.priority <= 1 ? (b.name.match(/rent|vista/i) ? 'Housing' : 'Utilities & Essentials')
+      : b.priority === 2 ? 'Insurance & Debt' : b.priority === 3 ? 'Necessities' : 'On Credit';
+    categories[cat] = (categories[cat] || 0) + b.amount;
+  });
+  const colors = { 'Housing':'#ef4444', 'Utilities & Essentials':'#eab308', 'Insurance & Debt':'#3b82f6', 'Necessities':'#22c55e', 'On Credit':'#a855f7' };
+  const totalBills = Object.values(categories).reduce((s, v) => s + v, 0);
+
+  document.getElementById('budgetCard').innerHTML = `
+    <h3>Monthly Budget Breakdown</h3>
+    ${Object.entries(categories).map(([cat, amt]) => {
+      const pct = Math.round(amt / totalIncome * 100);
+      return `<div style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+          <span>${cat}</span><span style="color:#64748b">${fmt(amt)} — ${pct}%</span>
+        </div>
+        <div class="fin-bar-bg"><div class="fin-bar" style="width:${Math.min(pct, 100)}%;background:${colors[cat]||'#94a3b8'}"></div></div>
+      </div>`;
+    }).join('')}
+    <div style="margin-top:16px;padding-top:12px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-weight:600;">
+      <span>Total Recurring</span>
+      <span style="color:${totalBills > totalIncome ? '#ef4444' : '#22c55e'}">${fmt(totalBills)}/mo</span>
+    </div>
+  `;
 }
 
-function showToast(text) {
-  const t=document.getElementById('toast'); t.textContent=text; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2000);
+function renderDeficit() {
+  const totalIncome = STATE.income.reduce((s, i) => s + i.amount, 0);
+  const totalBills = STATE.bills.reduce((s, b) => s + b.amount, 0);
+  const deficit = totalIncome - totalBills;
+  const onCredit = STATE.bills.filter(b => b.priority === 4).reduce((s, b) => s + b.amount, 0);
+
+  document.getElementById('deficitSummary').innerHTML = `
+    <div class="label">Monthly Structural ${deficit >= 0 ? 'Surplus' : 'Deficit'}</div>
+    <div class="amount">${deficit >= 0 ? '+' : '-'}${fmt(Math.abs(deficit))}/mo</div>
+    ${onCredit > 0 ? `<div class="note">${fmt(onCredit)}/mo goes on credit card, adding to debt each month.</div>` : ''}
+    <div style="margin-top: 16px; font-size: 13px; color: #64748b; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
+      <strong style="color:#1e293b;">Biggest levers to close the gap:</strong>
+      <ol style="margin-top: 8px; padding-left: 20px; line-height: 1.8;">
+        <li><strong>Supporting Hands funding</strong> — if IHSS/insurance covers 50%, saves ~$900/mo</li>
+        <li><strong>Increase behavior school income</strong> — currently ${fmt(STATE.income.find(i=>i.id==='behavior')?.amount||272)}/mo avg</li>
+        <li><strong>Move Supporting Hands off Apple Card</strong> — stop interest compounding</li>
+        <li><strong>AT&T plan review</strong> — ${fmt(STATE.bills.find(b=>b.id==='att')?.amount||129)}/mo may be reducible</li>
+      </ol>
+    </div>
+  `;
 }
 
-renderBills();
+function renderPayments() {
+  const payments = [...STATE.payments].sort((a, b) => b.date.localeCompare(a.date));
+  document.getElementById('paymentsListFull').innerHTML = payments.length === 0
+    ? '<div style="color:#94a3b8;font-size:13px;padding:16px 0;">No payments logged yet. Click "Log Payment" to start tracking.</div>'
+    : payments.map(p => `<div class="payment-row">
+        <span class="pay-date">${fmtDate(p.date)}</span>
+        <span class="pay-name">${esc(p.billName)}</span>
+        <span class="pay-amt">${fmt(p.amount)}</span>
+        <span class="pay-from">${esc(p.fromAccount || '')}</span>
+        <button class="btn-sm btn-del" onclick="deletePayment('${p.id}')" title="Remove" style="margin-left:4px;">&times;</button>
+      </div>`).join('');
 
-// Tab switching
-function showPanel(name) {
-  document.querySelectorAll('.fin-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.fin-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('panel-' + name).classList.add('active');
-  event.target.classList.add('active');
+  // Summary
+  const thisMonth = new Date().toISOString().slice(0, 7);
+  const monthPayments = payments.filter(p => p.date.startsWith(thisMonth));
+  const totalMonth = monthPayments.reduce((s, p) => s + p.amount, 0);
+  const totalAll = payments.reduce((s, p) => s + p.amount, 0);
+  const paidBills = STATE.bills.filter(b => b.status === 'paid').length;
+
+  document.getElementById('paymentSummary').innerHTML = `
+    <div style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:14px;">
+        <span>This month</span><span style="font-weight:700;color:#22c55e;font-size:20px;">${fmt(totalMonth)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:14px;">
+        <span>All time logged</span><span style="font-weight:700;color:#64748b;">${fmt(totalAll)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:14px;">
+        <span>Bills marked paid</span><span style="font-weight:700;color:#22c55e;">${paidBills} / ${STATE.bills.length}</span>
+      </div>
+    </div>
+    <div style="border-top:1px solid #e2e8f0;padding-top:16px;">
+      <h3>By Account</h3>
+      ${Object.entries(payments.reduce((acc, p) => { acc[p.fromAccount||'Unknown'] = (acc[p.fromAccount||'Unknown']||0) + p.amount; return acc; }, {}))
+        .sort((a, b) => b[1] - a[1])
+        .map(([acct, total]) => `<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;">
+          <span>${esc(acct)}</span><span style="font-weight:600;">${fmt(total)}</span>
+        </div>`).join('')}
+    </div>
+  `;
 }
 
-// Net worth chart
-(function() {
-  const data = [
-    { month: 'Apr', nw: -22165 },
-    { month: 'May', nw: -22115 },
-    { month: 'Jun', nw: -23033 },
-    { month: 'Jul', nw: -23201 },
-    { month: 'Aug', nw: -23835 },
-    { month: 'Sep', nw: -24274 },
-    { month: 'Oct', nw: -26278 },
-    { month: 'Nov', nw: -26482 },
-    { month: 'Dec', nw: -28655 },
-    { month: 'Jan', nw: -29007 },
-    { month: 'Feb', nw: -30289 },
-    { month: 'Mar', nw: -31420 }
+function renderEnvelopes() {
+  const totalIncome = STATE.income.reduce((s, i) => s + i.amount, 0);
+  let remaining = totalIncome;
+  const groups = [
+    { p: 1, label: 'Priority 1 — Survival', cls: 'p1' },
+    { p: 2, label: 'Priority 2 — Insurance & Debt Minimums', cls: 'p2' },
+    { p: 3, label: 'Priority 3 — Necessities', cls: 'p3' },
+    { p: 4, label: 'Priority 4 — On Credit (adds to debt)', cls: 'p4' },
   ];
+
+  let envelopeHtml = '<h3>April 2026 Envelopes</h3>';
+  const groupTotals = [];
+
+  groups.forEach(g => {
+    const bills = STATE.bills.filter(b => b.priority === g.p);
+    const groupTotal = bills.reduce((s, b) => s + b.amount, 0);
+    const funded = g.p <= 3;
+    envelopeHtml += `<div class="env-priority ${g.cls}">${g.label}</div>`;
+    bills.forEach(b => {
+      const isFunded = funded && remaining >= b.amount;
+      if (funded) remaining -= b.amount;
+      envelopeHtml += `<div class="envelope ${g.cls} ${!isFunded && g.p < 4 ? '' : g.p === 4 ? 'unfunded' : ''}">
+        <div class="env-row">
+          <span class="env-name">${esc(b.name)}</span>
+          <span class="env-amt" style="color:${isFunded ? '#22c55e' : '#ef4444'}">${isFunded ? fmt(b.amount) : fmt(b.amount) + ' unfunded'}</span>
+        </div>
+        <div class="env-bar"><div class="env-fill" style="width:${isFunded ? 100 : 0}%;background:${isFunded ? '#22c55e' : '#ef4444'};"></div></div>
+      </div>`;
+    });
+    const afterRemaining = funded ? Math.max(0, remaining) : remaining;
+    envelopeHtml += `<div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin:8px 0 4px 8px;">
+      <span>${g.cls.toUpperCase()} Total: ${fmt(groupTotal)}</span>
+      ${g.p < 4 ? `<span style="color:${afterRemaining > 0 ? '#22c55e' : '#ef4444'}">Remaining: ${fmt(afterRemaining)}</span>` : `<span style="color:#ef4444">This adds to debt</span>`}
+    </div>`;
+    groupTotals.push({ label: g.label, total: groupTotal, cls: g.cls });
+  });
+
+  document.getElementById('envelopesCard').innerHTML = envelopeHtml;
+
+  // Summary
+  const onCredit = STATE.bills.filter(b => b.priority === 4).reduce((s, b) => s + b.amount, 0);
+  const buffer = Math.max(0, totalIncome - STATE.bills.filter(b => b.priority <= 3).reduce((s, b) => s + b.amount, 0));
+  const p1 = STATE.bills.filter(b => b.priority === 1).reduce((s, b) => s + b.amount, 0);
+  const p2 = STATE.bills.filter(b => b.priority === 2).reduce((s, b) => s + b.amount, 0);
+  const p3 = STATE.bills.filter(b => b.priority === 3).reduce((s, b) => s + b.amount, 0);
+
+  document.getElementById('envelopeSummaryCard').innerHTML = `
+    <h3>Envelope Summary</h3>
+    <div style="margin-bottom:24px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-size:14px;">Monthly Income</span>
+        <span style="font-size:20px;font-weight:700;color:#22c55e;">${fmt(totalIncome)}</span>
+      </div>
+      <div class="fin-bar-bg" style="height:24px;border-radius:6px;">
+        <div style="height:100%;display:flex;border-radius:6px;overflow:hidden;">
+          <div style="width:${p1/totalIncome*100}%;background:#ef4444;" title="P1: ${fmt(p1)}"></div>
+          <div style="width:${p2/totalIncome*100}%;background:#eab308;" title="P2: ${fmt(p2)}"></div>
+          <div style="width:${p3/totalIncome*100}%;background:#3b82f6;" title="P3: ${fmt(p3)}"></div>
+          <div style="width:${buffer/totalIncome*100}%;background:#22c55e;" title="Buffer: ${fmt(buffer)}"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;font-size:11px;">
+        <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#ef4444;margin-right:4px;"></span>P1 ${fmt(p1)}</span>
+        <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#eab308;margin-right:4px;"></span>P2 ${fmt(p2)}</span>
+        <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#3b82f6;margin-right:4px;"></span>P3 ${fmt(p3)}</span>
+        <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#22c55e;margin-right:4px;"></span>Buffer ${fmt(buffer)}</span>
+      </div>
+    </div>
+    ${onCredit > 0 ? `
+    <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:16px;margin-bottom:16px;">
+      <div style="font-size:13px;font-weight:600;color:#ef4444;margin-bottom:8px;">THE HIDDEN COST</div>
+      <div style="font-size:13px;color:#1e293b;line-height:1.6;">
+        ${fmt(buffer)} looks like a buffer, but <strong>${fmt(onCredit)}/mo goes on Apple Card</strong> — that's new debt every month. The real deficit is:<br>
+        <span style="font-size:20px;font-weight:700;color:#ef4444;display:block;margin-top:8px;">-${fmt(onCredit - buffer)}/mo net new debt</span>
+        <span style="font-size:12px;color:#64748b;">Plus interest compounding on the balance</span>
+      </div>
+    </div>` : ''}
+    <div style="border-top:1px solid #e2e8f0;padding-top:16px;">
+      <h3>How Envelope Budgeting Helps</h3>
+      <ul style="font-size:13px;color:#64748b;line-height:1.8;padding-left:16px;">
+        <li>P1-P3 are <strong>fully funded</strong> from checking — these get paid first</li>
+        <li>P4 items go on credit — they're <strong>visible as unfunded</strong></li>
+        <li>If Supporting Hands gets insurance coverage, that $1,800 moves from P4 to P1</li>
+        <li>The buffer covers irregular expenses and prevents new LOC draws</li>
+      </ul>
+    </div>
+  `;
+}
+
+function renderCalendar() {
+  const now = new Date();
+  const month = now.getMonth();
+  const year = now.getFullYear();
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  // Build calendar entries from bills
+  const overdue = STATE.bills.filter(b => b.status === 'overdue');
+  const paid = STATE.bills.filter(b => b.status === 'paid');
+  const upcoming = STATE.bills.filter(b => b.status !== 'overdue' && b.status !== 'paid' && b.dueDay);
+
+  let html = '<div class="fin-card"><h3>Overdue & Paid</h3>';
+  overdue.forEach(b => {
+    html += `<div class="cal-row">
+      <div class="cal-day danger"><span class="month">${monthNames[month]}</span><span class="date">${b.dueDay || '?'}</span></div>
+      <div class="cal-info"><div class="name">${esc(b.name)}</div><div class="detail">${esc(b.notes || '')}</div></div>
+      <div class="cal-amt" style="color:#ef4444">${fmt(b.amount)}</div>
+    </div>`;
+  });
+  paid.forEach(b => {
+    html += `<div class="cal-row">
+      <div class="cal-day done"><span class="month">${monthNames[month]}</span><span class="date">${b.dueDay || '?'}</span></div>
+      <div class="cal-info"><div class="name">${esc(b.name)}</div><div class="detail">Paid</div></div>
+      <div class="cal-amt" style="color:#22c55e">${fmt(b.amount)} paid</div>
+    </div>`;
+  });
+  html += '</div>';
+
+  html += '<div class="fin-card"><h3>Upcoming This Month</h3>';
+  upcoming.sort((a, b) => (a.dueDay || 99) - (b.dueDay || 99)).forEach(b => {
+    const isPast = b.dueDay < now.getDate();
+    html += `<div class="cal-row">
+      <div class="cal-day ${isPast ? 'warn' : 'ok'}"><span class="month">${monthNames[month]}</span><span class="date">${b.dueDay}</span></div>
+      <div class="cal-info"><div class="name">${esc(b.name)}</div><div class="detail">${esc(b.account || '')} ${esc(b.notes || '')}</div></div>
+      <div class="cal-amt">${fmt(b.amount)}</div>
+    </div>`;
+  });
+  html += '</div>';
+
+  document.getElementById('calendarGrid').innerHTML = html;
+}
+
+function renderNetWorth() {
+  const data = [
+    { month: 'Apr', nw: -22165 }, { month: 'May', nw: -22115 },
+    { month: 'Jun', nw: -23033 }, { month: 'Jul', nw: -23201 },
+    { month: 'Aug', nw: -23835 }, { month: 'Sep', nw: -24274 },
+    { month: 'Oct', nw: -26278 }, { month: 'Nov', nw: -26482 },
+    { month: 'Dec', nw: -28655 }, { month: 'Jan', nw: -29007 },
+    { month: 'Feb', nw: -30289 }, { month: 'Mar', nw: -31420 }
+  ];
+  // Add current computed net worth
+  const currentNW = STATE.accounts.reduce((s, a) => s + a.balance, 0);
+  data.push({ month: 'Apr', nw: currentNW });
+
   const maxAbs = Math.max(...data.map(d => Math.abs(d.nw)));
   const chart = document.getElementById('nwChart');
-  if (!chart) return;
+  chart.innerHTML = '';
   data.forEach(d => {
     const wrap = document.createElement('div');
     wrap.className = 'nw-bar-wrap';
@@ -842,7 +907,270 @@ function showPanel(name) {
     wrap.appendChild(label);
     chart.appendChild(wrap);
   });
-})();
+
+  document.getElementById('nwSummary').innerHTML = `
+    <div style="display:flex;justify-content:space-between;font-size:13px;">
+      <span style="color:#64748b">Current Net Worth</span>
+      <span style="font-weight:700;color:#ef4444;font-size:18px;">${currentNW >= 0 ? '' : '-'}${fmt(Math.abs(currentNW))}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:8px;">
+      <span style="color:#64748b">12-month change</span>
+      <span style="font-weight:600;color:${currentNW > -22165 ? '#22c55e' : '#ef4444'};">${currentNW > -22165 ? '+' : '-'}${fmt(Math.abs(currentNW - (-22165)))} (${currentNW > -22165 ? 'better' : 'worse'})</span>
+    </div>
+  `;
+}
+
+function renderDebtPayoff() {
+  const debts = STATE.accounts.filter(a => a.balance < 0).map(a => {
+    const bill = STATE.bills.find(b => b.name.toLowerCase().includes(a.name.split(' ')[0].toLowerCase()));
+    const minPay = bill ? bill.amount : 0;
+    const bal = Math.abs(a.balance);
+    let payoff = minPay > 0 ? Math.ceil(bal / minPay) : 999;
+    let payoffStr = payoff > 120 ? (Math.round(payoff / 12) + '+ years') : payoff > 12 ? ('~' + Math.round(payoff / 12) + ' years') : ('~' + payoff + ' months');
+    const color = payoff > 60 ? '#ef4444' : payoff > 24 ? '#eab308' : '#22c55e';
+    return { name: a.name, balance: bal, minPay, payoffStr, color };
+  });
+
+  document.getElementById('debtPayoff').innerHTML = `
+    <table class="fin-table">
+      <thead><tr><th>Account</th><th class="amt">Balance</th><th class="amt">Min Pay</th><th>Payoff at Min</th></tr></thead>
+      <tbody>
+        ${debts.map(d => `<tr>
+          <td>${esc(d.name)}</td>
+          <td class="amt" style="color:#ef4444">${fmt(d.balance)}</td>
+          <td class="amt">${d.minPay ? fmt(d.minPay) : '—'}</td>
+          <td style="color:${d.color};font-weight:600;">${d.payoffStr}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid #e2e8f0;">
+      <h3>Avalanche Strategy (save most interest)</h3>
+      <div style="font-size:13px;color:#64748b;margin-bottom:12px;">Pay minimums on everything, throw any extra at the highest-interest debt first.</div>
+      <ol style="font-size:13px;color:#1e293b;padding-left:20px;line-height:2;">
+        <li><strong style="color:#ef4444;">Apple Card</strong> — highest interest rate, balance growing</li>
+        <li><strong style="color:#eab308;">Discover</strong> — likely high rate, small balance = quick win</li>
+        <li><strong style="color:#3b82f6;">EECU LOC</strong> — small balance, LOC rate</li>
+        <li><strong style="color:#64748b;">Auto Loan</strong> — lowest rate, keep at minimum</li>
+      </ol>
+    </div>
+    <div style="margin-top:16px;padding:12px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:8px;">
+      <div style="font-size:13px;font-weight:600;color:#22c55e;margin-bottom:4px;">Quick win: Discover + LOC</div>
+      <div style="font-size:12px;color:#64748b;">Both can be eliminated within 14 months at current minimums. Frees up $158/mo that can attack the Apple Card balance.</div>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ACTIONS
+// ═══════════════════════════════════════════════════════════════
+
+function cycleBill(id) {
+  const bill = STATE.bills.find(b => b.id === id);
+  if (!bill) return;
+  const idx = STATUS_CYCLE.indexOf(bill.status);
+  bill.status = STATUS_CYCLE[(idx + 1) % STATUS_CYCLE.length];
+  saveState(STATE);
+  renderAll();
+  showToast(bill.name + ' → ' + STATUS_LABELS[bill.status]);
+}
+
+function openAddBillModal() {
+  document.getElementById('billModalTitle').textContent = 'Add New Bill';
+  document.getElementById('editBillId').value = '';
+  document.getElementById('billName').value = '';
+  document.getElementById('billDueDay').value = '';
+  document.getElementById('billAmount').value = '';
+  document.getElementById('billStatus').value = 'upcoming';
+  document.getElementById('billPriority').value = '3';
+  document.getElementById('billAccount').value = 'EECU Checking';
+  document.getElementById('billNotes').value = '';
+  document.getElementById('deleteBillBtn').style.display = 'none';
+  document.getElementById('addBillModal').classList.add('open');
+}
+
+function editBill(id) {
+  const bill = STATE.bills.find(b => b.id === id);
+  if (!bill) return;
+  document.getElementById('billModalTitle').textContent = 'Edit Bill';
+  document.getElementById('editBillId').value = id;
+  document.getElementById('billName').value = bill.name;
+  document.getElementById('billDueDay').value = bill.dueDay || '';
+  document.getElementById('billAmount').value = bill.amount;
+  document.getElementById('billStatus').value = bill.status;
+  document.getElementById('billPriority').value = bill.priority;
+  document.getElementById('billAccount').value = bill.account || '';
+  document.getElementById('billNotes').value = bill.notes || '';
+  document.getElementById('deleteBillBtn').style.display = 'inline-block';
+  document.getElementById('addBillModal').classList.add('open');
+}
+
+function saveBill() {
+  const id = document.getElementById('editBillId').value;
+  const name = document.getElementById('billName').value.trim();
+  const amount = parseFloat(document.getElementById('billAmount').value);
+  if (!name || isNaN(amount)) { showToast('Name and amount required'); return; }
+
+  const data = {
+    name,
+    dueDay: parseInt(document.getElementById('billDueDay').value) || null,
+    amount,
+    status: document.getElementById('billStatus').value,
+    priority: parseInt(document.getElementById('billPriority').value),
+    account: document.getElementById('billAccount').value.trim(),
+    notes: document.getElementById('billNotes').value.trim(),
+  };
+
+  if (id) {
+    const bill = STATE.bills.find(b => b.id === id);
+    if (bill) Object.assign(bill, data);
+    showToast('Updated ' + name);
+  } else {
+    data.id = 'bill_' + Date.now();
+    STATE.bills.push(data);
+    showToast('Added ' + name);
+  }
+  saveState(STATE);
+  closeModal('addBillModal');
+  renderAll();
+}
+
+function deleteBill() {
+  const id = document.getElementById('editBillId').value;
+  if (!id) return;
+  const bill = STATE.bills.find(b => b.id === id);
+  if (bill && confirm('Delete "' + bill.name + '"?')) {
+    STATE.bills = STATE.bills.filter(b => b.id !== id);
+    saveState(STATE);
+    closeModal('addBillModal');
+    renderAll();
+    showToast('Deleted ' + bill.name);
+  }
+}
+
+function openPaymentFor(billId) {
+  const bill = STATE.bills.find(b => b.id === billId);
+  openPaymentModal(bill ? bill.name : '', bill ? bill.amount : '');
+}
+
+function openPaymentModal(billName, amount) {
+  const sel = document.getElementById('payBill');
+  sel.innerHTML = '<option value="">— Select bill —</option>' +
+    STATE.bills.map(b => `<option value="${esc(b.name)}" ${b.name === billName ? 'selected' : ''}>${esc(b.name)}</option>`).join('') +
+    '<option value="__other__">Other...</option>';
+  document.getElementById('payAmount').value = amount || '';
+  document.getElementById('payDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('payNotes').value = '';
+  document.getElementById('paymentModal').classList.add('open');
+}
+
+function savePayment() {
+  let billName = document.getElementById('payBill').value;
+  if (billName === '__other__') billName = prompt('Bill name:');
+  const amount = parseFloat(document.getElementById('payAmount').value);
+  if (!billName || isNaN(amount)) { showToast('Bill and amount required'); return; }
+
+  STATE.payments.push({
+    id: 'pay_' + Date.now(),
+    billName,
+    amount,
+    date: document.getElementById('payDate').value,
+    fromAccount: document.getElementById('payFrom').value,
+    notes: document.getElementById('payNotes').value.trim(),
+  });
+
+  // Auto-mark bill as paid
+  const bill = STATE.bills.find(b => b.name === billName);
+  if (bill && bill.status !== 'paid') {
+    bill.status = 'paid';
+  }
+
+  saveState(STATE);
+  closeModal('paymentModal');
+  renderAll();
+  showToast('Logged ' + fmt(amount) + ' for ' + billName);
+}
+
+function deletePayment(id) {
+  STATE.payments = STATE.payments.filter(p => p.id !== id);
+  saveState(STATE);
+  renderAll();
+  showToast('Payment removed');
+}
+
+function editAccountBalance(id) {
+  const acct = STATE.accounts.find(a => a.id === id);
+  if (!acct) return;
+  const val = prompt('New balance for ' + acct.name + ' (use negative for debt):', acct.balance);
+  if (val === null) return;
+  const num = parseFloat(val);
+  if (isNaN(num)) return;
+  acct.balance = num;
+  saveState(STATE);
+  renderAll();
+  showToast(acct.name + ' → ' + (num < 0 ? '-' : '') + fmt(Math.abs(num)));
+}
+
+function editAccountNotes(id) {
+  const acct = STATE.accounts.find(a => a.id === id);
+  if (!acct) return;
+  const val = prompt('Notes for ' + acct.name + ':', acct.notes || '');
+  if (val === null) return;
+  acct.notes = val;
+  saveState(STATE);
+  renderAll();
+}
+
+function editIncomeAmount(id) {
+  const inc = STATE.income.find(i => i.id === id);
+  if (!inc) return;
+  const val = prompt('Monthly amount for ' + inc.name + ':', inc.amount);
+  if (val === null) return;
+  const num = parseFloat(val);
+  if (isNaN(num)) return;
+  inc.amount = num;
+  saveState(STATE);
+  renderAll();
+  showToast(inc.name + ' → ' + fmt(num));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════════════════
+
+function showPanel(name, el) {
+  document.querySelectorAll('.fin-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.fin-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function showToast(text) {
+  const t = document.getElementById('toast');
+  t.textContent = text;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function ordinal(n) {
+  if (!n) return '';
+  const s = ['th','st','nd','rd'];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+});
 
 // CSV Import
 function handleDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('dragover'); }
@@ -855,7 +1183,7 @@ function handleDrop(e) {
 }
 
 function handleFile(file) {
-  if (!file || !file.name.endsWith('.csv')) { alert('Please drop a CSV file'); return; }
+  if (!file || !file.name.endsWith('.csv')) { showToast('Please drop a CSV file'); return; }
   const reader = new FileReader();
   reader.onload = function(e) {
     const lines = e.target.result.split('\n').filter(l => l.trim());
@@ -864,29 +1192,23 @@ function handleFile(file) {
     let txns = [];
 
     if (header.includes('transaction date') && header.includes('merchant')) {
-      // Apple Card format
       for (let i = 1; i < lines.length; i++) {
         const cols = parseCSVLine(lines[i]);
         if (cols.length < 7) continue;
         txns.push({ date: cols[0], desc: cols[2] || cols[1], amount: parseFloat(cols[6]) || 0 });
       }
     } else {
-      // EECU format - try common patterns
       for (let i = 1; i < lines.length; i++) {
         const cols = parseCSVLine(lines[i]);
         if (cols.length < 3) continue;
-        const dateCol = cols[0];
-        const descCol = cols.length > 3 ? cols[1] : cols[1];
         const amtCol = parseFloat((cols[cols.length - 2] || cols[cols.length - 1] || '0').replace(/[,$]/g, ''));
         if (isNaN(amtCol)) continue;
-        txns.push({ date: dateCol, desc: descCol, amount: amtCol });
+        txns.push({ date: cols[0], desc: cols[1], amount: amtCol });
       }
     }
 
-    if (txns.length === 0) { alert('Could not parse transactions from this file'); return; }
+    if (txns.length === 0) { showToast('Could not parse transactions'); return; }
 
-    const debits = txns.filter(t => t.amount < 0 || (t.amount > 0 && t.desc && !t.desc.match(/payment|deposit|payroll|transfer/i)));
-    const credits = txns.filter(t => t.amount > 0 && t.desc && t.desc.match(/payment|deposit|payroll|transfer/i));
     const totalOut = txns.filter(t => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
     const totalIn = txns.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0);
 
@@ -903,9 +1225,8 @@ function handleFile(file) {
       const isDebit = t.amount < 0;
       return '<div class="txn-row">' +
         '<span class="txn-date">' + (t.date || '').substring(0, 10) + '</span>' +
-        '<span class="txn-desc">' + escapeHtml(t.desc || 'Unknown') + '</span>' +
-        '<span class="txn-amt ' + (isDebit ? 'debit' : 'credit') + '">$' + Math.abs(t.amount).toFixed(2) + '</span>' +
-        '</div>';
+        '<span class="txn-desc">' + esc(t.desc || 'Unknown') + '</span>' +
+        '<span class="txn-amt ' + (isDebit ? 'debit' : 'credit') + '">$' + Math.abs(t.amount).toFixed(2) + '</span></div>';
     }).join('');
     if (txns.length > 100) list.innerHTML += '<div style="text-align:center;padding:8px;color:#64748b;font-size:12px;">Showing first 100 of ' + txns.length + '</div>';
   };
@@ -926,7 +1247,6 @@ function parseCSVLine(line) {
   return result;
 }
 
-function escapeHtml(str) {
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
+// Initial render
+renderAll();
 </script>

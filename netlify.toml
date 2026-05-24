@@ -93,6 +93,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/neo-home-command"
+  to = "/.netlify/functions/neo-home-command"
+  status = 200
+
+[[redirects]]
   from = "/api/seo-audit"
   to = "/.netlify/functions/seo-audit"
   status = 200
@@ -157,3 +162,6 @@
   from = "/api/home-search/*"
   to = "/.netlify/functions/home-search"
   status = 200
+[[edge_functions]]
+  path = "/admin/*"
+  function = "admin-auth"

@@ -84,6 +84,12 @@
     <!-- Meta tags and other head content can go here -->
 </head>
 <body>
+    {% if page.url and page.url.startsWith('/admin/') %}
+    <div class="admin-auth-bar" style="position:fixed;right:16px;bottom:16px;z-index:100000;display:flex;gap:10px;align-items:center;background:rgba(15,23,42,.92);color:#e2e8f0;border:1px solid rgba(16,185,129,.35);box-shadow:0 14px 40px rgba(0,0,0,.24);border-radius:999px;padding:9px 12px;font:600 12px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backdrop-filter:blur(12px);">
+        <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;border-radius:50%;background:#10b981;box-shadow:0 0 0 4px rgba(16,185,129,.14);"></span>Admin authenticated</span>
+        <a href="/admin/logout/" style="color:#f6c453;text-decoration:none;border-left:1px solid rgba(148,163,184,.35);padding-left:10px;">Logout</a>
+    </div>
+    {% endif %}
     <!-- Premium Navigation -->
     <nav class="nav-premium">
         <div class="container">

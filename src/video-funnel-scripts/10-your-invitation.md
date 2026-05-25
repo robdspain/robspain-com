@@ -16,7 +16,7 @@ If this resonates and you want support making the shift to Systems Leadership, I
 
 Here’s the next step if you want to explore the program:
 
-**[behaviorschool.com/transformation-program](https://behaviorschool.com/transformation-program#apply)**
+**[robspain.com/transformation-program](https://robspain.com/transformation-program/#apply)**
 
 On that page, you’ll find the full details—what’s included, who it’s designed for, and how it works.
 
@@ -36,4 +36,4 @@ If you want help getting there, I’d be honored to work with you.
 
 Take care of yourself. And I’ll talk to you soon.
 
-**[CTA on screen: behaviorschool.com/transformation-program]**
+**[CTA on screen: robspain.com/transformation-program]**

@@ -3,7 +3,7 @@ layout: post.njk
 title: "The School BCBA Crisis: Why So Many Behavior Analysts Burn Out"
 date: 2025-01-18
 image: /images/uploads/9be7bd5d-ed9b-4ab6-bed7-9912fcad4a42.png
-description: Discover why school-based BCBAs face unprecedented burnout rates
+description: Discover why BCBAs in schools face unprecedented burnout rates
   and learn systematic approaches to transform from crisis manager to systems
   leader.
 tags:

@@ -8,7 +8,7 @@
   --neo-rose: #ef4444;
   --neo-card: #ffffff;
   --neo-border: #e2e8f0;
-  --neo-purple: #8b5cf6;
+  --neo-prd: #1f4d3f;
 }
 
 .neo-dashboard-page {
@@ -232,7 +232,7 @@
 
 .project-prd-link {
   font-size: 0.7rem;
-  color: var(--neo-purple);
+  color: var(--neo-prd);
   text-decoration: none;
   display: flex;
   align-items: center;

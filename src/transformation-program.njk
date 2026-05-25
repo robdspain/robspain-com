@@ -1,0 +1,463 @@
+---
+layout: base.njk
+title: "8-Week Transformation Program for School BCBAs | July 2026 Cohort"
+description: "Apply for Rob Spain's July 2026 Transformation Program, an 8-week school-year prep cohort for school BCBAs meeting Thursdays from 6 to 8 PM Pacific."
+permalink: /transformation-program/
+changeFreq: weekly
+priority: 0.95
+seo:
+  metaTitle: "8-Week Transformation Program | July 2026 School BCBA Cohort"
+  metaDesc: "A focused school-year prep cohort for BCBAs in schools. Starts July 2, 2026 and meets Thursdays from 6 to 8 PM Pacific."
+extra_head: |
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "name": "8-Week Transformation Program for School BCBAs",
+    "description": "A live school-year prep cohort for BCBAs in schools who want a practical system for referrals, behavior plans, meetings, staff training, and implementation support.",
+    "provider": {
+      "@type": "Person",
+      "name": "Rob Spain",
+      "url": "https://robspain.com/"
+    },
+    "hasCourseInstance": {
+      "@type": "CourseInstance",
+      "courseMode": "Online",
+      "startDate": "2026-07-02T18:00:00-07:00",
+      "endDate": "2026-08-20T20:00:00-07:00",
+      "location": {
+        "@type": "VirtualLocation",
+        "url": "https://robspain.com/transformation-program/"
+      }
+    }
+  }
+  </script>
+---
+
+<style>
+  :root {
+    --tp-green: #1f4d3f;
+    --tp-green-dark: #123628;
+    --tp-gold: #e4b63d;
+    --tp-cream: #faf9f5;
+    --tp-panel: #f4f0e8;
+    --tp-ink: #18251f;
+    --tp-muted: #516158;
+  }
+
+  .tp-page {
+    background: var(--tp-cream);
+    color: var(--tp-ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .tp-wrap {
+    width: min(1120px, calc(100% - 32px));
+    margin: 0 auto;
+  }
+
+  .tp-hero {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(145deg, var(--tp-green-dark), var(--tp-green));
+    color: #fffef8;
+    padding: 88px 0 76px;
+  }
+
+  .tp-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(to right, rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,.08) 1px, transparent 1px);
+    background-size: 44px 44px;
+    opacity: .42;
+  }
+
+  .tp-hero::after {
+    content: "";
+    position: absolute;
+    width: 560px;
+    height: 560px;
+    right: -160px;
+    top: -220px;
+    border-radius: 999px;
+    background: rgba(228, 182, 61, .18);
+    filter: blur(8px);
+  }
+
+  .tp-hero-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(300px, .7fr);
+    gap: 44px;
+    align-items: center;
+  }
+
+  .tp-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 18px;
+    padding: 9px 14px;
+    border: 1px solid rgba(228, 182, 61, .72);
+    border-radius: 999px;
+    color: #f4d36d;
+    background: rgba(255,255,255,.08);
+    font-size: .82rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .tp-kicker span {
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: var(--tp-gold);
+  }
+
+  .tp-hero h1 {
+    max-width: 780px;
+    margin: 0;
+    font-size: clamp(2.7rem, 7vw, 5.6rem);
+    line-height: .95;
+    letter-spacing: -.055em;
+    font-weight: 850;
+  }
+
+  .tp-hero h1 em {
+    color: var(--tp-gold);
+    font-style: normal;
+  }
+
+  .tp-lede {
+    max-width: 670px;
+    margin: 24px 0 0;
+    color: rgba(255,255,255,.86);
+    font-size: clamp(1.08rem, 2vw, 1.26rem);
+    line-height: 1.72;
+  }
+
+  .tp-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 34px;
+  }
+
+  .tp-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 15px 22px;
+    border-radius: 14px;
+    font-weight: 800;
+    text-decoration: none;
+    transition: transform .18s ease, background .18s ease, border-color .18s ease;
+  }
+
+  .tp-btn:hover { transform: translateY(-2px); }
+
+  .tp-btn-primary {
+    color: var(--tp-green-dark);
+    background: var(--tp-gold);
+    box-shadow: 0 18px 42px rgba(0,0,0,.2);
+  }
+
+  .tp-btn-primary:hover { background: #f0c44b; }
+
+  .tp-btn-secondary {
+    color: #fffef8;
+    border: 1px solid rgba(255,255,255,.42);
+  }
+
+  .tp-card {
+    background: rgba(255,255,255,.95);
+    color: var(--tp-ink);
+    border: 1px solid rgba(228,182,61,.36);
+    border-radius: 28px;
+    padding: 28px;
+    box-shadow: 0 26px 70px rgba(0,0,0,.28);
+  }
+
+  .tp-card-title {
+    margin: 0 0 18px;
+    font-size: 1.15rem;
+    font-weight: 850;
+    color: var(--tp-green-dark);
+  }
+
+  .tp-schedule {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+  }
+
+  .tp-schedule div {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 16px;
+    padding: 14px 0;
+    border-top: 1px solid #e8dfcf;
+  }
+
+  .tp-schedule dt {
+    color: var(--tp-muted);
+    font-size: .8rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-weight: 800;
+  }
+
+  .tp-schedule dd {
+    margin: 0;
+    color: var(--tp-ink);
+    font-weight: 750;
+    line-height: 1.45;
+  }
+
+  .tp-section { padding: 76px 0; }
+  .tp-section h2 {
+    margin: 0 0 16px;
+    color: var(--tp-green-dark);
+    font-size: clamp(2rem, 4vw, 3.3rem);
+    line-height: 1.04;
+    letter-spacing: -.035em;
+    text-align: left;
+  }
+  .tp-section-lede {
+    max-width: 740px;
+    margin: 0 0 34px;
+    color: var(--tp-muted);
+    font-size: 1.1rem;
+    line-height: 1.75;
+  }
+
+  .tp-problem-grid, .tp-outcome-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .tp-tile {
+    background: #fffefb;
+    border: 1px solid #e8dfcf;
+    border-radius: 22px;
+    padding: 24px;
+    box-shadow: 0 16px 44px rgba(18,54,40,.07);
+  }
+
+  .tp-tile h3 {
+    margin: 0 0 10px;
+    color: var(--tp-green-dark);
+    font-size: 1.12rem;
+    line-height: 1.2;
+  }
+
+  .tp-tile p {
+    margin: 0;
+    color: var(--tp-muted);
+    line-height: 1.65;
+  }
+
+  .tp-band {
+    background: var(--tp-green-dark);
+    color: #fffef8;
+  }
+
+  .tp-band h2 { color: #fffef8; }
+  .tp-band .tp-section-lede { color: rgba(255,255,255,.78); }
+
+  .tp-weeks {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .tp-week {
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.13);
+    border-radius: 18px;
+    padding: 18px;
+  }
+
+  .tp-week .num {
+    color: var(--tp-gold);
+    font-size: .78rem;
+    font-weight: 850;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .tp-week h3 {
+    margin: 8px 0 8px;
+    color: #fffef8;
+    font-size: 1rem;
+  }
+
+  .tp-week p {
+    margin: 0;
+    color: rgba(255,255,255,.76);
+    line-height: 1.55;
+    font-size: .95rem;
+  }
+
+  .tp-apply {
+    background: var(--tp-panel);
+  }
+
+  .tp-apply-box {
+    display: grid;
+    grid-template-columns: 1fr .8fr;
+    gap: 28px;
+    align-items: center;
+    background: #fffefb;
+    border: 1px solid #e0d6c3;
+    border-radius: 30px;
+    padding: clamp(26px, 5vw, 48px);
+    box-shadow: 0 20px 70px rgba(18,54,40,.09);
+  }
+
+  .tp-apply-box h2 { margin-bottom: 12px; }
+
+  .tp-apply-note {
+    border-left: 4px solid var(--tp-gold);
+    padding-left: 18px;
+    color: var(--tp-muted);
+    line-height: 1.7;
+  }
+
+  .tp-fit-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .tp-fit-list div {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    color: var(--tp-muted);
+    line-height: 1.5;
+  }
+
+  .tp-fit-list span {
+    flex: 0 0 8px;
+    width: 8px;
+    height: 8px;
+    margin-top: 9px;
+    border-radius: 999px;
+    background: var(--tp-gold);
+  }
+
+  @media (max-width: 900px) {
+    .tp-hero-grid, .tp-apply-box { grid-template-columns: 1fr; }
+    .tp-problem-grid, .tp-outcome-grid { grid-template-columns: 1fr; }
+    .tp-weeks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 560px) {
+    .tp-hero { padding: 58px 0; }
+    .tp-section { padding: 54px 0; }
+    .tp-weeks { grid-template-columns: 1fr; }
+    .tp-schedule div { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>
+
+<div class="tp-page">
+  <section class="tp-hero">
+    <div class="tp-wrap tp-hero-grid">
+      <div>
+        <p class="tp-kicker"><span></span> July 2026 school-year prep cohort</p>
+        <h1>Build the school behavior system before the year starts <em>running you.</em></h1>
+        <p class="tp-lede">An 8-week live cohort for BCBAs in schools who want clearer referral flow, cleaner plans, better staff support, and a practical operating system before August pressure hits.</p>
+        <div class="tp-actions">
+          <a class="tp-btn tp-btn-primary" href="#apply">Apply for the July cohort</a>
+          <a class="tp-btn tp-btn-secondary" href="#curriculum">See the 8-week build</a>
+        </div>
+      </div>
+      <aside class="tp-card" aria-label="Cohort schedule">
+        <p class="tp-card-title">Next cohort schedule</p>
+        <dl class="tp-schedule">
+          <div><dt>Starts</dt><dd>Thursday, July 2, 2026</dd></div>
+          <div><dt>Meets</dt><dd>Thursdays, 6:00 to 8:00 PM Pacific</dd></div>
+          <div><dt>Runs</dt><dd>July 2 through August 20, 2026</dd></div>
+          <div><dt>Format</dt><dd>Live working sessions, implementation templates, and practical feedback</dd></div>
+          <div><dt>Focus</dt><dd>School-year prep for district BCBAs and behavior teams</dd></div>
+        </dl>
+      </aside>
+    </div>
+  </section>
+
+  <section class="tp-section">
+    <div class="tp-wrap">
+      <h2>This is for the moment before the school year gets loud.</h2>
+      <p class="tp-section-lede">Most school BCBAs do not need more theory in July. They need a working system they can bring into meetings, referrals, observations, plan reviews, and staff coaching before the calendar fills up.</p>
+      <div class="tp-problem-grid">
+        <article class="tp-tile">
+          <h3>Referral triage that does not depend on memory</h3>
+          <p>Create a simple intake and prioritization rhythm so urgent cases get attention without every request becoming a crisis.</p>
+        </article>
+        <article class="tp-tile">
+          <h3>Plans that are easier to implement</h3>
+          <p>Turn behavior plans into staff-facing routines, practice steps, and check-ins that make implementation more likely.</p>
+        </article>
+        <article class="tp-tile">
+          <h3>Meetings with cleaner decisions</h3>
+          <p>Use a practical structure for IEP, consultation, and team meetings so the next action is clear before people leave the room.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="tp-section tp-band" id="curriculum">
+    <div class="tp-wrap">
+      <h2>The 8-week build</h2>
+      <p class="tp-section-lede">Each week focuses on one part of the school behavior operating system. The goal is to leave with usable pieces, not a notebook full of ideas you have to translate later.</p>
+      <div class="tp-weeks">
+        <article class="tp-week"><div class="num">Week 1</div><h3>Map the current load</h3><p>Clarify caseload, referral sources, recurring fires, and the highest-leverage system gaps.</p></article>
+        <article class="tp-week"><div class="num">Week 2</div><h3>Referral and triage flow</h3><p>Build intake, priority criteria, and a response path that protects your time.</p></article>
+        <article class="tp-week"><div class="num">Week 3</div><h3>Observation to action</h3><p>Turn classroom observations into next steps staff can understand and use.</p></article>
+        <article class="tp-week"><div class="num">Week 4</div><h3>Plan quality review</h3><p>Use a plan review method that catches vague strategies before they reach implementation.</p></article>
+        <article class="tp-week"><div class="num">Week 5</div><h3>Staff support routines</h3><p>Create coaching and follow-up rhythms that fit real school schedules.</p></article>
+        <article class="tp-week"><div class="num">Week 6</div><h3>Data that guides decisions</h3><p>Choose measures and review points that help teams adjust without drowning in forms.</p></article>
+        <article class="tp-week"><div class="num">Week 7</div><h3>Meeting scripts and artifacts</h3><p>Prepare the agendas, decision prompts, and documents that make collaboration cleaner.</p></article>
+        <article class="tp-week"><div class="num">Week 8</div><h3>First 30 school days</h3><p>Build the launch plan for August and September so the system starts before the fires do.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="tp-section">
+    <div class="tp-wrap">
+      <h2>What you leave with</h2>
+      <p class="tp-section-lede">The cohort is designed around practical artifacts you can adapt to your district, campus, or caseload.</p>
+      <div class="tp-outcome-grid">
+        <article class="tp-tile"><h3>A school-year prep map</h3><p>Your priority cases, systems, meeting cadence, and first-month support plan in one place.</p></article>
+        <article class="tp-tile"><h3>Reusable team tools</h3><p>Templates for intake, consultation, observation notes, plan reviews, and staff support conversations.</p></article>
+        <article class="tp-tile"><h3>A clearer leadership rhythm</h3><p>A way to lead behavior systems without relying on constant availability or emergency problem solving.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="tp-section tp-apply" id="apply">
+    <div class="tp-wrap">
+      <div class="tp-apply-box">
+        <div>
+          <h2>Apply for the July 2026 cohort</h2>
+          <p class="tp-section-lede">Send a short note with your role, district or setting, and what you want working before the school year begins. Rob can confirm fit, cohort details, and next steps.</p>
+          <a class="tp-btn tp-btn-primary" href="mailto:rob@behaviorschool.com?subject=July%202026%20Transformation%20Program%20application&body=Hi%20Rob%2C%0A%0AI%27d%20like%20to%20apply%20for%20the%20July%202026%20Transformation%20Program.%0A%0ARole%3A%0ADistrict%20or%20setting%3A%0AWhat%20I%20want%20working%20before%20the%20school%20year%3A%0A%0AThanks%2C">Start the application email</a>
+        </div>
+        <aside class="tp-apply-note">
+          <p>The July cohort starts Thursday, July 2, 2026 and meets weekly from 6:00 to 8:00 PM Pacific through August 20. Sessions are scheduled on Thursdays and avoid major holidays.</p>
+          <div class="tp-fit-list" aria-label="Good fit checklist">
+            <div><span></span><p>You support students, staff, or teams in school settings.</p></div>
+            <div><span></span><p>You want reusable systems before the year starts.</p></div>
+            <div><span></span><p>You prefer practical working sessions over passive training.</p></div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</div>

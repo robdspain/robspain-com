@@ -18,7 +18,7 @@ That's why I created the **8-Week Transformation Program.**
 
 **[What it is]**
 
-This is an intensive coaching program designed specifically for school-based BCBAs who are ready to stop surviving and start leading.
+This is an intensive coaching program designed specifically for BCBAs in schools who are ready to stop surviving and start leading.
 
 Over 8 weeks, I'll guide you through the complete Systems Leadership framework—not just the theory, but the actual implementation.
 

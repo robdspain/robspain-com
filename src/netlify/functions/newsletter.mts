@@ -7,34 +7,63 @@ interface NewsletterRequest {
 
 const CONVEX_URL = "https://third-loris-453.convex.cloud";
 
+const jsonHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Content-Type": "application/json",
+  "Cache-Control": "no-cache, no-store, must-revalidate",
+};
+
+function json(statusCode: number, payload: Record<string, unknown>) {
+  return {
+    statusCode,
+    headers: jsonHeaders,
+    body: JSON.stringify(payload),
+  };
+}
+
+function parseNewsletterRequest(body: string | null): NewsletterRequest | null {
+  if (!body) return {} as NewsletterRequest;
+  try {
+    const parsed = JSON.parse(body);
+    return parsed && typeof parsed === "object" ? parsed as NewsletterRequest : null;
+  } catch {
+    return null;
+  }
+}
+
 const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
   if (event.httpMethod === "OPTIONS") {
-    return {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
+    return { statusCode: 200, headers: jsonHeaders, body: "" };
+  }
+
+  if (event.httpMethod === "GET") {
+    return json(200, {
+      success: true,
+      status: "ok",
+      service: "newsletter",
+      analytics: {
+        configured: false,
+        message: "Newsletter analytics are not connected to a live provider yet.",
       },
-      body: "",
-    };
+    });
   }
 
   if (event.httpMethod !== "POST") {
-    return {
-      statusCode: 405,
-      body: JSON.stringify({ error: "Method not allowed" }),
-    };
+    return json(405, { error: "Method not allowed" });
   }
 
   try {
-    const { email, source } = JSON.parse(event.body || "{}") as NewsletterRequest;
+    const request = parseNewsletterRequest(event.body);
+    if (!request) {
+      return json(400, { error: "Invalid JSON body" });
+    }
+
+    const { email, source } = request;
 
     if (!email || !email.includes("@")) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: "Valid email required" }),
-      };
+      return json(400, { error: "Valid email required" });
     }
 
     const convexResponse = await fetch(`${CONVEX_URL}/api/mutation`, {
@@ -86,20 +115,10 @@ https://robspain.com`,
       }
     }
 
-    return {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ success: true }),
-    };
+    return json(200, { success: true });
   } catch (error) {
     console.error("Newsletter error:", error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: "Failed to subscribe" }),
-    };
+    return json(500, { error: "Failed to subscribe" });
   }
 };
 

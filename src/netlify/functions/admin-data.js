@@ -1,5 +1,72 @@
 const { getStore } = require('@netlify/blobs');
 
+const VALID_KEYS = ['agent-activity', 'tasks', 'blockers'];
+
+const EMPTY_FALLBACKS = {
+  'agent-activity': {
+    lastUpdated: null,
+    agents: {},
+    recentActivity: [],
+    blockedQueue: [],
+    meta: {
+      source: 'empty-fallback',
+      reason: 'Netlify Blobs is not configured for this deployment',
+    },
+  },
+  tasks: {
+    lastUpdated: null,
+    tasks: [],
+    meta: {
+      source: 'empty-fallback',
+      reason: 'Netlify Blobs is not configured for this deployment',
+    },
+  },
+  blockers: {
+    lastUpdated: null,
+    blockers: [],
+    meta: {
+      source: 'empty-fallback',
+      reason: 'Netlify Blobs is not configured for this deployment',
+    },
+  },
+};
+
+function response(statusCode, headers, payload, extraHeaders = {}) {
+  return {
+    statusCode,
+    headers: { ...headers, ...extraHeaders },
+    body: typeof payload === 'string' ? payload : JSON.stringify(payload),
+  };
+}
+
+function getFallback(key, reason) {
+  return {
+    ...EMPTY_FALLBACKS[key],
+    lastUpdated: new Date().toISOString(),
+    meta: {
+      ...EMPTY_FALLBACKS[key].meta,
+      reason,
+    },
+  };
+}
+
+function openAdminStore() {
+  try {
+    return { store: getStore('admin-data'), error: null };
+  } catch (e) {
+    const siteID = process.env.SITE_ID || process.env.NETLIFY_SITE_ID;
+    const token = process.env.NETLIFY_TOKEN || process.env.NETLIFY_API_TOKEN;
+    if (!siteID || !token) {
+      return { store: null, error: 'Netlify Blobs is not configured for this deployment' };
+    }
+    try {
+      return { store: getStore({ name: 'admin-data', siteID, token }), error: null };
+    } catch (configError) {
+      return { store: null, error: `Netlify Blobs configuration failed: ${configError.message}` };
+    }
+  }
+}
+
 exports.handler = async (event) => {
   const headers = {
     'Content-Type': 'application/json',
@@ -14,35 +81,26 @@ exports.handler = async (event) => {
   }
 
   const key = event.queryStringParameters?.key;
-  const validKeys = ['agent-activity', 'tasks', 'blockers'];
 
-  if (!key || !validKeys.includes(key)) {
-    return { statusCode: 400, headers, body: JSON.stringify({ error: `Invalid key. Valid: ${validKeys.join(', ')}` }) };
+  if (!key || !VALID_KEYS.includes(key)) {
+    return response(400, headers, { error: `Invalid key. Valid: ${VALID_KEYS.join(', ')}` });
   }
 
-  // Use Netlify Blobs - auto-context in production, fall back to explicit config
-  let store;
-  try {
-    store = getStore('admin-data');
-  } catch (e) {
-    const siteID = process.env.SITE_ID || process.env.NETLIFY_SITE_ID;
-    const token = process.env.NETLIFY_TOKEN || process.env.NETLIFY_API_TOKEN;
-    if (!siteID || !token) {
-      // Blobs not configured — return 404 so client falls back to static JSON
-      return { statusCode: 404, headers, body: JSON.stringify({ error: 'Blobs not configured' }) };
-    }
-    store = getStore({ name: 'admin-data', siteID, token });
-  }
+  const { store, error } = openAdminStore();
 
   if (event.httpMethod === 'GET') {
+    if (!store) {
+      return response(200, headers, getFallback(key, error), { 'X-Admin-Data-Source': 'empty-fallback' });
+    }
+
     try {
       const data = await store.get(key);
       if (!data) {
-        return { statusCode: 404, headers, body: JSON.stringify({ error: 'Not found' }) };
+        return response(200, headers, getFallback(key, 'No blob record exists for this key yet'), { 'X-Admin-Data-Source': 'empty-fallback' });
       }
-      return { statusCode: 200, headers, body: data };
+      return response(200, headers, data, { 'X-Admin-Data-Source': 'netlify-blobs' });
     } catch (e) {
-      return { statusCode: 404, headers, body: JSON.stringify({ error: 'Not found' }) };
+      return response(200, headers, getFallback(key, e.message || 'Failed to read Netlify Blobs data'), { 'X-Admin-Data-Source': 'empty-fallback' });
     }
   }
 
@@ -50,15 +108,18 @@ exports.handler = async (event) => {
     const adminToken = process.env.ADMIN_API_TOKEN;
     const auth = event.headers.authorization || event.headers.Authorization;
     if (!adminToken || auth !== `Bearer ${adminToken}`) {
-      return { statusCode: 401, headers, body: JSON.stringify({ error: 'Unauthorized' }) };
+      return response(401, headers, { error: 'Unauthorized' });
+    }
+    if (!store) {
+      return response(503, headers, { error });
     }
     try {
-      await store.set(key, event.body);
-      return { statusCode: 200, headers, body: JSON.stringify({ success: true, key }) };
+      await store.set(key, event.body || '{}');
+      return response(200, headers, { success: true, key });
     } catch (e) {
-      return { statusCode: 500, headers, body: JSON.stringify({ error: String(e) }) };
+      return response(500, headers, { error: String(e) });
     }
   }
 
-  return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
+  return response(405, headers, { error: 'Method not allowed' });
 };

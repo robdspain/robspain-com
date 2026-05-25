@@ -16,7 +16,7 @@ And at the end of the day? You haven't touched a single behavior plan. You haven
 
 **[Pause, more reflective tone]**
 
-Here's the thing that nobody tells you in grad school: **research shows that over 72% of behavior analysts report medium to high levels of burnout** (Plantiveau, Dounavi, & Virués-Ortega, 2018). And school-based BCBAs? We face some of the highest turnover in the field.
+Here's the thing that nobody tells you in grad school: **research shows that over 72% of behavior analysts report medium to high levels of burnout** (Plantiveau, Dounavi, & Virués-Ortega, 2018). And BCBAs in schools? We face some of the highest turnover in the field.
 
 It's not because we don't care. It's not because we're not smart enough or skilled enough. It's because the system is designed to burn us out.
 

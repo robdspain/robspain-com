@@ -11,3 +11,14 @@
 /about  /#about 302
 /posts/  /blog/ 302
 /contact  /#contact 302
+
+# Current BehaviorSchool product redirects
+/bcba-study-tools  https://behaviorschool.com/study 301
+/bcba-study-tools/  https://behaviorschool.com/study 301
+/iep-behavior-goals  https://behaviorschool.com/iep-goals 301
+/iep-behavior-goals/  https://behaviorschool.com/iep-goals 301
+/supervision-tools  https://behaviorschool.com/supervisors 301
+/supervision-tools/  https://behaviorschool.com/supervisors 301
+/behavior-tools  https://behaviorschool.com/behavior-tools 301
+/behavior-tools/  https://behaviorschool.com/behavior-tools 301
+

@@ -341,7 +341,7 @@ class VideoFunnel {
                                     </div>
                                     <h3 style="color:#10B981;font-size:1.5rem;font-weight:800;margin-bottom:0.75rem;">Series Complete</h3>
                                     <p style="color:#94a3b8;margin-bottom:2rem;max-width:340px;line-height:1.6;">You now have the framework. Ready to implement it with support? Apply to the 8-Week Transformation Program.</p>
-                                    <a href="/transformation-program" class="optin-btn" style="display:inline-block;text-decoration:none;">
+                                    <a href="https://behaviorschool.com/transformation-program#apply" class="optin-btn" style="display:inline-block;text-decoration:none;">
                                         Apply to the Program <i class="fas fa-arrow-right"></i>
                                     </a>
                                 </div>

@@ -16,7 +16,7 @@ If this resonates and you want support making the shift to Systems Leadership, I
 
 Here’s the next step if you want to explore the program:
 
-**[behaviorschool.com/transformation-program](https://behaviorschool.com/transformation-program)**
+**[behaviorschool.com/transformation-program](https://behaviorschool.com/transformation-program#apply)**
 
 On that page, you’ll find the full details—what’s included, who it’s designed for, and how it works.
 

@@ -1,0 +1,61 @@
+{
+  "asOf": "2026-05-25",
+  "metrics": [
+    {
+      "key": "visits",
+      "label": "Visits",
+      "value": null,
+      "source": "Search Console, GA, or Netlify Analytics",
+      "status": "blocked",
+      "nextAction": "Connect an analytics export or API before reporting a number."
+    },
+    {
+      "key": "optIns",
+      "label": "Opt-ins",
+      "value": null,
+      "source": "Site email capture and newsletter list",
+      "status": "blocked",
+      "nextAction": "Connect the active capture source or newsletter provider export."
+    },
+    {
+      "key": "calls",
+      "label": "Calls",
+      "value": null,
+      "source": "Cal.com or calendar events",
+      "status": "blocked",
+      "nextAction": "Connect Cal.com API/export or define the calendar query for completed fit calls."
+    },
+    {
+      "key": "bookings",
+      "label": "Bookings",
+      "value": null,
+      "source": "Cal.com",
+      "status": "blocked",
+      "nextAction": "Connect Cal.com API/export before reporting booked calls."
+    },
+    {
+      "key": "invoices",
+      "label": "Invoices",
+      "value": null,
+      "source": "FreshBooks or Stripe invoices",
+      "status": "blocked",
+      "nextAction": "Connect invoice export/API and choose whether open invoices or sent invoices is the daily metric."
+    },
+    {
+      "key": "sales",
+      "label": "Sales",
+      "value": null,
+      "source": "Stripe, App Store, FreshBooks, or manual close result",
+      "status": "blocked",
+      "nextAction": "Connect payment exports/APIs and reconcile to closed-won pipeline rows."
+    }
+  ],
+  "pipeline": {
+    "source": "src/_data/revenuePipeline.csv",
+    "status": "ready_for_import",
+    "openLeads": 0,
+    "followUpsDue": 0,
+    "wonDeals": 0,
+    "nextAction": "Import the CSV header into Google Sheets or begin adding real leads locally."
+  }
+}

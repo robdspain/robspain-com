@@ -2,16 +2,20 @@
 const embedYouTube = require("eleventy-plugin-youtube-embed");
 const Image = require("@11ty/eleventy-img");
 const path = require("path");
+const fs = require("fs");
 
 // Async image optimization function
 async function imageShortcode(src, alt, sizes = "100vw", widths = [400, 800, 1200]) {
   // Handle empty/null images
   if (!src) return "";
 
-  // Resolve the image path
+  // Resolve the image path. Public assets are copied from src/public to site root,
+  // so /images/... should be optimized from src/public/images/... when present.
   let inputPath = src;
   if (src.startsWith("/")) {
-    inputPath = path.join("src", src);
+    const publicPath = path.join("src", "public", src);
+    const sourcePath = path.join("src", src);
+    inputPath = fs.existsSync(publicPath) ? publicPath : sourcePath;
   }
 
   let metadata;

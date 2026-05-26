@@ -1,20 +1,21 @@
 ---
 layout: base.njk
-title: "8-Week Transformation Program for School BCBAs | July 2026 Cohort"
-description: "Apply for Rob Spain's July 2026 Transformation Program, an 8-week school-year prep cohort for school BCBAs meeting Thursdays from 6 to 8 PM Pacific."
+title: "6-Week Transformation Program for School BCBAs | July 2026 Cohort"
+description: "Apply for Rob Spain's July 2026 Transformation Program, a 6-week school-year prep cohort for school BCBAs meeting Thursdays from 6:00 to 8:00 PM Pacific."
 permalink: /transformation-program/
 changeFreq: weekly
 priority: 0.95
+image: /images/transformation-program-hero.svg
 seo:
-  metaTitle: "8-Week Transformation Program | July 2026 School BCBA Cohort"
-  metaDesc: "A focused school-year prep cohort for BCBAs in schools. Starts July 2, 2026 and meets Thursdays from 6 to 8 PM Pacific."
+  metaTitle: "6-Week Transformation Program | July 2026 School BCBA Cohort"
+  metaDesc: "A focused 6-week school-year prep cohort for BCBAs in schools. Starts July 2, 2026 and meets Thursdays from 6:00 to 8:00 PM Pacific through August 6."
 extra_head: |
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "Course",
-    "name": "8-Week Transformation Program for School BCBAs",
-    "description": "A live school-year prep cohort for BCBAs in schools who want a practical system for referrals, behavior plans, meetings, staff training, and implementation support.",
+    "name": "6-Week Transformation Program for School BCBAs",
+    "description": "A live 6-week school-year prep cohort for BCBAs in schools who want practical systems for referrals, consultation, staff support, behavior planning, and implementation before the fall rush.",
     "provider": {
       "@type": "Person",
       "name": "Rob Spain",
@@ -24,7 +25,7 @@ extra_head: |
       "@type": "CourseInstance",
       "courseMode": "Online",
       "startDate": "2026-07-02T18:00:00-07:00",
-      "endDate": "2026-08-20T20:00:00-07:00",
+      "endDate": "2026-08-06T20:00:00-07:00",
       "location": {
         "@type": "VirtualLocation",
         "url": "https://robspain.com/transformation-program/"
@@ -43,6 +44,10 @@ extra_head: |
     --tp-panel: #f4f0e8;
     --tp-ink: #18251f;
     --tp-muted: #516158;
+  }
+
+  .nav-premium {
+    position: relative;
   }
 
   .tp-page {
@@ -89,7 +94,7 @@ extra_head: |
     position: relative;
     z-index: 1;
     display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(300px, .7fr);
+    grid-template-columns: minmax(0, 1.05fr) minmax(320px, .78fr);
     gap: 44px;
     align-items: center;
   }
@@ -173,6 +178,11 @@ extra_head: |
     border: 1px solid rgba(255,255,255,.42);
   }
 
+  .tp-hero-side {
+    display: grid;
+    gap: 18px;
+  }
+
   .tp-card {
     background: rgba(255,255,255,.95);
     color: var(--tp-ink);
@@ -180,6 +190,46 @@ extra_head: |
     border-radius: 28px;
     padding: 28px;
     box-shadow: 0 26px 70px rgba(0,0,0,.28);
+  }
+
+  .tp-visual-card {
+    padding: 18px;
+    background: linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,248,231,.9));
+  }
+
+  .tp-visual-frame {
+    position: relative;
+    overflow: hidden;
+    border-radius: 22px;
+    border: 1px solid rgba(18,54,40,.08);
+    background: linear-gradient(180deg, #f7f1e2, #efe4c7);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
+  }
+
+  .tp-visual-frame img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .tp-visual-caption {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 14px;
+    color: var(--tp-muted);
+    font-size: .92rem;
+    line-height: 1.5;
+  }
+
+  .tp-visual-label {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--tp-green-dark);
+    font-size: .78rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
   }
 
   .tp-card-title {
@@ -272,7 +322,7 @@ extra_head: |
 
   .tp-weeks {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 14px;
   }
 
@@ -354,14 +404,13 @@ extra_head: |
 
   @media (max-width: 900px) {
     .tp-hero-grid, .tp-apply-box { grid-template-columns: 1fr; }
-    .tp-problem-grid, .tp-outcome-grid { grid-template-columns: 1fr; }
-    .tp-weeks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .tp-problem-grid, .tp-outcome-grid, .tp-weeks { grid-template-columns: 1fr; }
+    .tp-visual-caption { flex-direction: column; }
   }
 
   @media (max-width: 560px) {
     .tp-hero { padding: 58px 0; }
     .tp-section { padding: 54px 0; }
-    .tp-weeks { grid-template-columns: 1fr; }
     .tp-schedule div { grid-template-columns: 1fr; gap: 4px; }
   }
 </style>
@@ -371,23 +420,40 @@ extra_head: |
     <div class="tp-wrap tp-hero-grid">
       <div>
         <p class="tp-kicker"><span></span> July 2026 school-year prep cohort</p>
-        <h1>Build the school behavior system before the year starts <em>running you.</em></h1>
-        <p class="tp-lede">An 8-week live cohort for BCBAs in schools who want clearer referral flow, cleaner plans, better staff support, and a practical operating system before August pressure hits.</p>
+        <h1>Build the school behavior system before the year starts <em>pulling you off plan.</em></h1>
+        <p class="tp-lede">A 6-week live cohort for BCBAs in schools who want tighter referral systems, stronger behavior plans, cleaner consultation routines, and practical implementation support before August pressure hits.</p>
         <div class="tp-actions">
-          <a class="tp-btn tp-btn-primary" href="#apply">Apply for the July cohort</a>
-          <a class="tp-btn tp-btn-secondary" href="#curriculum">See the 8-week build</a>
+          <a class="tp-btn tp-btn-primary" href="#apply">Apply for the 6-week cohort</a>
+          <a class="tp-btn tp-btn-secondary" href="#curriculum">See the 6-session curriculum</a>
         </div>
       </div>
-      <aside class="tp-card" aria-label="Cohort schedule">
-        <p class="tp-card-title">Next cohort schedule</p>
-        <dl class="tp-schedule">
-          <div><dt>Starts</dt><dd>Thursday, July 2, 2026</dd></div>
-          <div><dt>Meets</dt><dd>Thursdays, 6:00 to 8:00 PM Pacific</dd></div>
-          <div><dt>Runs</dt><dd>July 2 through August 20, 2026</dd></div>
-          <div><dt>Format</dt><dd>Live working sessions, implementation templates, and practical feedback</dd></div>
-          <div><dt>Focus</dt><dd>School-year prep for district BCBAs and behavior teams</dd></div>
-        </dl>
-      </aside>
+      <div class="tp-hero-side">
+        <aside class="tp-card tp-visual-card" aria-label="Transformation program visual overview">
+          <div class="tp-visual-frame">
+            <img src="/images/transformation-program-hero.svg" alt="Abstract planning board illustration for the Transformation Program" loading="eager" decoding="async">
+          </div>
+          <div class="tp-visual-caption">
+            <div>
+              <span class="tp-visual-label">Built for July</span>
+              Move from scattered summer prep to a clear operating rhythm for referrals, teams, and staff support.
+            </div>
+            <div>
+              <span class="tp-visual-label">Live working format</span>
+              Each Thursday session helps you leave with practical systems you can use right away.
+            </div>
+          </div>
+        </aside>
+        <aside class="tp-card" aria-label="Cohort schedule">
+          <p class="tp-card-title">Next cohort schedule</p>
+          <dl class="tp-schedule">
+            <div><dt>Starts</dt><dd>Thursday, July 2, 2026</dd></div>
+            <div><dt>Meets</dt><dd>Thursdays, 6:00 to 8:00 PM Pacific</dd></div>
+            <div><dt>Runs</dt><dd>July 2 through August 6, 2026</dd></div>
+            <div><dt>Format</dt><dd>Six live working sessions with implementation templates and practical feedback</dd></div>
+            <div><dt>Focus</dt><dd>School-year prep for district BCBAs, behavior teams, and consultation leads</dd></div>
+          </dl>
+        </aside>
+      </div>
     </div>
   </section>
 
@@ -414,17 +480,15 @@ extra_head: |
 
   <section class="tp-section tp-band" id="curriculum">
     <div class="tp-wrap">
-      <h2>The 8-week build</h2>
-      <p class="tp-section-lede">Each week focuses on one part of the school behavior operating system. The goal is to leave with usable pieces, not a notebook full of ideas you have to translate later.</p>
+      <h2>The 6-session summer build</h2>
+      <p class="tp-section-lede">Each Thursday focuses on one part of the school BCBA operating system. The goal is to leave with practical tools, decision rules, and reusable artifacts that are ready for real school use.</p>
       <div class="tp-weeks">
-        <article class="tp-week"><div class="num">Week 1</div><h3>Map the current load</h3><p>Clarify caseload, referral sources, recurring fires, and the highest-leverage system gaps.</p></article>
-        <article class="tp-week"><div class="num">Week 2</div><h3>Referral and triage flow</h3><p>Build intake, priority criteria, and a response path that protects your time.</p></article>
-        <article class="tp-week"><div class="num">Week 3</div><h3>Observation to action</h3><p>Turn classroom observations into next steps staff can understand and use.</p></article>
-        <article class="tp-week"><div class="num">Week 4</div><h3>Plan quality review</h3><p>Use a plan review method that catches vague strategies before they reach implementation.</p></article>
-        <article class="tp-week"><div class="num">Week 5</div><h3>Staff support routines</h3><p>Create coaching and follow-up rhythms that fit real school schedules.</p></article>
-        <article class="tp-week"><div class="num">Week 6</div><h3>Data that guides decisions</h3><p>Choose measures and review points that help teams adjust without drowning in forms.</p></article>
-        <article class="tp-week"><div class="num">Week 7</div><h3>Meeting scripts and artifacts</h3><p>Prepare the agendas, decision prompts, and documents that make collaboration cleaner.</p></article>
-        <article class="tp-week"><div class="num">Week 8</div><h3>First 30 school days</h3><p>Build the launch plan for August and September so the system starts before the fires do.</p></article>
+        <article class="tp-week"><div class="num">Session 1</div><h3>Caseload map and service priorities</h3><p>Clarify current responsibilities, identify the highest-risk demands, and define where your systems need to hold before August.</p></article>
+        <article class="tp-week"><div class="num">Session 2</div><h3>Referral pathways and triage rules</h3><p>Build an intake flow, priority criteria, and response rules that reduce ambiguity for schools, teams, and your calendar.</p></article>
+        <article class="tp-week"><div class="num">Session 3</div><h3>Observation systems that lead to action</h3><p>Turn classroom observations into concise notes, staff-facing recommendations, and next-step plans that people can actually use.</p></article>
+        <article class="tp-week"><div class="num">Session 4</div><h3>Behavior plan quality and implementation</h3><p>Refine plan components, implementation steps, and classroom supports so behavior plans are clearer before they reach staff.</p></article>
+        <article class="tp-week"><div class="num">Session 5</div><h3>Consultation meetings and staff coaching</h3><p>Create meeting agendas, coaching routines, and feedback structures that make team decisions cleaner and follow-through easier.</p></article>
+        <article class="tp-week"><div class="num">Session 6</div><h3>First-month launch systems</h3><p>Assemble your first 30-day school-year rhythm for data review, team support, follow-up, and early problem solving.</p></article>
       </div>
     </div>
   </section>
@@ -447,10 +511,10 @@ extra_head: |
         <div>
           <h2>Apply for the July 2026 cohort</h2>
           <p class="tp-section-lede">Send a short note with your role, district or setting, and what you want working before the school year begins. Rob can confirm fit, cohort details, and next steps.</p>
-          <a class="tp-btn tp-btn-primary" href="mailto:rob@behaviorschool.com?subject=July%202026%20Transformation%20Program%20application&body=Hi%20Rob%2C%0A%0AI%27d%20like%20to%20apply%20for%20the%20July%202026%20Transformation%20Program.%0A%0ARole%3A%0ADistrict%20or%20setting%3A%0AWhat%20I%20want%20working%20before%20the%20school%20year%3A%0A%0AThanks%2C">Start the application email</a>
+          <a class="tp-btn tp-btn-primary" href="mailto:rob@behaviorschool.com?subject=July%202026%206-Week%20Transformation%20Program%20application&body=Hi%20Rob%2C%0A%0AI%27d%20like%20to%20apply%20for%20the%20July%202026%206-week%20Transformation%20Program.%0A%0ARole%3A%0ADistrict%20or%20setting%3A%0AWhat%20I%20want%20working%20before%20the%20school%20year%3A%0AWhat%20school%20BCBA%20systems%20I%20most%20want%20to%20strengthen%3A%0A%0AThanks%2C">Start the application email</a>
         </div>
         <aside class="tp-apply-note">
-          <p>The July cohort starts Thursday, July 2, 2026 and meets weekly from 6:00 to 8:00 PM Pacific through August 20. Sessions are scheduled on Thursdays and avoid major holidays.</p>
+          <p>The July cohort starts Thursday, July 2, 2026 and meets weekly from 6:00 to 8:00 PM Pacific through August 6. Across six Thursday sessions, the focus stays on practical school BCBA systems you can bring into the first month of the year.</p>
           <div class="tp-fit-list" aria-label="Good fit checklist">
             <div><span></span><p>You support students, staff, or teams in school settings.</p></div>
             <div><span></span><p>You want reusable systems before the year starts.</p></div>

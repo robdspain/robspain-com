@@ -1,0 +1,91 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Transformation Program hero illustration</title>
+  <desc id="desc">Abstract planning board illustration with layered cards, pathways, and gold accents in green and cream brand colors.</desc>
+  <rect width="1200" height="900" rx="40" fill="#F7F1E2"/>
+  <rect x="34" y="34" width="1132" height="832" rx="32" fill="#FBF7EC" stroke="#E6D8B1" stroke-width="4"/>
+  <g opacity="0.5">
+    <path d="M98 158H1102" stroke="#D8C9A0" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 12"/>
+    <path d="M98 266H1102" stroke="#D8C9A0" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 12"/>
+    <path d="M98 374H1102" stroke="#D8C9A0" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 12"/>
+    <path d="M98 482H1102" stroke="#D8C9A0" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 12"/>
+    <path d="M98 590H1102" stroke="#D8C9A0" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 12"/>
+    <path d="M98 698H1102" stroke="#D8C9A0" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 12"/>
+  </g>
+  <rect x="110" y="108" width="352" height="622" rx="28" fill="#123628"/>
+  <rect x="136" y="142" width="300" height="84" rx="20" fill="#1F4D3F"/>
+  <circle cx="182" cy="184" r="19" fill="#E4B63D"/>
+  <path d="M218 167H380" stroke="#F6F0DF" stroke-width="12" stroke-linecap="round"/>
+  <path d="M218 197H340" stroke="#D4DCCF" stroke-width="8" stroke-linecap="round"/>
+  <g opacity="0.95">
+    <rect x="136" y="254" width="300" height="92" rx="20" fill="#F8F3E6"/>
+    <rect x="158" y="280" width="84" height="12" rx="6" fill="#E4B63D"/>
+    <path d="M158 309H408" stroke="#2A5B4C" stroke-width="10" stroke-linecap="round"/>
+    <path d="M158 332H360" stroke="#90A396" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  <g opacity="0.95">
+    <rect x="136" y="366" width="300" height="92" rx="20" fill="#F8F3E6"/>
+    <rect x="158" y="392" width="104" height="12" rx="6" fill="#E4B63D"/>
+    <path d="M158 421H392" stroke="#2A5B4C" stroke-width="10" stroke-linecap="round"/>
+    <path d="M158 444H338" stroke="#90A396" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  <g opacity="0.95">
+    <rect x="136" y="478" width="300" height="92" rx="20" fill="#F8F3E6"/>
+    <rect x="158" y="504" width="92" height="12" rx="6" fill="#E4B63D"/>
+    <path d="M158 533H400" stroke="#2A5B4C" stroke-width="10" stroke-linecap="round"/>
+    <path d="M158 556H354" stroke="#90A396" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  <g opacity="0.95">
+    <rect x="136" y="590" width="300" height="92" rx="20" fill="#F8F3E6"/>
+    <rect x="158" y="616" width="76" height="12" rx="6" fill="#E4B63D"/>
+    <path d="M158 645H386" stroke="#2A5B4C" stroke-width="10" stroke-linecap="round"/>
+    <path d="M158 668H320" stroke="#90A396" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="508" y="114" width="586" height="672" rx="34" fill="#FFFDF6"/>
+    <rect x="508" y="114" width="586" height="672" rx="34" stroke="#E7D7AE" stroke-width="4"/>
+  </g>
+  <rect x="552" y="162" width="128" height="128" rx="28" fill="#1F4D3F"/>
+  <circle cx="616" cy="226" r="34" fill="#E4B63D"/>
+  <path d="M715 188H1016" stroke="#1A4538" stroke-width="16" stroke-linecap="round"/>
+  <path d="M715 230H966" stroke="#6B7F74" stroke-width="10" stroke-linecap="round"/>
+  <path d="M715 262H898" stroke="#C2C9BD" stroke-width="10" stroke-linecap="round"/>
+  <g>
+    <rect x="552" y="334" width="482" height="118" rx="26" fill="#F6F0DF"/>
+    <circle cx="606" cy="393" r="22" fill="#123628"/>
+    <path d="M652 373H974" stroke="#234E40" stroke-width="12" stroke-linecap="round"/>
+    <path d="M652 406H922" stroke="#90A396" stroke-width="9" stroke-linecap="round"/>
+  </g>
+  <g>
+    <rect x="552" y="480" width="226" height="226" rx="30" fill="#123628"/>
+    <rect x="590" y="528" width="150" height="26" rx="13" fill="#E4B63D"/>
+    <rect x="590" y="574" width="116" height="18" rx="9" fill="#F7F1E2" opacity="0.9"/>
+    <path d="M590 626L630 590L670 642L714 546" stroke="#F7F1E2" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g>
+    <rect x="808" y="480" width="226" height="226" rx="30" fill="#F6F0DF"/>
+    <circle cx="921" cy="550" r="58" fill="#1F4D3F"/>
+    <path d="M921 492C945.301 492 965 511.699 965 536V550H877V536C877 511.699 896.699 492 921 492Z" fill="#E4B63D"/>
+    <rect x="866" y="628" width="110" height="14" rx="7" fill="#1F4D3F"/>
+    <rect x="866" y="655" width="86" height="12" rx="6" fill="#B0BAAF"/>
+  </g>
+  <path d="M462 222C516 222 520 362 574 362" stroke="#E4B63D" stroke-width="8" stroke-linecap="round" stroke-dasharray="10 16"/>
+  <path d="M462 430C528 430 514 594 590 594" stroke="#E4B63D" stroke-width="8" stroke-linecap="round" stroke-dasharray="10 16"/>
+  <path d="M462 634C550 634 520 594 808 594" stroke="#E4B63D" stroke-width="8" stroke-linecap="round" stroke-dasharray="10 16"/>
+  <circle cx="462" cy="222" r="14" fill="#E4B63D"/>
+  <circle cx="462" cy="430" r="14" fill="#E4B63D"/>
+  <circle cx="462" cy="634" r="14" fill="#E4B63D"/>
+  <circle cx="574" cy="362" r="14" fill="#E4B63D"/>
+  <circle cx="590" cy="594" r="14" fill="#E4B63D"/>
+  <circle cx="808" cy="594" r="14" fill="#E4B63D"/>
+  <defs>
+    <filter id="shadow" x="476" y="88" width="650" height="736" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="18"/>
+      <feGaussianBlur stdDeviation="16"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.0705882 0 0 0 0 0.211765 0 0 0 0 0.156863 0 0 0 0.16 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_1"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_1" result="shape"/>
+    </filter>
+  </defs>
+</svg>

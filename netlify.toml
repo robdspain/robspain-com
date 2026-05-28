@@ -4,12 +4,24 @@
 
 [functions]
   directory = "src/netlify/functions"
-  included_files = ["src/netlify/functions/crm.db"]
+  included_files = ["src/netlify/functions/crm.db", "_site/admin/**"]
 
 [[redirects]]
   from = "http:///*"
   to = "https://:splat"
   status = 301
+  force = true
+
+[[redirects]]
+  from = "/admin"
+  to = "/.netlify/functions/admin-gate?path=dashboard/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/admin/*"
+  to = "/.netlify/functions/admin-gate?path=:splat"
+  status = 200
   force = true
 
 [[redirects]]
@@ -162,6 +174,3 @@
   from = "/api/home-search/*"
   to = "/.netlify/functions/home-search"
   status = 200
-[[edge_functions]]
-  path = "/admin/*"
-  function = "admin-auth"

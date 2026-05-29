@@ -206,15 +206,7 @@ function mapRedfinHome(home) {
   if (isFixer) descParts.push('potential fixer-upper');
   if (hasPool) descParts.push('pool');
 
-  // Build image URL from Redfin's photo CDN
-  let imageUrl = '';
-  if (home.primaryPhotoDisplayLevel === 1 && home.photos?.value) {
-    const propertyId = home.propertyId;
-    const listingId = home.listingId;
-    if (listingId) {
-      imageUrl = `https://ssl.cdn-redfin.com/photo/123/islphoto/${String(listingId).slice(-3)}/genIslnoResize.${String(listingId).slice(-6)}_0.webp`;
-    }
-  }
+  const imageUrl = buildRedfinImageUrl(home);
 
   return {
     id: `rf-${home.propertyId}`,
@@ -231,4 +223,21 @@ function mapRedfinHome(home) {
     imageUrl,
     addedAt: new Date().toISOString(),
   };
+}
+
+function buildRedfinImageUrl(home) {
+  if (home.primaryPhotoDisplayLevel !== 1 || !home.photos?.value) {
+    return '';
+  }
+
+  const mlsId = String(home.mlsId?.value || '').trim();
+  if (!mlsId) {
+    return '';
+  }
+
+  const dataSourceId = home.dataSourceId || 123;
+  const shard = mlsId.slice(-3).padStart(3, '0');
+  const format = home.photoFormat || 'webp';
+
+  return `https://ssl.cdn-redfin.com/photo/${dataSourceId}/islphoto/${shard}/genIslnoResize.${mlsId}_0.${format}`;
 }

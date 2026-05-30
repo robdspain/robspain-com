@@ -15,6 +15,29 @@ permalink: /admin/kpi/
 .week-tab.active { background: #fff; color: #1e293b; border-bottom: 2px solid #fff; position: relative; z-index: 1; }
 .week-content { border: 1px solid #e2e8f0; border-radius: 0 0.75rem 0.75rem 0.75rem; padding: 1.5rem; background: #fff; margin-top: -1px; }
 .notes-box { margin-top: 1rem; padding: 1rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 0.5rem; font-size: 0.9rem; color: #166534; }
+.source-control-panel { margin: 0 0 2rem; padding: 1.5rem; background: #0f172a; color: #f8fafc; border-radius: 0.75rem; border: 1px solid rgba(148, 163, 184, 0.35); }
+.source-control-header { display: flex; justify-content: space-between; gap: 1rem; align-items: flex-start; margin-bottom: 1.25rem; }
+.source-control-header h3 { margin: 0 0 0.35rem; color: #fff; font-size: 1.25rem; }
+.source-control-header p { margin: 0; color: #cbd5e1; max-width: 760px; line-height: 1.5; }
+.source-pill { flex: 0 0 auto; display: inline-flex; align-items: center; border: 1px solid #facc15; color: #fde68a; background: rgba(250, 204, 21, 0.08); border-radius: 999px; padding: 0.4rem 0.7rem; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+.integration-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+.integration-card { background: #fff; color: #1e293b; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 1rem; min-height: 245px; display: flex; flex-direction: column; gap: 0.75rem; }
+.integration-topline { display: flex; justify-content: space-between; gap: 0.75rem; align-items: flex-start; }
+.integration-card h4 { margin: 0; font-size: 1rem; color: #0f172a; }
+.integration-value { font-size: 1.45rem; font-weight: 800; line-height: 1.1; color: #64748b; }
+.integration-value.connected { color: #047857; }
+.status-pill { display: inline-flex; align-items: center; width: fit-content; border-radius: 999px; padding: 0.25rem 0.55rem; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; }
+.status-needs_source { color: #92400e; background: #fef3c7; border: 1px solid #fde68a; }
+.status-source_configured_fetch_pending { color: #075985; background: #e0f2fe; border: 1px solid #bae6fd; }
+.metric-detail { margin: 0; color: #475569; font-size: 0.83rem; line-height: 1.45; }
+.metric-detail strong { color: #0f172a; }
+.source-fields { margin: auto 0 0; padding-top: 0.6rem; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 0.75rem; line-height: 1.45; }
+.source-fields code { background: #f1f5f9; color: #334155; border-radius: 0.25rem; padding: 0.08rem 0.22rem; }
+.legacy-note { margin: -0.5rem 0 1.25rem; padding: 0.85rem 1rem; background: #fffbeb; border: 1px solid #fde68a; border-radius: 0.5rem; color: #92400e; font-size: 0.86rem; line-height: 1.5; }
+@media (max-width: 720px) {
+  .source-control-header { display: block; }
+  .source-pill { margin-top: 0.85rem; }
+}
 </style>
 
 <div class="admin-dashboard-premium">
@@ -25,8 +48,43 @@ permalink: /admin/kpi/
                 Weekly <span class="text-gradient">KPI Dashboard</span>
             </h2>
             <p class="section-description-premium">
-                Track marketing and sales pipeline metrics week over week.
+                Track marketing and sales metrics only after the source of truth is connected.
             </p>
+        </div>
+
+        <section class="source-control-panel animate-fade-up stagger-1" aria-labelledby="kpi-source-control-heading">
+            <div class="source-control-header">
+                <div>
+                    <h3 id="kpi-source-control-heading">Daily KPI Source Control</h3>
+                    <p>{{ kpiIntegrations.policy }} Visits, opt-ins, completed calls, bookings, invoices, and sales should not be shown as numbers until the matching source is connected.</p>
+                </div>
+                <span class="source-pill">No source, no number</span>
+            </div>
+
+            <div class="integration-grid" id="integrationGrid">
+                {% for metric in kpiIntegrations.metrics %}
+                <article class="integration-card" data-metric-card="{{ metric.id }}">
+                    <div class="integration-topline">
+                        <div>
+                            <h4>{{ metric.label }}</h4>
+                            <span class="status-pill status-{{ metric.status }}" data-status>{{ metric.status | replace("_", " ") }}</span>
+                        </div>
+                        <div class="integration-value" data-value>--</div>
+                    </div>
+                    <p class="metric-detail"><strong>Daily metric:</strong> <span data-daily-metric>{{ metric.dailyMetric }}</span></p>
+                    <p class="metric-detail"><strong>Required source:</strong> <span data-required-source>{{ metric.requiredSource }}</span></p>
+                    <p class="metric-detail"><strong>Active source:</strong> <span data-active-source>{{ metric.activeSource }}</span></p>
+                    <p class="metric-detail"><strong>Next integration:</strong> <span data-next-action>{{ metric.nextAction }}</span></p>
+                    <div class="source-fields">
+                        Accepted: {{ metric.acceptedSources | join(", ") }}
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+        </section>
+
+        <div class="legacy-note animate-fade-up stagger-1">
+            The weekly dashboard below is a legacy planning snapshot. It is not treated as verified daily reporting until the source-control cards above show a connected source.
         </div>
 
         <!-- Week tabs -->
@@ -117,4 +175,47 @@ function showWeek(idx) {
     tabs.forEach(function(t, i) { t.classList.toggle('active', i === idx); });
     panels.forEach(function(p, i) { p.style.display = i === idx ? 'block' : 'none'; });
 }
+
+function humanStatus(status) {
+    return String(status || 'needs_source').replace(/_/g, ' ');
+}
+
+function updateKpiIntegrations(metrics) {
+    metrics.forEach(function(metric) {
+        var card = document.querySelector('[data-metric-card="' + metric.id + '"]');
+        if (!card) return;
+
+        var value = card.querySelector('[data-value]');
+        var status = card.querySelector('[data-status]');
+        var dailyMetric = card.querySelector('[data-daily-metric]');
+        var requiredSource = card.querySelector('[data-required-source]');
+        var activeSource = card.querySelector('[data-active-source]');
+        var nextAction = card.querySelector('[data-next-action]');
+
+        if (value) {
+            value.textContent = metric.value === null || typeof metric.value === 'undefined' ? '--' : metric.value;
+            value.classList.toggle('connected', metric.value !== null && typeof metric.value !== 'undefined');
+        }
+        if (status) {
+            status.textContent = humanStatus(metric.status);
+            status.className = 'status-pill status-' + (metric.status || 'needs_source');
+        }
+        if (dailyMetric) dailyMetric.textContent = metric.dailyMetric || '';
+        if (requiredSource) requiredSource.textContent = metric.requiredSource || '';
+        if (activeSource) activeSource.textContent = metric.activeSource || 'Not connected';
+        if (nextAction) nextAction.textContent = metric.nextAction || '';
+    });
+}
+
+fetch('/api/kpi-integrations', { headers: { 'Accept': 'application/json' } })
+    .then(function(response) {
+        if (!response.ok) throw new Error('KPI integration endpoint unavailable');
+        return response.json();
+    })
+    .then(function(data) {
+        if (data && Array.isArray(data.metrics)) updateKpiIntegrations(data.metrics);
+    })
+    .catch(function(error) {
+        console.warn(error.message);
+    });
 </script>

@@ -166,7 +166,7 @@ exports.handler = async (event) => {
     return { statusCode: 500, headers: headers({ 'Content-Type': 'text/plain; charset=utf-8' }), body: 'Missing GOOGLE_CLIENT_ID.' };
   }
   if (!readSession(event)) {
-    return { statusCode: 401, headers: headers({ 'Content-Type': 'text/html; charset=utf-8' }), body: loginPage() };
+    return { statusCode: 200, headers: headers({ 'Content-Type': 'text/html; charset=utf-8' }), body: loginPage() };
   }
   return serveAdminFile(event);
 };

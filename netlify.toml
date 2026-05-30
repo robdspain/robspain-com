@@ -60,6 +60,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/kpi-integrations"
+  to = "/.netlify/functions/kpi-integrations"
+  status = 200
+
+[[redirects]]
   from = "/api/r2/list"
   to = "/.netlify/functions/r2-list"
   status = 200

@@ -439,8 +439,12 @@ function defaultState() {
   return {
     bills: [
       { id:'rent', name:'Valley Vista (Rent)', dueDay:1, amount:2445, status:'upcoming', priority:1, account:'EECU Checking', notes:'' },
-      { id:'support', name:'Supporting Hands', dueDay:null, amount:1800, status:'current', priority:4, account:'Apple Card', notes:'Childcare — on credit' },
+      { id:'childsupport', name:'Child Support / DCSS', dueDay:1, amount:2100, status:'current', priority:1, account:'Payroll/DCSS', notes:'Court-ordered support baseline; set to $0 here if already withheld from net pay' },
+      { id:'support', name:'Supporting Hands', dueDay:null, amount:1800, status:'current', priority:1, account:'EECU Checking', notes:'Childcare — no longer on Apple Card' },
       { id:'auto', name:'EECU Auto Loan', dueDay:5, amount:499, status:'autopay', priority:1, account:'EECU Checking', notes:'' },
+      { id:'groceries', name:'Groceries / Household', dueDay:null, amount:500, status:'current', priority:1, account:'EECU Checking', notes:'Planning floor from prior monthly budget' },
+      { id:'fuel', name:'Fuel / Transportation', dueDay:null, amount:250, status:'current', priority:1, account:'EECU Checking', notes:'Monthly operating reserve; adjust from card/bank imports' },
+      { id:'familytherapy', name:'Child / Family Therapy Reserve', dueDay:null, amount:260, status:'current', priority:1, account:'EECU Checking', notes:'Assumes Rob half-share of four $130 sessions; update to actual order/provider cadence' },
       { id:'apple', name:'Apple Card Min', dueDay:27, amount:366, status:'paid', priority:2, account:'EECU Checking', notes:'' },
       { id:'collier', name:'Phillip M. Collier', dueDay:null, amount:375, status:'current', priority:4, account:'Apple Card', notes:'2-3x/mo' },
       { id:'toggle', name:'Toggle Insurance', dueDay:26, amount:202, status:'paid', priority:2, account:'EECU Debit', notes:'Car insurance' },
@@ -452,6 +456,10 @@ function defaultState() {
       { id:'loc', name:'EECU LOC Min', dueDay:26, amount:75, status:'upcoming', priority:2, account:'EECU Checking', notes:'' },
       { id:'principal', name:'Principal Insurance', dueDay:null, amount:35, status:'current', priority:2, account:'Auto-deduct', notes:'' },
       { id:'allstate', name:'Allstate Insurance', dueDay:null, amount:25, status:'current', priority:2, account:'Auto-deduct', notes:'' },
+      { id:'ofw', name:'OurFamilyWizard', dueDay:null, amount:9, status:'current', priority:3, account:'EECU Checking', notes:'Annual renewal normalized to monthly budget' },
+      { id:'netflix', name:'Netflix', dueDay:null, amount:18, status:'current', priority:3, account:'Apple Card', notes:'Streaming subscription' },
+      { id:'apple_services', name:'Apple Services', dueDay:null, amount:30, status:'current', priority:3, account:'Apple Card', notes:'Recurring services rounded from historical statements' },
+      { id:'legalreserve', name:'Legal Fee Reserve', dueDay:null, amount:750, status:'current', priority:4, account:'EECU Checking', notes:'Working reserve against active 2026 Tipton invoices; pause before adding new card debt' },
     ],
     accounts: [
       { id:'checking', name:'EECU Checking', type:'checking', balance:4009, notes:'After paycheck + payments' },
@@ -462,8 +470,8 @@ function defaultState() {
       { id:'discover', name:'Discover', type:'credit', balance:-1000, notes:'Min $83/mo' },
     ],
     income: [
-      { id:'kcusd', name:'Kings Canyon USD', amount:4361, frequency:'Biweekly' },
-      { id:'fpu', name:'FPU Payroll', amount:1093, frequency:'Monthly' },
+      { id:'kcusd', name:'Kings Canyon USD', amount:4361, frequency:'Monthly net estimate' },
+      { id:'fpu', name:'FPU Payroll', amount:0, frequency:'Paused — no current income' },
       { id:'behavior', name:'Behavior School', amount:272, frequency:'Irregular' },
     ],
     payments: [
@@ -483,13 +491,15 @@ function loadState() {
       const saved = JSON.parse(raw);
       // Merge with defaults to pick up new fields
       const def = defaultState();
-      return {
+      const merged = {
         bills: saved.bills || def.bills,
         accounts: saved.accounts || def.accounts,
         income: saved.income || def.income,
         payments: saved.payments || def.payments,
         lastUpdated: saved.lastUpdated || def.lastUpdated,
       };
+      applyCurrentFinanceCorrections(merged);
+      return merged;
     }
   } catch(e) {}
   // Migrate from v1 localStorage if present
@@ -500,11 +510,61 @@ function loadState() {
       const state = defaultState();
       state.bills.forEach(b => { if (statuses[b.id]) b.status = statuses[b.id]; });
       saveState(state);
+      applyCurrentFinanceCorrections(state);
       return state;
     }
   } catch(e) {}
-  return defaultState();
+  const state = defaultState();
+  applyCurrentFinanceCorrections(state);
+  return state;
 }
+
+function applyCurrentFinanceCorrections(state) {
+  const fpu = state.income?.find(i => i.id === 'fpu' || /FPU|Fresno Pacific/i.test(i.name || ''));
+  if (fpu) {
+    fpu.amount = 0;
+    fpu.frequency = 'Paused — no current income';
+  }
+
+  const support = state.bills?.find(b => b.id === 'support' || /Supporting Hands/i.test(b.name || ''));
+  if (support) {
+    support.account = 'EECU Checking';
+    support.priority = 1;
+    support.notes = 'Childcare — no longer on Apple Card';
+  }
+
+  const requiredBudgetBills = [
+    { id:'childsupport', name:'Child Support / DCSS', dueDay:1, amount:2100, status:'current', priority:1, account:'Payroll/DCSS', notes:'Court-ordered support baseline; set to $0 here if already withheld from net pay' },
+    { id:'groceries', name:'Groceries / Household', dueDay:null, amount:500, status:'current', priority:1, account:'EECU Checking', notes:'Planning floor from prior monthly budget' },
+    { id:'fuel', name:'Fuel / Transportation', dueDay:null, amount:250, status:'current', priority:1, account:'EECU Checking', notes:'Monthly operating reserve; adjust from card/bank imports' },
+    { id:'familytherapy', name:'Child / Family Therapy Reserve', dueDay:null, amount:260, status:'current', priority:1, account:'EECU Checking', notes:'Assumes Rob half-share of four $130 sessions; update to actual order/provider cadence' },
+    { id:'ofw', name:'OurFamilyWizard', dueDay:null, amount:9, status:'current', priority:3, account:'EECU Checking', notes:'Annual renewal normalized to monthly budget' },
+    { id:'netflix', name:'Netflix', dueDay:null, amount:18, status:'current', priority:3, account:'Apple Card', notes:'Streaming subscription' },
+    { id:'apple_services', name:'Apple Services', dueDay:null, amount:30, status:'current', priority:3, account:'Apple Card', notes:'Recurring services rounded from historical statements' },
+    { id:'legalreserve', name:'Legal Fee Reserve', dueDay:null, amount:750, status:'current', priority:4, account:'EECU Checking', notes:'Working reserve against active 2026 Tipton invoices; pause before adding new card debt' },
+  ];
+
+  requiredBudgetBills.forEach(required => {
+    const existing = state.bills?.find(b => b.id === required.id || b.name === required.name);
+    if (!existing) {
+      state.bills.push({...required});
+      return;
+    }
+    existing.name = required.name;
+    existing.priority = required.priority;
+    existing.account = required.account;
+    existing.notes = required.notes;
+    if (existing.amount == null || existing.amount === 0) existing.amount = required.amount;
+    if (!existing.status) existing.status = required.status;
+    if (existing.dueDay === undefined) existing.dueDay = required.dueDay;
+  });
+
+  const kcusd = state.income?.find(i => i.id === 'kcusd' || /Kings Canyon/i.test(i.name || ''));
+  if (kcusd && /biweekly/i.test(kcusd.frequency || '')) {
+    kcusd.frequency = 'Monthly net estimate';
+  }
+}
+
 
 function saveState(state) {
   state.lastUpdated = new Date().toISOString();
@@ -695,7 +755,7 @@ function renderDeficit() {
       <ol style="margin-top: 8px; padding-left: 20px; line-height: 1.8;">
         <li><strong>Supporting Hands funding</strong> — if IHSS/insurance covers 50%, saves ~$900/mo</li>
         <li><strong>Increase behavior school income</strong> — currently ${fmt(STATE.income.find(i=>i.id==='behavior')?.amount||272)}/mo avg</li>
-        <li><strong>Move Supporting Hands off Apple Card</strong> — stop interest compounding</li>
+        <li><strong>Keep Supporting Hands off Apple Card</strong> — avoid restarting interest compounding</li>
         <li><strong>AT&T plan review</strong> — ${fmt(STATE.bills.find(b=>b.id==='att')?.amount||129)}/mo may be reducible</li>
       </ol>
     </div>
@@ -826,7 +886,7 @@ function renderEnvelopes() {
       <ul style="font-size:13px;color:#64748b;line-height:1.8;padding-left:16px;">
         <li>P1-P3 are <strong>fully funded</strong> from checking — these get paid first</li>
         <li>P4 items go on credit — they're <strong>visible as unfunded</strong></li>
-        <li>If Supporting Hands gets insurance coverage, that $1,800 moves from P4 to P1</li>
+        <li>Supporting Hands is now treated as checking-funded, not Apple Card debt</li>
         <li>The buffer covers irregular expenses and prevents new LOC draws</li>
       </ul>
     </div>

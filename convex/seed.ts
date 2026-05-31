@@ -17,8 +17,12 @@ export const run = mutation({
     // Bills (as of 2026-03-30)
     const bills = [
       { name: "Valley Vista (Rent)", dueDay: 1, amount: 2445, status: "upcoming" as const, priority: 1, account: "EECU Checking" },
-      { name: "Supporting Hands", dueDay: undefined, amount: 1800, status: "current" as const, priority: 4, account: "Apple Card", notes: "Court-ordered visitation support" },
+      { name: "Child Support / DCSS", dueDay: 1, amount: 2100, status: "current" as const, priority: 1, account: "Payroll/DCSS", notes: "Court-ordered support baseline; set to $0 here if already withheld from net pay" },
+      { name: "Supporting Hands", dueDay: undefined, amount: 1800, status: "current" as const, priority: 1, account: "EECU Checking", notes: "Court-ordered visitation support; no longer on Apple Card" },
       { name: "EECU Auto Loan", dueDay: 5, amount: 499, status: "autopay" as const, priority: 1, account: "EECU Checking" },
+      { name: "Groceries / Household", dueDay: undefined, amount: 500, status: "current" as const, priority: 1, account: "EECU Checking", notes: "Planning floor from prior monthly budget" },
+      { name: "Fuel / Transportation", dueDay: undefined, amount: 250, status: "current" as const, priority: 1, account: "EECU Checking", notes: "Monthly operating reserve; adjust from card/bank imports" },
+      { name: "Child / Family Therapy Reserve", dueDay: undefined, amount: 260, status: "current" as const, priority: 1, account: "EECU Checking", notes: "Assumes Rob half-share of four $130 sessions; update to actual order/provider cadence" },
       { name: "Apple Card Min", dueDay: 27, amount: 366, status: "paid" as const, priority: 2, account: "EECU Checking", notes: "Paid $960 on 3/30" },
       { name: "Therapist (Collier)", dueDay: undefined, amount: 375, status: "current" as const, priority: 4, account: "Apple Card", notes: "Phillip M. Collier, $150/session, 2-3x/mo" },
       { name: "Toggle Insurance", dueDay: 26, amount: 199, status: "paid" as const, priority: 2, account: "EECU Debit", notes: "Auto insurance, paid 3/29" },
@@ -32,6 +36,8 @@ export const run = mutation({
       { name: "Principal Insurance", dueDay: undefined, amount: 35, status: "current" as const, priority: 2, account: "EECU Checking" },
       { name: "Allstate Insurance", dueDay: undefined, amount: 25, status: "current" as const, priority: 2, account: "Apple Card" },
       { name: "Netflix", dueDay: undefined, amount: 18, status: "upcoming" as const, priority: 3, account: "Apple Card" },
+      { name: "Apple Services", dueDay: undefined, amount: 30, status: "current" as const, priority: 3, account: "Apple Card", notes: "Recurring services rounded from historical statements" },
+      { name: "Legal Fee Reserve", dueDay: undefined, amount: 750, status: "current" as const, priority: 4, account: "EECU Checking", notes: "Working reserve against active 2026 Tipton invoices; pause before adding new card debt" },
     ];
 
     for (const bill of bills) {
@@ -54,8 +60,8 @@ export const run = mutation({
 
     // Income
     const incomes = [
-      { name: "Kings Canyon USD", amount: 4845, frequency: "Biweekly" },
-      { name: "FPU Payroll", amount: 1093, frequency: "Monthly" },
+      { name: "Kings Canyon USD", amount: 4361, frequency: "Monthly net estimate" },
+      { name: "FPU Payroll", amount: 0, frequency: "Paused — no current income" },
       { name: "Behavior School", amount: 272, frequency: "Irregular" },
     ];
 

@@ -56,4 +56,11 @@ export default defineSchema({
     category: v.optional(v.string()),
     importedAt: v.number(),
   }),
+
+  adminItems: defineTable({
+    key: v.string(),
+    value: v.any(),
+    updatedAt: v.number(),
+    updatedBy: v.optional(v.string()),
+  }).index("by_key", ["key"]),
 });

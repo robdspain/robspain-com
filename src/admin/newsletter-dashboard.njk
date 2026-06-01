@@ -315,9 +315,52 @@ function loadQueue() {
 }
 function saveQueue(q) {
   try { localStorage.setItem(NL_KEY, JSON.stringify(q)); } catch(e) {}
+  saveAdminItem(NL_KEY, q);
 }
 function loadPerf() {
   try { return JSON.parse(localStorage.getItem(PERF_KEY)) || defaultPerf; } catch(e) { return defaultPerf; }
+}
+function savePerf(p) {
+  try { localStorage.setItem(PERF_KEY, JSON.stringify(p)); } catch(e) {}
+  saveAdminItem(PERF_KEY, p);
+}
+
+async function saveAdminItem(key, value) {
+  try {
+    await fetch('/admin/api/admin-convex', {
+      method: 'PUT',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: key, value: value })
+    });
+  } catch(e) {
+    console.warn('Newsletter admin sync unavailable.', e);
+  }
+}
+
+async function hydrateAdminItems() {
+  try {
+    var keys = [NL_KEY, PERF_KEY];
+    for (var i = 0; i < keys.length; i++) {
+      var res = await fetch('/admin/api/admin-convex?key=' + encodeURIComponent(keys[i]), { credentials: 'same-origin' });
+      if (!res.ok) continue;
+      var data = await res.json();
+      if (!data.item || !data.item.value) continue;
+      if (keys[i] === NL_KEY && Array.isArray(data.item.value)) {
+        queue = data.item.value;
+        localStorage.setItem(NL_KEY, JSON.stringify(queue));
+      }
+      if (keys[i] === PERF_KEY && Array.isArray(data.item.value)) {
+        perf = data.item.value;
+        localStorage.setItem(PERF_KEY, JSON.stringify(perf));
+      }
+    }
+    renderStats();
+    renderQueue();
+    renderPerf();
+  } catch(e) {
+    console.warn('Using local newsletter admin state.', e);
+  }
 }
 
 var queue = loadQueue();
@@ -332,6 +375,7 @@ window.addEventListener('DOMContentLoaded', function() {
   updateCharCount('compose-subject','subj-count',40);
   updateCharCount('compose-preview','prev-count',90);
   document.getElementById('compose-body').addEventListener('input', updateWordCount);
+  hydrateAdminItems();
   // Next send date
   var nextTue = getNextTuesday();
   document.getElementById('stat-next-date').textContent = nextTue;
@@ -475,7 +519,7 @@ function markSent(id) {
     unsubs: unsubs
   };
   perf.unshift(newEntry);
-  try { localStorage.setItem(PERF_KEY, JSON.stringify(perf)); } catch(e) {}
+  savePerf(perf);
   queue = queue.filter(function(q){ return q.id !== id; });
   saveQueue(queue);
   renderQueue();

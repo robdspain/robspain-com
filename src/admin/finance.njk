@@ -355,7 +355,7 @@ permalink: /admin/finance/
   </div>
 
   <div style="text-align:center;margin-top:24px;font-size:12px;color:#64748b;">
-    Data managed by Paperclip CTO agent. All changes saved locally. <span id="convexStatus" style="color:#94a3b8;"></span>
+    Data managed by Paperclip CTO agent. Changes save locally first and sync to Convex. <span id="convexStatus" style="color:#94a3b8;"></span>
   </div>
 </div>
 
@@ -434,6 +434,14 @@ const STORE_KEY = 'spain-finance-v2';
 const STATUS_CYCLE = ['overdue','upcoming','current','autopay','paid'];
 const STATUS_LABELS = {overdue:'Overdue',upcoming:'Upcoming',current:'Active',autopay:'Autopay',paid:'Paid'};
 const PRIORITY_LABELS = {1:'P1 Survival',2:'P2 Insurance/Debt',3:'P3 Necessities',4:'P4 On Credit'};
+let financeSyncTimer = null;
+
+function setConvexStatus(message, isError) {
+  const target = document.getElementById('convexStatus');
+  if (!target) return;
+  target.textContent = message ? ` ${message}` : '';
+  target.style.color = isError ? '#b45309' : '#94a3b8';
+}
 
 function defaultState() {
   return {
@@ -569,9 +577,53 @@ function applyCurrentFinanceCorrections(state) {
 function saveState(state) {
   state.lastUpdated = new Date().toISOString();
   localStorage.setItem(STORE_KEY, JSON.stringify(state));
+  queueFinanceSync(state);
 }
 
 let STATE = loadState();
+
+function queueFinanceSync(state) {
+  clearTimeout(financeSyncTimer);
+  setConvexStatus('Syncing...');
+  const value = JSON.parse(JSON.stringify(state));
+  financeSyncTimer = setTimeout(async () => {
+    try {
+      const response = await fetch('/admin/api/admin-convex', {
+        method: 'PUT',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: STORE_KEY, value })
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
+      const stamp = data.updatedAt ? new Date(data.updatedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'now';
+      setConvexStatus(`Saved to Convex ${stamp}.`);
+    } catch (error) {
+      setConvexStatus(`Local only: ${error.message}`, true);
+    }
+  }, 650);
+}
+
+async function loadFinanceFromConvex() {
+  setConvexStatus('Loading Convex...');
+  try {
+    const response = await fetch(`/admin/api/admin-convex?key=${encodeURIComponent(STORE_KEY)}`, { credentials: 'same-origin' });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    if (!data.item || !data.item.value) {
+      setConvexStatus('No Convex record yet.');
+      return;
+    }
+    STATE = data.item.value;
+    applyCurrentFinanceCorrections(STATE);
+    localStorage.setItem(STORE_KEY, JSON.stringify(STATE));
+    renderAll();
+    const stamp = data.item.updatedAt ? new Date(data.item.updatedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'now';
+    setConvexStatus(`Loaded from Convex ${stamp}.`);
+  } catch (error) {
+    setConvexStatus(`Using local copy: ${error.message}`, true);
+  }
+}
 
 // ═══════════════════════════════════════════════════════════════
 // RENDER FUNCTIONS
@@ -1309,4 +1361,5 @@ function parseCSVLine(line) {
 
 // Initial render
 renderAll();
+loadFinanceFromConvex();
 </script>

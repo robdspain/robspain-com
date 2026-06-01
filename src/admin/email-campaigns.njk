@@ -106,6 +106,7 @@ permalink: /admin/email-campaigns/
 <script>
 // In-memory campaign state (loaded from 11ty data, editable in browser)
 var campaigns = {{ campaigns | dump | safe }};
+var CAMPAIGN_STORE_KEY = 'email-campaigns-v1';
 
 function toast(msg) {
     var t = document.getElementById('toast');
@@ -181,7 +182,16 @@ function saveEdit(id) {
 }
 
 function saveToServer(id, data) {
-    // POST to Netlify function to persist changes
+    fetch('/admin/api/admin-convex', {
+        method: 'PUT',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: CAMPAIGN_STORE_KEY, value: campaigns })
+    }).catch(function(err) {
+        console.log('Convex campaign save unavailable.', err);
+    });
+
+    // Legacy endpoint kept as a log/fallback for existing workflow visibility.
     fetch('/.netlify/functions/save-campaign', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -190,4 +200,46 @@ function saveToServer(id, data) {
         console.log('Server save pending - changes saved locally. Deploy to persist.');
     });
 }
+
+function applyCampaignState(remoteCampaigns) {
+    if (!Array.isArray(remoteCampaigns)) return;
+    campaigns = remoteCampaigns;
+    campaigns.forEach(function(c) {
+        var title = document.getElementById('title-' + c.id);
+        var preview = document.getElementById('preview-' + c.id);
+        var body = document.getElementById('body-' + c.id);
+        var badge = document.getElementById('badge-' + c.id);
+        var schedule = document.getElementById('sched-' + c.id);
+        var editSubject = document.getElementById('edit-subject-' + c.id);
+        var editPreview = document.getElementById('edit-preview-' + c.id);
+        var editBody = document.getElementById('edit-body-' + c.id);
+        if (title) title.textContent = c.subject || '';
+        if (preview) preview.textContent = c.previewText || '';
+        if (body) body.querySelector('.body-preview').textContent = c.body || '';
+        if (badge) {
+            var status = c.status || 'draft';
+            badge.textContent = status.toUpperCase();
+            badge.className = 'badge badge-' + status;
+        }
+        if (schedule) schedule.textContent = c.scheduledDate || '';
+        if (editSubject) editSubject.value = c.subject || '';
+        if (editPreview) editPreview.value = c.previewText || '';
+        if (editBody) editBody.value = c.body || '';
+    });
+}
+
+async function loadCampaignsFromConvex() {
+    try {
+        var response = await fetch('/admin/api/admin-convex?key=' + encodeURIComponent(CAMPAIGN_STORE_KEY), { credentials: 'same-origin' });
+        if (!response.ok) return;
+        var payload = await response.json();
+        if (payload.item && Array.isArray(payload.item.value)) {
+            applyCampaignState(payload.item.value);
+        }
+    } catch (error) {
+        console.log('Using static campaign data.', error);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadCampaignsFromConvex);
 </script>

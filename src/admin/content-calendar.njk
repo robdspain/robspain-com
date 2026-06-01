@@ -359,10 +359,11 @@ function showToast(msg) {
 async function saveState() {
   localStorage.setItem('content-calendar-state-v1', JSON.stringify(state));
   try {
-    await fetch('/.netlify/functions/content-calendar-data', {
+    await fetch('/admin/api/admin-convex', {
       method: 'PUT',
+      credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(state)
+      body: JSON.stringify({ key: 'content-calendar-state-v1', value: state })
     });
   } catch (err) {
     console.warn('Remote persistence unavailable, kept local copy.', err);
@@ -382,11 +383,17 @@ async function hydrate() {
   }
 
   try {
-    const res = await fetch('/.netlify/functions/content-calendar-data');
+    const res = await fetch('/admin/api/admin-convex?key=content-calendar-state-v1', { credentials: 'same-origin' });
     if (res.ok) {
       const data = await res.json();
-      if (data && Array.isArray(data.weeks)) {
-        state = data;
+      if (data.item && data.item.value && Array.isArray(data.item.value.weeks)) {
+        state = data.item.value;
+      } else {
+        const blobRes = await fetch('/.netlify/functions/content-calendar-data');
+        if (blobRes.ok) {
+          const blobData = await blobRes.json();
+          if (blobData && Array.isArray(blobData.weeks)) state = blobData;
+        }
       }
     }
   } catch (err) {

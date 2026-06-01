@@ -400,6 +400,18 @@ permalink: /admin/tasks/
     color: #fff;
   }
 
+  .sync-pill {
+    align-self: center;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 650;
+    white-space: nowrap;
+  }
+
+  .sync-pill.error {
+    color: var(--yellow);
+  }
+
   /* MODAL */
   .modal-overlay {
     display: none;
@@ -558,6 +570,7 @@ permalink: /admin/tasks/
     </div>
   </div>
   <div class="board-actions">
+    <span class="sync-pill" id="taskSyncStatus">Loading Convex...</span>
     <button class="btn" onclick="resetFilters()">🔄 Reset</button>
     <button class="btn btn-primary" onclick="openAddModal()">+ Add Task</button>
   </div>
@@ -819,27 +832,90 @@ permalink: /admin/tasks/
 
   let activeFilter = 'all';
   let editingTaskId = null;
+  const TASK_STORE_KEY = 'robKanbanTasks';
+  let taskSyncTimer = null;
+
+  function setTaskSyncStatus(message, isError) {
+    const target = document.getElementById('taskSyncStatus');
+    if (!target) return;
+    target.textContent = message;
+    target.classList.toggle('error', Boolean(isError));
+  }
 
   // Load saved states
   function loadTaskStates() {
-    const saved = localStorage.getItem('robKanbanTasks');
-    if (saved) {
-      const states = JSON.parse(saved);
-      tasks.forEach(task => {
-        if (states[task.id]) {
-          task.status = states[task.id].status || task.status;
-          task.dueDate = states[task.id].dueDate ?? task.dueDate;
-        }
-      });
-    }
+    const saved = localStorage.getItem(TASK_STORE_KEY);
+    if (!saved) return;
+    applyTaskState(JSON.parse(saved));
   }
 
   function saveTaskStates() {
-    const states = {};
-    tasks.forEach(task => {
-      states[task.id] = { status: task.status, dueDate: task.dueDate };
+    const value = {
+      tasks,
+      lastUpdated: new Date().toISOString()
+    };
+    localStorage.setItem(TASK_STORE_KEY, JSON.stringify(value));
+    queueTaskSync(value);
+  }
+
+  function applyTaskState(saved) {
+    if (!saved) return;
+
+    if (Array.isArray(saved.tasks)) {
+      tasks = saved.tasks;
+      return;
+    }
+
+    // Backward compatibility with the older localStorage shape:
+    // { [taskId]: { status, dueDate } }
+    Object.entries(saved).forEach(([id, state]) => {
+      const task = tasks.find(t => String(t.id) === String(id));
+      if (task && state) {
+        task.status = state.status || task.status;
+        task.dueDate = state.dueDate ?? task.dueDate;
+      }
     });
-    localStorage.setItem('robKanbanTasks', JSON.stringify(states));
+  }
+
+  function queueTaskSync(value) {
+    clearTimeout(taskSyncTimer);
+    setTaskSyncStatus('Syncing...');
+    taskSyncTimer = setTimeout(async () => {
+      try {
+        const response = await fetch('/admin/api/admin-convex', {
+          method: 'PUT',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: TASK_STORE_KEY, value })
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        const stamp = data.updatedAt ? new Date(data.updatedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'now';
+        setTaskSyncStatus(`Saved ${stamp}`);
+      } catch (error) {
+        setTaskSyncStatus(`Local only: ${error.message}`, true);
+      }
+    }, 650);
+  }
+
+  async function loadTasksFromConvex() {
+    setTaskSyncStatus('Loading Convex...');
+    try {
+      const response = await fetch(`/admin/api/admin-convex?key=${encodeURIComponent(TASK_STORE_KEY)}`, { credentials: 'same-origin' });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
+      if (!data.item || !data.item.value) {
+        setTaskSyncStatus('No Convex record yet');
+        return;
+      }
+      applyTaskState(data.item.value);
+      localStorage.setItem(TASK_STORE_KEY, JSON.stringify({ tasks, lastUpdated: new Date(data.item.updatedAt || Date.now()).toISOString() }));
+      renderBoard();
+      const stamp = data.item.updatedAt ? new Date(data.item.updatedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'now';
+      setTaskSyncStatus(`Loaded ${stamp}`);
+    } catch (error) {
+      setTaskSyncStatus(`Using local copy: ${error.message}`, true);
+    }
   }
 
   // Due date formatting
@@ -1060,5 +1136,6 @@ permalink: /admin/tasks/
   document.addEventListener('DOMContentLoaded', () => {
     loadTaskStates();
     renderBoard();
+    loadTasksFromConvex();
   });
 </script>

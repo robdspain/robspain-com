@@ -627,6 +627,7 @@ permalink: /admin/trends/
   // Load newsletter from localStorage on page load
   window.addEventListener('DOMContentLoaded', () => {
     loadNewsletterFromStorage();
+    loadNewsletterFromConvex();
     loadRedditTrends();
     loadPapers();
     loadIndustryNews();
@@ -641,6 +642,12 @@ permalink: /admin/trends/
     newsletterData.quickTip = document.getElementById('quick-tip').value;
     
     localStorage.setItem('newsletterDraft', JSON.stringify(newsletterData));
+    fetch('/admin/api/admin-convex', {
+      method: 'PUT',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: 'newsletterDraft', value: newsletterData })
+    }).catch(error => console.warn('Newsletter draft sync unavailable.', error));
     updateStats();
   }
 
@@ -656,6 +663,25 @@ permalink: /admin/trends/
       
       // Render added items
       renderAddedItems();
+    }
+  }
+
+  async function loadNewsletterFromConvex() {
+    try {
+      const response = await fetch('/admin/api/admin-convex?key=newsletterDraft', { credentials: 'same-origin' });
+      if (!response.ok) return;
+      const data = await response.json();
+      if (!data.item || !data.item.value) return;
+      newsletterData = data.item.value;
+      localStorage.setItem('newsletterDraft', JSON.stringify(newsletterData));
+      document.getElementById('hot-take').value = newsletterData.hotTake || '';
+      document.getElementById('tool-of-week').value = newsletterData.toolOfWeek || '';
+      document.getElementById('upcoming-text').value = newsletterData.upcoming || '';
+      document.getElementById('quick-tip').value = newsletterData.quickTip || '';
+      renderAddedItems();
+      updateStats();
+    } catch (error) {
+      console.warn('Using local newsletter draft.', error);
     }
   }
 
@@ -1196,6 +1222,12 @@ permalink: /admin/trends/
     document.getElementById('quick-tip').value = '';
     
     localStorage.removeItem('newsletterDraft');
+    fetch('/admin/api/admin-convex', {
+      method: 'PUT',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: 'newsletterDraft', value: newsletterData })
+    }).catch(error => console.warn('Newsletter clear sync unavailable.', error));
     renderAddedItems();
     showToast('Newsletter cleared!');
   }

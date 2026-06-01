@@ -11,7 +11,7 @@ permalink: /admin/court-compliance/
     <section class="hero-card">
       <p class="eyebrow">Court compliance tracker</p>
       <h1>Therapy, family therapy, anger management, and proof timeline</h1>
-      <p class="hero-copy">Private working tracker for each compliance gate, proof item, and scheduling step. Check items off as they are completed and the timeline updates automatically in this browser.</p>
+      <p class="hero-copy">Private working tracker for each compliance gate, proof item, and scheduling step. Check items off as they are completed and the timeline updates automatically.</p>
       <div class="status-grid" aria-label="Compliance progress summary">
         <div><span data-count-total>0</span><small>Total checklist items</small></div>
         <div><span data-count-done>0</span><small>Completed</small></div>
@@ -21,6 +21,7 @@ permalink: /admin/court-compliance/
         <span data-progress-label>0% complete</span>
         <div class="progress-track"><div class="progress-fill" data-progress-fill></div></div>
       </div>
+      <p class="sync-status" data-sync-status>Saving locally; connecting to Convex...</p>
     </section>
 
     <section class="notice-card">
@@ -495,7 +496,7 @@ permalink: /admin/court-compliance/
         <div class="tracker-card"><h3>Anger management</h3><textarea data-note="anger" placeholder="Provider called, first available session, cost, enrollment proof, attendance proof"></textarea></div>
         <div class="tracker-card"><h3>Counsel filing packet</h3><textarea data-note="counsel" placeholder="Proof sent to Amy or counsel, date, method, missing items"></textarea></div>
       </div>
-      <p class="small-note">Notes and checkbox state save locally in this browser only. Export or screenshot before relying on it as evidence.</p>
+      <p class="small-note">Notes and checkbox state save locally first, then sync to Convex when the protected admin API is available. Export or screenshot before relying on it as evidence.</p>
     </section>
 
     <section class="panel">
@@ -773,6 +774,18 @@ h3 {
   background: linear-gradient(90deg, #1f4d3f, #e4b63d);
   border-radius: 999px;
   transition: width .2s ease;
+}
+.sync-status {
+  color: #526158;
+  font-size: .86rem;
+  font-weight: 650;
+  margin: .75rem 0 0;
+}
+.sync-status.is-synced {
+  color: #1f4d3f;
+}
+.sync-status.is-error {
+  color: #9f3412;
 }
 .projection-grid {
   display: grid;
@@ -1177,7 +1190,8 @@ textarea {
 <script>
 (function () {
   const key = 'court-compliance-v2';
-  const state = JSON.parse(localStorage.getItem(key) || '{}');
+  const syncStatus = document.querySelector('[data-sync-status]');
+  let state = readLocalState();
   state.plan = state.plan || {};
   const inputs = Array.from(document.querySelectorAll('.checklist input'));
   const textareas = Array.from(document.querySelectorAll('textarea[data-note]'));
@@ -1186,6 +1200,22 @@ textarea {
   let callLog = Array.isArray(state.calls) ? state.calls : [];
   const stages = ['setup', 'anger', 'family', 'stepup', 'post16', 'proof'];
   const msDay = 24 * 60 * 60 * 1000;
+  let syncTimer = null;
+
+  function readLocalState() {
+    try {
+      return JSON.parse(localStorage.getItem(key) || '{}');
+    } catch (error) {
+      return {};
+    }
+  }
+
+  function setSyncStatus(message, type) {
+    if (!syncStatus) return;
+    syncStatus.textContent = message;
+    syncStatus.classList.toggle('is-synced', type === 'synced');
+    syncStatus.classList.toggle('is-error', type === 'error');
+  }
 
   function itemKey(input, index) {
     return input.closest('li').textContent.trim().replace(/\s+/g, ' ').slice(0, 120) || String(index);
@@ -1196,13 +1226,85 @@ textarea {
   }
 
   function save() {
+    const nextState = snapshotState();
+    localStorage.setItem(key, JSON.stringify(nextState));
+    queueRemoteSave(nextState);
+    updateProgress();
+  }
+
+  function snapshotState() {
     const checks = {};
     inputs.forEach((input, index) => { checks[itemKey(input, index)] = input.checked; });
     const notes = {};
     textareas.forEach((textarea, index) => { notes[noteKey(textarea, index)] = textarea.value; });
     const plan = {};
     planInputs.forEach(input => { plan[input.dataset.planInput] = input.value; });
-    localStorage.setItem(key, JSON.stringify({ checks, notes, plan, calls: callLog }));
+    return { checks, notes, plan, calls: callLog };
+  }
+
+  function queueRemoteSave(value) {
+    clearTimeout(syncTimer);
+    setSyncStatus('Saving locally; syncing to Convex...', 'pending');
+    syncTimer = setTimeout(async () => {
+      try {
+        const response = await fetch('/admin/api/admin-convex', {
+          method: 'PUT',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key, value })
+        });
+        if (!response.ok) throw new Error(`Convex save failed (${response.status})`);
+        const data = await response.json();
+        const stamp = data.updatedAt ? new Date(data.updatedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'now';
+        setSyncStatus(`Saved to Convex at ${stamp}.`, 'synced');
+      } catch (error) {
+        setSyncStatus(`Saved locally. Convex sync unavailable: ${error.message}`, 'error');
+      }
+    }, 650);
+  }
+
+  async function loadRemoteState() {
+    try {
+      const response = await fetch(`/admin/api/admin-convex?key=${encodeURIComponent(key)}`, { credentials: 'same-origin' });
+      if (!response.ok) throw new Error(`Convex load failed (${response.status})`);
+      const data = await response.json();
+      if (!data.item || !data.item.value) {
+        setSyncStatus('No Convex record yet. Local changes will create one.', 'pending');
+        return;
+      }
+      applyState(data.item.value);
+      localStorage.setItem(key, JSON.stringify(snapshotState()));
+      const stamp = data.item.updatedAt ? new Date(data.item.updatedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'now';
+      setSyncStatus(`Loaded from Convex. Last saved ${stamp}.`, 'synced');
+    } catch (error) {
+      setSyncStatus(`Using local browser copy. Convex load unavailable: ${error.message}`, 'error');
+    }
+  }
+
+  function applyState(nextState) {
+    state = nextState || {};
+    state.plan = state.plan || {};
+    callLog = Array.isArray(state.calls) ? state.calls : [];
+
+    inputs.forEach((input, index) => {
+      input.checked = Boolean(state.checks && state.checks[itemKey(input, index)]);
+    });
+    textareas.forEach((textarea, index) => {
+      textarea.value = (state.notes && state.notes[noteKey(textarea, index)]) || '';
+    });
+    planInputs.forEach(input => {
+      const saved = state.plan[input.dataset.planInput];
+      if (saved !== undefined) {
+        input.value = saved;
+      } else if (input.type === 'number') {
+        input.value = 0;
+      } else if (input.dataset.planInput === 'planStart') {
+        input.value = todayISO();
+      } else {
+        input.value = '';
+      }
+    });
+    renderCalls();
     updateProgress();
   }
 
@@ -1620,5 +1722,6 @@ textarea {
   });
   renderCalls();
   updateProgress();
+  loadRemoteState();
 })();
 </script>

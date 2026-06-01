@@ -472,7 +472,18 @@ function toggleFav(id) {
 
 async function saveFavorites() {
   // Save to localStorage as fallback
-  localStorage.setItem('hs-favorites', JSON.stringify([...favorites]));
+  const value = [...favorites];
+  localStorage.setItem('hs-favorites', JSON.stringify(value));
+  try {
+    await fetch('/admin/api/admin-convex', {
+      method: 'PUT',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: 'hs-favorites', value })
+    });
+  } catch (error) {
+    console.warn('Favorite sync unavailable; kept local copy.', error);
+  }
 }
 
 function shareSingle(id) {
@@ -544,5 +555,21 @@ if (savedFavs) {
   try { JSON.parse(savedFavs).forEach(id => favorites.add(id)); } catch (e) {}
 }
 
+async function loadFavoritesFromConvex() {
+  try {
+    const res = await fetch('/admin/api/admin-convex?key=hs-favorites', { credentials: 'same-origin' });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!data.item || !Array.isArray(data.item.value)) return;
+    favorites = new Set(data.item.value);
+    localStorage.setItem('hs-favorites', JSON.stringify([...favorites]));
+    updateStats();
+    renderListings();
+  } catch (error) {
+    console.warn('Using local favorites.', error);
+  }
+}
+
 loadData();
+loadFavoritesFromConvex();
 </script>

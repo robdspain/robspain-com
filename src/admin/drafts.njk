@@ -199,6 +199,26 @@ function loadDraftStatus() {
 // Save draft status to localStorage
 function saveDraftStatus() {
     localStorage.setItem('draftStatus', JSON.stringify(draftStatus));
+    fetch('/admin/api/admin-convex', {
+        method: 'PUT',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: 'draftStatus', value: draftStatus })
+    }).catch(error => console.warn('Draft status sync unavailable.', error));
+}
+
+async function loadDraftStatusFromConvex() {
+    try {
+        const response = await fetch('/admin/api/admin-convex?key=draftStatus', { credentials: 'same-origin' });
+        if (!response.ok) return;
+        const data = await response.json();
+        if (!data.item || !data.item.value) return;
+        draftStatus = data.item.value;
+        localStorage.setItem('draftStatus', JSON.stringify(draftStatus));
+        renderDrafts();
+    } catch (error) {
+        console.warn('Using local draft status.', error);
+    }
 }
 
 // Fetch drafts from the server
@@ -411,6 +431,7 @@ function showToast(message, type = 'info') {
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     loadDraftStatus();
+    loadDraftStatusFromConvex();
     fetchDrafts();
 });
 </script>

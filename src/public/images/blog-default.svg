@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Rob Spain School BCBA blog featured image</title>
+  <desc id="desc">A branded abstract image for school behavior analysis articles.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#064e3b"/>
+      <stop offset="0.52" stop-color="#0f766e"/>
+      <stop offset="1" stop-color="#10b981"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="78%" cy="18%" r="58%">
+      <stop offset="0" stop-color="#a7f3d0" stop-opacity="0.72"/>
+      <stop offset="1" stop-color="#a7f3d0" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#022c22" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <rect width="1200" height="675" fill="url(#glow)"/>
+  <path d="M0 520c155-72 292-76 410-12 148 81 311 70 491-31 113-64 213-87 299-70v268H0z" fill="#ecfdf5" opacity="0.16"/>
+  <path d="M82 105h232M82 157h330M82 209h250" stroke="#d1fae5" stroke-width="18" stroke-linecap="round" opacity="0.35"/>
+  <g filter="url(#shadow)">
+    <rect x="690" y="112" width="330" height="410" rx="32" fill="#f8fafc"/>
+    <rect x="734" y="166" width="242" height="30" rx="15" fill="#10b981" opacity="0.34"/>
+    <rect x="734" y="229" width="190" height="18" rx="9" fill="#0f172a" opacity="0.18"/>
+    <rect x="734" y="271" width="224" height="18" rx="9" fill="#0f172a" opacity="0.14"/>
+    <rect x="734" y="313" width="154" height="18" rx="9" fill="#0f172a" opacity="0.14"/>
+    <circle cx="791" cy="413" r="44" fill="#10b981" opacity="0.2"/>
+    <path d="M777 414l19 19 39-52" fill="none" stroke="#059669" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g fill="none" stroke="#d1fae5" stroke-linecap="round" opacity="0.46">
+    <path d="M154 412c75-92 146-92 213 0s139 92 216 0" stroke-width="12"/>
+    <path d="M154 470c75-92 146-92 213 0s139 92 216 0" stroke-width="12" opacity="0.55"/>
+  </g>
+  <text x="82" y="326" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="56" font-weight="800">School BCBA Insights</text>
+  <text x="82" y="376" fill="#d1fae5" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="600">Systems, behavior support, and educator tools</text>
+  <text x="82" y="584" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="25" font-weight="700">Rob Spain, BCBA, IBA</text>
+</svg>

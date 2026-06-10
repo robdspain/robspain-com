@@ -695,9 +695,8 @@ h2 {
     color: #cccccc;
 }
 
-.ace-logo {
-    width: 60px;
-    height: auto;
+.ace-logo-badge {
+    flex: 0 0 auto;
 }
 
 /* Footer Bottom */

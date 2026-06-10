@@ -91,6 +91,16 @@
     box-shadow: 0 0 50px rgba(16, 185, 129, 0.6);
 }
 
+.video-player-frame iframe,
+.video-player-frame video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #020617;
+}
+
 @keyframes pulse-pro-max {
     0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
     70% { box-shadow: 0 0 0 30px rgba(16, 185, 129, 0); }
@@ -144,6 +154,69 @@
     background: var(--color-primary, #10B981);
     transform: translateX(8px) scale(1.05);
     box-shadow: 0 20px 40px -10px rgba(16, 185, 129, 0.4);
+}
+
+.video-bento-grid {
+    max-width: 1100px;
+    margin: 2rem auto 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.video-step-card {
+    min-height: 150px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    text-align: left;
+    border: 1px solid #dbe3ea;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #0f172a;
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.video-step-card:hover,
+.video-step-card.active {
+    transform: translateY(-2px);
+    border-color: var(--color-primary, #10B981);
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
+}
+
+.video-step-card.locked {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.video-step-number {
+    font-size: 0.75rem;
+    font-weight: 900;
+    letter-spacing: 0.14em;
+    color: var(--color-primary, #10B981);
+    text-transform: uppercase;
+}
+
+.video-step-title {
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.video-step-status {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 0.35rem 0.6rem;
+    border-radius: 999px;
+    background: #ecfdf5;
+    color: #047857;
+    font-size: 0.75rem;
+    font-weight: 800;
 }
 
 /* Opt-in Form Overlay */
@@ -200,9 +273,30 @@
 }
 
 .script-content-view {
+    width: 100%;
+    height: 100%;
+    padding: 2rem;
+    overflow-y: auto;
+    text-align: left;
+    background: #0f172a;
     color: #e2e8f0;
     line-height: 1.6;
     font-size: 1.1rem;
+}
+
+.script-preview-inner {
+    max-width: 680px;
+    margin: 0 auto;
+}
+
+.script-preview-note {
+    padding: 0.85rem 1rem;
+    margin: 0 0 1.5rem;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    border-radius: 8px;
+    background: rgba(16, 185, 129, 0.1);
+    color: #bbf7d0;
+    font-size: 0.95rem;
 }
 
 .script-content-view h2, .script-content-view h3 {

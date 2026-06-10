@@ -124,27 +124,24 @@ description: Rob Spain, School BCBA with {{ experience.display }} years experien
         <div class="container">
             <div class="hero-content-premium">
                 <div class="hero-text-premium">
-                    <div class="hero-badge-premium animate-fade-up">
-                        <span>
-                            <div class="badge-dot"></div>
-                            School BCBA - Rob Spain
-                        </span>
-                    </div>
-                    
                     <h1 class="hero-title-premium animate-fade-up stagger-1">
                         Rob Spain - <span class="hero-title-gradient">School BCBA</span>
                     </h1>
 
-                    <h2 class="hero-subtitle-premium animate-fade-up stagger-2" style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem;">
-                        Empowering <a href="#about" style="color: #10B981; text-decoration: none;">School Behavior Interventionists</a> with proven tools to transform student outcomes.
+                    <h2 class="hero-subtitle-premium animate-fade-up stagger-2">
+                        Empowering <a href="#about">School Behavior Interventionists</a> with proven tools to transform student outcomes.
                     </h2>
 
 
 
                     <div class="hero-actions-premium animate-fade-up stagger-4">
-                        <a href="javascript:void(0)" class="btn-primary-premium" style="opacity: 0.8; cursor: default;">
-                            <i class="fas fa-play"></i>
-                            Get Free Training <span style="font-size: 0.75rem; margin-left: 0.5rem; opacity: 0.9; background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 4px;">COMING SOON</span>
+                        <a href="https://behaviorschool.com/transformation-program" target="_blank" rel="noopener" class="btn-primary-premium">
+                            <i class="fas fa-rocket"></i>
+                            Explore Behavior School
+                        </a>
+                        <a href="/blog/" class="btn-secondary-premium">
+                            <i class="fas fa-book-open"></i>
+                            Read School BCBA Articles
                         </a>
                     </div>
 
@@ -215,9 +212,10 @@ description: Rob Spain, School BCBA with {{ experience.display }} years experien
                     <p>After more than two decades of testing, refining, and scaling behavior systems, Rob Spain continues to share his School BCBA knowledge through presentations, courses, and the Behavior School platform. His mission is clear: to equip every School BCBA to step into the role of systems leader—because schools run better when behavior analysts lead at every level.</p>
                 </div>
                 <div class="about-visual animate-scale-up">
-                    <div class="about-image-placeholder" role="img" aria-label="Rob speaking">
-                        <span class="placeholder-label">Rob speaking</span>
-                    </div>
+                    <picture>
+                        <source srcset="/public/images/profile-Rob.webp" type="image/webp">
+                        <img src="/public/images/profile-Rob.png" alt="Rob Spain speaking about school-based behavior support" class="about-image" loading="lazy" decoding="async">
+                    </picture>
                 </div>
             </div>
         </div>
@@ -434,7 +432,7 @@ description: Rob Spain, School BCBA with {{ experience.display }} years experien
                     </div>
 
                     <div class="story-cta">
-                        <a href="/cv.html" class="story-button">
+                        <a href="/cv/" class="story-button">
                             <span>Learn More About My Journey</span>
                             <i class="fas fa-arrow-right"></i>
                         </a>
@@ -584,12 +582,60 @@ description: Rob Spain, School BCBA with {{ experience.display }} years experien
                 </p>
             </div>
 
+            {% if collections.youtube_videos.length > 0 %}
+            <div class="youtube-feed-grid animate-fade-up stagger-2">
+                {% for video in collections.youtube_videos %}
+                <a href="{{ video.data.youtubeUrl }}" class="youtube-video-card" target="_blank" rel="noopener">
+                    <div class="video-thumbnail">
+                        {% if video.data.youtubeId %}
+                        <img src="https://i.ytimg.com/vi/{{ video.data.youtubeId }}/mqdefault.jpg" alt="{{ video.data.title }}" loading="lazy">
+                        {% elif video.data.thumbnail %}
+                        <img src="{{ video.data.thumbnail }}" alt="{{ video.data.title }}" loading="lazy">
+                        {% else %}
+                        <div class="thumbnail-placeholder">
+                            <i class="fab fa-youtube"></i>
+                        </div>
+                        {% endif %}
+                        <div class="play-overlay">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">{{ video.data.title }}</h3>
+                        <div class="video-meta">
+                            <span class="video-type">{{ video.data.videoType | replace("_", " ") | capitalize }}</span>
+                            <span class="video-date">{{ video.data.date | friendlyDate }}</span>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            <div class="youtube-cta animate-fade-up">
+                <a href="https://www.youtube.com/@BehaviorSchool" target="_blank" rel="noopener" class="btn-secondary-premium">
+                    <i class="fab fa-youtube"></i> Subscribe on YouTube
+                </a>
+            </div>
+            {% else %}
             <div class="youtube-feed-container animate-fade-up stagger-2">
                 <div class="youtube-placeholder" style="background: rgba(16, 185, 129, 0.05); border: 2px dashed rgba(16, 185, 129, 0.2); border-radius: 24px; padding: 4rem; text-align: center; color: #10B981;">
                     <i class="fab fa-youtube" style="font-size: 3rem; margin-bottom: 1.5rem; opacity: 0.5;"></i>
-                    <p style="font-weight: 500;">YouTube Feed Coming Soon</p>
+                    <p style="font-weight: 500;">Videos Coming Soon</p>
+                    <a href="https://www.youtube.com/@BehaviorSchool" target="_blank" rel="noopener" style="color: #10B981; margin-top: 1rem; display: inline-block;">
+                        Subscribe to be notified <i class="fas fa-external-link-alt" style="font-size: 0.75rem;"></i>
+                    </a>
                 </div>
             </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="section-premium" id="newsletter">
+        <div class="container">
+            {% set newsletterId = "home" %}
+            {% set newsletterSource = "/" %}
+            {% set newsletterTitle = "Join the School BCBA Systems Letter." %}
+            {% set newsletterDescription = "One shared newsletter across robspain.com and Behavior School: practical school behavior articles, implementation prompts, and resources for BCBAs who want to lead systems." %}
+            {% include "newsletter-signup.njk" %}
         </div>
     </section>
 

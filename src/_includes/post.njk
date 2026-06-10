@@ -23,9 +23,9 @@ layout: base.njk
         </div>
         {% endif %}
 
-        {% if image and not youtubeUrl %}
+        {% if not youtubeUrl %}
         <div class="post-featured-image" style="margin-bottom: 3rem; border-radius: 1rem; overflow: hidden; box-shadow: var(--shadow-xl);">
-            {% image image, title, "(max-width: 800px) 100vw, 800px" %}
+            {% image image | postImage, title, "(max-width: 800px) 100vw, 800px" %}
         </div>
         <style>.post-featured-image img { width: 100%; height: auto; display: block; }</style>
         {% endif %}
@@ -34,10 +34,159 @@ layout: base.njk
             {{ content | safe }}
         </div>
 
+        <p class="post-ai-disclosure">AI-assisted draft; reviewed and edited by Rob Spain.</p>
+
+        {% set newsletterId = "post" %}
+        {% set newsletterSource = page.url %}
+        {% set newsletterTitle = "Want the newsletter version of these articles?" %}
+        {% set newsletterDescription = "Get the same practical School BCBA Systems Letter that goes to Behavior School subscribers, with article takeaways, implementation prompts, and new resources." %}
+        {% include "newsletter-signup.njk" %}
+
+        <aside class="post-author-box" aria-label="About the author">
+            <div class="post-author-mark">RS</div>
+            <div>
+                <p class="post-author-kicker">Written by Rob Spain, BCBA, IBA</p>
+                <p>Rob is a school-based behavior analyst, university faculty member, BACB ACE provider, and founder of Behavior School. His work focuses on practical behavior systems that help educators move from crisis response to prevention.</p>
+                <div class="post-author-links">
+                    <a href="/cv/">View CV</a>
+                    <a href="https://behaviorschool.com" target="_blank" rel="noopener">Behavior School</a>
+                </div>
+            </div>
+        </aside>
+
+        <aside class="post-conversion-panel" aria-label="School BCBA resources">
+            <div>
+                <p class="post-conversion-kicker">Ready to build sustainable behavior systems?</p>
+                <h2>Move from crisis response to systems leadership.</h2>
+                <p>Explore Behavior School resources for school-based BCBAs, educators, and district teams who need practical tools that reduce burnout and improve implementation.</p>
+            </div>
+            <div class="post-conversion-actions">
+                <a href="https://behaviorschool.com/transformation-program" target="_blank" rel="noopener" class="btn-primary-premium">
+                    <i class="fas fa-rocket"></i> View the Program
+                </a>
+                <a href="/#contact" class="btn-secondary-premium">
+                    <i class="fas fa-envelope"></i> Talk with Rob
+                </a>
+            </div>
+        </aside>
+
+        <style>
+        .post-conversion-panel {
+            margin-top: 3.5rem;
+            padding: 2rem;
+            border-radius: 1rem;
+            background: linear-gradient(135deg, rgba(6, 78, 59, 0.96), rgba(16, 185, 129, 0.9));
+            color: white;
+            display: grid;
+            gap: 1.5rem;
+        }
+        .post-conversion-panel h2 {
+            margin: 0.35rem 0 0.75rem;
+            color: white;
+            font-size: 1.8rem;
+            line-height: 1.15;
+        }
+        .post-conversion-panel p {
+            margin: 0;
+            color: rgba(255,255,255,0.84);
+        }
+        .post-conversion-kicker {
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .post-conversion-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.85rem;
+            align-items: center;
+        }
+        .post-author-box {
+            margin-top: 3rem;
+            padding: 1.5rem;
+            border: 1px solid var(--gray-200);
+            border-radius: 0.75rem;
+            display: grid;
+            grid-template-columns: 3.25rem 1fr;
+            gap: 1rem;
+            background: white;
+            box-shadow: var(--shadow-sm);
+        }
+        .post-author-mark {
+            width: 3.25rem;
+            height: 3.25rem;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+        }
+        .post-author-box p {
+            margin: 0;
+            color: var(--gray-700);
+            line-height: 1.65;
+        }
+        .post-author-kicker {
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--gray-900) !important;
+            margin-bottom: 0.35rem !important;
+        }
+        .post-author-links {
+            margin-top: 0.85rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            font-weight: 700;
+        }
+        .post-author-links a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        .post-author-links a:hover {
+            text-decoration: underline;
+        }
+        .post-ai-disclosure {
+            margin: 2rem 0 0;
+            color: var(--gray-500);
+            font-size: 0.78rem;
+            line-height: 1.5;
+            font-style: italic;
+        }
+        .post-conversion-panel .btn-secondary-premium {
+            background: rgba(255,255,255,0.08);
+            color: white;
+            border-color: rgba(255,255,255,0.42);
+        }
+        .post-conversion-panel .btn-secondary-premium:hover {
+            background: rgba(255,255,255,0.18);
+            border-color: rgba(255,255,255,0.72);
+            color: white;
+        }
+        @media (max-width: 640px) {
+            .post-author-box {
+                grid-template-columns: 1fr;
+            }
+            .post-conversion-panel {
+                padding: 1.5rem;
+            }
+            .post-conversion-actions a {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        </style>
+
         <!-- Share & Navigation -->
         <div style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--gray-200);">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
-                <div style="font-weight: 600; color: var(--gray-600);">Share this insights:</div>
+                <div style="font-weight: 600; color: var(--gray-600);">Share this insight:</div>
                 <div style="display: flex; gap: 1rem;">
                     <a href="https://twitter.com/intent/tweet?text={{ title | urlencode }}&url=https://robspain.com{{ page.url }}" target="_blank" rel="noopener" class="btn-secondary-premium" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
                         <i class="fab fa-twitter"></i> Twitter
@@ -51,7 +200,7 @@ layout: base.njk
                 </div>
             </div>
 
-            <a href="/blog.html" class="btn-secondary-premium" style="display: inline-flex; width: auto;">
+            <a href="/blog/" class="btn-secondary-premium" style="display: inline-flex; width: auto;">
                 <i class="fas fa-arrow-left"></i> Back to Blog
             </a>
         </div>

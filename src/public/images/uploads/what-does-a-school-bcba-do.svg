@@ -1,0 +1,65 @@
+<svg width="1200" height="675" viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">What does a school BCBA do</title>
+  <desc id="desc">A branded visual showing a school BCBA connecting behavior assessment, coaching, data, and school systems.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#064E3B"/>
+      <stop offset="0.48" stop-color="#0F766E"/>
+      <stop offset="1" stop-color="#14B8A6"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.96"/>
+      <stop offset="1" stop-color="#ECFDF5" stop-opacity="0.9"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="20" stdDeviation="22" flood-color="#022C22" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <g opacity="0.18" fill="none" stroke="#D1FAE5" stroke-width="2">
+    <path d="M0 150 C185 80 355 210 545 138 S900 70 1200 155"/>
+    <path d="M0 540 C150 475 370 590 575 525 S900 455 1200 560"/>
+    <path d="M155 0 L650 675"/>
+    <path d="M545 0 L1040 675"/>
+  </g>
+  <g transform="translate(82 74)">
+    <text x="0" y="0" fill="#D1FAE5" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="900" letter-spacing="2">SCHOOL BCBA ROLE CLARITY</text>
+    <text x="0" y="70" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="66" font-weight="900">What Does a</text>
+    <text x="0" y="138" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="66" font-weight="900">School BCBA Do?</text>
+    <text x="0" y="190" fill="#D1FAE5" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="700">From FBA writer to systems partner.</text>
+  </g>
+  <g transform="translate(92 330)" filter="url(#shadow)">
+    <rect x="0" y="0" width="225" height="145" rx="18" fill="url(#panel)"/>
+    <circle cx="42" cy="42" r="19" fill="#10B981"/>
+    <text x="76" y="49" fill="#064E3B" font-family="Inter, Arial, sans-serif" font-size="21" font-weight="900">Assessment</text>
+    <text x="30" y="92" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700">FBA/BIP decisions</text>
+    <text x="30" y="118" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700">function-based support</text>
+  </g>
+  <g transform="translate(355 380)" filter="url(#shadow)">
+    <rect x="0" y="0" width="225" height="145" rx="18" fill="url(#panel)"/>
+    <circle cx="42" cy="42" r="19" fill="#F59E0B"/>
+    <text x="76" y="49" fill="#064E3B" font-family="Inter, Arial, sans-serif" font-size="21" font-weight="900">Coaching</text>
+    <text x="30" y="92" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700">teacher support</text>
+    <text x="30" y="118" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700">feasible routines</text>
+  </g>
+  <g transform="translate(618 330)" filter="url(#shadow)">
+    <rect x="0" y="0" width="225" height="145" rx="18" fill="url(#panel)"/>
+    <circle cx="42" cy="42" r="19" fill="#22C55E"/>
+    <text x="76" y="49" fill="#064E3B" font-family="Inter, Arial, sans-serif" font-size="21" font-weight="900">Data</text>
+    <text x="30" y="92" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700">progress signals</text>
+    <text x="30" y="118" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700">implementation checks</text>
+  </g>
+  <g transform="translate(881 380)" filter="url(#shadow)">
+    <rect x="0" y="0" width="225" height="145" rx="18" fill="url(#panel)"/>
+    <circle cx="42" cy="42" r="19" fill="#0EA5E9"/>
+    <text x="76" y="49" fill="#064E3B" font-family="Inter, Arial, sans-serif" font-size="21" font-weight="900">Systems</text>
+    <text x="30" y="92" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700">tiered support</text>
+    <text x="30" y="118" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700">team collaboration</text>
+  </g>
+  <g fill="none" stroke="#A7F3D0" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M317 405 C345 398 332 456 355 454"/>
+    <path d="M580 454 C615 456 592 405 618 405"/>
+    <path d="M843 405 C872 398 857 454 881 454"/>
+  </g>
+  <text x="92" y="610" fill="#D1FAE5" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="800">robspain.com</text>
+</svg>

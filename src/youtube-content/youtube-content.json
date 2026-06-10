@@ -1,0 +1,6 @@
+{
+  "layout": "youtube-content.njk",
+  "permalink": false,
+  "eleventyExcludeFromCollections": false,
+  "tags": ["youtube_content"]
+}

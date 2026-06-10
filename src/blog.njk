@@ -1,7 +1,8 @@
 ---
 layout: base.njk
 title: Blog - Rob Spain | School BCBA Insights
-description: Insights, strategies, and systematic approaches for school-based behavior analysis from Rob Spain, BCBA.
+description: Practical School BCBA articles on behavior systems, burnout prevention, PBIS, educator coaching, and sustainable school-based behavior analysis.
+canonical: /blog/
 ---
 
 <header class="blog-header-premium animate-fade-up">
@@ -9,24 +10,26 @@ description: Insights, strategies, and systematic approaches for school-based be
         <div class="blog-header-content">
             <span class="section-badge-premium">Professional Insights</span>
             <h1 class="text-display-md">School BCBA <span class="text-gradient">Blog</span></h1>
-            <p class="body-large">Systematic approaches to transform school behavior systems, reduce burnout, and improve student outcomes.</p>
+            <p class="body-large">Practical articles for school BCBAs, educators, and district leaders building behavior systems that reduce burnout and improve student outcomes.</p>
         </div>
     </div>
 </header>
 
 <section class="section-premium" style="padding-top: 0;">
     <div class="container">
+        {% set newsletterId = "blog" %}
+        {% set newsletterSource = "/blog/" %}
+        {% set newsletterTitle = "Get the next School BCBA systems article by email." %}
+        {% set newsletterDescription = "Each issue turns one practical blog insight into a short implementation prompt you can use in real school behavior systems." %}
+        {% include "newsletter-signup.njk" %}
+
         <!-- Featured Post: The Crisis Story -->
         {% if collections.posts | length > 0 %}
-        {% set latestPost = collections.posts | reverse | first %}
+        {% set latestPost = collections.posts | first %}
         <div class="latest-post-highlight animate-fade-up stagger-1">
             <a href="{{ latestPost.url }}" class="highlight-card card-premium">
                 <div class="highlight-image">
-                    {% if latestPost.data.image %}
-                        {% image latestPost.data.image, latestPost.data.title, "(max-width: 1024px) 100vw, 600px" %}
-                    {% else %}
-                        <div class="placeholder-icon-highlight"><i class="fas fa-rocket"></i></div>
-                    {% endif %}
+                    {% image latestPost.data.image | postImage, latestPost.data.title, "(max-width: 1024px) 100vw, 600px" %}
                 </div>
                 <div class="highlight-content">
                     <div class="post-meta-premium">
@@ -46,15 +49,11 @@ description: Insights, strategies, and systematic approaches for school-based be
 
         <!-- Grid for Remaining Posts -->
         <div class="cards-grid-premium" id="blog-posts" style="margin-top: 4rem;">
-            {% for post in collections.posts | reverse %}
+            {% for post in collections.posts %}
             {% if loop.index > 1 %}
             <article class="card-premium animate-fade-up">
                 <div class="card-image-wrapper">
-                    {% if post.data.image %}
-                        {% image post.data.image, post.data.title, "(max-width: 768px) 100vw, 400px", [400, 600] %}
-                    {% else %}
-                        <div class="card-icon-placeholder"><i class="fas fa-book-open"></i></div>
-                    {% endif %}
+                    {% image post.data.image | postImage, post.data.title, "(max-width: 768px) 100vw, 400px", [400, 600] %}
                 </div>
                 <div class="card-content-inner">
                     <div class="post-meta-small">
@@ -78,8 +77,41 @@ description: Insights, strategies, and systematic approaches for school-based be
             {% endif %}
             {% endfor %}
         </div>
+
+        <div class="blog-conversion-strip animate-fade-up">
+            <div>
+                <h2>Need a behavior system that works beyond one student at a time?</h2>
+                <p>Start with Rob's School BCBA systems framework, then bring the right training, tools, and implementation plan back to your team.</p>
+            </div>
+            <div class="blog-conversion-actions">
+                <a href="https://behaviorschool.com/transformation-program" target="_blank" rel="noopener" class="btn-primary-premium">
+                    <i class="fas fa-rocket"></i> Explore the Program
+                </a>
+                <a href="/#contact" class="btn-secondary-premium">
+                    <i class="fas fa-envelope"></i> Discuss Consulting
+                </a>
+            </div>
+        </div>
     </div>
 </section>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "School BCBA Blog Articles",
+  "itemListElement": [
+    {% for post in collections.posts %}
+    {
+      "@type": "ListItem",
+      "position": {{ loop.index }},
+      "url": "https://robspain.com{{ post.url }}",
+      "name": {{ post.data.title | dump | safe }}
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
 
 <style>
 .blog-header-premium {
@@ -99,6 +131,39 @@ description: Insights, strategies, and systematic approaches for school-based be
     margin-bottom: 6rem;
 }
 
+.blog-conversion-strip {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem;
+    margin: 4rem 0 0;
+    border-radius: 24px;
+    background: linear-gradient(135deg, rgba(236, 253, 245, 0.92), rgba(255, 255, 255, 0.96));
+    border: 1px solid rgba(16, 185, 129, 0.18);
+    box-shadow: 0 18px 45px -28px rgba(6, 78, 59, 0.45);
+}
+
+.blog-conversion-strip h2 {
+    margin: 0 0 0.55rem;
+    font-size: clamp(1.35rem, 2vw, 2rem);
+    line-height: 1.15;
+    color: var(--gray-900);
+}
+
+.blog-conversion-strip p {
+    margin: 0;
+    color: var(--gray-600);
+    max-width: 680px;
+}
+
+.blog-conversion-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.85rem;
+}
+
 .highlight-card {
     display: grid;
     grid-template-columns: 1.2fr 1fr;
@@ -114,17 +179,16 @@ description: Insights, strategies, and systematic approaches for school-based be
     overflow: hidden;
     box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1);
     height: 450px;
+    padding: 1rem;
+    background: linear-gradient(135deg, #ecfdf5, #f8fafc);
 }
 
 .highlight-image img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.highlight-card:hover .highlight-image img {
-    transform: scale(1.05);
+    object-fit: contain;
+    object-position: center;
+    border-radius: 14px;
 }
 
 .highlight-content {
@@ -168,17 +232,16 @@ description: Insights, strategies, and systematic approaches for school-based be
     height: 240px;
     margin: -2rem -2rem 1.5rem -2rem;
     overflow: hidden;
+    padding: 0.75rem;
+    background: linear-gradient(135deg, #ecfdf5, #f8fafc);
 }
 
 .card-image-wrapper img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
-}
-
-.card-premium:hover .card-image-wrapper img {
-    transform: scale(1.08);
+    object-fit: contain;
+    object-position: center;
+    border-radius: 12px;
 }
 
 .post-meta-small {
@@ -188,16 +251,6 @@ description: Insights, strategies, and systematic approaches for school-based be
     text-transform: uppercase;
     letter-spacing: 0.1em;
     margin-bottom: 0.75rem;
-}
-
-.placeholder-icon-highlight {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--gradient-emerald);
-    color: white;
-    font-size: 4rem;
 }
 
 @media (max-width: 1024px) {
@@ -218,6 +271,18 @@ description: Insights, strategies, and systematic approaches for school-based be
     }
     .blog-header-content {
         margin: 0 auto;
+    }
+    .blog-conversion-strip {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding: 1.5rem;
+    }
+    .blog-conversion-actions {
+        justify-content: center;
+    }
+    .blog-conversion-actions a {
+        width: 100%;
+        justify-content: center;
     }
 }
 </style>

@@ -1,6 +1,6 @@
 ---
 title: "Video 06: What Systems Leadership Looks Like"
-series: "transformation"
+series: "school-bcba"
 published: true
 step: 6
 ---

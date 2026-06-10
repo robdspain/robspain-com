@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Content Pipeline | Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f1f5f9;
+      min-height: 100vh;
+      color: #1e293b;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      padding: 24px 0;
+      margin-bottom: 24px;
+    }
+    header .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .header-title i {
+      font-size: 2rem;
+      color: #10B981;
+    }
+    .header-title h1 {
+      color: white;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    .header-title p {
+      color: #94a3b8;
+      font-size: 0.875rem;
+    }
+    .back-link {
+      color: #94a3b8;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+    .back-link:hover {
+      color: #10B981;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 900px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-header h2 {
+      font-size: 1.125rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card-header h2 i {
+      color: #10B981;
+    }
+    .card-body {
+      padding: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 8px;
+    }
+    .form-group .hint {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 0.9375rem;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    input[type="text"]:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #10B981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: #10B981;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #059669;
+      transform: translateY(-2px);
+    }
+    .btn-primary:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #475569;
+    }
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+    .btn-full {
+      width: 100%;
+    }
+
+    .url-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .url-item {
+      display: flex;
+      gap: 8px;
+    }
+    .url-item input {
+      flex: 1;
+    }
+    .url-item button {
+      padding: 8px 12px;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #64748b;
+      transition: all 0.2s;
+    }
+    .url-item button:hover {
+      background: #fee2e2;
+      color: #dc2626;
+      border-color: #fecaca;
+    }
+    .add-url-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: #f1f5f9;
+      border: 1px dashed #cbd5e1;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      color: #64748b;
+      transition: all 0.2s;
+    }
+    .add-url-btn:hover {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+      color: #475569;
+    }
+
+    /* Script Output */
+    .script-output {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 16px;
+      display: none;
+    }
+    .script-output.visible {
+      display: block;
+    }
+    .script-section {
+      margin-bottom: 24px;
+    }
+    .script-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .script-section-header h3 {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #10B981;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .script-section-header .timestamp {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+    .script-section-content {
+      background: white;
+      padding: 16px;
+      border-radius: 8px;
+      border-left: 3px solid #10B981;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+    .script-section-content .direction {
+      color: #0891b2;
+      font-weight: 500;
+    }
+    .script-section-content .emphasis {
+      font-weight: 700;
+    }
+
+    /* Loading State */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.8);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+    .loading-overlay.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(16, 185, 129, 0.2);
+      border-top-color: #10B981;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .loading-text {
+      color: white;
+      margin-top: 20px;
+      font-size: 1.125rem;
+      font-weight: 500;
+    }
+    .loading-status {
+      color: #94a3b8;
+      margin-top: 8px;
+      font-size: 0.875rem;
+    }
+
+    /* Metadata Section */
+    .metadata-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .metadata-item {
+      background: #f8fafc;
+      padding: 16px;
+      border-radius: 8px;
+    }
+    .metadata-item label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .metadata-item p {
+      margin-top: 8px;
+      font-size: 0.9375rem;
+    }
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      margin: 4px 4px 4px 0;
+    }
+
+    /* Copy Button */
+    .copy-btn {
+      padding: 6px 12px;
+      font-size: 0.75rem;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover {
+      background: #e2e8f0;
+    }
+    .copy-btn.copied {
+      background: #dcfce7;
+      border-color: #86efac;
+      color: #16a34a;
+    }
+
+    /* Alert */
+    .alert {
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .alert-error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .alert-success {
+      background: #dcfce7;
+      color: #166534;
+    }
+    .alert i {
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* Pipeline Flow */
+    .pipeline-flow {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .pipeline-step {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 14px;
+      min-height: 106px;
+    }
+    .pipeline-step.active {
+      border-color: #10B981;
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.12);
+    }
+    .pipeline-number {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #ecfdf5;
+      color: #047857;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .pipeline-label {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 4px;
+    }
+    .pipeline-desc {
+      font-size: 0.75rem;
+      line-height: 1.4;
+      color: #64748b;
+    }
+
+    /* Phase 2 - Content Generation */
+    .phase-card {
+      margin-top: 24px;
+      display: none;
+    }
+    .phase-card.visible {
+      display: block;
+    }
+    .phase-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .phase-step {
+      width: 32px;
+      height: 32px;
+      background: #10B981;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.875rem;
+    }
+    .phase-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    .phase-desc {
+      font-size: 0.875rem;
+      color: #64748b;
+    }
+
+    .youtube-input-group {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .youtube-input-group input {
+      flex: 1;
+    }
+
+    .generate-btns {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Social Media Output */
+    .social-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 8px;
+    }
+    .social-tab {
+      padding: 8px 16px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #64748b;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .social-tab:hover {
+      background: #f1f5f9;
+    }
+    .social-tab.active {
+      background: #10B981;
+      color: white;
+    }
+    .social-content {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .social-content-panel {
+      display: none;
+    }
+    .social-content-panel.active {
+      display: block;
+    }
+    .social-text {
+      background: white;
+      padding: 16px;
+      border-radius: 8px;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      margin-bottom: 12px;
+    }
+    .social-hashtags {
+      font-size: 0.875rem;
+      color: #0891b2;
+    }
+    .social-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #e2e8f0;
+    }
+    .char-count {
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+
+    /* Blog and Newsletter Output */
+    .blog-preview {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      border: 1px solid #e2e8f0;
+    }
+    .blog-preview h3 {
+      font-size: 1.25rem;
+      margin-bottom: 12px;
+      color: #1e293b;
+    }
+    .blog-preview .description {
+      color: #64748b;
+      margin-bottom: 16px;
+      font-style: italic;
+    }
+    .blog-preview .body {
+      font-size: 0.9375rem;
+      line-height: 1.8;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .blog-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .newsletter-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .newsletter-meta-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .newsletter-meta-item label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .newsletter-subjects {
+      margin: 0;
+      padding-left: 18px;
+      color: #1e293b;
+      line-height: 1.6;
+    }
+    @media (max-width: 900px) {
+      header .container {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .pipeline-flow {
+        grid-template-columns: 1fr;
+      }
+      .youtube-input-group,
+      .blog-actions {
+        flex-direction: column;
+      }
+      .newsletter-meta {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="header-title">
+        <i class="fab fa-youtube"></i>
+        <div>
+          <h1>YouTube Content Pipeline</h1>
+          <p>Turn one researched video into a blog, newsletter, and LinkedIn/X posts</p>
+        </div>
+      </div>
+      <a href="/admin/cms/" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Admin
+      </a>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="alert-container"></div>
+
+    <section class="pipeline-flow" aria-label="Publishing workflow">
+      <div class="pipeline-step active">
+        <div class="pipeline-number">1</div>
+        <div class="pipeline-label">Idea & Research</div>
+        <div class="pipeline-desc">Capture the angle, notes, and source links.</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-number">2</div>
+        <div class="pipeline-label">YouTube Script</div>
+        <div class="pipeline-desc">Generate the video script and metadata.</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-number">3</div>
+        <div class="pipeline-label">Upload URL</div>
+        <div class="pipeline-desc">Paste the live YouTube URL after upload.</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-number">4</div>
+        <div class="pipeline-label">Blog + Newsletter</div>
+        <div class="pipeline-desc">Create the long-form post and email draft.</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-number">5</div>
+        <div class="pipeline-label">LinkedIn + X</div>
+        <div class="pipeline-desc">Generate channel-specific launch copy.</div>
+      </div>
+    </section>
+
+    <div class="main-grid">
+      <!-- Input Panel -->
+      <div class="card">
+        <div class="card-header">
+          <h2><i class="fas fa-edit"></i> Idea & Research Inputs</h2>
+        </div>
+        <div class="card-body">
+          <form id="script-form">
+            <div class="form-group">
+              <label for="video-type">Video Type</label>
+              <select id="video-type" name="videoType">
+                <option value="insight">Insight / Opinion</option>
+                <option value="research_review">Research Review</option>
+                <option value="project_update">Project Update</option>
+                <option value="news">News Commentary</option>
+                <option value="tutorial">Tutorial / How-To</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="idea">Content Idea *</label>
+              <textarea id="idea" name="idea" placeholder="What's the main topic or idea for this video?" required></textarea>
+              <p class="hint">Be specific about the angle or takeaway you want to cover</p>
+            </div>
+
+            <div class="form-group">
+              <label>Source URLs (optional)</label>
+              <div class="url-list" id="url-list">
+                <div class="url-item">
+                  <input type="text" placeholder="https://example.com/article" class="source-url">
+                  <button type="button" onclick="fetchUrlContent(this)" title="Fetch content">
+                    <i class="fas fa-download"></i>
+                  </button>
+                </div>
+              </div>
+              <button type="button" class="add-url-btn" onclick="addUrlField()">
+                <i class="fas fa-plus"></i> Add URL
+              </button>
+              <p class="hint">Add links to articles, research, or news to reference</p>
+            </div>
+
+            <div class="form-group">
+              <label for="source-notes">Additional Notes (optional)</label>
+              <textarea id="source-notes" name="sourceNotes" placeholder="Paste article content, key points, or any notes..."></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="target-length">Target Length</label>
+                <select id="target-length" name="targetLength">
+                  <option value="short">Short (5-7 min)</option>
+                  <option value="standard" selected>Standard (10-15 min)</option>
+                  <option value="deep_dive">Deep Dive (20+ min)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="primary-cta">Primary CTA</label>
+                <select id="primary-cta" name="primaryCta">
+                  <option value="transformation-program">Transformation Program</option>
+                  <option value="study">Study Resources</option>
+                  <option value="supervision-tools">Supervision Tools</option>
+                  <option value="resources">Free Resources</option>
+                  <option value="iep-goals">IEP Goals</option>
+                  <option value="behavior-plans">Behavior Plans</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full" id="generate-btn">
+              <i class="fas fa-sparkles"></i> Generate Script
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Output Panel -->
+      <div class="card">
+        <div class="card-header">
+          <h2><i class="fas fa-scroll"></i> Generated Script</h2>
+          <button class="copy-btn" id="copy-all-btn" onclick="copyFullScript()" style="display: none;">
+            <i class="fas fa-copy"></i> Copy All
+          </button>
+        </div>
+        <div class="card-body">
+          <div id="empty-state" style="text-align: center; padding: 60px 20px; color: #94a3b8;">
+            <i class="fas fa-file-alt" style="font-size: 3rem; margin-bottom: 16px; opacity: 0.5;"></i>
+            <p>Your generated script will appear here</p>
+          </div>
+
+          <div class="script-output" id="script-output">
+            <!-- Script content will be inserted here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metadata Card (shown after generation) -->
+    <div class="card" id="metadata-card" style="margin-top: 24px; display: none;">
+      <div class="card-header">
+        <h2><i class="fas fa-tags"></i> Metadata & SEO</h2>
+      </div>
+      <div class="card-body">
+        <div class="metadata-grid" id="metadata-grid">
+          <!-- Metadata will be inserted here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 2: Content Generation -->
+    <div class="card phase-card" id="phase2-card">
+      <div class="card-header">
+        <h2><i class="fas fa-rocket"></i> Publish From YouTube</h2>
+      </div>
+      <div class="card-body">
+        <div class="phase-header">
+          <div class="phase-step">2</div>
+          <div>
+            <div class="phase-title">After uploading to YouTube</div>
+            <div class="phase-desc">Paste the YouTube URL to generate the blog post, newsletter, and LinkedIn/X launch posts.</div>
+          </div>
+        </div>
+
+        <div class="youtube-input-group">
+          <input type="text" id="youtube-url" placeholder="https://www.youtube.com/watch?v=..." />
+          <button class="btn btn-secondary" onclick="validateYouTubeUrl()">
+            <i class="fas fa-check"></i> Verify
+          </button>
+        </div>
+
+        <div class="generate-btns">
+          <button class="btn btn-primary" id="generate-blog-btn" onclick="generateBlogPost()" disabled>
+            <i class="fas fa-blog"></i> Generate Blog Post
+          </button>
+          <button class="btn btn-primary" id="generate-newsletter-btn" onclick="generateNewsletterDraft()" disabled>
+            <i class="fas fa-envelope-open-text"></i> Generate Newsletter
+          </button>
+          <button class="btn btn-primary" id="generate-social-btn" onclick="generateSocialContent()" disabled>
+            <i class="fas fa-share-alt"></i> Generate LinkedIn/X
+          </button>
+          <button class="btn btn-secondary" id="generate-all-btn" onclick="generateAllContent()" disabled>
+            <i class="fas fa-magic"></i> Generate All
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Blog Post Output -->
+    <div class="card phase-card" id="blog-output-card">
+      <div class="card-header">
+        <h2><i class="fas fa-blog"></i> Generated Blog Post</h2>
+        <button class="copy-btn" onclick="copyBlogContent()"><i class="fas fa-copy"></i> Copy Markdown</button>
+      </div>
+      <div class="card-body">
+        <div class="blog-preview" id="blog-preview">
+          <h3 id="blog-title">Blog Title</h3>
+          <p class="description" id="blog-description">Blog description...</p>
+          <div class="body" id="blog-body">Blog content will appear here...</div>
+        </div>
+        <div class="blog-actions">
+          <button class="btn btn-primary" onclick="downloadBlogFile()">
+            <i class="fas fa-download"></i> Download .md File
+          </button>
+          <button class="btn btn-secondary" onclick="copyBlogContent()">
+            <i class="fas fa-copy"></i> Copy to Clipboard
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Newsletter Output -->
+    <div class="card phase-card" id="newsletter-output-card">
+      <div class="card-header">
+        <h2><i class="fas fa-envelope-open-text"></i> Newsletter Draft</h2>
+        <button class="copy-btn" onclick="copyNewsletterContent()"><i class="fas fa-copy"></i> Copy Email</button>
+      </div>
+      <div class="card-body">
+        <div class="newsletter-meta">
+          <div class="newsletter-meta-item">
+            <label>Subject Options</label>
+            <ol class="newsletter-subjects" id="newsletter-subjects"></ol>
+          </div>
+          <div class="newsletter-meta-item">
+            <label>Preview Text</label>
+            <p id="newsletter-preview-text">Preview text will appear here...</p>
+          </div>
+        </div>
+        <div class="blog-preview">
+          <h3 id="newsletter-title">Newsletter Title</h3>
+          <div class="body" id="newsletter-body">Newsletter content will appear here...</div>
+        </div>
+        <div class="blog-actions">
+          <button class="btn btn-secondary" onclick="copyNewsletterContent()">
+            <i class="fas fa-copy"></i> Copy Newsletter
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Social Media Output -->
+    <div class="card phase-card" id="social-output-card">
+      <div class="card-header">
+        <h2><i class="fas fa-share-alt"></i> LinkedIn + X Posts</h2>
+      </div>
+      <div class="card-body">
+        <div class="social-tabs">
+          <button class="social-tab active" onclick="switchSocialTab('twitter')">
+            <i class="fab fa-twitter"></i> Twitter/X
+          </button>
+          <button class="social-tab" onclick="switchSocialTab('linkedin')">
+            <i class="fab fa-linkedin"></i> LinkedIn
+          </button>
+        </div>
+
+        <div class="social-content">
+          <!-- Twitter -->
+          <div class="social-content-panel active" id="social-twitter">
+            <div class="social-text" id="twitter-text">Twitter post will appear here...</div>
+            <div class="social-hashtags" id="twitter-hashtags"></div>
+            <div class="social-meta">
+              <span class="char-count" id="twitter-count">0 / 280 characters</span>
+              <button class="copy-btn" onclick="copySocialPost('twitter')">
+                <i class="fas fa-copy"></i> Copy
+              </button>
+            </div>
+          </div>
+
+          <!-- LinkedIn -->
+          <div class="social-content-panel" id="social-linkedin">
+            <div class="social-text" id="linkedin-text">LinkedIn post will appear here...</div>
+            <div class="social-hashtags" id="linkedin-hashtags"></div>
+            <div class="social-meta">
+              <span class="char-count" id="linkedin-count">0 characters</span>
+              <button class="copy-btn" onclick="copySocialPost('linkedin')">
+                <i class="fas fa-copy"></i> Copy
+              </button>
+            </div>
+          </div>
+
+          <!-- Facebook -->
+          <div class="social-content-panel" id="social-facebook">
+            <div class="social-text" id="facebook-text">Facebook post will appear here...</div>
+            <div class="social-meta">
+              <span class="char-count" id="facebook-count">0 characters</span>
+              <button class="copy-btn" onclick="copySocialPost('facebook')">
+                <i class="fas fa-copy"></i> Copy
+              </button>
+            </div>
+          </div>
+
+          <!-- Instagram -->
+          <div class="social-content-panel" id="social-instagram">
+            <div class="social-text" id="instagram-text">Instagram caption will appear here...</div>
+            <div class="social-hashtags" id="instagram-hashtags"></div>
+            <div class="social-meta">
+              <span class="char-count" id="instagram-count">0 / 2200 characters</span>
+              <button class="copy-btn" onclick="copySocialPost('instagram')">
+                <i class="fas fa-copy"></i> Copy
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Generating your script...</p>
+    <p class="loading-status" id="loading-status">Analyzing content and crafting hook...</p>
+  </div>
+
+  <script>
+    let generatedScript = null;
+    let fetchedContent = '';
+
+    // Add URL field
+    function addUrlField() {
+      const urlList = document.getElementById('url-list');
+      const urlItem = document.createElement('div');
+      urlItem.className = 'url-item';
+      urlItem.innerHTML = `
+        <input type="text" placeholder="https://example.com/article" class="source-url">
+        <button type="button" onclick="fetchUrlContent(this)" title="Fetch content">
+          <i class="fas fa-download"></i>
+        </button>
+        <button type="button" onclick="removeUrlField(this)" title="Remove">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
+      urlList.appendChild(urlItem);
+    }
+
+    // Remove URL field
+    function removeUrlField(btn) {
+      btn.closest('.url-item').remove();
+    }
+
+    // Fetch URL content
+    async function fetchUrlContent(btn) {
+      const input = btn.closest('.url-item').querySelector('input');
+      const url = input.value.trim();
+      if (!url) return;
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+      try {
+        const response = await fetch('/.netlify/functions/fetch-url-content', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          fetchedContent += `\n\n--- Source: ${data.title} (${data.domain}) ---\n${data.content}`;
+          btn.innerHTML = '<i class="fas fa-check" style="color: #10B981;"></i>';
+          showAlert(`Fetched content from ${data.domain} (${data.wordCount} words)`, 'success');
+        } else {
+          throw new Error(data.error || 'Failed to fetch');
+        }
+      } catch (error) {
+        btn.innerHTML = '<i class="fas fa-exclamation-triangle" style="color: #dc2626;"></i>';
+        showAlert(`Failed to fetch URL: ${error.message}`, 'error');
+      }
+
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-download"></i>';
+      }, 3000);
+    }
+
+    // Show alert
+    function showAlert(message, type) {
+      const container = document.getElementById('alert-container');
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+        <span>${message}</span>
+      `;
+      container.appendChild(alert);
+      setTimeout(() => alert.remove(), 5000);
+    }
+
+    // Form submission
+    document.getElementById('script-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const form = e.target;
+      const generateBtn = document.getElementById('generate-btn');
+      const loadingOverlay = document.getElementById('loading-overlay');
+
+      // Gather data
+      const data = {
+        videoType: form.videoType.value,
+        idea: form.idea.value,
+        targetLength: form.targetLength.value,
+        primaryCta: form.primaryCta.value,
+        sourceContent: fetchedContent + '\n\n' + form.sourceNotes.value
+      };
+
+      // Show loading
+      generateBtn.disabled = true;
+      loadingOverlay.classList.add('visible');
+
+      // Update loading status
+      const statuses = [
+        'Analyzing your topic...',
+        'Crafting attention-grabbing hook...',
+        'Building content sections...',
+        'Adding retention hooks...',
+        'Generating actionable takeaway...',
+        'Creating metadata and tags...',
+        'Polishing final script...'
+      ];
+      let statusIndex = 0;
+      const statusInterval = setInterval(() => {
+        document.getElementById('loading-status').textContent = statuses[statusIndex % statuses.length];
+        statusIndex++;
+      }, 3000);
+
+      try {
+        const response = await fetch('/.netlify/functions/generate-script', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          generatedScript = result;
+          displayScript(result);
+          showAlert('Script generated successfully!', 'success');
+        } else {
+          throw new Error(result.error || 'Generation failed');
+        }
+      } catch (error) {
+        showAlert(`Error: ${error.message}`, 'error');
+      } finally {
+        clearInterval(statusInterval);
+        generateBtn.disabled = false;
+        loadingOverlay.classList.remove('visible');
+      }
+    });
+
+    // Display generated script
+    function displayScript(script) {
+      const output = document.getElementById('script-output');
+      const emptyState = document.getElementById('empty-state');
+      const copyAllBtn = document.getElementById('copy-all-btn');
+      const metadataCard = document.getElementById('metadata-card');
+      const phase2Card = document.getElementById('phase2-card');
+
+      emptyState.style.display = 'none';
+      output.classList.add('visible');
+      copyAllBtn.style.display = 'block';
+      metadataCard.style.display = 'block';
+      phase2Card.classList.add('visible');
+
+      // Build script HTML
+      let html = '';
+
+      // Title
+      html += `<div class="script-section">
+        <div class="script-section-header">
+          <h3>Title</h3>
+          <button class="copy-btn" onclick="copySection('title')"><i class="fas fa-copy"></i> Copy</button>
+        </div>
+        <div class="script-section-content" id="section-title">${script.title || 'Untitled'}</div>
+      </div>`;
+
+      // Hook
+      if (script.hook) {
+        html += `<div class="script-section">
+          <div class="script-section-header">
+            <h3>Hook</h3>
+            <span class="timestamp">[0:00-0:30]</span>
+          </div>
+          <div class="script-section-content" id="section-hook">${formatScriptText(script.hook)}</div>
+        </div>`;
+      }
+
+      // Intro
+      if (script.intro) {
+        html += `<div class="script-section">
+          <div class="script-section-header">
+            <h3>Intro</h3>
+            <span class="timestamp">[0:30-1:30]</span>
+          </div>
+          <div class="script-section-content" id="section-intro">${formatScriptText(script.intro)}</div>
+        </div>`;
+      }
+
+      // Content sections
+      if (script.sections && script.sections.length > 0) {
+        script.sections.forEach((section, index) => {
+          html += `<div class="script-section">
+            <div class="script-section-header">
+              <h3>${section.heading || `Section ${index + 1}`}</h3>
+              <span class="timestamp">${section.timestamp || ''}</span>
+            </div>
+            <div class="script-section-content" id="section-${index}">${formatScriptText(section.content)}</div>
+            ${section.retentionHook ? `<p style="color: #0891b2; font-size: 0.875rem; margin-top: 8px;"><strong>[RETENTION HOOK]</strong> ${section.retentionHook}</p>` : ''}
+          </div>`;
+        });
+      }
+
+      // Actionable Takeaway
+      if (script.actionableTakeaway) {
+        html += `<div class="script-section">
+          <div class="script-section-header">
+            <h3>Actionable Takeaway</h3>
+          </div>
+          <div class="script-section-content" id="section-takeaway">${formatScriptText(script.actionableTakeaway)}</div>
+        </div>`;
+      }
+
+      // CTA
+      if (script.cta) {
+        html += `<div class="script-section">
+          <div class="script-section-header">
+            <h3>Call to Action</h3>
+          </div>
+          <div class="script-section-content" id="section-cta">${formatScriptText(script.cta)}</div>
+        </div>`;
+      }
+
+      // Outro
+      if (script.outro) {
+        html += `<div class="script-section">
+          <div class="script-section-header">
+            <h3>Outro</h3>
+          </div>
+          <div class="script-section-content" id="section-outro">${formatScriptText(script.outro)}</div>
+        </div>`;
+      }
+
+      output.innerHTML = html;
+
+      // Build metadata
+      if (script.metadata) {
+        let metaHtml = '';
+
+        if (script.metadata.youtubeTitle) {
+          metaHtml += `<div class="metadata-item">
+            <label>YouTube Title</label>
+            <p>${script.metadata.youtubeTitle}</p>
+          </div>`;
+        }
+
+        if (script.metadata.tags && script.metadata.tags.length > 0) {
+          metaHtml += `<div class="metadata-item">
+            <label>Tags</label>
+            <p>${script.metadata.tags.map(t => `<span class="tag">${t}</span>`).join('')}</p>
+          </div>`;
+        }
+
+        if (script.metadata.thumbnailTextOptions && script.metadata.thumbnailTextOptions.length > 0) {
+          metaHtml += `<div class="metadata-item">
+            <label>Thumbnail Text Options</label>
+            <p>${script.metadata.thumbnailTextOptions.map(t => `<span class="tag" style="background: #fef3c7; color: #b45309;">${t}</span>`).join('')}</p>
+          </div>`;
+        }
+
+        if (script.metadata.shortsHook) {
+          metaHtml += `<div class="metadata-item" style="grid-column: 1 / -1;">
+            <label>YouTube Shorts Hook</label>
+            <p>${script.metadata.shortsHook}</p>
+          </div>`;
+        }
+
+        if (script.metadata.youtubeDescription) {
+          metaHtml += `<div class="metadata-item" style="grid-column: 1 / -1;">
+            <label>YouTube Description</label>
+            <p style="white-space: pre-wrap; font-size: 0.875rem;">${script.metadata.youtubeDescription}</p>
+          </div>`;
+        }
+
+        document.getElementById('metadata-grid').innerHTML = metaHtml;
+      }
+    }
+
+    // Format script text with directions
+    function formatScriptText(text) {
+      if (!text) return '';
+      return text
+        .replace(/\[([^\]]+)\]/g, '<span class="direction">[$1]</span>')
+        .replace(/\*\*([^*]+)\*\*/g, '<span class="emphasis">$1</span>');
+    }
+
+    // Copy section
+    function copySection(sectionId) {
+      const section = document.getElementById(`section-${sectionId}`);
+      if (section) {
+        const text = section.textContent;
+        navigator.clipboard.writeText(text);
+        showAlert('Copied to clipboard!', 'success');
+      }
+    }
+
+    // Copy full script
+    function copyFullScript() {
+      if (!generatedScript) return;
+
+      let fullText = `TITLE: ${generatedScript.title}\n\n`;
+      fullText += `HOOK [0:00-0:30]\n${generatedScript.hook}\n\n`;
+      fullText += `INTRO [0:30-1:30]\n${generatedScript.intro}\n\n`;
+
+      if (generatedScript.sections) {
+        generatedScript.sections.forEach((section, i) => {
+          fullText += `${section.heading} ${section.timestamp}\n${section.content}\n`;
+          if (section.retentionHook) {
+            fullText += `[RETENTION HOOK] ${section.retentionHook}\n`;
+          }
+          fullText += '\n';
+        });
+      }
+
+      fullText += `ACTIONABLE TAKEAWAY\n${generatedScript.actionableTakeaway}\n\n`;
+      fullText += `CTA\n${generatedScript.cta}\n\n`;
+      fullText += `OUTRO\n${generatedScript.outro}`;
+
+      navigator.clipboard.writeText(fullText);
+
+      const btn = document.getElementById('copy-all-btn');
+      btn.classList.add('copied');
+      btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = '<i class="fas fa-copy"></i> Copy All';
+      }, 2000);
+    }
+
+    // ========== PHASE 2: Blog & Social Generation ==========
+
+    let youtubeUrl = '';
+    let youtubeId = '';
+    let generatedBlog = null;
+    let generatedNewsletter = null;
+    let generatedSocial = null;
+
+    // Validate YouTube URL
+    function validateYouTubeUrl() {
+      const input = document.getElementById('youtube-url');
+      const url = input.value.trim();
+
+      const urlMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\s?]+)/);
+
+      if (urlMatch) {
+        youtubeUrl = url;
+        youtubeId = urlMatch[1];
+        input.style.borderColor = '#10B981';
+
+        // Enable generation buttons
+        document.getElementById('generate-blog-btn').disabled = false;
+        document.getElementById('generate-newsletter-btn').disabled = false;
+        document.getElementById('generate-social-btn').disabled = false;
+        document.getElementById('generate-all-btn').disabled = false;
+
+        showAlert(`Valid YouTube URL detected (ID: ${youtubeId})`, 'success');
+      } else {
+        input.style.borderColor = '#dc2626';
+        showAlert('Invalid YouTube URL. Please paste a valid YouTube video link.', 'error');
+      }
+    }
+
+    // Generate blog post
+    async function generateBlogPost() {
+      if (!generatedScript || !youtubeUrl) {
+        showAlert('Please generate a script and enter a YouTube URL first.', 'error');
+        return;
+      }
+
+      const loadingOverlay = document.getElementById('loading-overlay');
+      document.getElementById('loading-status').textContent = 'Generating blog post...';
+      loadingOverlay.classList.add('visible');
+
+      try {
+        const response = await fetch('/.netlify/functions/generate-blog', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: generatedScript.title,
+            youtubeUrl: youtubeUrl,
+            youtubeId: youtubeId,
+            script: generatedScript,
+            videoType: document.getElementById('video-type').value,
+            tags: generatedScript.metadata?.tags || []
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          generatedBlog = result;
+          displayBlogPost(result);
+          document.getElementById('blog-output-card').classList.add('visible');
+          showAlert('Blog post generated successfully!', 'success');
+        } else {
+          throw new Error(result.error || 'Generation failed');
+        }
+      } catch (error) {
+        showAlert(`Blog generation error: ${error.message}`, 'error');
+      } finally {
+        loadingOverlay.classList.remove('visible');
+      }
+    }
+
+    // Generate newsletter draft
+    async function generateNewsletterDraft() {
+      if (!generatedScript || !youtubeUrl) {
+        showAlert('Please generate a script and enter a YouTube URL first.', 'error');
+        return;
+      }
+
+      const loadingOverlay = document.getElementById('loading-overlay');
+      document.getElementById('loading-status').textContent = 'Generating newsletter draft...';
+      loadingOverlay.classList.add('visible');
+
+      try {
+        const response = await fetch('/.netlify/functions/generate-newsletter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: generatedScript.title,
+            youtubeUrl: youtubeUrl,
+            blog: generatedBlog,
+            script: generatedScript,
+            videoType: document.getElementById('video-type').value
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          generatedNewsletter = result.newsletter;
+          displayNewsletterDraft(result.newsletter);
+          document.getElementById('newsletter-output-card').classList.add('visible');
+          showAlert('Newsletter draft generated successfully!', 'success');
+        } else {
+          throw new Error(result.error || 'Generation failed');
+        }
+      } catch (error) {
+        showAlert(`Newsletter generation error: ${error.message}`, 'error');
+      } finally {
+        loadingOverlay.classList.remove('visible');
+      }
+    }
+
+    // Generate social content
+    async function generateSocialContent() {
+      if (!generatedScript || !youtubeUrl) {
+        showAlert('Please generate a script and enter a YouTube URL first.', 'error');
+        return;
+      }
+
+      const loadingOverlay = document.getElementById('loading-overlay');
+      document.getElementById('loading-status').textContent = 'Generating social media posts...';
+      loadingOverlay.classList.add('visible');
+
+      try {
+        const response = await fetch('/.netlify/functions/generate-social', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: generatedScript.title,
+            youtubeUrl: youtubeUrl,
+            script: generatedScript,
+            videoType: document.getElementById('video-type').value,
+            platforms: ['twitter', 'linkedin']
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          generatedSocial = result.platforms;
+          displaySocialContent(result.platforms);
+          document.getElementById('social-output-card').classList.add('visible');
+          showAlert('Social media posts generated successfully!', 'success');
+        } else {
+          throw new Error(result.error || 'Generation failed');
+        }
+      } catch (error) {
+        showAlert(`Social generation error: ${error.message}`, 'error');
+      } finally {
+        loadingOverlay.classList.remove('visible');
+      }
+    }
+
+    // Generate all content
+    async function generateAllContent() {
+      await generateBlogPost();
+      await generateNewsletterDraft();
+      await generateSocialContent();
+    }
+
+    // Display blog post
+    function displayBlogPost(blog) {
+      document.getElementById('blog-title').textContent = blog.frontmatter.title;
+      document.getElementById('blog-description').textContent = blog.frontmatter.description;
+
+      // Convert markdown to simple HTML for preview
+      const bodyHtml = blog.body
+        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/^\* (.*$)/gim, '<li>$1</li>')
+        .replace(/^\d+\. (.*$)/gim, '<li>$1</li>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/^/gm, '<p>')
+        .replace(/<\/p>$/gm, '</p>');
+
+      document.getElementById('blog-body').innerHTML = bodyHtml;
+    }
+
+    // Display newsletter draft
+    function displayNewsletterDraft(newsletter) {
+      document.getElementById('newsletter-title').textContent = newsletter.title || 'Newsletter Draft';
+      document.getElementById('newsletter-preview-text').textContent = newsletter.previewText || '';
+
+      const subjects = document.getElementById('newsletter-subjects');
+      subjects.innerHTML = '';
+      (newsletter.subjectLines || []).forEach(subject => {
+        const li = document.createElement('li');
+        li.textContent = subject;
+        subjects.appendChild(li);
+      });
+
+      const bodyHtml = (newsletter.body || '')
+        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/^\* (.*$)/gim, '<li>$1</li>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/^/gm, '<p>')
+        .replace(/<\/p>$/gm, '</p>');
+
+      document.getElementById('newsletter-body').innerHTML = bodyHtml;
+    }
+
+    // Display social content
+    function displaySocialContent(social) {
+      // Twitter
+      if (social.twitter) {
+        document.getElementById('twitter-text').textContent = social.twitter.text || '';
+        document.getElementById('twitter-hashtags').textContent = social.twitter.hashtags || '';
+        const twitterLen = (social.twitter.text || '').length;
+        document.getElementById('twitter-count').textContent = `${twitterLen} / 280 characters`;
+        document.getElementById('twitter-count').style.color = twitterLen > 280 ? '#dc2626' : '#94a3b8';
+      }
+
+      // LinkedIn
+      if (social.linkedin) {
+        document.getElementById('linkedin-text').textContent = social.linkedin.text || '';
+        document.getElementById('linkedin-hashtags').textContent = social.linkedin.hashtags || '';
+        document.getElementById('linkedin-count').textContent = `${(social.linkedin.text || '').length} characters`;
+      }
+
+      // Facebook
+      if (social.facebook) {
+        document.getElementById('facebook-text').textContent = social.facebook.text || '';
+        document.getElementById('facebook-count').textContent = `${(social.facebook.text || '').length} characters`;
+      }
+
+      // Instagram
+      if (social.instagram) {
+        document.getElementById('instagram-text').textContent = social.instagram.caption || '';
+        document.getElementById('instagram-hashtags').textContent = social.instagram.hashtags || '';
+        const igLen = (social.instagram.caption || '').length;
+        document.getElementById('instagram-count').textContent = `${igLen} / 2200 characters`;
+      }
+    }
+
+    // Switch social tab
+    function switchSocialTab(platform) {
+      // Update tabs
+      document.querySelectorAll('.social-tab').forEach(tab => tab.classList.remove('active'));
+      event.target.closest('.social-tab').classList.add('active');
+
+      // Update panels
+      document.querySelectorAll('.social-content-panel').forEach(panel => panel.classList.remove('active'));
+      document.getElementById(`social-${platform}`).classList.add('active');
+    }
+
+    // Copy social post
+    function copySocialPost(platform) {
+      if (!generatedSocial || !generatedSocial[platform]) return;
+
+      let text = '';
+      if (platform === 'instagram') {
+        text = generatedSocial[platform].caption + '\n\n' + (generatedSocial[platform].hashtags || '');
+      } else {
+        text = generatedSocial[platform].text + (generatedSocial[platform].hashtags ? '\n\n' + generatedSocial[platform].hashtags : '');
+      }
+
+      navigator.clipboard.writeText(text);
+      showAlert(`${platform.charAt(0).toUpperCase() + platform.slice(1)} post copied!`, 'success');
+    }
+
+    // Copy blog content
+    function copyBlogContent() {
+      if (!generatedBlog) return;
+      navigator.clipboard.writeText(generatedBlog.fullMarkdown);
+      showAlert('Blog markdown copied to clipboard!', 'success');
+    }
+
+    // Copy newsletter content
+    function copyNewsletterContent() {
+      if (!generatedNewsletter) return;
+
+      const subjectLines = (generatedNewsletter.subjectLines || [])
+        .map((subject, index) => `${index + 1}. ${subject}`)
+        .join('\n');
+      const text = [
+        'SUBJECT OPTIONS:',
+        subjectLines,
+        '',
+        `PREVIEW TEXT: ${generatedNewsletter.previewText || ''}`,
+        '',
+        generatedNewsletter.body || '',
+        generatedNewsletter.ps ? `\nP.S. ${generatedNewsletter.ps}` : ''
+      ].join('\n');
+
+      navigator.clipboard.writeText(text);
+      showAlert('Newsletter copied to clipboard!', 'success');
+    }
+
+    // Download blog file
+    function downloadBlogFile() {
+      if (!generatedBlog) return;
+
+      const blob = new Blob([generatedBlog.fullMarkdown], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = generatedBlog.filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      showAlert(`Downloaded ${generatedBlog.filename}`, 'success');
+    }
+  </script>
+</body>
+</html>

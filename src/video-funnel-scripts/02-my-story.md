@@ -1,6 +1,6 @@
 ---
 title: "Video 02: When I Almost Quit"
-series: "transformation"
+series: "school-bcba"
 published: true
 step: 2
 ---

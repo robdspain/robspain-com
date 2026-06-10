@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Engagement Hub | Rob Spain Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      min-height: 100vh;
+      color: #1e293b;
+    }
+
+    /* Header */
+    .admin-header {
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .admin-header h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .admin-header h1 i {
+      color: #10B981;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .back-link {
+      color: #64748b;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.875rem;
+    }
+
+    .back-link:hover {
+      color: #10B981;
+    }
+
+    /* Main Container */
+    .engagement-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* Sync Bar */
+    .sync-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding: 16px 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .sync-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #64748b;
+      font-size: 0.875rem;
+    }
+
+    .sync-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: #10B981;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .sync-btn:hover { background: #059669; }
+    .sync-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+    .sync-btn.syncing i { animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Platform Stats */
+    .platform-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .platform-stat {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 2px solid transparent;
+    }
+
+    .platform-stat:hover { border-color: #e2e8f0; }
+    .platform-stat.active { border-color: #10B981; background: #f0fdf4; }
+    .platform-stat.disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .platform-icon {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      font-size: 1.5rem;
+    }
+
+    .platform-stat.facebook .platform-icon { background: #e7f3ff; color: #1877f2; }
+    .platform-stat.instagram .platform-icon { background: #fce7eb; color: #e4405f; }
+    .platform-stat.twitter .platform-icon { background: #e8f5fd; color: #000; }
+    .platform-stat.linkedin .platform-icon { background: #e8f4fc; color: #0a66c2; }
+
+    .platform-info h3 {
+      font-size: 0.875rem;
+      color: #64748b;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .platform-count {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .unread-badge {
+      display: inline-block;
+      background: #ef4444;
+      color: white;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: 8px;
+      font-weight: 600;
+    }
+
+    .platform-note {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 8px 16px;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .filter-btn:hover { border-color: #10B981; color: #10B981; }
+    .filter-btn.active { background: #10B981; color: white; border-color: #10B981; }
+
+    .filter-count {
+      background: rgba(0,0,0,0.1);
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+    }
+
+    .filter-btn.active .filter-count {
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* Main Layout */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 24px;
+    }
+
+    /* Comments List */
+    .comments-list-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .comments-list {
+      max-height: calc(100vh - 380px);
+      overflow-y: auto;
+    }
+
+    .comment-item {
+      padding: 16px 20px;
+      border-bottom: 1px solid #f1f5f9;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .comment-item:hover { background: #f8fafc; }
+    .comment-item.selected { background: #f0fdf4; border-left: 3px solid #10B981; }
+    .comment-item.unread { background: #fefce8; }
+
+    .comment-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .comment-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: #64748b;
+      flex-shrink: 0;
+    }
+
+    .comment-avatar img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .comment-meta { flex: 1; }
+
+    .comment-author {
+      font-weight: 600;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .platform-badge {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    .platform-badge.facebook { background: #e7f3ff; color: #1877f2; }
+    .platform-badge.instagram { background: #fce7eb; color: #e4405f; }
+    .platform-badge.twitter { background: #e8f5fd; color: #000; }
+    .platform-badge.linkedin { background: #e8f4fc; color: #0a66c2; }
+
+    .comment-time {
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+
+    .comment-text {
+      color: #475569;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .comment-indicators {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .indicator {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: #f1f5f9;
+      color: #64748b;
+    }
+
+    .indicator.question { background: #fef3c7; color: #92400e; }
+    .indicator.replied { background: #dcfce7; color: #166534; }
+    .indicator.high-priority { background: #fee2e2; color: #dc2626; }
+
+    /* Reply Panel */
+    .reply-panel {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 20px;
+      position: sticky;
+      top: 24px;
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100vh - 200px);
+    }
+
+    .reply-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .reply-panel-header h3 {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .selected-comment {
+      padding: 16px;
+      background: #f8fafc;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      flex-shrink: 0;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .selected-comment .comment-header {
+      margin-bottom: 12px;
+    }
+
+    .selected-comment .full-text {
+      color: #1e293b;
+      line-height: 1.6;
+      font-size: 0.9375rem;
+    }
+
+    .selected-comment .post-link {
+      margin-top: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: #10B981;
+      text-decoration: none;
+    }
+
+    .selected-comment .post-link:hover {
+      text-decoration: underline;
+    }
+
+    .quick-replies {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-shrink: 0;
+    }
+
+    .quick-reply {
+      padding: 6px 12px;
+      background: #f1f5f9;
+      border: none;
+      border-radius: 16px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .quick-reply:hover { background: #e2e8f0; }
+
+    .reply-textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 0.9375rem;
+      resize: vertical;
+      margin-bottom: 12px;
+      font-family: inherit;
+      flex: 1;
+    }
+
+    .reply-textarea:focus {
+      outline: none;
+      border-color: #10B981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+
+    .char-count {
+      text-align: right;
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-bottom: 12px;
+    }
+
+    .reply-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .btn-action {
+      padding: 10px 14px;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.875rem;
+    }
+
+    .btn-action:hover { background: #f8fafc; border-color: #cbd5e1; }
+    .btn-action.flagged { background: #fef3c7; border-color: #f59e0b; color: #92400e; }
+
+    .btn-reply {
+      flex: 1;
+      padding: 12px;
+      background: #10B981;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-reply:hover { background: #059669; }
+    .btn-reply:disabled { background: #94a3b8; cursor: not-allowed; }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #94a3b8;
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .empty-state p {
+      margin-bottom: 8px;
+    }
+
+    /* Notification Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 14px 20px;
+      background: #1e293b;
+      color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 1000;
+      animation: slideIn 0.3s ease;
+    }
+
+    .toast.success { background: #10B981; }
+    .toast.error { background: #ef4444; }
+
+    @keyframes slideIn {
+      from { transform: translateY(100px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Loading Spinner */
+    .loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255,255,255,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #e2e8f0;
+      border-top-color: #10B981;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .platform-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .reply-panel {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-radius: 16px 16px 0 0;
+        max-height: 60vh;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+        z-index: 100;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+      }
+
+      .reply-panel.visible {
+        transform: translateY(0);
+      }
+
+      .comments-list {
+        max-height: calc(100vh - 450px);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .platform-stats {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .platform-stat {
+        padding: 12px;
+      }
+
+      .platform-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1.25rem;
+      }
+
+      .platform-count {
+        font-size: 1.25rem;
+      }
+
+      .engagement-container {
+        padding: 16px;
+      }
+
+      .sync-bar {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="admin-header">
+    <h1><i class="fas fa-comments"></i> Engagement Hub</h1>
+    <div class="header-actions">
+      <a href="/admin/" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Admin
+      </a>
+    </div>
+  </header>
+
+  <div class="engagement-container">
+    <!-- Sync Bar -->
+    <div class="sync-bar">
+      <div class="sync-info">
+        <i class="fas fa-clock"></i>
+        <span id="last-sync">Last synced: Never</span>
+      </div>
+      <button class="sync-btn" onclick="syncAllComments()" id="sync-btn">
+        <i class="fas fa-sync-alt"></i> Sync Comments
+      </button>
+    </div>
+
+    <!-- Platform Stats -->
+    <div class="platform-stats">
+      <div class="platform-stat facebook active" data-platform="all" onclick="filterByPlatform('all')">
+        <div class="platform-icon"><i class="fab fa-facebook-f"></i></div>
+        <div class="platform-info">
+          <h3>Facebook</h3>
+          <span class="platform-count" id="fb-count">0</span>
+          <span class="unread-badge" id="fb-unread" style="display:none;">0</span>
+        </div>
+      </div>
+      <div class="platform-stat instagram" data-platform="instagram" onclick="filterByPlatform('instagram')">
+        <div class="platform-icon"><i class="fab fa-instagram"></i></div>
+        <div class="platform-info">
+          <h3>Instagram</h3>
+          <span class="platform-count" id="ig-count">0</span>
+          <span class="unread-badge" id="ig-unread" style="display:none;">0</span>
+        </div>
+      </div>
+      <div class="platform-stat twitter disabled" data-platform="twitter">
+        <div class="platform-icon"><i class="fab fa-x-twitter"></i></div>
+        <div class="platform-info">
+          <h3>Twitter/X</h3>
+          <span class="platform-count">-</span>
+          <p class="platform-note">Requires Basic tier ($100/mo)</p>
+        </div>
+      </div>
+      <div class="platform-stat linkedin disabled" data-platform="linkedin">
+        <div class="platform-icon"><i class="fab fa-linkedin-in"></i></div>
+        <div class="platform-info">
+          <h3>LinkedIn</h3>
+          <span class="platform-count">-</span>
+          <p class="platform-note">Requires Partner Program</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <button class="filter-btn active" data-filter="all">
+        All <span class="filter-count" id="count-all">0</span>
+      </button>
+      <button class="filter-btn" data-filter="unread">
+        <i class="fas fa-circle" style="font-size: 0.5rem; color: #f59e0b;"></i>
+        Unread <span class="filter-count" id="count-unread">0</span>
+      </button>
+      <button class="filter-btn" data-filter="questions">
+        <i class="fas fa-question-circle"></i>
+        Questions <span class="filter-count" id="count-questions">0</span>
+      </button>
+      <button class="filter-btn" data-filter="replied">
+        <i class="fas fa-check-circle"></i>
+        Replied <span class="filter-count" id="count-replied">0</span>
+      </button>
+      <button class="filter-btn" data-filter="flagged">
+        <i class="fas fa-flag"></i>
+        Flagged <span class="filter-count" id="count-flagged">0</span>
+      </button>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="main-layout">
+      <!-- Comments List -->
+      <div class="comments-list-container">
+        <div class="comments-list" id="comments-list">
+          <div class="empty-state" id="empty-state">
+            <i class="fas fa-inbox"></i>
+            <p>No comments yet</p>
+            <p style="font-size: 0.875rem;">Click "Sync Comments" to fetch the latest from Facebook and Instagram</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reply Panel -->
+      <div class="reply-panel" id="reply-panel">
+        <div class="reply-panel-header">
+          <h3>Reply to Comment</h3>
+          <button class="btn-action" onclick="closeReplyPanel()" title="Close">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="selected-comment" id="selected-comment">
+          <p style="color: #94a3b8; font-style: italic;">Select a comment from the list to reply...</p>
+        </div>
+
+        <div class="quick-replies">
+          <button class="quick-reply" onclick="insertQuickReply('Thanks for watching! ')">Thanks!</button>
+          <button class="quick-reply" onclick="insertQuickReply('Great question! ')">Great question!</button>
+          <button class="quick-reply" onclick="insertQuickReply('Check out the link in my bio for more resources.')">Link in bio</button>
+          <button class="quick-reply" onclick="insertQuickReply('I cover this in more detail in another video - ')">More in video</button>
+        </div>
+
+        <textarea
+          class="reply-textarea"
+          id="reply-text"
+          placeholder="Write your reply..."
+          oninput="updateCharCount()"
+        ></textarea>
+
+        <div class="char-count" id="char-count">0 characters</div>
+
+        <div class="reply-actions">
+          <button class="btn-action" onclick="markAsRead()" title="Mark as Read" id="btn-mark-read">
+            <i class="fas fa-check"></i>
+          </button>
+          <button class="btn-action" onclick="toggleFlag()" title="Flag for Later" id="btn-flag">
+            <i class="fas fa-flag"></i>
+          </button>
+          <button class="btn-action" onclick="viewOnPlatform()" title="View on Platform" id="btn-view">
+            <i class="fas fa-external-link-alt"></i>
+          </button>
+          <button class="btn-reply" id="send-reply-btn" onclick="sendReply()" disabled>
+            <i class="fas fa-paper-plane"></i> Send Reply
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State
+    let allComments = [];
+    let filteredComments = [];
+    let selectedComment = null;
+    let currentFilter = 'all';
+    let currentPlatform = 'all';
+    let commentStatuses = {}; // Persisted read/replied/flagged status
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCommentStatuses();
+      loadComments();
+      setupFilterButtons();
+    });
+
+    // Load persisted statuses from localStorage
+    function loadCommentStatuses() {
+      try {
+        const saved = localStorage.getItem('commentStatuses');
+        if (saved) {
+          commentStatuses = JSON.parse(saved);
+        }
+      } catch (e) {
+        console.error('Failed to load comment statuses:', e);
+      }
+    }
+
+    // Save statuses to localStorage
+    function saveCommentStatuses() {
+      try {
+        localStorage.setItem('commentStatuses', JSON.stringify(commentStatuses));
+      } catch (e) {
+        console.error('Failed to save comment statuses:', e);
+      }
+    }
+
+    // Load comments from API
+    async function loadComments() {
+      try {
+        const response = await fetch('/.netlify/functions/get-comments');
+        const data = await response.json();
+
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        allComments = (data.comments || []).map(c => ({
+          ...c,
+          status: commentStatuses[c._id]?.status || c.status || 'unread'
+        }));
+
+        updateCounts(data.counts);
+        applyFilters();
+        updateLastSync();
+
+      } catch (error) {
+        console.error('Failed to load comments:', error);
+        showToast('Failed to load comments: ' + error.message, 'error');
+      }
+    }
+
+    // Sync comments from platforms
+    async function syncAllComments() {
+      const btn = document.getElementById('sync-btn');
+      btn.classList.add('syncing');
+      btn.disabled = true;
+
+      try {
+        // Sync Facebook and Instagram in parallel
+        const results = await Promise.allSettled([
+          fetch('/.netlify/functions/fetch-fb-comments', { method: 'POST' }),
+          fetch('/.netlify/functions/fetch-ig-comments', { method: 'POST' })
+        ]);
+
+        // Check for errors
+        const errors = results
+          .filter(r => r.status === 'rejected')
+          .map(r => r.reason.message);
+
+        if (errors.length > 0) {
+          console.error('Sync errors:', errors);
+        }
+
+        // Reload comments
+        await loadComments();
+        showToast('Comments synced successfully!', 'success');
+
+      } catch (error) {
+        showToast('Sync failed: ' + error.message, 'error');
+      } finally {
+        btn.classList.remove('syncing');
+        btn.disabled = false;
+      }
+    }
+
+    // Update platform counts
+    function updateCounts(counts) {
+      document.getElementById('fb-count').textContent = counts?.facebook?.total || 0;
+      document.getElementById('ig-count').textContent = counts?.instagram?.total || 0;
+
+      updateUnreadBadge('fb', counts?.facebook?.unread);
+      updateUnreadBadge('ig', counts?.instagram?.unread);
+
+      // Update filter counts
+      updateFilterCounts();
+    }
+
+    function updateUnreadBadge(prefix, count) {
+      const badge = document.getElementById(`${prefix}-unread`);
+      if (count > 0) {
+        badge.textContent = count;
+        badge.style.display = 'inline';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    function updateFilterCounts() {
+      const total = allComments.length;
+      const unread = allComments.filter(c => c.status === 'unread').length;
+      const questions = allComments.filter(c => c.isQuestion).length;
+      const replied = allComments.filter(c => c.status === 'replied').length;
+      const flagged = allComments.filter(c => c.status === 'flagged').length;
+
+      document.getElementById('count-all').textContent = total;
+      document.getElementById('count-unread').textContent = unread;
+      document.getElementById('count-questions').textContent = questions;
+      document.getElementById('count-replied').textContent = replied;
+      document.getElementById('count-flagged').textContent = flagged;
+    }
+
+    function updateLastSync() {
+      const el = document.getElementById('last-sync');
+      el.textContent = `Last synced: ${new Date().toLocaleTimeString()}`;
+    }
+
+    // Apply filters and render
+    function applyFilters() {
+      filteredComments = allComments.filter(c => {
+        // Platform filter
+        if (currentPlatform !== 'all' && c.platform !== currentPlatform) return false;
+
+        // Status filter
+        switch (currentFilter) {
+          case 'unread': return c.status === 'unread';
+          case 'questions': return c.isQuestion;
+          case 'replied': return c.status === 'replied';
+          case 'flagged': return c.status === 'flagged';
+          default: return true;
+        }
+      });
+
+      renderComments();
+      updateFilterCounts();
+    }
+
+    // Render comments list
+    function renderComments() {
+      const list = document.getElementById('comments-list');
+      const empty = document.getElementById('empty-state');
+
+      if (filteredComments.length === 0) {
+        list.innerHTML = '';
+        list.appendChild(empty);
+        empty.style.display = 'block';
+        return;
+      }
+
+      empty.style.display = 'none';
+
+      list.innerHTML = filteredComments.map(c => `
+        <div class="comment-item ${c.status === 'unread' ? 'unread' : ''} ${selectedComment?._id === c._id ? 'selected' : ''}"
+             onclick="selectComment('${c._id}')"
+             data-id="${c._id}">
+          <div class="comment-header">
+            <div class="comment-avatar">
+              ${c.authorAvatarUrl
+                ? `<img src="${c.authorAvatarUrl}" alt="${c.authorName}" loading="lazy">`
+                : c.authorName.charAt(0).toUpperCase()}
+            </div>
+            <div class="comment-meta">
+              <div class="comment-author">
+                ${escapeHtml(c.authorName)}
+                <span class="platform-badge ${c.platform}">${c.platform}</span>
+              </div>
+              <div class="comment-time">${formatTime(c.createdAt)}</div>
+            </div>
+          </div>
+          <p class="comment-text">${escapeHtml(c.text)}</p>
+          <div class="comment-indicators">
+            ${c.isQuestion ? '<span class="indicator question"><i class="fas fa-question-circle"></i> Question</span>' : ''}
+            ${c.status === 'replied' ? '<span class="indicator replied"><i class="fas fa-check"></i> Replied</span>' : ''}
+            ${c.status === 'flagged' ? '<span class="indicator high-priority"><i class="fas fa-flag"></i> Flagged</span>' : ''}
+            ${c.likeCount > 0 ? `<span class="indicator"><i class="fas fa-heart"></i> ${c.likeCount}</span>` : ''}
+            ${c.replyCount > 0 ? `<span class="indicator"><i class="fas fa-comment"></i> ${c.replyCount}</span>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Select a comment
+    function selectComment(id) {
+      selectedComment = allComments.find(c => c._id === id);
+
+      if (!selectedComment) return;
+
+      // Update UI
+      renderComments();
+
+      // Update selected comment panel
+      const panel = document.getElementById('selected-comment');
+      panel.innerHTML = `
+        <div class="comment-header">
+          <div class="comment-avatar">
+            ${selectedComment.authorAvatarUrl
+              ? `<img src="${selectedComment.authorAvatarUrl}" alt="${selectedComment.authorName}">`
+              : selectedComment.authorName.charAt(0).toUpperCase()}
+          </div>
+          <div class="comment-meta">
+            <div class="comment-author">
+              ${escapeHtml(selectedComment.authorName)}
+              <span class="platform-badge ${selectedComment.platform}">${selectedComment.platform}</span>
+            </div>
+            <div class="comment-time">${formatTime(selectedComment.createdAt)}</div>
+          </div>
+        </div>
+        <p class="full-text">${escapeHtml(selectedComment.text)}</p>
+        ${selectedComment.postUrl ? `
+          <a href="${selectedComment.postUrl}" target="_blank" class="post-link">
+            <i class="fas fa-external-link-alt"></i> View original post
+          </a>
+        ` : ''}
+      `;
+
+      // Enable reply button
+      document.getElementById('send-reply-btn').disabled = false;
+      document.getElementById('reply-text').focus();
+
+      // Update flag button state
+      const flagBtn = document.getElementById('btn-flag');
+      if (selectedComment.status === 'flagged') {
+        flagBtn.classList.add('flagged');
+      } else {
+        flagBtn.classList.remove('flagged');
+      }
+
+      // Show panel on mobile
+      document.getElementById('reply-panel').classList.add('visible');
+    }
+
+    // Send reply
+    async function sendReply() {
+      if (!selectedComment) return;
+
+      const replyText = document.getElementById('reply-text').value.trim();
+      if (!replyText) {
+        showToast('Please enter a reply', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('send-reply-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+      try {
+        const response = await fetch('/.netlify/functions/reply-to-comment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            platform: selectedComment.platform,
+            platformCommentId: selectedComment.platformCommentId,
+            replyText
+          })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || 'Failed to send reply');
+        }
+
+        // Update status
+        updateCommentStatus(selectedComment._id, 'replied');
+
+        showToast('Reply sent successfully!', 'success');
+        document.getElementById('reply-text').value = '';
+        updateCharCount();
+
+      } catch (error) {
+        showToast('Failed: ' + error.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Reply';
+      }
+    }
+
+    // Insert quick reply
+    function insertQuickReply(text) {
+      const textarea = document.getElementById('reply-text');
+      textarea.value += text;
+      textarea.focus();
+      updateCharCount();
+    }
+
+    // Update character count
+    function updateCharCount() {
+      const count = document.getElementById('reply-text').value.length;
+      document.getElementById('char-count').textContent = `${count} characters`;
+    }
+
+    // Mark as read
+    function markAsRead() {
+      if (!selectedComment) return;
+      updateCommentStatus(selectedComment._id, 'read');
+      showToast('Marked as read', 'success');
+    }
+
+    // Toggle flag
+    function toggleFlag() {
+      if (!selectedComment) return;
+      const newStatus = selectedComment.status === 'flagged' ? 'read' : 'flagged';
+      updateCommentStatus(selectedComment._id, newStatus);
+
+      const flagBtn = document.getElementById('btn-flag');
+      if (newStatus === 'flagged') {
+        flagBtn.classList.add('flagged');
+        showToast('Comment flagged', 'success');
+      } else {
+        flagBtn.classList.remove('flagged');
+        showToast('Flag removed', 'success');
+      }
+    }
+
+    // View on platform
+    function viewOnPlatform() {
+      if (!selectedComment?.postUrl) {
+        showToast('No link available', 'error');
+        return;
+      }
+      window.open(selectedComment.postUrl, '_blank');
+    }
+
+    // Update comment status
+    function updateCommentStatus(id, status) {
+      // Update in memory
+      const comment = allComments.find(c => c._id === id);
+      if (comment) {
+        comment.status = status;
+      }
+      if (selectedComment?._id === id) {
+        selectedComment.status = status;
+      }
+
+      // Persist to localStorage
+      commentStatuses[id] = { status, updatedAt: Date.now() };
+      saveCommentStatuses();
+
+      // Re-render
+      applyFilters();
+    }
+
+    // Filter by platform
+    function filterByPlatform(platform) {
+      if (platform === 'twitter' || platform === 'linkedin') return;
+
+      currentPlatform = platform;
+
+      document.querySelectorAll('.platform-stat').forEach(el => {
+        el.classList.toggle('active', el.dataset.platform === platform);
+      });
+
+      applyFilters();
+    }
+
+    // Setup filter buttons
+    function setupFilterButtons() {
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentFilter = btn.dataset.filter;
+          applyFilters();
+        });
+      });
+    }
+
+    // Close reply panel (mobile)
+    function closeReplyPanel() {
+      document.getElementById('reply-panel').classList.remove('visible');
+      selectedComment = null;
+      renderComments();
+      document.getElementById('selected-comment').innerHTML =
+        '<p style="color: #94a3b8; font-style: italic;">Select a comment from the list to reply...</p>';
+      document.getElementById('reply-text').value = '';
+      document.getElementById('send-reply-btn').disabled = true;
+    }
+
+    // Utility: Format time
+    function formatTime(timestamp) {
+      const diff = Date.now() - timestamp;
+      const minutes = Math.floor(diff / 60000);
+      if (minutes < 1) return 'Just now';
+      if (minutes < 60) return `${minutes}m ago`;
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return `${hours}h ago`;
+      const days = Math.floor(hours / 24);
+      if (days < 7) return `${days}d ago`;
+      return new Date(timestamp).toLocaleDateString();
+    }
+
+    // Utility: Escape HTML
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Utility: Show toast
+    function showToast(message, type = 'success') {
+      // Remove existing toasts
+      document.querySelectorAll('.toast').forEach(t => t.remove());
+
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+        ${escapeHtml(message)}
+      `;
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(20px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      // Escape to close reply panel
+      if (e.key === 'Escape') {
+        closeReplyPanel();
+      }
+
+      // Cmd/Ctrl + Enter to send reply
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        if (selectedComment && document.getElementById('reply-text').value.trim()) {
+          sendReply();
+        }
+      }
+    });
+  </script>
+</body>
+</html>

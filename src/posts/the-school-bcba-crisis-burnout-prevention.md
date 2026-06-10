@@ -1,9 +1,9 @@
 ---
 layout: post.njk
-title: "The School BCBA Crisis: Why 70% of Behavior Analysts Burn Out Within 3 Years"
+title: "The School BCBA Crisis: Why So Many Behavior Analysts Burn Out"
 date: 2025-01-18
 image: /public/images/uploads/9be7bd5d-ed9b-4ab6-bed7-9912fcad4a42.png
-description: Discover why school-based BCBAs face unprecedented burnout rates
+description: Discover why BCBAs in schools face unprecedented burnout rates
   and learn systematic approaches to transform from crisis manager to systems
   leader.
 tags:
@@ -12,7 +12,7 @@ tags:
   - systems-thinking
   - behavior-analysis
 ---
-The statistics are alarming: **70% of school-based BCBAs leave their positions within three years**. As someone who has worked in school systems for over 20 years, I've seen this pattern repeat itself across districts, states, and even countries.
+The statistics are alarming: **research shows that over 72% of behavior analysts report medium to high levels of burnout**, and turnover in school-based positions remains a persistent concern. As someone who has worked in school systems for over 20 years, I've seen this pattern repeat itself across districts, states, and even countries.
 
 But here's what most concerning: **we're treating burnout as an individual problem rather than a systems issue**.
 
@@ -22,7 +22,7 @@ When I started as a school BCBA in 2011, I thought the challenge was mastering b
 
 Consider these realities I've witnessed hundreds of times:
 
-* **Reactive caseloads**: Spending 80% of time crisis management instead of prevention
+* **Reactive caseloads**: Spending most of the day in crisis management instead of prevention
 * **Implementation gaps**: Writing excellent behavior plans that teachers can't or won't implement  
 * **Ethical conflicts**: Pressure from administration to bend compliance standards
 * **Isolation**: Being the only behavior analyst in a district of 5,000 students
@@ -70,9 +70,9 @@ School BCBAs must lead systems, not just serve them:
 
 Research consistently shows that systems-level approaches outperform individual interventions:
 
-* **Tier 2 interventions reduce special education referrals by 30%** (Sugai & Simonsen, 2012)
-* **Teacher training programs improve implementation fidelity by 65%** (Stormont et al., 2015)
-* **School-wide PBIS reduces office discipline referrals by 20-60%** (Bradshaw et al., 2010)
+* **School-wide PBIS can reduce office discipline referrals** (Bradshaw et al., 2010)
+* **72% of BCBAs and RBTs report medium to high levels of burnout** (Plantiveau et al., 2018)
+* **Systems-level PBIS implementation improves student outcomes** when sustained with fidelity across tiers (Sugai & Simonsen, 2012)
 
 ## The Future of School-Based Behavior Analysis
 
@@ -97,12 +97,12 @@ Systems change starts with you. This week, I challenge you to:
 
 - - -
 
-*What's your biggest challenge as a school BCBA? Share in the comments, and let's build solutions together.*
+*What's your biggest challenge as a school BCBA? I'd love to hear from you — [reach out on LinkedIn](https://www.linkedin.com/in/robspain/) or through [Behavior School](https://behaviorschool.com/community).*
 
 - - -
 
 **References:**
 
-* Bradshaw, C. P., Mitchell, M. M., & Leaf, P. J. (2010). Examining the effects of schoolwide positive behavioral interventions and supports on student outcomes. *Journal of Positive Behavior Interventions, 12*(3), 133-148.
-* Stormont, M., Reinke, W. M., Herman, K. C., & Lembke, E. S. (2015). Teachers' sense of efficacy and beliefs about classroom management. *Teaching and Teacher Education, 45*, 129-136.
-* Sugai, G., & Simonsen, B. (2012). Positive behavioral interventions and supports: History, defining features, and misconceptions. *PBIS Newsletter, 4*(1), 4-10.
+* Bradshaw, C. P., Mitchell, M. M., & Leaf, P. J. (2010). Examining the effects of schoolwide positive behavioral interventions and supports on student outcomes: Results from a randomized controlled effectiveness trial in elementary schools. *Journal of Positive Behavior Interventions, 12*(3), 133–148. https://doi.org/10.1177/1098300709334798
+* Plantiveau, C., Dounavi, K., & Virués-Ortega, J. (2018). High levels of burnout among early-career board-certified behavior analysts with low collegial support in the work environment. *European Journal of Behavior Analysis, 19*(2), 195–207. https://doi.org/10.1080/15021149.2018.1438339
+* Sugai, G., & Simonsen, B. (2012). Positive behavioral interventions and supports: History, defining features, and misconceptions. Center on PBIS. https://www.pbis.org/resource/positive-behavioral-interventions-and-supports-history-defining-features-and-misconceptions

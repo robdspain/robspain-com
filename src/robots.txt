@@ -16,10 +16,11 @@ Sitemap: https://robspain.com/sitemap.xml
 
 # Allow all search engines to crawl the site
 # Priority pages for crawling
-Allow: /index.html
-Allow: /cv.html
-Allow: /privacy.html
-Allow: /terms.html
+Allow: /
+Allow: /blog/
+Allow: /cv/
+Allow: /privacy/
+Allow: /terms/
 
 # Allow images and assets
 Allow: /public/images/
@@ -27,6 +28,8 @@ Allow: /*.css
 Allow: /*.js
 
 # Block sensitive areas (if any)
+Disallow: /admin/
+Disallow: /.netlify/
 Disallow: /.claude/
 Disallow: /private/
 

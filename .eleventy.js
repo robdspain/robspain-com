@@ -1,12 +1,30 @@
 // YouTube Embed Plugin with Lite mode for better performance
 const embedYouTube = require("eleventy-plugin-youtube-embed");
-const Image = require("@11ty/eleventy-img");
 const path = require("path");
+const fs = require("fs");
+const matter = require("gray-matter");
+
+const DEFAULT_BLOG_IMAGE = "/public/images/blog-default.png";
+let Image;
+
+function escapeAttribute(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
 
 // Async image optimization function
 async function imageShortcode(src, alt, sizes = "100vw", widths = [400, 800, 1200]) {
   // Handle empty/null images
-  if (!src) return "";
+  if (!src) src = DEFAULT_BLOG_IMAGE;
+
+  if (src.endsWith(".svg") || process.env.SKIP_IMAGE_OPTIMIZATION === "true") {
+    return `<img src="${escapeAttribute(src)}" alt="${escapeAttribute(alt)}" loading="lazy" decoding="async">`;
+  }
+
+  Image ||= require("@11ty/eleventy-img");
 
   // Resolve the image path
   let inputPath = src;
@@ -27,9 +45,9 @@ async function imageShortcode(src, alt, sizes = "100vw", widths = [400, 800, 120
       }
     });
   } catch (e) {
-    // If image processing fails, return original img tag
+    // Keep builds resilient when CMS content references a missing upload.
     console.warn(`Image processing failed for ${src}: ${e.message}`);
-    return `<img src="${src}" alt="${alt || ''}" loading="lazy">`;
+    return `<img src="${DEFAULT_BLOG_IMAGE}" alt="${escapeAttribute(alt)}" loading="lazy" decoding="async">`;
   }
 
   let imageAttributes = {
@@ -42,7 +60,17 @@ async function imageShortcode(src, alt, sizes = "100vw", widths = [400, 800, 120
   return Image.generateHTML(metadata, imageAttributes);
 }
 
+function plainImageShortcode(src, alt) {
+  if (!src) src = DEFAULT_BLOG_IMAGE;
+  return `<img src="${escapeAttribute(src)}" alt="${escapeAttribute(alt)}" loading="lazy" decoding="async">`;
+}
+
 module.exports = function(eleventyConfig) {
+  // Ignore video scripts - these are for CMS editing only, never published
+  eleventyConfig.ignores.add("src/video-funnel-scripts/**");
+  // Ignore the archived duplicate homepage so crawlers only see the canonical home page.
+  eleventyConfig.ignores.add("src/index 2.html");
+
   // Pass-through copies for static assets
   eleventyConfig.addPassthroughCopy("src/public");
   eleventyConfig.addPassthroughCopy("src/*.css");
@@ -50,23 +78,30 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy("src/admin");
   eleventyConfig.addPassthroughCopy("src/_headers");
   eleventyConfig.addPassthroughCopy("src/robots.txt");
-  eleventyConfig.addPassthroughCopy("src/sitemap.xml");
 
   // Image optimization shortcode - converts to WebP with responsive sizes
-  eleventyConfig.addNunjucksAsyncShortcode("image", imageShortcode);
-  eleventyConfig.addLiquidShortcode("image", imageShortcode);
-  eleventyConfig.addJavaScriptFunction("image", imageShortcode);
+  if (process.env.SKIP_IMAGE_OPTIMIZATION === "true") {
+    eleventyConfig.addNunjucksShortcode("image", plainImageShortcode);
+    eleventyConfig.addLiquidShortcode("image", plainImageShortcode);
+    eleventyConfig.addJavaScriptFunction("image", plainImageShortcode);
+  } else {
+    eleventyConfig.addNunjucksAsyncShortcode("image", imageShortcode);
+    eleventyConfig.addLiquidShortcode("image", imageShortcode);
+    eleventyConfig.addJavaScriptFunction("image", imageShortcode);
+  }
 
   // YouTube Embed Plugin - Lite mode for faster page loads
   // Lazy-loads iframe only when user clicks, uses youtube-nocookie.com for privacy
-  eleventyConfig.addPlugin(embedYouTube, {
-    lite: {
-      css: { enabled: true },
-      js: { enabled: true }
-    },
-    modestBranding: true,
-    recommendSelfOnly: true
-  });
+  if (process.env.SKIP_YOUTUBE_EMBED_PLUGIN !== "true") {
+    eleventyConfig.addPlugin(embedYouTube, {
+      lite: {
+        css: { enabled: true },
+        js: { enabled: true }
+      },
+      modestBranding: true,
+      recommendSelfOnly: true
+    });
+  }
 
   // Reading Time Filter
   eleventyConfig.addFilter("readingTime", function(content) {
@@ -80,6 +115,36 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addFilter("rssDate", function(date) {
     if (!date) return "";
     return new Date(date).toUTCString();
+  });
+
+  // Friendly Date Filter
+  eleventyConfig.addFilter("friendlyDate", function(date) {
+    if (!date) return "";
+    const d = new Date(date);
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+  });
+
+  eleventyConfig.addFilter("absoluteUrl", function(url) {
+    if (!url) return "https://robspain.com";
+    if (/^https?:\/\//.test(url)) return url;
+    return `https://robspain.com${url.startsWith("/") ? "" : "/"}${url}`;
+  });
+
+  eleventyConfig.addFilter("postImage", function(image) {
+    return image || DEFAULT_BLOG_IMAGE;
+  });
+
+  eleventyConfig.addFilter("imageMime", function(image) {
+    const src = image || DEFAULT_BLOG_IMAGE;
+    if (src.endsWith(".svg")) return "image/svg+xml";
+    if (src.endsWith(".webp")) return "image/webp";
+    if (src.endsWith(".png")) return "image/png";
+    return "image/jpeg";
+  });
+
+  eleventyConfig.addFilter("json", function(value) {
+    return JSON.stringify(value);
   });
 
   // Custom Markdown Settings
@@ -102,8 +167,21 @@ module.exports = function(eleventyConfig) {
   });
 
   // Published Video Scripts Collection
-  eleventyConfig.addCollection("published_scripts", function(collectionApi) {
-    return collectionApi.getFilteredByGlob("src/video-funnel-scripts/*.md")
+  eleventyConfig.addCollection("published_scripts", function() {
+    const scriptsDir = path.join(__dirname, "src", "video-funnel-scripts");
+    if (!fs.existsSync(scriptsDir)) return [];
+
+    return fs.readdirSync(scriptsDir)
+      .filter(file => file.endsWith(".md"))
+      .map(file => {
+        const filePath = path.join(scriptsDir, file);
+        const parsed = matter(fs.readFileSync(filePath, "utf8"));
+        return {
+          inputPath: filePath,
+          data: parsed.data,
+          templateContent: markdownIt.render(parsed.content)
+        };
+      })
       .filter(item => item.data.published === true)
       .sort((a, b) => a.data.step - b.data.step);
   });
@@ -119,6 +197,20 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addCollection("allPosts", function(collectionApi) {
     return collectionApi.getFilteredByGlob("src/posts/*.md")
       .sort((a, b) => b.date - a.date);
+  });
+
+  // Published YouTube Content Collection (status = "published")
+  eleventyConfig.addCollection("youtube_videos", function(collectionApi) {
+    return collectionApi.getFilteredByGlob("src/youtube-content/*.md")
+      .filter(item => item.data.status === "published")
+      .sort((a, b) => new Date(b.data.date) - new Date(a.data.date))
+      .slice(0, 10); // Latest 10 videos
+  });
+
+  // All YouTube Content (for admin)
+  eleventyConfig.addCollection("all_youtube", function(collectionApi) {
+    return collectionApi.getFilteredByGlob("src/youtube-content/*.md")
+      .sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
   });
 
   return {

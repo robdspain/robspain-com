@@ -6,7 +6,7 @@ eleventyExcludeFromCollections: true
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Rob Spain, BCBA - School BCBA Blog</title>
-    <link>https://robspain.com/blog.html</link>
+    <link>https://robspain.com/blog/</link>
     <description>Insights, strategies, and systematic approaches for school-based behavior analysis from Rob Spain, BCBA.</description>
     <language>en-us</language>
     {% set lastPost = collections.posts | last %}
@@ -17,7 +17,7 @@ eleventyExcludeFromCollections: true
     <image>
       <url>https://robspain.com/public/images/profile-Rob.png</url>
       <title>Rob Spain, BCBA - School BCBA Blog</title>
-      <link>https://robspain.com/blog.html</link>
+      <link>https://robspain.com/blog/</link>
     </image>
     {% for post in collections.posts | reverse %}
     <item>
@@ -26,9 +26,7 @@ eleventyExcludeFromCollections: true
       <guid isPermaLink="true">https://robspain.com{{ post.url }}</guid>
       <pubDate>{{ post.date | rssDate }}</pubDate>
       <description>{{ post.data.description | escape }}</description>
-      {% if post.data.image %}
-      <enclosure url="https://robspain.com{{ post.data.image }}" type="image/jpeg"/>
-      {% endif %}
+      <enclosure url="{{ post.data.image | postImage | absoluteUrl }}" type="{{ post.data.image | postImage | imageMime }}"/>
       <author>rob@robspain.com (Rob Spain)</author>
     </item>
     {% endfor %}

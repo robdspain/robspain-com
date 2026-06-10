@@ -1,0 +1,31 @@
+---
+permalink: /sitemap.xml
+eleventyExcludeFromCollections: true
+---
+<?xml version="1.0" encoding="utf-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  {% for page in collections.all %}
+    {% if not page.data.eleventyExcludeFromCollections and page.url and page.url != "/404/" and page.url.indexOf("/admin/") != 0 %}
+    <url>
+      <loc>https://robspain.com{{ page.url | url }}</loc>
+      <lastmod>{{ page.date.toISOString() }}</lastmod>
+      {% if page.url == "/" %}
+      <changefreq>weekly</changefreq>
+      <priority>1.0</priority>
+      {% elif page.url == "/blog/" %}
+      <changefreq>weekly</changefreq>
+      <priority>0.9</priority>
+      {% elif page.url.indexOf("/blog/") == 0 or page.url.indexOf("/posts/") == 0 %}
+      <changefreq>monthly</changefreq>
+      <priority>0.8</priority>
+      {% elif page.url == "/cv/" %}
+      <changefreq>monthly</changefreq>
+      <priority>0.7</priority>
+      {% else %}
+      <changefreq>{{ page.data.changeFreq | default("monthly") }}</changefreq>
+      <priority>{{ page.data.priority | default(0.5) }}</priority>
+      {% endif %}
+    </url>
+    {% endif %}
+  {% endfor %}
+</urlset>

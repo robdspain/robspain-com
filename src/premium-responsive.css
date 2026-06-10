@@ -301,8 +301,7 @@
 
 /* High DPI Display Optimization */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    .hero-image-premium,
-    .ace-logo {
+    .hero-image-premium {
         image-rendering: -webkit-optimize-contrast;
         image-rendering: crisp-edges;
     }

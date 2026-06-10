@@ -1,6 +1,6 @@
 ---
 title: "Video 10: Your Invitation"
-series: "transformation"
+series: "school-bcba"
 published: true
 step: 10
 ---

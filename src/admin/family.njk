@@ -1,7 +1,7 @@
 ---
 layout: base.njk
-title: Household Finance Dashboard - Rob Spain
-permalink: /admin/finance/
+title: Family & Finance Command Center - Rob Spain
+permalink: /admin/family/
 ---
 
 <style>
@@ -157,9 +157,16 @@ permalink: /admin/finance/
 </style>
 
 <div class="fin-dash">
-  <div class="fin-header">
-    <h2>Household Finance</h2>
-    <span class="updated" id="lastUpdated">Updated: loading...</span>
+  <div class="fin-header" style="flex-direction: column; align-items: flex-start; gap: 12px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 8px;">
+      <h2>Family &amp; Finance Command Center</h2>
+      <span class="updated" id="lastUpdated">Updated: loading...</span>
+    </div>
+    <div class="family-quick-links" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
+      <a href="/admin/home/" class="fin-tab" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 12px;"><i class="fas fa-house-signal"></i> Home Command</a>
+      <a href="/admin/court-compliance/" class="fin-tab" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 12px;"><i class="fas fa-clipboard-check"></i> Custody Tracker</a>
+      <a href="/admin/home-search/" class="fin-tab" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 12px;"><i class="fas fa-home"></i> Home Search</a>
+    </div>
   </div>
 
   <!-- Tab Navigation -->

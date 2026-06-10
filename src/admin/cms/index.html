@@ -26,27 +26,39 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 2.5rem;
       font-weight: 800;
-      color: #059669;
+      color: #0f766e;
       margin-bottom: 2rem;
       text-align: center;
       letter-spacing: -0.05em;
     }
     #nc-root div[class*="nc-login-container"] {
-      background-color: #f8fafc !important;
+      background: radial-gradient(circle at 10% 20%, rgba(244, 252, 249, 1) 0%, rgba(248, 250, 252, 1) 90.7%) !important;
+    }
+    #nc-root div[class*="nc-login-container"] > section {
+      background: rgba(255, 255, 255, 0.8) !important;
+      backdrop-filter: blur(20px) !important;
+      border: 1px solid rgba(15, 118, 110, 0.08) !important;
+      box-shadow: 0 20px 40px rgba(15, 118, 110, 0.05) !important;
+      border-radius: 24px !important;
+      padding: 3rem !important;
+      max-width: 440px !important;
     }
     #nc-root button[class*="nc-login-button"] {
-      background-color: #059669 !important;
+      background: linear-gradient(135deg, #0f766e 0%, #115e59 100%) !important;
       color: white !important;
-      border-radius: 12px !important;
-      padding: 12px 24px !important;
-      font-weight: 600 !important;
-      transition: all 0.3s ease !important;
-      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2) !important;
+      border-radius: 14px !important;
+      padding: 14px 28px !important;
+      font-weight: 700 !important;
+      font-family: 'Inter', sans-serif !important;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      box-shadow: 0 4px 14px rgba(15, 118, 110, 0.15) !important;
+      border: none !important;
+      letter-spacing: -0.01em !important;
     }
     #nc-root button[class*="nc-login-button"]:hover {
-      background-color: #047857 !important;
+      background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%) !important;
       transform: translateY(-2px) !important;
-      box-shadow: 0 8px 20px rgba(5, 150, 105, 0.3) !important;
+      box-shadow: 0 8px 24px rgba(15, 118, 110, 0.25) !important;
     }
 
     /* Admin Sidebar */
@@ -55,119 +67,143 @@
       left: 0;
       top: 0;
       bottom: 0;
-      width: 260px;
-      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      width: 270px;
+      background: rgba(255, 255, 255, 0.85) !important;
+      backdrop-filter: blur(20px) !important;
+      border-right: 1px solid rgba(15, 118, 110, 0.08) !important;
       z-index: 100000;
-      transform: translateX(-260px);
-      transition: transform 0.3s ease;
+      transform: translateX(-270px);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       flex-direction: column;
-      box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+      box-shadow: 10px 0 30px rgba(15, 118, 110, 0.03) !important;
     }
     #admin-sidebar.open {
       transform: translateX(0);
     }
     #admin-sidebar-header {
-      padding: 24px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding: 28px 24px;
+      border-bottom: 1px solid rgba(15, 118, 110, 0.08);
     }
     #admin-sidebar-header h2 {
-      color: white;
-      font-size: 1.25rem;
-      font-weight: 700;
+      color: #0f172a;
+      font-size: 1.3rem;
+      font-weight: 800;
       margin: 0;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: -0.03em;
     }
     #admin-sidebar-header h2 span {
-      color: #10B981;
+      color: #0d9488;
+      font-size: 1.1rem;
     }
     #admin-sidebar-nav {
       flex: 1;
-      padding: 16px 0;
+      padding: 20px 0;
       overflow-y: auto;
     }
     .sidebar-section {
-      padding: 0 12px;
+      padding: 0 8px;
       margin-bottom: 24px;
     }
     .sidebar-section-label {
       font-size: 11px;
-      font-weight: 700;
+      font-weight: 750;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: #64748b;
-      padding: 8px 12px;
-      margin-bottom: 4px;
+      letter-spacing: 0.12em;
+      color: #94a3b8;
+      padding: 8px 16px;
+      margin-bottom: 6px;
+      font-family: 'Inter', sans-serif;
     }
     .sidebar-link {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 12px 16px;
-      color: #94a3b8;
+      padding: 10px 16px;
+      color: #475569;
       text-decoration: none;
-      border-radius: 8px;
+      border-radius: 10px;
       font-size: 14px;
-      font-weight: 500;
-      transition: all 0.2s ease;
+      font-weight: 600;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      margin: 2px 12px;
+      font-family: 'Inter', sans-serif;
     }
     .sidebar-link:hover {
-      background: rgba(255,255,255,0.1);
-      color: white;
+      background: rgba(13, 148, 136, 0.04);
+      color: #0f766e;
     }
     .sidebar-link.active {
-      background: rgba(16, 185, 129, 0.2);
-      color: #10B981;
+      background: rgba(13, 148, 136, 0.08) !important;
+      color: #0f766e !important;
+      font-weight: 700 !important;
     }
     .sidebar-link i {
       width: 20px;
       text-align: center;
       font-size: 16px;
+      color: #64748b;
+      transition: color 0.2s;
+    }
+    .sidebar-link:hover i, .sidebar-link.active i {
+      color: #0d9488;
     }
     #sidebar-toggle {
       position: fixed;
-      left: 12px;
-      top: 12px;
-      width: 44px;
-      height: 44px;
-      background: #1e293b;
-      border: none;
-      border-radius: 12px;
-      color: white;
-      font-size: 18px;
+      left: 16px;
+      top: 16px;
+      width: 48px;
+      height: 48px;
+      background: #ffffff;
+      border: 1px solid rgba(15, 118, 110, 0.08);
+      border-radius: 14px;
+      color: #0f766e;
+      font-size: 20px;
       cursor: pointer;
       z-index: 100001;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      transition: all 0.2s ease;
+      box-shadow: 0 4px 20px rgba(15, 118, 110, 0.08);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
     #sidebar-toggle:hover {
-      background: #10B981;
+      background: #0d9488;
+      color: white;
+      border-color: #0d9488;
       transform: scale(1.05);
+      box-shadow: 0 8px 30px rgba(13, 148, 136, 0.2);
     }
     #sidebar-toggle.open {
-      left: 272px;
+      left: 286px;
+      border-radius: 50%;
     }
     #admin-sidebar-footer {
-      padding: 16px 24px;
-      border-top: 1px solid rgba(255,255,255,0.1);
+      padding: 20px 24px;
+      border-top: 1px solid rgba(15, 118, 110, 0.08);
+      background: rgba(13, 148, 136, 0.01);
     }
     .sidebar-footer-link {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       color: #64748b;
       text-decoration: none;
       font-size: 13px;
+      font-weight: 600;
       padding: 8px 0;
       transition: color 0.2s;
+      font-family: 'Inter', sans-serif;
     }
     .sidebar-footer-link:hover {
-      color: #10B981;
+      color: #0d9488;
+    }
+    .sidebar-footer-link i {
+      font-size: 14px;
     }
 
     /* Fix Preview Pane Scrolling */
@@ -185,50 +221,161 @@
       overflow: auto !important;
     }
 
+    /* General Decap CMS Overrides */
+    body {
+      background-color: #f8fafc !important;
+    }
+    header[class*="AppHeader"] {
+      background-color: #ffffff !important;
+      border-bottom: 1px solid rgba(15, 118, 110, 0.08) !important;
+      box-shadow: 0 4px 20px rgba(15, 118, 110, 0.01) !important;
+      padding: 0 24px !important;
+    }
+    header[class*="AppHeader"] a[class*="AppHeaderLogo"] {
+      font-weight: 800 !important;
+      letter-spacing: -0.04em !important;
+      color: #0f766e !important;
+    }
+    header[class*="AppHeader"] button[class*="AppHeaderButton"] {
+      border-radius: 12px !important;
+      background: #f1f5f9 !important;
+      color: #475569 !important;
+      font-weight: 600 !important;
+      border: 1px solid rgba(0,0,0,0.02) !important;
+      transition: all 0.2s !important;
+    }
+    header[class*="AppHeader"] button[class*="AppHeaderButton"]:hover {
+      background: #e2e8f0 !important;
+      color: #0f172a !important;
+    }
+    aside[class*="SidebarContainer"] {
+      background: #ffffff !important;
+      border-right: 1px solid rgba(15, 118, 110, 0.08) !important;
+    }
+    aside[class*="SidebarContainer"] a[class*="SidebarLink"] {
+      border-radius: 10px !important;
+      color: #475569 !important;
+      font-weight: 600 !important;
+      margin: 4px 12px !important;
+      transition: all 0.2s !important;
+    }
+    aside[class*="SidebarContainer"] a[class*="SidebarLink"]:hover {
+      background: rgba(13, 148, 136, 0.04) !important;
+      color: #0f766e !important;
+    }
+    aside[class*="SidebarContainer"] a[class*="SidebarLink"][class*="active"] {
+      background: rgba(13, 148, 136, 0.08) !important;
+      color: #0f766e !important;
+      font-weight: 700 !important;
+    }
+    div[class*="Card"] {
+      border: 1px solid rgba(15, 118, 110, 0.06) !important;
+      box-shadow: 0 4px 12px rgba(15, 118, 110, 0.02) !important;
+      border-radius: 16px !important;
+      overflow: hidden !important;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      background: #ffffff !important;
+    }
+    div[class*="Card"]:hover {
+      transform: translateY(-2px) !important;
+      border-color: rgba(13, 148, 136, 0.2) !important;
+      box-shadow: 0 12px 24px rgba(15, 118, 110, 0.06) !important;
+    }
+    div[class*="ControlContainer"] {
+      border: 1px solid rgba(15, 118, 110, 0.08) !important;
+      background: #ffffff !important;
+      border-radius: 14px !important;
+      padding: 18px !important;
+      margin-bottom: 20px !important;
+      transition: border-color 0.2s, box-shadow 0.2s !important;
+    }
+    div[class*="ControlContainer"]:focus-within {
+      border-color: #0d9488 !important;
+      box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.08) !important;
+    }
+    label[class*="ControlLabel"] {
+      color: #334155 !important;
+      font-weight: 700 !important;
+      font-size: 13px !important;
+      letter-spacing: -0.01em !important;
+      margin-bottom: 8px !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.05em !important;
+    }
+    input[class*="Control"], textarea[class*="Control"] {
+      border: 1px solid #cbd5e1 !important;
+      border-radius: 10px !important;
+      padding: 12px 16px !important;
+      font-size: 15px !important;
+      color: #0f172a !important;
+      background-color: #f8fafc !important;
+      transition: all 0.2s !important;
+      outline: none !important;
+      font-family: 'Inter', sans-serif !important;
+    }
+    input[class*="Control"]:focus, textarea[class*="Control"]:focus {
+      background-color: #ffffff !important;
+      border-color: #0d9488 !important;
+      box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1) !important;
+    }
+
     /* Tiptap Editor Styles */
     .tiptap-wrapper {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      overflow: hidden;
-      background: #fff;
+      border: 1px solid rgba(15, 118, 110, 0.08) !important;
+      border-radius: 16px !important;
+      overflow: hidden !important;
+      background: #ffffff !important;
+      box-shadow: 0 4px 20px rgba(15, 118, 110, 0.02) !important;
+      transition: all 0.3s ease !important;
+    }
+    .tiptap-wrapper:focus-within {
+      border-color: #0d9488 !important;
+      box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.08) !important;
     }
     .tiptap-toolbar {
       display: flex;
       flex-wrap: wrap;
-      gap: 4px;
-      padding: 8px 12px;
+      gap: 6px;
+      padding: 12px 16px;
       background: #f8fafc;
-      border-bottom: 1px solid #e2e8f0;
+      border-bottom: 1px solid rgba(15, 118, 110, 0.08);
+      align-items: center;
     }
     .tiptap-toolbar button {
-      padding: 6px 10px;
-      border: 1px solid #e2e8f0;
-      border-radius: 4px;
-      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: transparent;
       cursor: pointer;
       font-size: 13px;
-      font-weight: 500;
-      color: #475569;
-      transition: all 0.15s ease;
+      font-weight: 600;
+      color: #64748b;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .tiptap-toolbar button:hover {
       background: #f1f5f9;
-      border-color: #cbd5e1;
+      color: #0f172a;
     }
     .tiptap-toolbar button.is-active {
-      background: #059669;
-      color: #fff;
-      border-color: #059669;
+      background: rgba(13, 148, 136, 0.08) !important;
+      color: #0f766e !important;
+      border-color: rgba(13, 148, 136, 0.15) !important;
     }
     .tiptap-toolbar .separator {
       width: 1px;
-      background: #e2e8f0;
+      height: 18px;
+      background: rgba(15, 118, 110, 0.08);
       margin: 0 4px;
     }
     .tiptap-editor {
-      padding: 16px;
-      min-height: 300px;
-      max-height: 600px;
+      padding: 24px;
+      min-height: 350px;
+      max-height: 650px;
       overflow-y: auto;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 16px;
@@ -239,19 +386,21 @@
       outline: none;
     }
     .tiptap-editor p {
-      margin: 0 0 1em 0;
+      margin: 0 0 1.2em 0;
     }
     .tiptap-editor h1, .tiptap-editor h2, .tiptap-editor h3 {
-      font-weight: 700;
+      font-weight: 800;
       line-height: 1.3;
-      margin: 1.5em 0 0.5em 0;
+      margin: 1.6em 0 0.6em 0;
+      color: #0f172a;
+      letter-spacing: -0.02em;
     }
-    .tiptap-editor h1 { font-size: 2rem; }
-    .tiptap-editor h2 { font-size: 1.5rem; border-bottom: 2px solid #10B981; padding-bottom: 0.25em; }
-    .tiptap-editor h3 { font-size: 1.25rem; color: #10B981; }
+    .tiptap-editor h1 { font-size: 2.25rem; }
+    .tiptap-editor h2 { font-size: 1.75rem; border-bottom: 2px solid #0d9488; padding-bottom: 0.25em; }
+    .tiptap-editor h3 { font-size: 1.35rem; color: #0f766e; }
     .tiptap-editor ul, .tiptap-editor ol {
-      padding-left: 1.5em;
-      margin: 1em 0;
+      padding-left: 1.75em;
+      margin: 1.2em 0;
     }
     .tiptap-editor ul {
       list-style-type: disc;
@@ -260,7 +409,7 @@
       list-style-type: decimal;
     }
     .tiptap-editor li {
-      margin-bottom: 0.5em;
+      margin-bottom: 0.6em;
       display: list-item;
     }
     .tiptap-editor li p {
@@ -268,28 +417,32 @@
       display: inline;
     }
     .tiptap-editor li::marker {
-      color: #10B981;
+      color: #0d9488;
     }
     .tiptap-editor blockquote {
-      border-left: 4px solid #10B981;
-      padding-left: 1em;
-      margin: 1em 0;
+      border-left: 4px solid #0d9488;
+      padding: 8px 16px;
+      margin: 1.2em 0;
       font-style: italic;
-      color: #64748b;
+      color: #475569;
+      background: #f8fafc;
+      border-radius: 0 8px 8px 0;
     }
     .tiptap-editor code {
       background: #f1f5f9;
-      padding: 2px 6px;
-      border-radius: 4px;
+      padding: 3px 6px;
+      border-radius: 6px;
       font-family: monospace;
       font-size: 0.9em;
+      color: #0f766e;
     }
     .tiptap-editor pre {
-      background: #1e293b;
-      color: #e2e8f0;
-      padding: 1em;
-      border-radius: 8px;
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 1.2em;
+      border-radius: 12px;
       overflow-x: auto;
+      margin: 1.2em 0;
     }
     .tiptap-editor pre code {
       background: none;
@@ -297,21 +450,21 @@
       color: inherit;
     }
     .tiptap-editor a {
-      color: #059669;
+      color: #0d9488;
       text-decoration: underline;
     }
     .tiptap-editor hr {
       border: none;
-      border-top: 2px solid #e2e8f0;
+      border-top: 2px solid rgba(15, 118, 110, 0.08);
       margin: 2em 0;
     }
     .tiptap-editor img {
       max-width: 100%;
       height: auto;
-      border-radius: 8px;
+      border-radius: 12px;
     }
     .tiptap-editor .ProseMirror-selectednode {
-      outline: 2px solid #059669;
+      outline: 2px solid #0d9488;
     }
     .tiptap-editor p.is-editor-empty:first-child::before {
       content: attr(data-placeholder);
@@ -322,28 +475,210 @@
     }
     .tiptap-editor .youtube-embed {
       display: inline-block;
-      background: #f1f5f9;
-      border: 2px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 12px;
-      margin: 1em 0;
+      background: #f8fafc;
+      border: 2px solid rgba(15, 118, 110, 0.08);
+      border-radius: 16px;
+      padding: 16px;
+      margin: 1.2em 0;
       text-align: center;
+      box-shadow: 0 4px 12px rgba(15, 118, 110, 0.02);
     }
     .tiptap-editor .youtube-embed:hover {
-      border-color: #059669;
+      border-color: #0d9488;
     }
     .tiptap-editor .youtube-embed img {
       margin: 0;
-      border-radius: 8px;
+      border-radius: 10px;
     }
     .tiptap-toolbar button[title="YouTube Video"] {
-      background: #FF0000;
-      color: white;
-      border-color: #FF0000;
+      color: #ef4444;
     }
     .tiptap-toolbar button[title="YouTube Video"]:hover {
-      background: #CC0000;
-      border-color: #CC0000;
+      background: #fee2e2;
+      color: #dc2626;
+    }
+    .tiptap-toolbar button[title="YouTube Video"].is-active {
+      background: #fee2e2;
+      color: #dc2626;
+      border-color: #fca5a5;
+    }
+
+    /* AI Toolbar Button Styles */
+    #ai-toolbar-container {
+      display: flex;
+      gap: 10px;
+      position: fixed;
+      top: 14px;
+      right: 220px;
+      z-index: 9999;
+      align-items: center;
+    }
+    .ai-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      font-family: 'Inter', sans-serif;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+    .ai-btn i {
+      font-size: 14px;
+    }
+    .ai-btn-purple {
+      background: #f3e8ff;
+      color: #6b21a8;
+      border-color: #e9d5ff;
+    }
+    .ai-btn-purple:hover {
+      background: #e9d5ff;
+      transform: translateY(-1px);
+    }
+    .ai-btn-blue {
+      background: #dbeafe;
+      color: #1e40af;
+      border-color: #bfdbfe;
+    }
+    .ai-btn-blue:hover {
+      background: #bfdbfe;
+      transform: translateY(-1px);
+    }
+    .ai-btn-emerald {
+      background: #d1fae5;
+      color: #065f46;
+      border-color: #a7f3d0;
+    }
+    .ai-btn-emerald:hover {
+      background: #a7f3d0;
+      transform: translateY(-1px);
+    }
+
+    /* Manual SEO Button Styles */
+    #ai-generate-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 12px 20px;
+      background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%) !important;
+      color: white !important;
+      border: none !important;
+      border-radius: 12px !important;
+      font-weight: 700 !important;
+      font-size: 13px !important;
+      cursor: pointer !important;
+      z-index: 9999 !important;
+      box-shadow: 0 4px 20px rgba(13, 148, 136, 0.25) !important;
+      font-family: 'Inter', sans-serif !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    #ai-generate-btn:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 8px 30px rgba(13, 148, 136, 0.35) !important;
+    }
+
+    /* Tiptap Media Modal Styles */
+    .tiptap-media-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.3) !important;
+      backdrop-filter: blur(8px) !important;
+      z-index: 100000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.2s ease;
+    }
+    .tiptap-media-modal-content {
+      background: #ffffff !important;
+      padding: 32px !important;
+      border-radius: 20px !important;
+      max-width: 500px !important;
+      width: 90% !important;
+      box-shadow: 0 20px 50px rgba(15, 118, 110, 0.08) !important;
+      border: 1px solid rgba(15, 118, 110, 0.08) !important;
+    }
+    .tiptap-media-modal-content h3 {
+      margin: 0 0 20px 0 !important;
+      font-size: 18px !important;
+      font-weight: 800 !important;
+      color: #0f172a !important;
+      letter-spacing: -0.02em !important;
+    }
+    .tiptap-media-modal-field {
+      margin-bottom: 20px !important;
+    }
+    .tiptap-media-modal-field label {
+      display: block !important;
+      margin-bottom: 8px !important;
+      font-weight: 700 !important;
+      color: #475569 !important;
+      font-size: 13px !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.05em !important;
+    }
+    .tiptap-media-modal-field input[type="text"] {
+      width: 100% !important;
+      padding: 12px 16px !important;
+      border: 1px solid #cbd5e1 !important;
+      border-radius: 10px !important;
+      font-size: 14px !important;
+      outline: none !important;
+      background: #f8fafc !important;
+      transition: all 0.2s !important;
+    }
+    .tiptap-media-modal-field input[type="text"]:focus {
+      background: #ffffff !important;
+      border-color: #0d9488 !important;
+      box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1) !important;
+    }
+    .tiptap-media-modal-field input[type="file"] {
+      font-size: 14px !important;
+      color: #475569 !important;
+    }
+    .tiptap-media-modal-actions {
+      display: flex !important;
+      gap: 12px !important;
+      justify-content: flex-end !important;
+      margin-top: 24px !important;
+    }
+    .tiptap-media-modal-btn {
+      padding: 12px 24px !important;
+      border-radius: 10px !important;
+      font-size: 14px !important;
+      font-weight: 750 !important;
+      cursor: pointer !important;
+      transition: all 0.2s !important;
+      font-family: 'Inter', sans-serif !important;
+    }
+    .tiptap-media-modal-btn-cancel {
+      border: 1px solid #e2e8f0 !important;
+      background: #ffffff !important;
+      color: #475569 !important;
+    }
+    .tiptap-media-modal-btn-cancel:hover {
+      background: #f1f5f9 !important;
+      color: #0f172a !important;
+    }
+    .tiptap-media-modal-btn-insert {
+      border: none !important;
+      background: #0f766e !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 12px rgba(15, 118, 110, 0.15) !important;
+    }
+    .tiptap-media-modal-btn-insert:hover {
+      background: #0d9488 !important;
+      box-shadow: 0 8px 20px rgba(15, 118, 110, 0.25) !important;
     }
   </style>
 </head>
@@ -403,27 +738,27 @@
           // Create a modal for image insertion
           var modal = document.createElement('div');
           modal.id = 'tiptap-media-modal';
-          modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:100000;display:flex;align-items:center;justify-content:center;';
+          modal.className = 'tiptap-media-modal-overlay';
 
           var content = document.createElement('div');
-          content.style.cssText = 'background:white;padding:24px;border-radius:12px;max-width:500px;width:90%;';
+          content.className = 'tiptap-media-modal-content';
           content.innerHTML = '\
-            <h3 style="margin:0 0 16px 0;font-size:18px;font-weight:600;">Insert Image</h3>\
-            <div style="margin-bottom:16px;">\
-              <label style="display:block;margin-bottom:8px;font-weight:500;">Image URL</label>\
-              <input type="text" id="tiptap-img-url" placeholder="https://..." style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;">\
+            <h3>Insert Image</h3>\
+            <div class="tiptap-media-modal-field">\
+              <label>Image URL</label>\
+              <input type="text" id="tiptap-img-url" placeholder="https://...">\
             </div>\
-            <div style="margin-bottom:16px;">\
-              <label style="display:block;margin-bottom:8px;font-weight:500;">Or upload from computer</label>\
-              <input type="file" id="tiptap-img-file" accept="image/*" style="width:100%;">\
+            <div class="tiptap-media-modal-field">\
+              <label>Or upload from computer</label>\
+              <input type="file" id="tiptap-img-file" accept="image/*">\
             </div>\
-            <div style="margin-bottom:16px;">\
-              <label style="display:block;margin-bottom:8px;font-weight:500;">Alt text (optional)</label>\
-              <input type="text" id="tiptap-img-alt" placeholder="Image description" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;">\
+            <div class="tiptap-media-modal-field">\
+              <label>Alt text (optional)</label>\
+              <input type="text" id="tiptap-img-alt" placeholder="Image description">\
             </div>\
-            <div style="display:flex;gap:12px;justify-content:flex-end;">\
-              <button id="tiptap-img-cancel" style="padding:10px 20px;border:1px solid #ddd;border-radius:6px;background:white;cursor:pointer;">Cancel</button>\
-              <button id="tiptap-img-insert" style="padding:10px 20px;border:none;border-radius:6px;background:#059669;color:white;cursor:pointer;font-weight:500;">Insert Image</button>\
+            <div class="tiptap-media-modal-actions">\
+              <button id="tiptap-img-cancel" class="tiptap-media-modal-btn tiptap-media-modal-btn-cancel">Cancel</button>\
+              <button id="tiptap-img-insert" class="tiptap-media-modal-btn tiptap-media-modal-btn-insert">Insert Image</button>\
             </div>\
             <p id="tiptap-img-preview" style="margin-top:16px;text-align:center;"></p>\
           ';
@@ -757,31 +1092,31 @@
         render: function() {
           var self = this;
           var toolbarButtons = [
-            { cmd: 'bold', label: 'B', title: 'Bold' },
-            { cmd: 'italic', label: 'I', title: 'Italic' },
-            { cmd: 'underline', label: 'U', title: 'Underline' },
-            { cmd: 'strike', label: 'S', title: 'Strikethrough' },
+            { cmd: 'bold', icon: 'fas fa-bold', title: 'Bold' },
+            { cmd: 'italic', icon: 'fas fa-italic', title: 'Italic' },
+            { cmd: 'underline', icon: 'fas fa-underline', title: 'Underline' },
+            { cmd: 'strike', icon: 'fas fa-strikethrough', title: 'Strikethrough' },
             { type: 'separator' },
             { cmd: 'h1', label: 'H1', title: 'Heading 1' },
             { cmd: 'h2', label: 'H2', title: 'Heading 2' },
             { cmd: 'h3', label: 'H3', title: 'Heading 3' },
             { type: 'separator' },
-            { cmd: 'bulletList', label: '•', title: 'Bullet List' },
-            { cmd: 'orderedList', label: '1.', title: 'Numbered List' },
-            { cmd: 'blockquote', label: '"', title: 'Quote' },
+            { cmd: 'bulletList', icon: 'fas fa-list-ul', title: 'Bullet List' },
+            { cmd: 'orderedList', icon: 'fas fa-list-ol', title: 'Numbered List' },
+            { cmd: 'blockquote', icon: 'fas fa-quote-left', title: 'Quote' },
             { type: 'separator' },
-            { cmd: 'alignLeft', label: '⬅', title: 'Align Left' },
-            { cmd: 'alignCenter', label: '⬌', title: 'Align Center' },
-            { cmd: 'alignRight', label: '➡', title: 'Align Right' },
+            { cmd: 'alignLeft', icon: 'fas fa-align-left', title: 'Align Left' },
+            { cmd: 'alignCenter', icon: 'fas fa-align-center', title: 'Align Center' },
+            { cmd: 'alignRight', icon: 'fas fa-align-right', title: 'Align Right' },
             { type: 'separator' },
-            { cmd: 'link', label: '🔗', title: 'Link' },
-            { cmd: 'image', label: '🖼', title: 'Image' },
-            { cmd: 'youtube', label: '▶', title: 'YouTube Video' },
-            { cmd: 'code', label: '</>', title: 'Inline Code' },
-            { cmd: 'hr', label: '―', title: 'Horizontal Rule' },
+            { cmd: 'link', icon: 'fas fa-link', title: 'Link' },
+            { cmd: 'image', icon: 'fas fa-image', title: 'Image' },
+            { cmd: 'youtube', icon: 'fab fa-youtube', title: 'YouTube Video' },
+            { cmd: 'code', icon: 'fas fa-code', title: 'Inline Code' },
+            { cmd: 'hr', icon: 'fas fa-minus', title: 'Horizontal Rule' },
             { type: 'separator' },
-            { cmd: 'undo', label: '↩', title: 'Undo' },
-            { cmd: 'redo', label: '↪', title: 'Redo' }
+            { cmd: 'undo', icon: 'fas fa-undo', title: 'Undo' },
+            { cmd: 'redo', icon: 'fas fa-redo', title: 'Redo' }
           ];
 
           return h('div', { className: 'tiptap-wrapper' },
@@ -796,7 +1131,7 @@
                   title: btn.title,
                   className: self.isActive(btn.cmd) ? 'is-active' : '',
                   onClick: function(e) { e.preventDefault(); self.execCommand(btn.cmd); }
-                }, btn.label);
+                }, btn.icon ? h('i', { className: btn.icon }) : btn.label);
               })
             ),
             h('div', {
@@ -1275,8 +1610,7 @@
 
         var btn = document.createElement('button');
         btn.id = 'ai-generate-btn';
-        btn.innerHTML = '✨ Regenerate SEO';
-        btn.style.cssText = 'position:fixed;bottom:24px;right:24px;padding:12px 20px;background:linear-gradient(135deg,#8B5CF6,#6366F1);color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;z-index:9999;box-shadow:0 4px 12px rgba(139,92,246,0.4);';
+        btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Regenerate SEO';
         btn.onclick = function() { generateSEO(true); };
         document.body.appendChild(btn);
       }
@@ -1324,13 +1658,12 @@
         if (!document.getElementById('ai-toolbar-container')) {
           var container = document.createElement('div');
           container.id = 'ai-toolbar-container';
-          container.style.cssText = 'display:flex;gap:8px;position:fixed;top:12px;right:200px;z-index:10000;';
 
           // Add Video Button
           var videoBtn = document.createElement('button');
           videoBtn.id = 'add-video-btn';
-          videoBtn.innerHTML = '🎬 Add Video';
-          videoBtn.style.cssText = 'background:#8B5CF6;color:white;border:none;padding:8px 16px;border-radius:8px;font-weight:600;cursor:pointer;font-size:14px;box-shadow:0 2px 8px rgba(139,92,246,0.3);';
+          videoBtn.className = 'ai-btn ai-btn-purple';
+          videoBtn.innerHTML = '<i class="fas fa-video"></i> Add Video';
           videoBtn.onclick = function(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -1359,8 +1692,8 @@
           // AI Image Button
           var imgBtn = document.createElement('button');
           imgBtn.id = 'ai-image-btn';
-          imgBtn.innerHTML = '🎨 AI Image';
-          imgBtn.style.cssText = 'background:#3B82F6;color:white;border:none;padding:8px 16px;border-radius:8px;font-weight:600;cursor:pointer;font-size:14px;box-shadow:0 2px 8px rgba(59,130,246,0.3);';
+          imgBtn.className = 'ai-btn ai-btn-blue';
+          imgBtn.innerHTML = '<i class="fas fa-paint-brush"></i> AI Image';
           imgBtn.onclick = async function(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -1369,7 +1702,7 @@
               alert('Please enter a title first so I know what to draw!');
               return;
             }
-            imgBtn.innerHTML = '🎨 Generating...';
+            imgBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
             imgBtn.disabled = true;
             try {
               var response = await fetch('/.netlify/functions/generate-image', {
@@ -1396,12 +1729,12 @@
               win.document.write('<p style="margin-top:20px;color:#333;">Right-click the image → Save Image As → then upload to your post</p>');
               win.document.write('</body></html>');
 
-              imgBtn.innerHTML = '🎨 Done!';
-              setTimeout(function() { imgBtn.innerHTML = '🎨 AI Image'; }, 3000);
+              imgBtn.innerHTML = '<i class="fas fa-check"></i> Done!';
+              setTimeout(function() { imgBtn.innerHTML = '<i class="fas fa-paint-brush"></i> AI Image'; }, 3000);
             } catch (err) {
               console.error('AI Image error:', err);
               alert('Image generation failed: ' + err.message);
-              imgBtn.innerHTML = '🎨 AI Image';
+              imgBtn.innerHTML = '<i class="fas fa-paint-brush"></i> AI Image';
             } finally {
               imgBtn.disabled = false;
             }
@@ -1411,8 +1744,8 @@
           // AI SEO Button
           var seoBtn = document.createElement('button');
           seoBtn.id = 'ai-seo-btn';
-          seoBtn.innerHTML = '✨ AI SEO';
-          seoBtn.style.cssText = 'background:#10B981;color:white;border:none;padding:8px 16px;border-radius:8px;font-weight:600;cursor:pointer;font-size:14px;box-shadow:0 2px 8px rgba(16,185,129,0.3);';
+          seoBtn.className = 'ai-btn ai-btn-emerald';
+          seoBtn.innerHTML = '<i class="fas fa-magic"></i> AI SEO';
           seoBtn.onclick = function(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -1506,11 +1839,26 @@
               <a href="/admin/cms/#/collections/blog" class="sidebar-link">\
                 <i class="fas fa-blog"></i> Blog Posts\
               </a>\
-              <a href="/admin/cms/#/collections/youtube_content" class="sidebar-link">\
+                <a href="/admin/cms/#/collections/youtube_content" class="sidebar-link">\
                 <i class="fas fa-youtube"></i> YouTube Content\
               </a>\
               <a href="/admin/cms/#/collections/video_scripts" class="sidebar-link">\
                 <i class="fas fa-scroll"></i> Funnel Scripts\
+              </a>\
+            </div>\
+            <div class="sidebar-section">\
+              <div class="sidebar-section-label">Household</div>\
+              <a href="/admin/home/" class="sidebar-link">\
+                <i class="fas fa-house-signal"></i> Home Command\
+              </a>\
+              <a href="/admin/family/" class="sidebar-link">\
+                <i class="fas fa-people-roof"></i> Family & Finance\
+              </a>\
+              <a href="/admin/home-search/" class="sidebar-link">\
+                <i class="fas fa-home"></i> Home Search\
+              </a>\
+              <a href="/admin/court-compliance/" class="sidebar-link">\
+                <i class="fas fa-clipboard-check"></i> Custody Tracker\
               </a>\
             </div>\
             <div class="sidebar-section">\

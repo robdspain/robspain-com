@@ -25,8 +25,20 @@ function parseCookies(header) {
   );
 }
 
-function allowedEmail() {
-  return (process.env.ADMIN_ALLOWED_EMAIL || process.env.ADMIN_AUTH_USER || 'robspain@gmail.com').toLowerCase();
+function isEmailAllowed(email) {
+  if (!email) return false;
+  const allowedStr = (process.env.ADMIN_ALLOWED_EMAIL || process.env.ADMIN_AUTH_USER || 'robspain@gmail.com').toLowerCase();
+  const allowedList = allowedStr.split(',').map((e) => e.trim()).filter(Boolean);
+  return allowedList.includes(email.toLowerCase());
+}
+
+function allowedEmailsDescription() {
+  const allowedStr = (process.env.ADMIN_ALLOWED_EMAIL || process.env.ADMIN_AUTH_USER || 'robspain@gmail.com').toLowerCase();
+  const allowedList = allowedStr.split(',').map((e) => e.trim()).filter(Boolean);
+  if (allowedList.length === 1) {
+    return 'as ' + allowedList[0];
+  }
+  return 'with an authorized Google account';
 }
 
 function createSession(email) {
@@ -46,7 +58,7 @@ function readSession(event) {
 
   try {
     const session = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
-    if (!session.email || session.email.toLowerCase() !== allowedEmail()) return null;
+    if (!session.email || !isEmailAllowed(session.email)) return null;
     if (!session.exp || session.exp < Math.floor(Date.now() / 1000)) return null;
     return session;
   } catch {
@@ -84,7 +96,7 @@ function loginPage(error) {
     '.google-icon-svg{width:18px;height:18px;background:url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="%23EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="%234285F4" d="M46.5 24c0-1.63-.15-3.2-.42-4.73H24v9h12.75c-.55 2.87-2.17 5.3-4.61 6.93l7.2 5.58C43.5 36.42 46.5 30.72 46.5 24z"/><path fill="%23FBBC05" d="M10.54 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24s.92 7.54 2.56 10.78l7.98-6.19z"/><path fill="%2334A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.2-5.58c-2.12 1.39-4.8 2.29-8.69 2.29-6.26 0-11.57-4.22-13.46-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>\') no-repeat center;background-size:contain}' +
     '.error{margin:0 0 20px;color:#b42318;font-size:15px;text-align:left}' +
     '</style>' +
-    '</head><body><main class="card"><h1>Rob Spain Admin</h1><p>Sign in with Google as ' + escapeHtml(allowedEmail()) + ' to continue.</p>' + errorHtml +
+    '</head><body><main class="card"><h1>Rob Spain Admin</h1><p>Sign in with Google ' + escapeHtml(allowedEmailsDescription()) + ' to continue.</p>' + errorHtml +
     '<div id="g_id_onload" data-client_id="' + escapeHtml(clientId) + '" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>' +
     '<div class="google-wrap"><div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="continue_with" data-shape="pill" data-logo_alignment="right"></div></div>' +
     '<div id="fallback-wrap" class="fallback-wrap" style="display:none;"><a id="fallback-login-link" href="#" class="fallback-btn"><span class="google-icon-svg"></span><span>Sign in with Google</span></a></div>' +
@@ -121,7 +133,7 @@ async function verifyCredential(credential) {
   const token = await response.json();
   if (!response.ok || token.error) throw new Error(token.error_description || token.error || 'Google rejected the credential.');
   if (token.aud !== process.env.GOOGLE_CLIENT_ID) throw new Error('Google credential was issued for a different client.');
-  if (!token.email_verified || token.email.toLowerCase() !== allowedEmail()) throw new Error('Access denied for ' + (token.email || 'this Google account') + '.');
+  if (!token.email_verified || !isEmailAllowed(token.email)) throw new Error('Access denied for ' + (token.email || 'this Google account') + '.');
   return token.email;
 }
 

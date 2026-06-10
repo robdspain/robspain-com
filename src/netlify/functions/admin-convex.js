@@ -47,8 +47,9 @@ function readAdminSession(event) {
 
   try {
     const session = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
-    const allowedEmail = (process.env.ADMIN_ALLOWED_EMAIL || process.env.ADMIN_AUTH_USER || 'robspain@gmail.com').toLowerCase();
-    if (!session.email || session.email.toLowerCase() !== allowedEmail) return null;
+    const allowedStr = (process.env.ADMIN_ALLOWED_EMAIL || process.env.ADMIN_AUTH_USER || 'robspain@gmail.com').toLowerCase();
+    const allowedList = allowedStr.split(',').map((e) => e.trim()).filter(Boolean);
+    if (!session.email || !allowedList.includes(session.email.toLowerCase())) return null;
     if (!session.exp || session.exp < Math.floor(Date.now() / 1000)) return null;
     return session;
   } catch {

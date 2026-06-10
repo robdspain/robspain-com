@@ -22,7 +22,7 @@ collections:
       - {label: "Title", name: "title", widget: "string"}
       - {label: "Publish Date", name: "date", widget: "datetime"}
       - {label: "YouTube URL", name: "youtubeUrl", widget: "string", required: false, hint: "Paste the YouTube video link here"}
-      - {label: "Featured Image", name: "image", widget: "image"}
+      - {label: "Featured Image", name: "image", widget: "image", required: false, hint: "Upload a custom image when available. Posts without one use the branded School BCBA fallback image."}
       - {label: "Excerpt", name: "description", widget: "text", hint: "Short summary for blog list and social previews"}
       - {label: "Body", name: "body", widget: "tiptap"}
       - {label: "Tags", name: "tags", widget: "list", default: ["post"]}
@@ -55,6 +55,16 @@ collections:
         fields:
           - {label: "Post Text", name: "text", widget: "text", required: false, hint: "Professional tone with insights (optimal: 150-300 chars)"}
           - {label: "Hashtags", name: "hashtags", widget: "string", required: false, hint: "e.g. #BehaviorAnalysis #Education #SchoolPsychology"}
+      - label: "Newsletter Draft"
+        name: "newsletter"
+        widget: "object"
+        collapsed: true
+        fields:
+          - {label: "Subject Lines", name: "subjectLines", widget: "list", required: false}
+          - {label: "Preview Text", name: "previewText", widget: "string", required: false}
+          - {label: "Email Body", name: "body", widget: "markdown", required: false}
+          - {label: "P.S.", name: "ps", widget: "text", required: false}
+          - {label: "CTA URL", name: "ctaUrl", widget: "string", required: false}
       - label: "Instagram Caption"
         name: "instagram"
         widget: "object"
@@ -70,7 +80,87 @@ collections:
     slug: "{{slug}}"
     fields:
       - {label: "Title", name: "title", widget: "string"}
-      - {label: "Series", name: "series", widget: "select", options: ["transformation"], default: "transformation"}
+      - {label: "Series", name: "series", widget: "select", options: ["school-bcba", "transformation"], default: "school-bcba"}
       - {label: "Funnel Step Number", name: "step", widget: "number", value_type: "int", min: 1, max: 10}
       - {label: "Published", name: "published", widget: "boolean", default: false}
+      - {label: "Video URL", name: "videoUrl", widget: "string", required: false, hint: "Optional direct video URL"}
+      - {label: "YouTube ID", name: "youtubeId", widget: "string", required: false, hint: "Optional YouTube video ID"}
+      - {label: "Bunny Video ID", name: "bunnyVideoId", widget: "string", required: false, hint: "Optional Bunny Stream video ID"}
+      - {label: "Bunny Library ID", name: "bunnyLibraryId", widget: "string", required: false, default: "394122"}
       - {label: "Script Content", name: "body", widget: "markdown"}
+
+  - name: "youtube_content"
+    label: "YouTube Content"
+    folder: "src/youtube-content"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Status", name: "status", widget: "select", options: ["draft", "script_complete", "recorded", "uploaded", "published"], default: "draft"}
+      - {label: "Video Type", name: "videoType", widget: "select", options: ["research_review", "project_update", "news", "tutorial", "insight"], default: "insight"}
+      - {label: "Date", name: "date", widget: "datetime"}
+      - {label: "YouTube URL", name: "youtubeUrl", widget: "string", required: false, hint: "Add after uploading to YouTube"}
+      - {label: "YouTube ID", name: "youtubeId", widget: "string", required: false}
+      - {label: "Thumbnail", name: "thumbnail", widget: "image", required: false}
+      - {label: "Featured", name: "featured", widget: "boolean", default: false}
+      - label: "Script Inputs"
+        name: "inputs"
+        widget: "object"
+        collapsed: true
+        fields:
+          - {label: "Content Idea", name: "idea", widget: "text", hint: "The main topic or idea for this video"}
+          - {label: "Source URLs", name: "sourceUrls", widget: "list", required: false, hint: "Links to articles, research, etc."}
+          - {label: "Source Notes", name: "sourceNotes", widget: "text", required: false, hint: "Pasted content or additional notes"}
+          - {label: "Target Length", name: "targetLength", widget: "select", options: ["short", "standard", "deep_dive"], default: "standard"}
+          - {label: "Primary CTA", name: "primaryCta", widget: "select", options: ["transformation-program", "study", "supervision-tools", "resources", "iep-goals", "behavior-plans"], default: "transformation-program"}
+          - {label: "Secondary CTA", name: "secondaryCta", widget: "select", options: ["", "transformation-program", "study", "supervision-tools", "resources", "iep-goals", "behavior-plans"], required: false}
+      - label: "Generated Script"
+        name: "script"
+        widget: "object"
+        collapsed: true
+        fields:
+          - {label: "Hook", name: "hook", widget: "text", required: false}
+          - {label: "Intro", name: "intro", widget: "text", required: false}
+          - {label: "Full Script", name: "fullScript", widget: "markdown", required: false}
+          - {label: "Actionable Takeaway", name: "actionableTakeaway", widget: "text", required: false}
+          - {label: "CTA Script", name: "cta", widget: "text", required: false}
+          - {label: "Outro", name: "outro", widget: "text", required: false}
+      - label: "Metadata"
+        name: "metadata"
+        widget: "object"
+        collapsed: true
+        fields:
+          - {label: "YouTube Title", name: "youtubeTitle", widget: "string", required: false, hint: "Max 60 characters"}
+          - {label: "YouTube Description", name: "youtubeDescription", widget: "text", required: false}
+          - {label: "Tags", name: "tags", widget: "list", required: false}
+          - {label: "Thumbnail Text Options", name: "thumbnailTextOptions", widget: "list", required: false}
+          - {label: "Shorts Hook", name: "shortsHook", widget: "text", required: false}
+      - label: "Social Media"
+        name: "social"
+        widget: "object"
+        collapsed: true
+        fields:
+          - {label: "Twitter Text", name: "twitterText", widget: "text", required: false}
+          - {label: "Twitter Hashtags", name: "twitterHashtags", widget: "string", required: false}
+          - {label: "LinkedIn Text", name: "linkedinText", widget: "text", required: false}
+          - {label: "LinkedIn Hashtags", name: "linkedinHashtags", widget: "string", required: false}
+          - {label: "Facebook Text", name: "facebookText", widget: "text", required: false}
+          - {label: "Instagram Caption", name: "instagramCaption", widget: "text", required: false}
+          - {label: "Instagram Hashtags", name: "instagramHashtags", widget: "text", required: false}
+      - label: "Newsletter"
+        name: "newsletter"
+        widget: "object"
+        collapsed: true
+        fields:
+          - {label: "Subject Lines", name: "subjectLines", widget: "list", required: false}
+          - {label: "Preview Text", name: "previewText", widget: "string", required: false}
+          - {label: "Email Body", name: "body", widget: "markdown", required: false}
+          - {label: "P.S.", name: "ps", widget: "text", required: false}
+          - {label: "CTA URL", name: "ctaUrl", widget: "string", required: false}
+      - label: "Blog Post"
+        name: "blogPost"
+        widget: "object"
+        collapsed: true
+        fields:
+          - {label: "Generated", name: "generated", widget: "boolean", default: false}
+          - {label: "Blog Path", name: "path", widget: "string", required: false}

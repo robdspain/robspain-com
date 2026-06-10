@@ -333,6 +333,9 @@
     <script src="/video-funnel.js"></script>
     <script src="/contact-form.js"></script>
     <script src="/email-capture.js"></script>
+    {% if page.url and page.url.indexOf("/admin/") == 0 %}
+    <script src="/admin-auth.js"></script>
+    {% endif %}
     <script>
       (function(){
         var el = document.getElementById('current-year');

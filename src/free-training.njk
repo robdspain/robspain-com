@@ -1,0 +1,241 @@
+---
+layout: base.njk
+title: "Free Training: The Systems Leader Method | Rob Spain"
+description: "A 10-part free video training series for school BCBAs. Learn how to stop fighting fires and start building systems. By Rob Spain, BCBA, IBA."
+permalink: /free-training/
+---
+
+<link rel="stylesheet" href="/video-funnel.css">
+
+<!-- Hero -->
+<section class="vf-hero">
+  <div class="vf-hero-inner">
+    <p class="vf-hero-kicker">Free Video Training Series</p>
+    <h1 class="vf-hero-title">From Crisis Manager<br>to Systems Leader</h1>
+    <p class="vf-hero-sub">10 short videos. One framework. Built for school BCBAs who are tired of putting out fires every single day.</p>
+
+  </div>
+</section>
+
+<!-- Main Funnel Section -->
+<section class="video-funnel-section" id="free-training">
+  <div class="vf-container">
+
+
+
+    <!-- Coming Soon Placeholder -->
+    <div style="
+      background: #0f172a;
+      border-radius: 20px;
+      padding: 4rem 2rem;
+      text-align: center;
+      margin: 0 auto 2rem;
+      border: 1px solid rgba(255,255,255,0.08);
+    ">
+      <div style="
+        width: 72px; height: 72px;
+        background: rgba(16,185,129,0.12);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 1.5rem;
+      ">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+      </div>
+      <h3 style="color: white; font-size: 1.4rem; font-weight: 700; margin: 0 0 0.75rem;">Videos Coming Soon</h3>
+      <p style="color: rgba(255,255,255,0.55); font-size: 1rem; margin: 0 0 2rem; max-width: 400px; margin-left: auto; margin-right: auto;">
+        The full 10-part training series is in production. Drop your email below to be the first to know when it launches.
+      </p>
+      <form name="training-waitlist" method="POST" data-netlify="true" style="display:flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; max-width: 440px; margin: 0 auto;">
+        <input type="hidden" name="form-name" value="training-waitlist">
+        <input
+          type="email"
+          name="email"
+          required
+          placeholder="your@email.com"
+          style="
+            flex: 1; min-width: 220px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            color: white;
+            font-size: 0.95rem;
+            outline: none;
+          "
+        >
+        <button type="submit" style="
+          background: #10B981;
+          color: white;
+          border: none;
+          border-radius: 10px;
+          padding: 0.75rem 1.5rem;
+          font-weight: 600;
+          font-size: 0.95rem;
+          cursor: pointer;
+          white-space: nowrap;
+        ">Notify Me</button>
+      </form>
+    </div>
+
+    <!-- Video List Preview -->
+    <div class="vf-grid-header">
+      <h2 class="vf-grid-title">What's Coming</h2>
+      <p class="vf-grid-sub">10 short videos — 1 to 3 minutes each — built around the Systems Leader framework.</p>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 3rem;">
+      {% set videoTitles = [
+        "The Breaking Point",
+        "When I Almost Quit",
+        "The Myth That Kept Me Stuck",
+        "The Moment Everything Changed",
+        "The 5-Pillar Framework",
+        "What Systems Leadership Looks Like",
+        "Why Most BCBAs Stay Stuck",
+        "Real Results",
+        "The 8-Week Transformation Program",
+        "Your Invitation"
+      ] %}
+      {% for title in videoTitles %}
+      <div style="
+        background: #0f172a;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      ">
+        <span style="
+          background: rgba(16,185,129,0.12);
+          color: #10B981;
+          font-weight: 700;
+          font-size: 0.8rem;
+          width: 32px; height: 32px;
+          border-radius: 8px;
+          display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0;
+        ">{{ loop.index }}</span>
+        <span style="color: rgba(255,255,255,0.8); font-size: 0.95rem; font-weight: 500;">{{ title }}</span>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Bottom CTA -->
+    <div class="vf-bottom-cta">
+      <p class="vf-bottom-text">Ready to build the system now? Apply to the 8-Week Transformation Program.</p>
+      <a href="/transformation-program/#apply" class="vf-cta-btn">Apply to the Program</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- Video player JS disabled until videos are recorded -->
+
+<style>
+/* Page-level styles for free-training only */
+.vf-hero {
+  background: linear-gradient(135deg, #0f172a 0%, #1a2e1f 60%, #0f172a 100%);
+  padding: 5rem 1.5rem 4rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.vf-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2310B981' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.vf-hero-inner {
+  position: relative;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.vf-hero-kicker {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #10B981;
+  margin-bottom: 1rem;
+}
+.vf-hero-title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.25rem;
+}
+.vf-hero-sub {
+  font-size: 1.1rem;
+  color: #94a3b8;
+  line-height: 1.7;
+  max-width: 520px;
+  margin: 0 auto 2rem;
+}
+.vf-hero-meta {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.vf-meta-pill {
+  background: rgba(16,185,129,0.12);
+  border: 1px solid rgba(16,185,129,0.3);
+  color: #10B981;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+}
+.vf-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 1.5rem 4rem;
+}
+.vf-grid-header {
+  margin-top: 3rem;
+  margin-bottom: 1.25rem;
+}
+.vf-grid-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #e2e8f0;
+  margin-bottom: 0.25rem;
+}
+.vf-grid-sub {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+.vf-bottom-cta {
+  margin-top: 3.5rem;
+  text-align: center;
+  padding: 2.5rem;
+  border: 1px solid rgba(16,185,129,0.2);
+  border-radius: 20px;
+  background: rgba(16,185,129,0.05);
+}
+.vf-bottom-text {
+  color: #94a3b8;
+  margin-bottom: 1.25rem;
+  font-size: 1rem;
+}
+.vf-cta-btn {
+  display: inline-block;
+  background: #10B981;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0.875rem 2rem;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.2s;
+}
+.vf-cta-btn:hover {
+  background: #059669;
+  transform: translateY(-2px);
+}
+</style>

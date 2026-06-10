@@ -23,6 +23,7 @@
     <!-- Stylesheets -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/animations.css">
     <link rel="stylesheet" href="/premium-enhanced.css">
     <link rel="stylesheet" href="/premium-sections.css">
     <link rel="stylesheet" href="/premium-personal-story.css">
@@ -30,10 +31,17 @@
     <link rel="stylesheet" href="/premium-styles.css">
     <link rel="stylesheet" href="/video-funnel.css">
     <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/email-capture.css">
     
     {% if extra_css %}
     <link rel="stylesheet" href="{{ extra_css }}">
     {% endif %}
+    {% if extra_head %}
+    {{ extra_head | safe }}
+    {% endif %}
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://robspain.com{{ page.url | url }}">
 
     {% if page.url and page.url.indexOf("/admin/") == 0 %}
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
@@ -127,6 +135,7 @@
     {% endif %}
 
     <!-- SEO & Social Meta Tags -->
+<<<<<<< HEAD
     <meta property="og:title" content="{{ resolvedTitle }}">
     <meta property="og:description" content="{{ resolvedDescription }}">
     <meta property="og:image" content="{{ resolvedImage | absoluteUrl }}">
@@ -140,10 +149,22 @@
     <meta name="twitter:description" content="{{ resolvedDescription }}">
     <meta name="twitter:image" content="{{ resolvedImage | absoluteUrl }}">
     <meta name="twitter:site" content="@robspainBCBA">
+=======
+    <meta property="og:title" content="{{ seo.metaTitle or title or "Rob Spain - School BCBA" }}">
+    <meta property="og:description" content="{{ seo.metaDesc or description or "Rob Spain, School BCBA." }}">
+    <meta property="og:image" content="https://robspain.com{{ seo.socialImage or image or "/images/profile-Rob.png" }}">
+    <meta property="og:url" content="https://robspain.com{{ page.url }}">
+    <meta property="og:type" content="article">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ seo.metaTitle or title or "Rob Spain - School BCBA" }}">
+    <meta name="twitter:description" content="{{ seo.metaDesc or description or "Rob Spain, School BCBA." }}">
+    <meta name="twitter:image" content="https://robspain.com{{ seo.socialImage or image or "/images/profile-Rob.png" }}">
+>>>>>>> origin/main
     <meta name="twitter:creator" content="@robspainBCBA">
 
-    {% if layout == "post.njk" %}
     <script type="application/ld+json">
+    {% if layout == "post.njk" %}
     {
       "@context": "https://schema.org",
       "@type": "BlogPosting",
@@ -174,8 +195,21 @@
       "description": "{{ resolvedDescription }}"{% if tags or keywords %},
       "keywords": "{{ (tags or keywords) | join(', ') }}"{% endif %}
     }
-    </script>
+    {% else %}
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "url": "https://robspain.com/",
+      "name": "Rob Spain, BCBA",
+      "author": {
+        "@type": "Person",
+        "name": "Rob Spain",
+        "url": "https://robspain.com"
+      },
+      "description": "{{ seo.metaDesc or description or 'Rob Spain, School BCBA.' }}"
+    }
     {% endif %}
+<<<<<<< HEAD
     {% if page.url == "/" %}
     <script type="application/ld+json">
     {
@@ -231,10 +265,19 @@
     }
     </script>
     {% endif %}
+=======
+    </script>
+>>>>>>> origin/main
 
     <!-- Meta tags and other head content can go here -->
 </head>
 <body>
+    {% if page.url and page.url.startsWith('/admin/') %}
+    <div class="admin-auth-bar" style="position:fixed;right:16px;bottom:16px;z-index:100000;display:flex;gap:10px;align-items:center;background:rgba(15,23,42,.92);color:#e2e8f0;border:1px solid rgba(16,185,129,.35);box-shadow:0 14px 40px rgba(0,0,0,.24);border-radius:999px;padding:9px 12px;font:600 12px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backdrop-filter:blur(12px);">
+        <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;border-radius:50%;background:#10b981;box-shadow:0 0 0 4px rgba(16,185,129,.14);"></span>Admin authenticated</span>
+        <a href="/admin/logout/" style="color:#f6c453;text-decoration:none;border-left:1px solid rgba(148,163,184,.35);padding-left:10px;">Logout</a>
+    </div>
+    {% endif %}
     <!-- Premium Navigation -->
     <nav class="nav-premium">
         <div class="container">
@@ -244,6 +287,10 @@
                 </a>
                 <div class="nav-links-premium">
                     <a href="/#about" class="nav-link-premium">ABOUT</a>
+<<<<<<< HEAD
+=======
+                    <a href="/transformation-program/" class="nav-link-premium">PROGRAM</a>
+>>>>>>> origin/main
                     <a href="/blog/" class="nav-link-premium">BLOG</a>
                     <a href="/cv/" class="nav-link-premium">CV</a>
                 </div>
@@ -257,6 +304,13 @@
 
     <footer class="footer">
         <div class="container">
+            <!-- Email Signup Section -->
+            <!-- Temporarily commented out due to Nunjucks syntax issue
+            <div class="footer-email-signup-wrapper">
+                {% include "components/EmailSignup.njk" %}
+            </div>
+            -->
+            
             <div class="footer-content">
                 <div class="footer-section">
                     <h4>Professional Resources</h4>
@@ -265,22 +319,29 @@
                             <i class="fas fa-graduation-cap"></i>
                             Behavior School
                         </a>
-                        <a href="https://behaviorschool.com/bcba-study-tools" target="_blank" class="footer-link">
+                        <a href="https://behaviorschool.com/study" target="_blank" class="footer-link">
                             <i class="fas fa-brain"></i>
                             Behavior Study Tools
                         </a>
-                        <a href="https://behaviorschool.com/iep-behavior-goals" target="_blank" class="footer-link">
+                        <a href="https://behaviorschool.com/iep-goals" target="_blank" class="footer-link">
                             <i class="fas fa-file-signature"></i>
                             IEP Goal Generator
                         </a>
-                        <a href="https://behaviorschool.com/supervision-tools" target="_blank" class="footer-link">
+                        <a href="https://behaviorschool.com/supervisors" target="_blank" class="footer-link">
                             <i class="fas fa-user-tie"></i>
                             Supervision Tools
                         </a>
-                        <a href="https://behaviorschool.com/transformation-program" target="_blank" class="footer-link">
+                        <a href="/transformation-program/" class="footer-link">
                             <i class="fas fa-rocket"></i>
                             Transformation Program
                         </a>
+<<<<<<< HEAD
+=======
+                        <a href="https://reunifyscience.com" target="_blank" class="footer-link">
+                            <i class="fas fa-hands-helping"></i>
+                            ReunifyScience
+                        </a>
+>>>>>>> origin/main
                         <a href="/cv/" class="footer-link">
                             <i class="fas fa-file-alt"></i>
                             Professional CV
@@ -330,14 +391,17 @@
                         <div class="bacb-details">
                             <p><strong>BACB ACE Provider:</strong> Behavior School LLC</p>
                             <p><strong>ACE Provider #:</strong> OP-25-11420</p>
-                            <p><strong>Valid:</strong> 01/30/25 - 01/31/26</p>
                         </div>
                         <div class="bacb-logos">
+<<<<<<< HEAD
                             <div class="ace-logo-badge" aria-label="BACB ACE Authorized Continuing Education Provider">
                                 <span>BACB</span>
                                 <strong>ACE</strong>
                                 <small>Provider</small>
                             </div>
+=======
+                            <img src="/images/BACB_ACE-Logo.jpg" alt="BACB ACE Authorized Continuing Education Provider" class="ace-logo" loading="lazy" decoding="async" style="display: block; max-width: 60px; height: auto;">
+>>>>>>> origin/main
                         </div>
                     </div>
                 </div>
@@ -346,18 +410,23 @@
             <div class="footer-bottom">
                 <div class="footer-bottom-content">
                     <p>&copy; <span id="current-year"></span> Rob Spain, BCBA, IBA. All rights reserved.</p>
-                    <p class="footer-note">For comprehensive <a href="/#about" style="color: #10B981;">School BCBA</a> resources: <a href="https://behaviorschool.com/bcba-study-tools" target="_blank" style="color: #10B981;">Behavior Study Tools</a> | <a href="https://behaviorschool.com" target="_blank" style="color: #10B981;">Behavior School</a></p>
+                    <p class="footer-note">For comprehensive <a href="/#about" style="color: #10B981;">School BCBA</a> resources: <a href="https://behaviorschool.com/study" target="_blank" style="color: #10B981;">Behavior Study Tools</a> | <a href="https://behaviorschool.com" target="_blank" style="color: #10B981;">Behavior School</a></p>
                 </div>
             </div>
         </div>
     </footer>
+    <script src="/js/animations.js"></script>
     <script src="/premium-interactions.js"></script>
     <script src="/newsletter-signup.js"></script>
     <script src="/video-funnel.js"></script>
     <script src="/contact-form.js"></script>
+<<<<<<< HEAD
     {% if page.url and page.url.indexOf("/admin/") == 0 %}
     <script src="/admin-auth.js"></script>
     {% endif %}
+=======
+    <script src="/email-capture.js"></script>
+>>>>>>> origin/main
     <script>
       (function(){
         var el = document.getElementById('current-year');
@@ -372,11 +441,6 @@
         // Update all elements with the js-years-exp class
         document.querySelectorAll('.js-years-exp').forEach(function(element) {
           element.textContent = yearsDisplay;
-        });
-        
-        // Update data-counter attributes for the index page stats
-        document.querySelectorAll('[data-counter-exp]').forEach(function(element) {
-          element.setAttribute('data-counter', years);
         });
       })();
     </script>

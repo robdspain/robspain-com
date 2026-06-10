@@ -1,0 +1,100 @@
+{
+  "lastUpdated": "2026-02-11T17:00:06Z",
+  "agents": {
+    "Neo": {
+      "status": "working",
+      "task": "Paper 1 full voice conversion (14 parts sent), processing scout findings, heartbeat checks",
+      "lastActive": "2026-02-11T17:00:06Z"
+    },
+    "Scout": {
+      "status": "deployed",
+      "task": "6 new findings \u2014 fieldwork tracker intel, study tool comparison, ABA biz docs, IEHP denials",
+      "lastActive": "2026-02-11T17:00:06Z"
+    },
+    "Writer": {
+      "status": "waiting",
+      "task": "13 drafts awaiting Rob's review (10 existing + 3 new lead responses)",
+      "lastActive": "2026-02-11T17:00:06Z"
+    },
+    "Analyst": {
+      "status": "deployed",
+      "task": "Daily report delivered",
+      "lastActive": "2026-02-11T04:47:00Z"
+    },
+    "Engineer": {
+      "status": "idle",
+      "task": "Agent HQ + Tasks page upgrades complete",
+      "lastActive": "2026-02-11T04:53:00Z"
+    },
+    "Planner": {
+      "status": "idle",
+      "task": "No active task chains",
+      "lastActive": "2026-02-10T12:00:00Z"
+    },
+    "Browser": {
+      "status": "idle",
+      "task": "No active browse tasks",
+      "lastActive": "2026-02-10T12:00:00Z"
+    },
+    "Docs": {
+      "status": "idle",
+      "task": "Weekly report scheduled Mon 8AM",
+      "lastActive": "2026-02-10T12:00:00Z"
+    },
+    "SEO": {
+      "status": "working",
+      "task": "Draft ready: 'How Long to Become a BCBA' (10K-50K monthly searches)",
+      "lastActive": "2026-02-11T17:00:06Z"
+    },
+    "BAE SIG": {
+      "status": "blocked",
+      "task": "Waiting: PayPal link from Liz Flaherty",
+      "lastActive": "2026-02-10T22:00:00Z"
+    },
+    "KCUSD": {
+      "status": "deployed",
+      "task": "Premium UI redesign deployed (motion-utils, animated homepage)",
+      "lastActive": "2026-02-11T04:30:00Z"
+    },
+    "Pro": {
+      "status": "working",
+      "task": "plan.behaviorschool.com DNS live, Netlify site created, first build triggered",
+      "lastActive": "2026-02-11T17:00:06Z"
+    },
+    "RobSpain.com": {
+      "status": "deployed",
+      "task": "Live \u2014 CV updated with CalABA presentations, mobile fixes deployed",
+      "lastActive": "2026-02-11T17:00:06Z"
+    },
+    "BehaviorSchool": {
+      "status": "deployed",
+      "task": "Live \u2014 15 blog posts SEO-optimized, nav fix + pro mockups deployed",
+      "lastActive": "2026-02-11T17:00:06Z"
+    },
+    "Study App": {
+      "status": "blocked",
+      "task": "React mounts but Supabase env vars missing from build \u2014 needs .env.local",
+      "lastActive": "2026-02-11T06:00:00Z"
+    },
+    "Supervision": {
+      "status": "idle",
+      "task": "Phase 1 built. Waiting for study bridge + Convex deploy",
+      "lastActive": "2026-02-10T12:00:00Z"
+    },
+    "Toolchest": {
+      "status": "idle",
+      "task": "4 MVP tools built. Waiting for auth integration",
+      "lastActive": "2026-02-10T12:00:00Z"
+    },
+    "VideoGen": {
+      "status": "idle",
+      "task": "20 BCBA questions ready. Waiting for batch render trigger",
+      "lastActive": "2026-02-10T12:00:00Z"
+    },
+    "Learning": {
+      "status": "idle",
+      "task": "R2 video hosting configured. Platform awaiting content",
+      "lastActive": "2026-02-10T12:00:00Z"
+    }
+  }
+}

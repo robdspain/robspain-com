@@ -1,0 +1,349 @@
+---
+layout: base.njk
+title: Neo Home Command Center - Rob Spain
+description: Private mobile command surface for Rob and Cristal's home automations.
+permalink: /admin/home/
+extra_head: |
+  <meta name="theme-color" content="#0b1220">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Neo Home">
+  <link rel="manifest" href="/neo-home.webmanifest">
+---
+
+<style>
+  :root {
+    --neo-ink: #e5f4ff;
+    --neo-muted: #8ba4b8;
+    --neo-line: rgba(148, 197, 255, 0.18);
+    --neo-panel: rgba(10, 22, 38, 0.72);
+    --neo-panel-strong: rgba(9, 18, 31, 0.92);
+    --neo-blue: #4fc3ff;
+    --neo-gold: #f6c453;
+    --neo-green: #60d394;
+    --neo-red: #fb7185;
+    --neo-radius: 28px;
+  }
+
+  body { background: #07111f; }
+  .nav-premium, .footer { display: none; }
+  main { min-height: 100vh; }
+
+  .neo-home {
+    min-height: 100vh;
+    color: var(--neo-ink);
+    background:
+      radial-gradient(circle at 18% 6%, rgba(79, 195, 255, 0.23), transparent 34rem),
+      radial-gradient(circle at 82% 14%, rgba(246, 196, 83, 0.16), transparent 30rem),
+      linear-gradient(155deg, #07111f 0%, #081827 48%, #111827 100%);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .neo-home::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: linear-gradient(to bottom, black 0%, transparent 82%);
+    pointer-events: none;
+  }
+
+  .neo-shell {
+    width: min(1120px, calc(100% - 28px));
+    margin: 0 auto;
+    padding: max(24px, env(safe-area-inset-top)) 0 max(28px, env(safe-area-inset-bottom));
+    position: relative;
+    z-index: 1;
+  }
+
+  .neo-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+
+  .neo-brand { display: flex; align-items: center; gap: 12px; }
+  .neo-orb {
+    width: 46px;
+    height: 46px;
+    border-radius: 18px;
+    background: conic-gradient(from 210deg, var(--neo-blue), var(--neo-gold), var(--neo-green), var(--neo-blue));
+    box-shadow: 0 0 34px rgba(79, 195, 255, 0.35);
+    position: relative;
+  }
+  .neo-orb::after { content: ""; position: absolute; inset: 5px; border-radius: 14px; background: #081827; }
+  .neo-title h1 { font-size: clamp(1.5rem, 6vw, 3.8rem); line-height: 0.95; margin: 0; letter-spacing: -0.07em; }
+  .neo-title p { margin: 4px 0 0; color: var(--neo-muted); font-size: 0.86rem; }
+
+  .neo-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #c7f9df;
+    border: 1px solid rgba(96, 211, 148, 0.28);
+    background: rgba(96, 211, 148, 0.08);
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+  .neo-dot { width: 8px; height: 8px; border-radius: 999px; background: var(--neo-green); box-shadow: 0 0 16px var(--neo-green); }
+
+  .neo-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 18px; align-items: stretch; }
+  .neo-panel {
+    border: 1px solid var(--neo-line);
+    background: var(--neo-panel);
+    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.32);
+    backdrop-filter: blur(18px);
+    border-radius: var(--neo-radius);
+  }
+
+  .neo-command { padding: clamp(18px, 4vw, 30px); }
+  .neo-kicker { color: var(--neo-gold); font-size: 0.78rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 900; margin-bottom: 12px; }
+  .neo-command h2 { font-size: clamp(2.2rem, 10vw, 5.2rem); line-height: 0.9; letter-spacing: -0.08em; margin: 0 0 18px; max-width: 9ch; }
+  .neo-command p { color: var(--neo-muted); max-width: 55ch; line-height: 1.6; margin: 0 0 20px; }
+
+  .neo-input-wrap { display: grid; gap: 12px; }
+  .neo-input {
+    width: 100%;
+    min-height: 138px;
+    border: 1px solid rgba(148, 197, 255, 0.22);
+    border-radius: 24px;
+    background: rgba(3, 10, 20, 0.62);
+    color: white;
+    resize: vertical;
+    padding: 18px;
+    font: 700 1.04rem/1.45 Inter, sans-serif;
+    outline: none;
+  }
+  .neo-input:focus { border-color: rgba(79, 195, 255, 0.78); box-shadow: 0 0 0 4px rgba(79, 195, 255, 0.12); }
+
+  .neo-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .neo-btn {
+    appearance: none;
+    border: 0;
+    border-radius: 18px;
+    padding: 13px 16px;
+    min-height: 48px;
+    color: white;
+    font-weight: 900;
+    cursor: pointer;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.11);
+    transition: transform .18s ease, border-color .18s ease, background .18s ease;
+  }
+  .neo-btn:active { transform: scale(0.98); }
+  .neo-btn-primary { background: linear-gradient(135deg, #0ea5e9, #2563eb); border-color: rgba(79,195,255,.55); box-shadow: 0 18px 48px rgba(14,165,233,.24); flex: 1; }
+  .neo-btn-gold { background: rgba(246, 196, 83, 0.12); color: #ffe7a1; border-color: rgba(246, 196, 83, 0.32); }
+  .neo-btn-ghost { color: #cfe9ff; }
+
+  .neo-side { display: grid; gap: 18px; }
+  .neo-card { padding: 18px; }
+  .neo-card h3 { margin: 0 0 12px; font-size: 1rem; letter-spacing: -0.02em; }
+  .neo-card p, .neo-small { color: var(--neo-muted); font-size: .86rem; line-height: 1.55; margin: 0; }
+
+  .neo-token-row { display: flex; gap: 8px; margin-top: 12px; }
+  .neo-token-row input {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid rgba(148,197,255,.18);
+    border-radius: 14px;
+    background: rgba(0,0,0,.28);
+    color: white;
+    padding: 11px 12px;
+    outline: none;
+  }
+  .neo-token-row button { white-space: nowrap; }
+
+  .neo-quick-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+  .neo-chip {
+    border: 1px solid rgba(148,197,255,.15);
+    background: rgba(255,255,255,.055);
+    border-radius: 18px;
+    color: #e5f4ff;
+    min-height: 74px;
+    padding: 12px;
+    text-align: left;
+    cursor: pointer;
+  }
+  .neo-chip strong { display: block; font-size: .95rem; margin-bottom: 4px; }
+  .neo-chip span { color: var(--neo-muted); font-size: .76rem; line-height: 1.25; display: block; }
+
+  .neo-log { min-height: 88px; border-radius: 18px; padding: 14px; background: rgba(0,0,0,.28); border: 1px solid rgba(148,197,255,.12); color: #cfe9ff; font: 0.86rem/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre-wrap; }
+  .neo-log[data-state="error"] { color: #fecdd3; border-color: rgba(251,113,133,.35); }
+  .neo-log[data-state="ok"] { color: #bbf7d0; border-color: rgba(96,211,148,.34); }
+
+  .neo-install { margin-top: 18px; display: flex; align-items: center; gap: 10px; justify-content: space-between; border: 1px dashed rgba(246,196,83,.28); background: rgba(246,196,83,.07); padding: 14px; border-radius: 22px; }
+
+  @media (max-width: 820px) {
+    .neo-shell { width: min(100% - 20px, 680px); }
+    .neo-grid { grid-template-columns: 1fr; }
+    .neo-topbar { align-items: flex-start; }
+    .neo-status { margin-top: 4px; }
+    .neo-command h2 { max-width: 8ch; }
+    .neo-btn-primary { flex-basis: 100%; }
+  }
+
+  @media (max-width: 480px) {
+    .neo-topbar { flex-direction: column; }
+    .neo-quick-grid { grid-template-columns: 1fr; }
+    .neo-command { border-radius: 24px; }
+  }
+</style>
+
+<section class="neo-home" aria-label="Neo Home Command Center">
+  <div class="neo-shell">
+    <header class="neo-topbar">
+      <div class="neo-brand">
+        <div class="neo-orb" aria-hidden="true"></div>
+        <div class="neo-title">
+          <h1>Neo Home</h1>
+          <p>Private command surface for Rob + Cristal</p>
+        </div>
+      </div>
+      <div class="neo-status" id="bridgeStatus"><span class="neo-dot"></span><span>Command bridge ready</span></div>
+    </header>
+
+    <div class="neo-grid">
+      <article class="neo-panel neo-command">
+        <div class="neo-kicker">Ask the house</div>
+        <h2>What do you need?</h2>
+        <p>Type a command, use iPhone keyboard dictation, or tap a quick action. Risky commands are queued for confirmation instead of executed blindly.</p>
+
+        <div class="neo-input-wrap">
+          <textarea id="commandText" class="neo-input" placeholder="Try: turn on the den lights, open the living room TV remote, or ask Neo what devices are online."></textarea>
+          <div class="neo-actions">
+            <button class="neo-btn neo-btn-primary" id="sendCommand">Send to Neo</button>
+            <button class="neo-btn neo-btn-gold" id="dictationHint">Use keyboard mic</button>
+            <button class="neo-btn neo-btn-ghost" id="clearCommand">Clear</button>
+          </div>
+        </div>
+
+        <div class="neo-install">
+          <div>
+            <strong>Add to Home Screen</strong>
+            <div class="neo-small">In Safari: Share → Add to Home Screen. Then keep using keyboard dictation for reliable voice input.</div>
+          </div>
+          <span aria-hidden="true">⌂</span>
+        </div>
+      </article>
+
+      <aside class="neo-side">
+        <section class="neo-panel neo-card">
+          <h3>Quick commands</h3>
+          <div class="neo-quick-grid" id="quickGrid">
+            <button class="neo-chip" data-command="Show me the current Home Assistant device status."><strong>Status</strong><span>What is online?</span></button>
+            <button class="neo-chip" data-command="Open the living room TV controls."><strong>Living room</strong><span>TV + media controls</span></button>
+            <button class="neo-chip" data-command="Open the den controls."><strong>Den</strong><span>Monitor, stereo, Alexa</span></button>
+            <button class="neo-chip" data-command="Open parents room controls without playing audio."><strong>Parents room</strong><span>HomePod + Echo Show</span></button>
+            <button class="neo-chip" data-command="Start the Yo Gabba Gabba helper for Kian."><strong>Kian mode</strong><span>Kid-safe media helper</span></button>
+            <button class="neo-chip" data-command="Ask Neo for a house summary and any issues needing Rob."><strong>Briefing</strong><span>Home summary</span></button>
+          </div>
+        </section>
+
+        <section class="neo-panel neo-card">
+          <h3>Private access key</h3>
+          <p>Saved only on this device. The Netlify function rejects commands when a server key is configured and this does not match.</p>
+          <div class="neo-token-row">
+            <input id="accessKey" type="password" placeholder="Paste home key" autocomplete="off">
+            <button class="neo-btn neo-btn-ghost" id="saveKey">Save</button>
+          </div>
+        </section>
+
+        <section class="neo-panel neo-card">
+          <h3>Last result</h3>
+          <div class="neo-log" id="resultLog">No command sent yet.</div>
+        </section>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<script>
+(function () {
+  const commandText = document.getElementById('commandText');
+  const resultLog = document.getElementById('resultLog');
+  const accessKey = document.getElementById('accessKey');
+  const sendButton = document.getElementById('sendCommand');
+  const savedKey = localStorage.getItem('neoHomeAccessKey') || '';
+  accessKey.value = savedKey;
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/neo-home-sw.js').catch(() => {});
+  }
+
+  function setLog(message, state) {
+    resultLog.textContent = message;
+    resultLog.dataset.state = state || '';
+  }
+
+  function buildPayload(command, source) {
+    return {
+      command,
+      source: source || 'manual',
+      person: localStorage.getItem('neoHomePerson') || 'Rob',
+      device: /iPhone|iPad|iPod/i.test(navigator.userAgent) ? 'iOS PWA' : 'Web PWA',
+      href: location.href,
+      createdAt: new Date().toISOString()
+    };
+  }
+
+  async function sendCommand(command, source) {
+    const clean = (command || '').trim();
+    if (!clean) {
+      setLog('Type a command first. On iPhone, tap in the box and use the keyboard mic.', 'error');
+      commandText.focus();
+      return;
+    }
+
+    sendButton.disabled = true;
+    setLog('Sending command to Neo…');
+
+    try {
+      const res = await fetch('/api/neo-home-command', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Neo-Home-Key': localStorage.getItem('neoHomeAccessKey') || ''
+        },
+        body: JSON.stringify(buildPayload(clean, source))
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error || 'Command failed with HTTP ' + res.status);
+      }
+      setLog('Queued for Neo.\nID: ' + (data.id || 'pending') + '\nMode: ' + (data.mode || 'queue'), 'ok');
+      commandText.value = '';
+    } catch (err) {
+      setLog('Not sent: ' + err.message + '\n\nIf this is the first run, save the private access key or finish deploying the command bridge.', 'error');
+    } finally {
+      sendButton.disabled = false;
+    }
+  }
+
+  sendButton.addEventListener('click', () => sendCommand(commandText.value, 'manual'));
+  document.getElementById('clearCommand').addEventListener('click', () => { commandText.value = ''; commandText.focus(); });
+  document.getElementById('saveKey').addEventListener('click', () => {
+    localStorage.setItem('neoHomeAccessKey', accessKey.value.trim());
+    setLog('Access key saved on this device.', 'ok');
+  });
+  document.getElementById('dictationHint').addEventListener('click', () => {
+    commandText.focus();
+    setLog('Keyboard dictation is the reliable iPhone path: tap the mic on the iOS keyboard, speak, then Send to Neo.');
+  });
+  document.getElementById('quickGrid').addEventListener('click', (event) => {
+    const chip = event.target.closest('[data-command]');
+    if (!chip) return;
+    commandText.value = chip.dataset.command;
+    sendCommand(chip.dataset.command, 'quick-action');
+  });
+})();
+</script>

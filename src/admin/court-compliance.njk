@@ -1,0 +1,1727 @@
+---
+layout: base.njk
+title: Court Compliance Tracker - Rob Spain
+permalink: /admin/court-compliance/
+---
+
+<div class="compliance-page">
+  <div class="compliance-container">
+    <a class="back-link" href="/admin/dashboard/">Back to admin dashboard</a>
+
+    <section class="hero-card">
+      <p class="eyebrow">Court compliance tracker</p>
+      <h1>Therapy, family therapy, anger management, and proof timeline</h1>
+      <p class="hero-copy">Private working tracker for each compliance gate, proof item, and scheduling step. Check items off as they are completed and the timeline updates automatically.</p>
+      <div class="status-grid" aria-label="Compliance progress summary">
+        <div><span data-count-total>0</span><small>Total checklist items</small></div>
+        <div><span data-count-done>0</span><small>Completed</small></div>
+        <div><span data-count-open>0</span><small>Open</small></div>
+      </div>
+      <div class="overall-progress" aria-label="Overall completion progress">
+        <span data-progress-label>0% complete</span>
+        <div class="progress-track"><div class="progress-fill" data-progress-fill></div></div>
+      </div>
+      <p class="sync-status" data-sync-status>Saving locally; connecting to Convex...</p>
+    </section>
+
+    <section class="notice-card">
+      <h2>Important scope note</h2>
+      <p>This page is an organization tool, not legal advice. The underlying court order, recommendation, or counsel instruction controls if any detail conflicts. Confirm deadlines, wording, acceptable providers, and filing requirements with counsel before filing, serving, or relying on this tracker.</p>
+    </section>
+
+    <section class="panel command-panel">
+      <div class="panel-heading">
+        <p class="eyebrow">Right now</p>
+        <h2>Next task and projected path home</h2>
+      </div>
+      <div class="projection-grid">
+        <div class="next-card">
+          <span class="next-label">Next required action</span>
+          <strong data-next-task>Enter start dates and completed counts.</strong>
+          <p data-next-detail>The projection updates from the dates and counts below.</p>
+        </div>
+        <div class="date-card">
+          <span>Waylon + Harrison broader schedule estimate</span>
+          <strong data-wh-home-date>Not enough data</strong>
+          <small data-wh-home-detail>First/third weekends plus Wednesday overnight begins after the listed gates.</small>
+        </div>
+        <div class="date-card">
+          <span>Dylan broader schedule estimate</span>
+          <strong data-dylan-home-date>Not enough data</strong>
+          <small data-dylan-home-detail>Separate Dylan gates run after Dylan-specific family therapy and visits.</small>
+        </div>
+      </div>
+
+      <div class="schedule-controls" aria-label="Timeline inputs">
+        <label>Projection start date
+          <input type="date" data-plan-input="planStart">
+        </label>
+        <label>Anger-management first class
+          <input type="date" data-plan-input="angerStart">
+        </label>
+        <label>Family therapy first session
+          <input type="date" data-plan-input="familyStart">
+        </label>
+        <label>Anger classes done
+          <input type="number" min="0" max="10" step="1" data-plan-input="angerDone">
+        </label>
+        <label>Family sessions done
+          <input type="number" min="0" max="24" step="1" data-plan-input="familyDone">
+        </label>
+        <label>W/H two-hour visits done
+          <input type="number" min="0" max="6" step="1" data-plan-input="whTwoHourDone">
+        </label>
+        <label>W/H Saturday visits done
+          <input type="number" min="0" max="6" step="1" data-plan-input="whSaturdayDone">
+        </label>
+        <label>W/H overnights done
+          <input type="number" min="0" max="6" step="1" data-plan-input="whOvernightDone">
+        </label>
+        <label>W/H first-third weekends done
+          <input type="number" min="0" max="6" step="1" data-plan-input="whWeekendDone">
+        </label>
+        <label>Dylan two-hour visits done
+          <input type="number" min="0" max="6" step="1" data-plan-input="dylanTwoHourDone">
+        </label>
+        <label>Dylan Saturday visits done
+          <input type="number" min="0" max="6" step="1" data-plan-input="dylanSaturdayDone">
+        </label>
+        <label>Dylan overnights done
+          <input type="number" min="0" max="4" step="1" data-plan-input="dylanOvernightDone">
+        </label>
+        <label>Dylan first-third weekends done
+          <input type="number" min="0" max="4" step="1" data-plan-input="dylanWeekendDone">
+        </label>
+      </div>
+      <div class="control-actions">
+        <button type="button" class="utility-button" data-mark-today>Use today for missing start dates</button>
+        <button type="button" class="utility-button secondary" data-reset-plan>Reset projection inputs</button>
+      </div>
+      <p class="small-note">Date estimates assume weekly anger-management classes, weekly family therapy for the first 16 sessions, Dylan-specific alternating sessions after the first four family sessions, weekly visits unless the report says first/third weekends, and no cancellations, refusals, holidays, or therapist delays.</p>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <p class="eyebrow">Visual timeline</p>
+        <h2>Dated gate sequence</h2>
+      </div>
+      <div class="timeline-legend">
+        <span><i class="legend-dot done"></i> Done</span>
+        <span><i class="legend-dot active"></i> Next gate</span>
+        <span><i class="legend-dot waiting"></i> Waiting</span>
+      </div>
+      <div class="path-columns">
+        <div>
+          <h3>Waylon + Harrison path</h3>
+          <div class="timeline" data-path="wh" aria-label="Waylon and Harrison dated timeline"></div>
+        </div>
+        <div>
+          <h3>Dylan path</h3>
+          <div class="timeline" data-path="dylan" aria-label="Dylan dated timeline"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <p class="eyebrow">Recommendation text translated into tasks</p>
+        <h2>What needs to be done</h2>
+      </div>
+
+      <div class="requirement-block">
+        <h3>1. Personal therapist requirement for Dr. Phillip Collier</h3>
+        <p>The recommendation says that after sixteen family therapy sessions are completed, Father continues twice-monthly individual therapy with Dr. Phillip Collier for twelve sessions. The stated purpose is support with parenting and co-parenting, plus unresolved issues in the marriage to Mother.</p>
+        <ul class="checklist" data-checklist="individual-therapy">
+          <li><label><input type="checkbox" data-stage="setup"> Ask Dr. Collier for a written attendance and compliance letter for current therapy.</label></li>
+          <li><label><input type="checkbox" data-stage="setup"> Keep the letter limited to attendance, active participation, treatment status, and scheduling, without privileged clinical detail.</label></li>
+          <li><label><input type="checkbox" data-stage="post16"> After sixteen family therapy sessions, schedule twelve twice-monthly individual therapy sessions with Dr. Collier.</label></li>
+          <li><label><input type="checkbox" data-stage="post16"> Confirm Dr. Collier can address parenting, co-parenting, and unresolved marriage issues as stated in the recommendation.</label></li>
+          <li><label><input type="checkbox" data-stage="post16"> Have Dr. Collier contact the evaluator at 209-425-2729 before the third session to discuss the referral reason, if counsel approves that contact.</label></li>
+          <li><label><input type="checkbox" data-stage="post16"> File or send proof of attendance to Mother’s attorney after the first, sixth, and twelfth sessions.</label></li>
+          <li><label><input type="checkbox" data-stage="post16"> Confirm whether Dr. Collier and the co-parenting facilitator may communicate with each other about progress in both therapies.</label></li>
+          <li><label><input type="checkbox" data-stage="proof"> Save all letters, session confirmations, and proof transmissions as PDFs.</label></li>
+        </ul>
+      </div>
+
+      <div class="requirement-block">
+        <h3>2. Janz family therapy setup</h3>
+        <p>The recommendation calls for both parties and the minors to participate in twenty-four sessions of family therapy with a licensed mental health professional experienced with families in high-conflict divorces. Mother participates in half of the sessions. The first sixteen sessions are weekly, and the remaining eight sessions are twice monthly.</p>
+        <ul class="checklist" data-checklist="family-therapy">
+          <li><label><input type="checkbox" data-stage="setup"> Send the Janz follow-up draft after approval.</label></li>
+          <li><label><input type="checkbox" data-stage="setup"> Confirm what documents are pending in the Janz portal and who must complete each one.</label></li>
+          <li><label><input type="checkbox" data-stage="setup"> Confirm Brooke’s required consent, intake paperwork, attendance, and support obligations before scheduling.</label></li>
+          <li><label><input type="checkbox" data-stage="setup"> Confirm Janz can provide family therapy involving both parents and the children together as required or clinically directed.</label></li>
+          <li><label><input type="checkbox" data-stage="setup"> Ask whether Janz needs a copy of the custody recommendation or order before scheduling.</label></li>
+          <li><label><input type="checkbox" data-stage="family"> Complete the first four sessions with both parents plus Harrison and Waylon, unless counsel or the therapist confirms a different court-approved structure.</label></li>
+          <li><label><input type="checkbox" data-stage="family"> Complete the next alternating sessions for Dylan and the whole-minor group as directed by the family therapist and recommendation.</label></li>
+          <li><label><input type="checkbox" data-stage="family"> Confirm the family therapist has a copy of the evaluation report and treats it as confidential.</label></li>
+          <li><label><input type="checkbox" data-stage="family"> File written proof of attendance for the first, sixth, twelfth, sixteenth, and twenty-fourth family therapy sessions.</label></li>
+          <li><label><input type="checkbox" data-stage="proof"> Save all Janz replies, appointment confirmations, attendance letters, cancellation notices, and refusal documentation as PDFs.</label></li>
+        </ul>
+      </div>
+
+      <div class="requirement-block">
+        <h3>3. Anger management course in Fresno</h3>
+        <p>The recommendation says Father participates in ten once-weekly in-person anger-management classes. Written proof of attendance must be filed with the Court and copied to Mother after the first, fourth, and tenth classes.</p>
+        <ul class="checklist" data-checklist="anger-management">
+          <li><label><input type="checkbox" data-stage="setup"> Call providers and confirm live, in-person Fresno-area availability.</label></li>
+          <li><label><input type="checkbox" data-stage="setup"> Confirm the program is suitable for court-related anger-management compliance.</label></li>
+          <li><label><input type="checkbox" data-stage="anger"> Enroll in a ten-session once-weekly in-person anger-management class.</label></li>
+          <li><label><input type="checkbox" data-stage="anger"> Attend the first class and get written proof.</label></li>
+          <li><label><input type="checkbox" data-stage="anger"> File first-class proof with the Court and copy Mother.</label></li>
+          <li><label><input type="checkbox" data-stage="anger"> Attend the fourth class and get written proof.</label></li>
+          <li><label><input type="checkbox" data-stage="anger"> File fourth-class proof with the Court and copy Mother.</label></li>
+          <li><label><input type="checkbox" data-stage="anger"> Complete the tenth class and get written proof or certificate.</label></li>
+          <li><label><input type="checkbox" data-stage="anger"> File tenth-class proof with the Court and copy Mother.</label></li>
+        </ul>
+      </div>
+
+      <div class="requirement-block">
+        <h3>4. Step-up visitation proof gates</h3>
+        <p>These are tracking milestones only. Counsel should confirm exact trigger language before using this page to claim compliance.</p>
+        <ul class="checklist" data-checklist="step-up">
+          <li><label><input type="checkbox" data-stage="stepup"> After four anger-management classes and four family therapy sessions with Harrison and Waylon, track six two-hour unmonitored visits before family therapy sessions.</label></li>
+          <li><label><input type="checkbox" data-stage="stepup"> After six two-hour visits with Harrison and Waylon, track six Saturday 3pm to 7pm visits.</label></li>
+          <li><label><input type="checkbox" data-stage="stepup"> After ten anger-management classes and six Saturday visits with Harrison and Waylon, track six Saturday overnights.</label></li>
+          <li><label><input type="checkbox" data-stage="stepup"> Track Harrison and Waylon’s first-and-third weekend progression and Wednesday overnight progression.</label></li>
+          <li><label><input type="checkbox" data-stage="stepup"> After six family therapy sessions with Dylan alone, track Dylan’s six two-hour unmonitored visits before family therapy sessions.</label></li>
+          <li><label><input type="checkbox" data-stage="stepup"> Track Dylan’s Saturday visits, Saturday overnights, and weekend progression separately.</label></li>
+          <li><label><input type="checkbox" data-stage="proof"> Preserve proof of every completed, missed, refused, cancelled, or made-up visit.</label></li>
+        </ul>
+      </div>
+
+      <div class="requirement-block">
+        <h3>5. Proof file to keep current</h3>
+        <p>Create one clean proof packet so nothing has to be reconstructed later. Each item should be saved as a PDF or screenshot with the date visible.</p>
+        <ul class="checklist" data-checklist="proof-file">
+          <li><label><input type="checkbox" data-stage="proof"> Individual therapy attendance or compliance letter from Dr. Collier.</label></li>
+          <li><label><input type="checkbox" data-stage="proof"> Janz family therapy request email and all replies.</label></li>
+          <li><label><input type="checkbox" data-stage="proof"> Janz intake paperwork or appointment confirmation.</label></li>
+          <li><label><input type="checkbox" data-stage="proof"> Family therapy attendance proof for session 1, 6, 12, 16, and 24.</label></li>
+          <li><label><input type="checkbox" data-stage="proof"> Anger-management enrollment confirmation.</label></li>
+          <li><label><input type="checkbox" data-stage="proof"> Anger-management attendance proof for class 1, 4, and 10.</label></li>
+          <li><label><input type="checkbox" data-stage="proof"> Short cover index listing what each proof item shows.</label></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <p class="eyebrow">Draft email</p>
+        <h2>Email to Janz Family Therapy</h2>
+      </div>
+      <div class="email-draft">
+        <p><span class="label">To:</span> Vanessa Flores, Janz Family Therapy</p>
+        <p><span class="label">Cc:</span> Brooke Spain</p>
+        <p><span class="label">Subject:</span> Re: JFT</p>
+        <div class="email-body">
+          <p>Hello Vanessa,</p>
+          <p>I wanted to follow up on the pending documents and confirm that we are trying to set up family therapy in the way the custody recommendation/order requires.</p>
+          <p>My understanding is that the family therapy needs to involve both parents, that Brooke is required to attend and support the therapy, and that the children need to participate together as directed by the family therapist and the recommendation/order. I also understand that Harrison and Waylon are supposed to be involved together at the start, with Dylan and the family configuration addressed as the therapy progresses.</p>
+          <p>Can you please confirm the next steps so we can move this forward promptly?</p>
+          <ol>
+            <li>What documents are still pending in the portal, and who needs to complete each one?</li>
+            <li>Does Janz need Brooke to complete consent or intake paperwork before scheduling can proceed?</li>
+            <li>Can Janz provide family therapy involving both parents and the children together as required or clinically directed?</li>
+            <li>What is the earliest available appointment for the first family therapy session?</li>
+            <li>Do you need a copy of the custody recommendation/order before scheduling or before the therapist confirms the required session structure?</li>
+            <li>Can Janz provide written confirmation of scheduled sessions, attendance, cancellations, refusals, and participation if documentation is needed for court compliance?</li>
+          </ol>
+          <p>I want to make sure I am doing everything needed on my side and that the process is not delayed by missing paperwork or consent issues.</p>
+          <p>Thank you,<br>Rob Spain</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <p class="eyebrow">Family therapy coordination</p>
+        <h2>Appointments and Fresno providers to call</h2>
+      </div>
+
+      <div class="tool-grid">
+        <article class="tool-card">
+          <h3>Current appointment status</h3>
+          <dl>
+            <dt>Janz / Vanessa Flores</dt>
+            <dd>Appointment request is being reviewed and is not confirmed until an acceptance email arrives. Requested for Thursday, June 11, 2026, 11:00 AM to 12:00 PM PDT, video office. Phone: <a href="tel:+15598251205">(559) 825-1205</a>.</dd>
+            <dt>Full Life Change</dt>
+            <dd>Recurring Fridays at 10:15 AM.</dd>
+            <dt>Dr. Collier</dt>
+            <dd>Every other Tuesday at 7:00 AM, next appointment Tuesday, June 9, 2026. Dr. Collier has been emailed for a letter verifying that the court-identified therapy topics have already been covered.</dd>
+          </dl>
+          <button type="button" class="utility-button" data-download-calendar>Download Google Calendar import</button>
+        </article>
+
+        <article class="tool-card">
+          <h3>Family therapy call script</h3>
+          <p class="call-script">Hi, I am looking for family therapy in a court-involved custody matter. The custody evaluation recommends family therapy with a licensed mental health professional experienced in high-conflict divorce. The first phase involves both parents and Harrison and Waylon, with goals of addressing family history, relational issues, communication, and planning for unmonitored visitation. Are you accepting cases like this, and can you provide attendance or compliance documentation if clinically appropriate?</p>
+        </article>
+      </div>
+
+      <div class="provider-grid">
+        <article class="provider-card priority">
+          <h3>Janz Family Therapy</h3>
+          <p>Fresno child, teen, and family therapy. Already tied to the Vanessa Flores appointment request.</p>
+          <dl>
+            <dt>Phone</dt><dd><a href="tel:+15598251205">(559) 825-1205</a></dd>
+            <dt>Email</dt><dd><a href="mailto:help@janztherapy.com">help@janztherapy.com</a></dd>
+            <dt>Website</dt><dd><a href="https://janztherapy.com/contact" target="_blank" rel="noopener">janztherapy.com/contact</a></dd>
+            <dt>Address</dt><dd>1357 W Shaw Ave #100, Fresno, CA 93711</dd>
+          </dl>
+        </article>
+
+        <article class="provider-card priority">
+          <h3>Comprehensive Youth Services</h3>
+          <p>Fresno nonprofit. Website lists Court Ordered Conjoint Therapy.</p>
+          <dl>
+            <dt>Phone</dt><dd><a href="tel:+15592293561">(559) 229-3561</a></dd>
+            <dt>Email</dt><dd><a href="mailto:cys@cysfresno.org">cys@cysfresno.org</a></dd>
+            <dt>Website</dt><dd><a href="https://www.cysfresno.org/programs" target="_blank" rel="noopener">cysfresno.org/programs</a></dd>
+            <dt>Address</dt><dd>4545 N. West Ave. Bldg B, Fresno, CA 93705</dd>
+          </dl>
+        </article>
+
+        <article class="provider-card">
+          <h3>Fresno Family Therapy</h3>
+          <p>Fresno/Clovis practice with child, teen, couples, and family therapy.</p>
+          <dl>
+            <dt>Phone</dt><dd><a href="tel:+15597955990">(559) 795-5990</a></dd>
+            <dt>Email</dt><dd><a href="mailto:info@fresnofamilytherapy.com">info@fresnofamilytherapy.com</a></dd>
+            <dt>Website</dt><dd><a href="https://fresnofamilytherapy.com/our-office/" target="_blank" rel="noopener">fresnofamilytherapy.com/our-office</a></dd>
+          </dl>
+        </article>
+
+        <article class="provider-card">
+          <h3>Central Valley Family Therapy</h3>
+          <p>Fresno family and couples therapy practice.</p>
+          <dl>
+            <dt>Phone</dt><dd><a href="tel:+15596916840">(559) 691-6840</a></dd>
+            <dt>Email</dt><dd><a href="mailto:contact@centralvalleyfamilytherapy.com">contact@centralvalleyfamilytherapy.com</a></dd>
+            <dt>Website</dt><dd><a href="https://centralvalleyfamilytherapy.com/contact/" target="_blank" rel="noopener">centralvalleyfamilytherapy.com/contact</a></dd>
+            <dt>Address</dt><dd>7170 N Financial Dr. Suite 110, Fresno, CA 93720</dd>
+          </dl>
+        </article>
+
+        <article class="provider-card">
+          <h3>Esperanza Family Counseling</h3>
+          <p>Fresno in-person and telehealth therapy for individuals, couples, families, children, and teens.</p>
+          <dl>
+            <dt>Phone</dt><dd><a href="tel:+15594720501">(559) 472-0501</a></dd>
+            <dt>Contact</dt><dd><a href="https://www.esperanzafamilycounseling.com/contact-us" target="_blank" rel="noopener">Website contact form</a></dd>
+            <dt>Website</dt><dd><a href="https://www.esperanzafamilycounseling.com/contact-us" target="_blank" rel="noopener">esperanzafamilycounseling.com/contact-us</a></dd>
+            <dt>Address</dt><dd>410 W Fallbrook Ave, Suite 105, Fresno, CA 93711</dd>
+          </dl>
+        </article>
+
+        <article class="provider-card">
+          <h3>Deeply Rooted Family Counseling</h3>
+          <p>Fresno family counseling practice.</p>
+          <dl>
+            <dt>Phone</dt><dd><a href="tel:+15595470907">(559) 547-0907</a></dd>
+            <dt>Email</dt><dd><a href="mailto:admin@deeplyrootedfc.com">admin@deeplyrootedfc.com</a></dd>
+            <dt>Website</dt><dd><a href="https://deeplyrootedfc.com/" target="_blank" rel="noopener">deeplyrootedfc.com</a></dd>
+            <dt>Address</dt><dd>5740 N Palm Ave Suite 101 or 111, Fresno, CA 93704</dd>
+          </dl>
+        </article>
+
+        <article class="provider-card">
+          <h3>North Star Wellness Center</h3>
+          <p>Fresno individual adult, family, and child therapy.</p>
+          <dl>
+            <dt>Phone</dt><dd><a href="tel:+15592262273">(559) 226-2273</a></dd>
+            <dt>Email</dt><dd><a href="mailto:info@northstarwellnesscenter.org">info@northstarwellnesscenter.org</a></dd>
+            <dt>Website</dt><dd><a href="https://www.northstarwellnesscenter.org/" target="_blank" rel="noopener">northstarwellnesscenter.org</a></dd>
+          </dl>
+        </article>
+
+        <article class="provider-card">
+          <h3>4C Children and Family Services</h3>
+          <p>Fresno children and family services practice.</p>
+          <dl>
+            <dt>Phone</dt><dd><a href="tel:+15593387923">(559) 338-7923</a></dd>
+            <dt>Email</dt><dd><a href="mailto:info@4cfam.com">info@4cfam.com</a></dd>
+            <dt>Website</dt><dd><a href="https://4cfam.com/contact" target="_blank" rel="noopener">4cfam.com/contact</a></dd>
+            <dt>Address</dt><dd>1300 E Shaw Ave, Suite 130, Fresno, CA 93710</dd>
+          </dl>
+        </article>
+
+        <article class="provider-card">
+          <h3>Family Foundations Counseling Services</h3>
+          <p>Fresno child, youth, adult, and family counseling.</p>
+          <dl>
+            <dt>Phone</dt><dd><a href="tel:+15594373710">(559) 437-3710</a></dd>
+            <dt>Email</dt><dd><a href="mailto:admin@ffcounseling.org">admin@ffcounseling.org</a></dd>
+            <dt>Website</dt><dd><a href="https://familyfoundationscounseling.org/" target="_blank" rel="noopener">familyfoundationscounseling.org</a></dd>
+            <dt>Address</dt><dd>2610 West Shaw Ln. STE 104, Fresno, CA 93711</dd>
+          </dl>
+        </article>
+
+        <article class="provider-card">
+          <h3>Vue Family Therapy</h3>
+          <p>Fresno therapy practice. Relationship issues and high-conflict couples listed.</p>
+          <dl>
+            <dt>Phone</dt><dd><a href="tel:+15592023390">(559) 202-3390</a></dd>
+            <dt>Email</dt><dd><a href="mailto:info@vuefamilytherapy.com">info@vuefamilytherapy.com</a></dd>
+            <dt>Website</dt><dd><a href="https://vftclientportal.clientsecure.me/" target="_blank" rel="noopener">vftclientportal.clientsecure.me</a></dd>
+            <dt>Address</dt><dd>1300 W. Shaw Ave Ste 3A, Fresno, CA 93711</dd>
+          </dl>
+        </article>
+      </div>
+
+      <div class="panel-heading subheading">
+        <p class="eyebrow">Private-pay backups</p>
+        <h2>California court-involved options if Fresno providers cannot take it</h2>
+      </div>
+      <div class="provider-grid">
+        <article class="provider-card">
+          <h3>Dena Marshall, LMFT</h3>
+          <p>Court-involved family therapy, parent-child contact problems/refusal, and high-conflict custody work.</p>
+          <dl>
+            <dt>Phone</dt><dd><a href="tel:+18054041913">(805) 404-1913</a></dd>
+            <dt>Email</dt><dd><a href="mailto:denamarshallmft@hotmail.com">denamarshallmft@hotmail.com</a></dd>
+            <dt>Website</dt><dd><a href="https://denamarshallmft.com/" target="_blank" rel="noopener">denamarshallmft.com</a></dd>
+          </dl>
+        </article>
+
+        <article class="provider-card">
+          <h3>The Couples Therapy & Reunification Counseling</h3>
+          <p>California in-person and virtual reunification and high-conflict family work.</p>
+          <dl>
+            <dt>Phone</dt><dd><a href="tel:+15627746787">(562) 774-6787</a></dd>
+            <dt>Contact</dt><dd><a href="https://www.thecouplestherapy.com/" target="_blank" rel="noopener">Website contact</a></dd>
+            <dt>Website</dt><dd><a href="https://www.thecouplestherapy.com/" target="_blank" rel="noopener">thecouplestherapy.com</a></dd>
+          </dl>
+        </article>
+
+        <article class="provider-card">
+          <h3>Izzo Marriage and Family Therapy</h3>
+          <p>San Mateo, San Carlos, and telehealth across California; intake and referrals available by email.</p>
+          <dl>
+            <dt>Phone</dt><dd><a href="tel:+16502235605">(650) 223-5605</a></dd>
+            <dt>Email</dt><dd><a href="mailto:referrals@izzotherapy.com">referrals@izzotherapy.com</a></dd>
+            <dt>Website</dt><dd><a href="https://www.izzotherapy.com/contact" target="_blank" rel="noopener">izzotherapy.com/contact</a></dd>
+          </dl>
+        </article>
+
+        <article class="provider-card">
+          <h3>Cornerstone Counseling Center</h3>
+          <p>Co-custody parenting / conjoint class materials. Ask whether their service fits the specific order.</p>
+          <dl>
+            <dt>Phone</dt><dd><a href="tel:+18053906384">(805) 390-6384</a></dd>
+            <dt>Email</dt><dd><a href="mailto:cornerstonesb@aol.com">cornerstonesb@aol.com</a></dd>
+            <dt>Website</dt><dd><a href="https://www.cornerstonesv.com/wp-content/uploads/2023/06/COPAR-CONJOINT-2023.pdf" target="_blank" rel="noopener">Conjoint intake PDF</a></dd>
+          </dl>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <p class="eyebrow">Provider research</p>
+        <h2>Fresno anger-management options to call today</h2>
+      </div>
+      <div class="provider-grid">
+        <article class="provider-card priority">
+          <h3>Total Life Change</h3>
+          <p>Why call first: site/search results describe an anger-management program in Fresno, with court-approved language in public listings and in-person/online availability listed by Psychology Today.</p>
+          <dl>
+            <dt>Address</dt><dd>1300 E. Shaw Avenue, Suite 121, Fresno, CA 93710</dd>
+            <dt>Phone found</dt><dd>(559) 523-4255 and public listing also shows 559-475-9779</dd>
+            <dt>Source notes</dt><dd>Public site says anger management is a court-approved program. Psychology Today listing says available both in-person and online.</dd>
+          </dl>
+          <p class="call-script">Call script: “I need a live Fresno anger-management course for court-related compliance. Do you offer in-person sessions this week, and can you provide enrollment and attendance proof?”</p>
+        </article>
+
+        <article class="provider-card priority">
+          <h3>Alternative Health Consultants</h3>
+          <p>Why call: listed in the Fresno Superior Court Program Provider Resource Guide with anger management, outpatient services, and a minimum 12-week anger-management program.</p>
+          <dl>
+            <dt>Address</dt><dd>5637 N. Figarden Drive, Suite 104, Fresno, CA 93722</dd>
+            <dt>Phone</dt><dd>559-289-0669 cell or 559-261-4008 office</dd>
+            <dt>Guide notes</dt><dd>Anger management minimum 12 weeks; private pay; intake/assessment range listed as $70-$90; referring party update letters by fax.</dd>
+          </dl>
+        </article>
+
+        <article class="provider-card">
+          <h3>Comprehensive Counseling Services</h3>
+          <p>Why call: Fresno Superior Court guide lists anger management, family counseling, mental health, parenting, and cognitive/behavioral model.</p>
+          <dl>
+            <dt>Address</dt><dd>307 N. Van Ness Avenue, Suite 102, Fresno, CA 93701</dd>
+            <dt>Phone</dt><dd>559-233-5505</dd>
+            <dt>Email</dt><dd>ccsreports@yahoo.com</dd>
+            <dt>Guide notes</dt><dd>No wait listed; private pay; assessment listed as $50-$65; Spanish and English.</dd>
+          </dl>
+        </article>
+
+        <article class="provider-card">
+          <h3>Marjaree Mason Center</h3>
+          <p>Why call: Fresno Superior Court guide lists anger management and teen anger management, with a 12-session anger-management program.</p>
+          <dl>
+            <dt>Address</dt><dd>770 E. Shaw Avenue, Suite 326, Fresno, CA 93710</dd>
+            <dt>Phone</dt><dd>559-226-1831</dd>
+            <dt>Guide notes</dt><dd>Anger management 12 sessions; assessment fee listed as $50 for anger management; Spanish or English.</dd>
+          </dl>
+        </article>
+
+        <article class="provider-card">
+          <h3>Sierra Education and Research Institute</h3>
+          <p>Why call: Fresno Superior Court guide lists anger management, cognitive behavioral model, psychoeducational groups, and individual therapy.</p>
+          <dl>
+            <dt>Address</dt><dd>5130 E. Clinton Way, Fresno, CA 93727</dd>
+            <dt>Phone</dt><dd>(559) 253-2320</dd>
+            <dt>Email</dt><dd>office@serinstitute.org</dd>
+            <dt>Guide notes</dt><dd>Wait listed as about one week; outpatient length depends on treatment plan or mandated requirements.</dd>
+          </dl>
+        </article>
+
+        <article class="provider-card caution">
+          <h3>Supporting Hands Family Center</h3>
+          <p>Useful if live Zoom is acceptable, but not the top match if the order requires in-person. Their public classes page says anger management is Fridays 6pm to 7pm and currently offered via Zoom, with active participation and a certificate after all twelve classes.</p>
+          <dl>
+            <dt>Public note</dt><dd>Zoom only at time of review; confirm whether that satisfies the court order before using this option.</dd>
+          </dl>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <p class="eyebrow">Call tracker</p>
+        <h2>Use this while scheduling</h2>
+      </div>
+      <div class="tracker-grid">
+        <div class="tracker-card"><h3>Dr. Collier</h3><textarea data-note="collier" placeholder="Date asked, response, next appointment, proof letter status"></textarea></div>
+        <div class="tracker-card"><h3>Janz Family Therapy</h3><textarea data-note="janz" placeholder="Email sent date, reply, forms needed, first family therapy appointment"></textarea></div>
+        <div class="tracker-card"><h3>Anger management</h3><textarea data-note="anger" placeholder="Provider called, first available session, cost, enrollment proof, attendance proof"></textarea></div>
+        <div class="tracker-card"><h3>Counsel filing packet</h3><textarea data-note="counsel" placeholder="Proof sent to Amy or counsel, date, method, missing items"></textarea></div>
+      </div>
+      <p class="small-note">Notes and checkbox state save locally first, then sync to Convex when the protected admin API is available. Export or screenshot before relying on it as evidence.</p>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <p class="eyebrow">Action tools</p>
+        <h2>Calls, emails, proof, and Codex handoff</h2>
+      </div>
+
+      <div class="tool-grid">
+        <article class="tool-card">
+          <h3>Fast call list</h3>
+          <div class="phone-list">
+            <a href="tel:+15595234255">Total Life Change: 559-523-4255</a>
+            <a href="tel:+15594759779">Total Life Change alternate: 559-475-9779</a>
+            <a href="tel:+15592890669">Alternative Health Consultants cell: 559-289-0669</a>
+            <a href="tel:+15592614008">Alternative Health Consultants office: 559-261-4008</a>
+            <a href="tel:+15592335505">Comprehensive Counseling: 559-233-5505</a>
+            <a href="tel:+15592261831">Marjaree Mason Center: 559-226-1831</a>
+            <a href="tel:+15592532320">Sierra Education and Research Institute: 559-253-2320</a>
+          </div>
+        </article>
+
+        <article class="tool-card">
+          <h3>Add call log</h3>
+          <div class="mini-form">
+            <input data-call-field="date" type="date">
+            <input data-call-field="provider" placeholder="Provider or person">
+            <input data-call-field="phone" placeholder="Phone">
+            <select data-call-field="status">
+              <option>Called - left message</option>
+              <option>Called - reached person</option>
+              <option>Scheduled</option>
+              <option>Not suitable</option>
+              <option>Waiting for callback</option>
+            </select>
+            <textarea data-call-field="notes" placeholder="What they said, price, first available date, proof they can provide"></textarea>
+            <button type="button" class="utility-button" data-add-call>Add call note</button>
+          </div>
+        </article>
+      </div>
+
+      <div class="call-table-wrap">
+        <table class="call-table">
+          <thead><tr><th>Date</th><th>Provider</th><th>Phone</th><th>Status</th><th>Notes</th><th></th></tr></thead>
+          <tbody data-call-log></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <p class="eyebrow">Templates</p>
+        <h2>Copy-ready messages</h2>
+      </div>
+      <div class="template-grid">
+        <article class="template-card">
+          <div class="template-head"><h3>Janz scheduling follow-up</h3><button type="button" data-copy-template="janz">Copy</button></div>
+          <pre data-template="janz">Hello Vanessa,
+
+I am following up to move family therapy forward promptly under the custody recommendation/order. Please confirm:
+
+1. What documents are still pending and who must complete each one?
+2. Whether Brooke must complete consent or intake paperwork before scheduling.
+3. Whether Janz can provide family therapy involving both parents and the children as required or clinically directed.
+4. The earliest available first session.
+5. Whether you need a copy of the custody recommendation/order before scheduling.
+6. Whether Janz can provide written confirmation of scheduled sessions, attendance, cancellations, refusals, and participation for court-compliance documentation.
+
+Thank you,
+Rob Spain</pre>
+        </article>
+
+        <article class="template-card">
+          <div class="template-head"><h3>Anger-management provider call/email</h3><button type="button" data-copy-template="angerProvider">Copy</button></div>
+          <pre data-template="angerProvider">Hello,
+
+I need to enroll in a live, in-person anger-management program for court-related compliance. The requirement is 10 once-weekly in-person sessions, with written proof after the first, fourth, and tenth class.
+
+Can you please confirm:
+1. Whether you offer in-person anger-management classes in Fresno;
+2. The earliest start date;
+3. Whether the program can provide written attendance proof after class 1, class 4, and completion;
+4. Total cost and intake requirements.
+
+Thank you,
+Rob Spain</pre>
+        </article>
+
+        <article class="template-card">
+          <div class="template-head"><h3>Dr. Collier proof letter request</h3><button type="button" data-copy-template="collier">Copy</button></div>
+          <pre data-template="collier">Hi Dr. Collier,
+
+Can you please provide a brief attendance/compliance letter confirming that I am actively participating in individual therapy, including the dates attended or current schedule?
+
+I am not asking for privileged clinical details. I only need attendance, participation status, and scheduling information for compliance documentation.
+
+Thank you,
+Rob</pre>
+        </article>
+
+        <article class="template-card">
+          <div class="template-head"><h3>Amy proof update</h3><button type="button" data-copy-template="amy">Copy</button></div>
+          <pre data-template="amy">Hi Amy,
+
+I am sending a compliance update so the record is clean and date-locked.
+
+Completed:
+- [insert completed item]
+
+Scheduled:
+- [insert scheduled provider/session/date]
+
+Waiting on:
+- [insert provider, Mother, therapist, or records issue]
+
+Proof attached or available:
+- [insert file names/screenshots/PDFs]
+
+My next action is:
+- [insert next task from tracker]
+
+Thank you,
+Rob</pre>
+        </article>
+
+        <article class="template-card">
+          <div class="template-head"><h3>OFW neutral scheduling note</h3><button type="button" data-copy-template="ofw">Copy</button></div>
+          <pre data-template="ofw">Brooke,
+
+I am working to complete the court-recommended therapeutic and compliance steps. Please confirm your availability and any required paperwork for the family-therapy scheduling process.
+
+I will keep the communication limited to scheduling, required participation, and documentation so the process can move forward without delay.
+
+Rob</pre>
+        </article>
+
+        <article class="template-card">
+          <div class="template-head"><h3>Missed/refused visit documentation</h3><button type="button" data-copy-template="refusal">Copy</button></div>
+          <pre data-template="refusal">Compliance note:
+
+Date:
+Scheduled contact/session:
+Who was present:
+What happened:
+Exact words used, if any:
+Provider/monitor documentation requested:
+Make-up time requested:
+Proof saved:
+
+I am documenting this neutrally for compliance tracking and counsel review.</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <p class="eyebrow">Proof packet</p>
+        <h2>Export, print, and send back to Codex</h2>
+      </div>
+      <div class="tool-grid">
+        <article class="tool-card">
+          <h3>Export tracker data</h3>
+          <p>Downloads a JSON snapshot of the timeline inputs, notes, checkbox state, and call log from this browser.</p>
+          <button type="button" class="utility-button" data-export-json>Download JSON snapshot</button>
+          <button type="button" class="utility-button secondary" data-print-page>Print / save PDF</button>
+        </article>
+
+        <article class="tool-card">
+          <h3>Send a task back to Codex/Neo</h3>
+          <p>Queues an instruction through the existing agent-instruction endpoint. Use this to ask Codex to update the packet, draft an email, or analyze new proof.</p>
+          <div class="mini-form">
+            <input data-codex-token type="password" placeholder="Admin token">
+            <textarea data-codex-message placeholder="Example: Update the custody compliance packet with my new anger-management enrollment proof and recalculate the timeline."></textarea>
+            <button type="button" class="utility-button" data-send-codex>Send to Neo agent</button>
+            <small data-codex-status></small>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+</div>
+
+<style>
+.compliance-page {
+  background: #f6f2ea;
+  color: #17221d;
+  min-height: 100vh;
+  padding: 3rem 1rem 5rem;
+}
+.compliance-container {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+.back-link {
+  display: inline-block;
+  color: #1f4d3f;
+  text-decoration: none;
+  margin-bottom: 1rem;
+  font-weight: 650;
+}
+.hero-card, .panel, .notice-card {
+  background: #fffdf8;
+  border: 1px solid #d9d1c4;
+  border-radius: 22px;
+  box-shadow: 0 14px 35px rgba(18, 54, 40, 0.08);
+  padding: clamp(1.25rem, 3vw, 2.25rem);
+  margin-bottom: 1.25rem;
+}
+.hero-card {
+  background: linear-gradient(135deg, #fffdf8 0%, #ecf4ef 100%);
+}
+.eyebrow {
+  color: #1f4d3f;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  font-size: .78rem;
+  font-weight: 750;
+  margin: 0 0 .5rem;
+}
+h1, h2, h3 {
+  color: #123628;
+  line-height: 1.1;
+}
+h1 {
+  font-size: clamp(2rem, 5vw, 3.75rem);
+  margin: 0 0 1rem;
+}
+h2 {
+  font-size: clamp(1.45rem, 3vw, 2.2rem);
+  margin: 0;
+}
+h3 {
+  font-size: 1.1rem;
+  margin: 0 0 .65rem;
+}
+.hero-copy, .notice-card p, .requirement-block p, .provider-card p, .small-note, .timeline-content p {
+  color: #43524a;
+}
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .75rem;
+  margin-top: 1.25rem;
+}
+.status-grid div {
+  background: rgba(31, 77, 63, .08);
+  border: 1px solid rgba(31, 77, 63, .16);
+  border-radius: 16px;
+  padding: 1rem;
+}
+.status-grid span {
+  display: block;
+  color: #123628;
+  font-size: 2rem;
+  font-weight: 800;
+}
+.status-grid small {
+  color: #526158;
+  font-weight: 650;
+}
+.overall-progress {
+  margin-top: 1.25rem;
+}
+.progress-track {
+  width: 100%;
+  height: 12px;
+  background: #e8dfd2;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: .45rem;
+}
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #1f4d3f, #e4b63d);
+  border-radius: 999px;
+  transition: width .2s ease;
+}
+.sync-status {
+  color: #526158;
+  font-size: .86rem;
+  font-weight: 650;
+  margin: .75rem 0 0;
+}
+.sync-status.is-synced {
+  color: #1f4d3f;
+}
+.sync-status.is-error {
+  color: #9f3412;
+}
+.projection-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.next-card, .date-card {
+  background: #fffaf0;
+  border: 1px solid #e4ded2;
+  border-radius: 18px;
+  padding: 1rem;
+}
+.next-card {
+  border-color: rgba(31, 77, 63, .35);
+  background: linear-gradient(135deg, #fffaf0, #eef6f1);
+}
+.next-label, .date-card span {
+  color: #526158;
+  display: block;
+  font-size: .82rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: .4rem;
+}
+.next-card strong, .date-card strong {
+  color: #123628;
+  display: block;
+  font-size: clamp(1.15rem, 2vw, 1.55rem);
+  line-height: 1.15;
+}
+.next-card p, .date-card small {
+  color: #43524a;
+  display: block;
+  margin-top: .55rem;
+}
+.schedule-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: .85rem;
+  margin-top: 1rem;
+}
+.schedule-controls label {
+  color: #334139;
+  display: grid;
+  font-size: .88rem;
+  font-weight: 700;
+  gap: .4rem;
+}
+.schedule-controls input {
+  background: white;
+  border: 1px solid #d9d1c4;
+  border-radius: 12px;
+  color: #17221d;
+  font: inherit;
+  padding: .75rem .8rem;
+}
+.control-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .7rem;
+  margin-top: 1rem;
+}
+.utility-button {
+  background: #1f4d3f;
+  border: 0;
+  border-radius: 999px;
+  color: white;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 750;
+  padding: .75rem 1rem;
+}
+.utility-button.secondary {
+  background: #ede4d7;
+  color: #123628;
+}
+.panel-heading {
+  border-bottom: 1px solid #e4ded2;
+  padding-bottom: 1rem;
+  margin-bottom: 1.25rem;
+}
+.panel-heading.subheading {
+  margin-top: 1.6rem;
+}
+.timeline-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 0 0 1rem;
+}
+.timeline-legend span {
+  color: #526158;
+  font-size: .9rem;
+  font-weight: 700;
+}
+.legend-dot {
+  border-radius: 999px;
+  display: inline-block;
+  height: 10px;
+  margin-right: .35rem;
+  width: 10px;
+}
+.legend-dot.done { background: #1f4d3f; }
+.legend-dot.active { background: #e4b63d; }
+.legend-dot.waiting { background: #d9d1c4; }
+.path-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.2rem;
+}
+.timeline {
+  display: grid;
+  gap: 1rem;
+}
+.timeline-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: stretch;
+}
+.timeline-marker {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  min-width: 44px;
+}
+.timeline-marker::after {
+  content: '';
+  position: absolute;
+  top: 44px;
+  bottom: -1rem;
+  width: 2px;
+  background: #d9d1c4;
+}
+.timeline-item:last-child .timeline-marker::after {
+  display: none;
+}
+.timeline-marker span {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #fffaf0;
+  color: #123628;
+  border: 2px solid #d9d1c4;
+  font-weight: 800;
+  z-index: 1;
+}
+.timeline-item.is-complete .timeline-marker span {
+  background: #1f4d3f;
+  color: white;
+  border-color: #1f4d3f;
+}
+.timeline-content {
+  border: 1px solid #e4ded2;
+  border-radius: 18px;
+  padding: 1rem;
+  background: #fffaf0;
+}
+.timeline-item.is-active .timeline-marker span {
+  background: #e4b63d;
+  border-color: #e4b63d;
+  color: #123628;
+}
+.timeline-item.is-waiting {
+  opacity: .72;
+}
+.timeline-content small {
+  color: #526158;
+  display: inline-block;
+  margin-top: .45rem;
+}
+.gate-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+  margin-top: .7rem;
+}
+.gate-meta span {
+  background: white;
+  border: 1px solid #e4ded2;
+  border-radius: 999px;
+  color: #43524a;
+  font-size: .78rem;
+  font-weight: 750;
+  padding: .28rem .55rem;
+}
+.requirement-block {
+  border: 1px solid #e4ded2;
+  border-radius: 18px;
+  padding: 1.15rem;
+  margin: 1rem 0;
+  background: #fffaf0;
+}
+.checklist {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+}
+.checklist li {
+  border-top: 1px solid #e4ded2;
+}
+.checklist label {
+  display: flex;
+  gap: .75rem;
+  padding: .75rem 0;
+  align-items: flex-start;
+  cursor: pointer;
+}
+.checklist input {
+  accent-color: #1f4d3f;
+  margin-top: .2rem;
+  min-width: 18px;
+  min-height: 18px;
+}
+.checklist li:has(input:checked) label {
+  color: #627269;
+  text-decoration: line-through;
+}
+.email-draft, .provider-card, .tracker-card, .tool-card, .template-card {
+  background: #fffaf0;
+  border: 1px solid #e4ded2;
+  border-radius: 16px;
+  padding: 1rem;
+}
+.label, dt {
+  color: #123628;
+  font-weight: 750;
+}
+.email-body {
+  background: white;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: .75rem;
+}
+.email-body ol {
+  padding-left: 1.35rem;
+}
+.provider-grid, .tracker-grid, .tool-grid, .template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+.template-grid {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+.phone-list {
+  display: grid;
+  gap: .55rem;
+}
+.phone-list a {
+  background: white;
+  border: 1px solid #e4ded2;
+  border-radius: 12px;
+  color: #1f4d3f;
+  font-weight: 750;
+  padding: .75rem;
+  text-decoration: none;
+}
+.provider-card a,
+.tool-card a {
+  color: #1f4d3f;
+  font-weight: 750;
+  text-decoration: none;
+}
+.provider-card a:hover,
+.tool-card a:hover {
+  text-decoration: underline;
+}
+.mini-form {
+  display: grid;
+  gap: .65rem;
+}
+.mini-form input, .mini-form select {
+  background: white;
+  border: 1px solid #d9d1c4;
+  border-radius: 12px;
+  color: #17221d;
+  font: inherit;
+  padding: .75rem .8rem;
+}
+.call-table-wrap {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+.call-table {
+  border-collapse: collapse;
+  min-width: 900px;
+  width: 100%;
+}
+.call-table th, .call-table td {
+  border-bottom: 1px solid #e4ded2;
+  color: #334139;
+  padding: .75rem;
+  text-align: left;
+  vertical-align: top;
+}
+.call-table th {
+  color: #123628;
+  font-size: .78rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.delete-call {
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 999px;
+  color: #991b1b;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 750;
+  padding: .35rem .65rem;
+}
+.template-head {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: .7rem;
+}
+.template-head h3 {
+  margin: 0;
+}
+.template-head button {
+  background: #1f4d3f;
+  border: 0;
+  border-radius: 999px;
+  color: white;
+  cursor: pointer;
+  font: inherit;
+  font-size: .85rem;
+  font-weight: 750;
+  padding: .45rem .75rem;
+}
+.template-card pre {
+  background: white;
+  border: 1px solid #e4ded2;
+  border-radius: 12px;
+  color: #17221d;
+  font: 0.9rem/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  margin: 0;
+  max-height: 360px;
+  overflow: auto;
+  padding: .9rem;
+  white-space: pre-wrap;
+}
+.provider-card.priority {
+  border-color: rgba(31, 77, 63, .45);
+  box-shadow: inset 0 0 0 2px rgba(31, 77, 63, .08);
+}
+.provider-card.caution {
+  border-color: rgba(228, 182, 61, .6);
+}
+dl {
+  margin: .75rem 0;
+}
+dt {
+  margin-top: .65rem;
+  font-size: .88rem;
+}
+dd {
+  margin: .15rem 0 0;
+  color: #43524a;
+}
+.call-script {
+  border-left: 4px solid #e4b63d;
+  padding-left: .75rem;
+}
+textarea {
+  width: 100%;
+  min-height: 130px;
+  resize: vertical;
+  border: 1px solid #d9d1c4;
+  border-radius: 12px;
+  padding: .85rem;
+  font: inherit;
+  color: #17221d;
+  background: white;
+}
+@media (max-width: 720px) {
+  .status-grid {
+    grid-template-columns: 1fr;
+  }
+  .projection-grid, .path-columns {
+    grid-template-columns: 1fr;
+  }
+  .timeline-item {
+    grid-template-columns: 1fr;
+  }
+  .timeline-marker {
+    justify-content: flex-start;
+  }
+  .timeline-marker::after {
+    display: none;
+  }
+}
+</style>
+
+<script>
+(function () {
+  const key = 'court-compliance-v2';
+  const syncStatus = document.querySelector('[data-sync-status]');
+  let state = readLocalState();
+  state.plan = state.plan || {};
+  const inputs = Array.from(document.querySelectorAll('.checklist input'));
+  const textareas = Array.from(document.querySelectorAll('textarea[data-note]'));
+  const planInputs = Array.from(document.querySelectorAll('[data-plan-input]'));
+  const callFields = Array.from(document.querySelectorAll('[data-call-field]'));
+  let callLog = Array.isArray(state.calls) ? state.calls : [];
+  const stages = ['setup', 'anger', 'family', 'stepup', 'post16', 'proof'];
+  const msDay = 24 * 60 * 60 * 1000;
+  let syncTimer = null;
+
+  function readLocalState() {
+    try {
+      return JSON.parse(localStorage.getItem(key) || '{}');
+    } catch (error) {
+      return {};
+    }
+  }
+
+  function setSyncStatus(message, type) {
+    if (!syncStatus) return;
+    syncStatus.textContent = message;
+    syncStatus.classList.toggle('is-synced', type === 'synced');
+    syncStatus.classList.toggle('is-error', type === 'error');
+  }
+
+  function itemKey(input, index) {
+    return input.closest('li').textContent.trim().replace(/\s+/g, ' ').slice(0, 120) || String(index);
+  }
+
+  function noteKey(textarea, index) {
+    return textarea.dataset.note || String(index);
+  }
+
+  function save() {
+    const nextState = snapshotState();
+    localStorage.setItem(key, JSON.stringify(nextState));
+    queueRemoteSave(nextState);
+    updateProgress();
+  }
+
+  function snapshotState() {
+    const checks = {};
+    inputs.forEach((input, index) => { checks[itemKey(input, index)] = input.checked; });
+    const notes = {};
+    textareas.forEach((textarea, index) => { notes[noteKey(textarea, index)] = textarea.value; });
+    const plan = {};
+    planInputs.forEach(input => { plan[input.dataset.planInput] = input.value; });
+    return { checks, notes, plan, calls: callLog };
+  }
+
+  function queueRemoteSave(value) {
+    clearTimeout(syncTimer);
+    setSyncStatus('Saving locally; syncing to Convex...', 'pending');
+    syncTimer = setTimeout(async () => {
+      try {
+        const response = await fetch('/admin/api/admin-convex', {
+          method: 'PUT',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key, value })
+        });
+        if (!response.ok) throw new Error(`Convex save failed (${response.status})`);
+        const data = await response.json();
+        const stamp = data.updatedAt ? new Date(data.updatedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'now';
+        setSyncStatus(`Saved to Convex at ${stamp}.`, 'synced');
+      } catch (error) {
+        setSyncStatus(`Saved locally. Convex sync unavailable: ${error.message}`, 'error');
+      }
+    }, 650);
+  }
+
+  async function loadRemoteState() {
+    try {
+      const response = await fetch(`/admin/api/admin-convex?key=${encodeURIComponent(key)}`, { credentials: 'same-origin' });
+      if (!response.ok) throw new Error(`Convex load failed (${response.status})`);
+      const data = await response.json();
+      if (!data.item || !data.item.value) {
+        setSyncStatus('No Convex record yet. Local changes will create one.', 'pending');
+        return;
+      }
+      applyState(data.item.value);
+      localStorage.setItem(key, JSON.stringify(snapshotState()));
+      const stamp = data.item.updatedAt ? new Date(data.item.updatedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'now';
+      setSyncStatus(`Loaded from Convex. Last saved ${stamp}.`, 'synced');
+    } catch (error) {
+      setSyncStatus(`Using local browser copy. Convex load unavailable: ${error.message}`, 'error');
+    }
+  }
+
+  function applyState(nextState) {
+    state = nextState || {};
+    state.plan = state.plan || {};
+    callLog = Array.isArray(state.calls) ? state.calls : [];
+
+    inputs.forEach((input, index) => {
+      input.checked = Boolean(state.checks && state.checks[itemKey(input, index)]);
+    });
+    textareas.forEach((textarea, index) => {
+      textarea.value = (state.notes && state.notes[noteKey(textarea, index)]) || '';
+    });
+    planInputs.forEach(input => {
+      const saved = state.plan[input.dataset.planInput];
+      if (saved !== undefined) {
+        input.value = saved;
+      } else if (input.type === 'number') {
+        input.value = 0;
+      } else if (input.dataset.planInput === 'planStart') {
+        input.value = todayISO();
+      } else {
+        input.value = '';
+      }
+    });
+    renderCalls();
+    updateProgress();
+  }
+
+  function percent(done, total) {
+    return total ? Math.round((done / total) * 100) : 0;
+  }
+
+  function updateProgress() {
+    const done = inputs.filter(input => input.checked).length;
+    const total = inputs.length;
+    const open = total - done;
+    const overall = percent(done, total);
+    document.querySelector('[data-count-total]').textContent = total;
+    document.querySelector('[data-count-done]').textContent = done;
+    document.querySelector('[data-count-open]').textContent = open;
+    document.querySelector('[data-progress-label]').textContent = `${overall}% complete`;
+    document.querySelector('[data-progress-fill]').style.width = `${overall}%`;
+
+    stages.forEach(stage => {
+      const stageInputs = inputs.filter(input => input.dataset.stage === stage);
+      const stageDone = stageInputs.filter(input => input.checked).length;
+      const stagePercent = percent(stageDone, stageInputs.length);
+      const fill = document.querySelector(`[data-stage-fill="${stage}"]`);
+      const label = document.querySelector(`[data-stage-label="${stage}"]`);
+      const item = document.querySelector(`[data-stage="${stage}"].timeline-item`);
+      if (fill) fill.style.width = `${stagePercent}%`;
+      if (label) label.textContent = `${stagePercent}% complete, ${stageDone} of ${stageInputs.length} items`;
+      if (item) item.classList.toggle('is-complete', stageInputs.length > 0 && stageDone === stageInputs.length);
+    });
+    renderProjection();
+  }
+
+  function todayISO() {
+    const today = new Date();
+    return toISO(today);
+  }
+
+  function toISO(date) {
+    const fixed = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+    return fixed.toISOString().slice(0, 10);
+  }
+
+  function parseDate(value) {
+    if (!value) return null;
+    const date = new Date(`${value}T12:00:00`);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  function addDays(date, days) {
+    if (!date) return null;
+    return new Date(date.getTime() + days * msDay);
+  }
+
+  function addWeeks(date, weeks) {
+    return addDays(date, weeks * 7);
+  }
+
+  function maxDate() {
+    const dates = Array.from(arguments).filter(Boolean);
+    if (!dates.length) return null;
+    return new Date(Math.max.apply(null, dates.map(date => date.getTime())));
+  }
+
+  function countValue(name) {
+    const input = document.querySelector(`[data-plan-input="${name}"]`);
+    const value = input ? Number(input.value) : 0;
+    return Number.isFinite(value) ? value : 0;
+  }
+
+  function dateValue(name) {
+    const input = document.querySelector(`[data-plan-input="${name}"]`);
+    return parseDate(input && input.value);
+  }
+
+  function formatDate(date) {
+    if (!date) return 'Set start dates';
+    return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  function daysUntil(date) {
+    if (!date) return '';
+    const today = parseDate(todayISO());
+    const days = Math.ceil((date - today) / msDay);
+    if (days < 0) return 'ready now';
+    if (days === 0) return 'today';
+    if (days === 1) return 'tomorrow';
+    return `${days} days`;
+  }
+
+  function remainingWeekly(startDate, completed, required) {
+    if (!startDate) return null;
+    const done = Math.min(Math.max(completed, 0), required);
+    if (done >= required) return addWeeks(startDate, required - 1);
+    return addWeeks(startDate, required - 1);
+  }
+
+  function finishWeeklyAfter(gateDate, completed, required) {
+    if (!gateDate) return null;
+    const done = Math.min(Math.max(completed, 0), required);
+    if (done >= required) return gateDate;
+    return addWeeks(gateDate, required - done);
+  }
+
+  function finishEveryOtherWeekAfter(gateDate, completed, required) {
+    if (!gateDate) return null;
+    const done = Math.min(Math.max(completed, 0), required);
+    if (done >= required) return gateDate;
+    return addWeeks(gateDate, (required - done) * 2);
+  }
+
+  function buildProjection() {
+    const planStart = dateValue('planStart') || parseDate(todayISO());
+    const angerStart = dateValue('angerStart') || planStart;
+    const familyStart = dateValue('familyStart') || planStart;
+    const angerDone = countValue('angerDone');
+    const familyDone = countValue('familyDone');
+
+    const anger1 = angerStart;
+    const anger4 = remainingWeekly(angerStart, angerDone, 4);
+    const anger10 = remainingWeekly(angerStart, angerDone, 10);
+    const family4 = remainingWeekly(familyStart, familyDone, 4);
+    const family16 = remainingWeekly(familyStart, familyDone, 16);
+    const dylanSixAlone = familyStart ? addWeeks(familyStart, 14) : null;
+
+    const whTwoHourStart = maxDate(anger4, family4);
+    const whTwoHourDone = finishWeeklyAfter(whTwoHourStart, countValue('whTwoHourDone'), 6);
+    const whSaturdayDone = finishWeeklyAfter(whTwoHourDone, countValue('whSaturdayDone'), 6);
+    const whOvernightStart = maxDate(anger10, whSaturdayDone);
+    const whOvernightDone = finishWeeklyAfter(whOvernightStart, countValue('whOvernightDone'), 6);
+    const whWeekendDone = finishEveryOtherWeekAfter(whOvernightDone, countValue('whWeekendDone'), 6);
+
+    const dylanTwoHourDone = finishWeeklyAfter(dylanSixAlone, countValue('dylanTwoHourDone'), 6);
+    const dylanSaturdayDone = finishWeeklyAfter(dylanTwoHourDone, countValue('dylanSaturdayDone'), 6);
+    const dylanOvernightDone = finishWeeklyAfter(dylanSaturdayDone, countValue('dylanOvernightDone'), 4);
+    const dylanWeekendDone = finishEveryOtherWeekAfter(dylanOvernightDone, countValue('dylanWeekendDone'), 4);
+
+    return {
+      wh: [
+        { id: 'anger1', title: 'Anger-management class 1 proof', date: anger1, done: angerDone >= 1, detail: 'File proof with the Court and copy Mother.' },
+        { id: 'whGate1', title: 'Gate: 4 anger classes + 4 family sessions', date: whTwoHourStart, done: angerDone >= 4 && familyDone >= 4, detail: 'Unlocks six two-hour unmonitored visits before family therapy.' },
+        { id: 'whTwoHour', title: 'Six two-hour unmonitored visits', date: whTwoHourDone, done: countValue('whTwoHourDone') >= 6, detail: 'Visits occur before family therapy sessions.' },
+        { id: 'whSaturday', title: 'Six Saturday 3pm-7pm visits', date: whSaturdayDone, done: countValue('whSaturdayDone') >= 6, detail: 'Next gate before Saturday overnights.' },
+        { id: 'anger10', title: 'Anger-management class 10 proof', date: anger10, done: angerDone >= 10, detail: 'File final proof/certificate with the Court and copy Mother.' },
+        { id: 'whOvernight', title: 'Six Saturday overnights', date: whOvernightDone, done: countValue('whOvernightDone') >= 6, detail: 'Saturday 3pm to Sunday 2pm for six consecutive weeks.' },
+        { id: 'whWeekend', title: 'Six first/third Friday-Sunday weekends', date: whWeekendDone, done: countValue('whWeekendDone') >= 6, detail: 'After this, expands to Friday-Monday plus Wednesday overnight.' },
+        { id: 'whHome', title: 'Broader home schedule begins', date: whWeekendDone, done: countValue('whWeekendDone') >= 6, detail: 'First/third weekends through Monday morning plus every Wednesday overnight.' }
+      ],
+      dylan: [
+        { id: 'family16', title: 'Sixteen family therapy sessions completed', date: family16, done: familyDone >= 16, detail: 'Also triggers co-parenting therapy and both parents’ individual therapy requirements.' },
+        { id: 'dylanSixAlone', title: 'Six Dylan/Father family therapy sessions', date: dylanSixAlone, done: familyDone >= 16, detail: 'Projected as alternating Dylan sessions after the first four family sessions.' },
+        { id: 'dylanTwoHour', title: 'Six Dylan two-hour unmonitored visits', date: dylanTwoHourDone, done: countValue('dylanTwoHourDone') >= 6, detail: 'Visits occur before family therapy sessions.' },
+        { id: 'dylanSaturday', title: 'Six Dylan Saturday 3pm-7pm visits', date: dylanSaturdayDone, done: countValue('dylanSaturdayDone') >= 6, detail: 'Next gate before Saturday overnights.' },
+        { id: 'dylanOvernight', title: 'Four Dylan Saturday overnights', date: dylanOvernightDone, done: countValue('dylanOvernightDone') >= 4, detail: 'Saturday 3pm to Sunday 2pm for four Saturday overnights.' },
+        { id: 'dylanWeekend', title: 'Four Dylan first/third Friday-Sunday weekends', date: dylanWeekendDone, done: countValue('dylanWeekendDone') >= 4, detail: 'After this, expands to Friday-Monday plus Wednesday overnight.' },
+        { id: 'dylanHome', title: 'Broader Dylan home schedule begins', date: dylanWeekendDone, done: countValue('dylanWeekendDone') >= 4, detail: 'First/third weekends through Monday morning plus every Wednesday overnight.' }
+      ]
+    };
+  }
+
+  function renderPath(name, gates) {
+    const target = document.querySelector(`[data-path="${name}"]`);
+    if (!target) return;
+    const firstOpen = gates.find(gate => !gate.done);
+    target.innerHTML = gates.map((gate, index) => {
+      const active = firstOpen && firstOpen.id === gate.id;
+      const className = gate.done ? 'is-complete' : active ? 'is-active' : 'is-waiting';
+      return `
+        <article class="timeline-item ${className}">
+          <div class="timeline-marker"><span>${gate.done ? '✓' : index + 1}</span></div>
+          <div class="timeline-content">
+            <h3>${gate.title}</h3>
+            <p>${gate.detail}</p>
+            <div class="gate-meta">
+              <span>${formatDate(gate.date)}</span>
+              <span>${gate.done ? 'Done' : daysUntil(gate.date)}</span>
+            </div>
+          </div>
+        </article>
+      `;
+    }).join('');
+  }
+
+  function renderProjection() {
+    const projection = buildProjection();
+    renderPath('wh', projection.wh);
+    renderPath('dylan', projection.dylan);
+    const allGates = projection.wh.concat(projection.dylan);
+    const next = allGates
+      .filter(gate => !gate.done && gate.date)
+      .sort((a, b) => a.date - b.date)[0] || allGates.find(gate => !gate.done);
+    const whHome = projection.wh[projection.wh.length - 1];
+    const dylanHome = projection.dylan[projection.dylan.length - 1];
+
+    document.querySelector('[data-next-task]').textContent = next ? next.title : 'All tracked gates are marked complete.';
+    document.querySelector('[data-next-detail]').textContent = next ? `${formatDate(next.date)} (${daysUntil(next.date)}). ${next.detail}` : 'Confirm final proof packet and counsel instructions.';
+    document.querySelector('[data-wh-home-date]').textContent = formatDate(whHome.date);
+    document.querySelector('[data-wh-home-detail]').textContent = `${daysUntil(whHome.date)} if the sequence runs without delay.`;
+    document.querySelector('[data-dylan-home-date]').textContent = formatDate(dylanHome.date);
+    document.querySelector('[data-dylan-home-detail]').textContent = `${daysUntil(dylanHome.date)} if the sequence runs without delay.`;
+  }
+
+  function renderCalls() {
+    const body = document.querySelector('[data-call-log]');
+    if (!body) return;
+    if (!callLog.length) {
+      body.innerHTML = '<tr><td colspan="6">No calls logged yet.</td></tr>';
+      return;
+    }
+    body.innerHTML = callLog.map((call, index) => `
+      <tr>
+        <td>${escapeHtml(call.date || '')}</td>
+        <td>${escapeHtml(call.provider || '')}</td>
+        <td>${escapeHtml(call.phone || '')}</td>
+        <td>${escapeHtml(call.status || '')}</td>
+        <td>${escapeHtml(call.notes || '')}</td>
+        <td><button type="button" class="delete-call" data-delete-call="${index}">Delete</button></td>
+      </tr>
+    `).join('');
+  }
+
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, char => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    }[char]));
+  }
+
+  function snapshot() {
+    const checks = {};
+    inputs.forEach((input, index) => { checks[itemKey(input, index)] = input.checked; });
+    const notes = {};
+    textareas.forEach((textarea, index) => { notes[noteKey(textarea, index)] = textarea.value; });
+    const plan = {};
+    planInputs.forEach(input => { plan[input.dataset.planInput] = input.value; });
+    return {
+      exportedAt: new Date().toISOString(),
+      page: 'Court compliance tracker',
+      nextTask: document.querySelector('[data-next-task]')?.textContent?.trim(),
+      nextDetail: document.querySelector('[data-next-detail]')?.textContent?.trim(),
+      waylonHarrisonProjection: document.querySelector('[data-wh-home-date]')?.textContent?.trim(),
+      dylanProjection: document.querySelector('[data-dylan-home-date]')?.textContent?.trim(),
+      plan,
+      checks,
+      notes,
+      calls: callLog
+    };
+  }
+
+  function downloadSnapshot() {
+    const blob = new Blob([JSON.stringify(snapshot(), null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `court-compliance-snapshot-${todayISO()}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function downloadCalendar() {
+    const ics = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Rob Spain//Court Compliance//EN',
+      'CALSCALE:GREGORIAN',
+      'BEGIN:VEVENT',
+      'UID:family-counseling-vanessa-flores-20260611@robspain.com',
+      'DTSTAMP:20260601T170000Z',
+      'DTSTART;TZID=America/Los_Angeles:20260611T110000',
+      'DTEND;TZID=America/Los_Angeles:20260611T120000',
+      'SUMMARY:Family counseling appointment request - Vanessa Flores',
+      'DESCRIPTION:Pending appointment request for Harrison and Waylon. Video link will be emailed 10 minutes before. Phone: (559) 825-1205.',
+      'LOCATION:Video Office',
+      'END:VEVENT',
+      'BEGIN:VEVENT',
+      'UID:full-life-change-fridays-1015@robspain.com',
+      'DTSTAMP:20260601T170000Z',
+      'DTSTART;TZID=America/Los_Angeles:20260605T101500',
+      'DTEND;TZID=America/Los_Angeles:20260605T111500',
+      'RRULE:FREQ=WEEKLY;BYDAY=FR',
+      'SUMMARY:Full Life Change appointment',
+      'END:VEVENT',
+      'BEGIN:VEVENT',
+      'UID:dr-collier-every-other-tuesday-0700@robspain.com',
+      'DTSTAMP:20260601T170000Z',
+      'DTSTART;TZID=America/Los_Angeles:20260609T070000',
+      'DTEND;TZID=America/Los_Angeles:20260609T080000',
+      'RRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=TU',
+      'SUMMARY:Dr. Collier appointment',
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\r\n');
+    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'court-compliance-appointments.ics';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  async function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return;
+    }
+    const area = document.createElement('textarea');
+    area.value = text;
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand('copy');
+    area.remove();
+  }
+
+  inputs.forEach((input, index) => {
+    input.checked = Boolean(state.checks && state.checks[itemKey(input, index)]);
+    input.addEventListener('change', save);
+  });
+  textareas.forEach((textarea, index) => {
+    textarea.value = (state.notes && state.notes[noteKey(textarea, index)]) || '';
+    textarea.addEventListener('input', save);
+  });
+  planInputs.forEach(input => {
+    const saved = state.plan[input.dataset.planInput];
+    if (saved !== undefined) {
+      input.value = saved;
+    } else if (input.type === 'number') {
+      input.value = 0;
+    } else if (input.dataset.planInput === 'planStart') {
+      input.value = todayISO();
+    }
+    input.addEventListener('input', save);
+    input.addEventListener('change', save);
+  });
+  document.querySelector('[data-mark-today]').addEventListener('click', () => {
+    const today = todayISO();
+    ['planStart', 'angerStart', 'familyStart'].forEach(name => {
+      const input = document.querySelector(`[data-plan-input="${name}"]`);
+      if (input && !input.value) input.value = today;
+    });
+    save();
+  });
+  document.querySelector('[data-reset-plan]').addEventListener('click', () => {
+    planInputs.forEach(input => {
+      input.value = input.type === 'number' ? 0 : '';
+      if (input.dataset.planInput === 'planStart') input.value = todayISO();
+    });
+    save();
+  });
+  document.querySelector('[data-add-call]')?.addEventListener('click', () => {
+    const call = {};
+    callFields.forEach(field => { call[field.dataset.callField] = field.value; });
+    if (!call.date) call.date = todayISO();
+    if (!call.provider && !call.notes) return;
+    callLog.unshift(call);
+    callFields.forEach(field => {
+      if (field.type !== 'date') field.value = '';
+      if (field.dataset.callField === 'date') field.value = todayISO();
+    });
+    renderCalls();
+    save();
+  });
+  document.querySelector('[data-call-log]')?.addEventListener('click', event => {
+    const button = event.target.closest('[data-delete-call]');
+    if (!button) return;
+    callLog.splice(Number(button.dataset.deleteCall), 1);
+    renderCalls();
+    save();
+  });
+  callFields.forEach(field => {
+    if (field.dataset.callField === 'date' && !field.value) field.value = todayISO();
+  });
+  document.querySelectorAll('[data-copy-template]').forEach(button => {
+    button.addEventListener('click', async () => {
+      const template = document.querySelector(`[data-template="${button.dataset.copyTemplate}"]`);
+      await copyText(template?.textContent || '');
+      const original = button.textContent;
+      button.textContent = 'Copied';
+      setTimeout(() => { button.textContent = original; }, 1200);
+    });
+  });
+  document.querySelector('[data-export-json]')?.addEventListener('click', downloadSnapshot);
+  document.querySelector('[data-download-calendar]')?.addEventListener('click', downloadCalendar);
+  document.querySelector('[data-print-page]')?.addEventListener('click', () => window.print());
+  document.querySelector('[data-send-codex]')?.addEventListener('click', async () => {
+    const token = document.querySelector('[data-codex-token]').value.trim();
+    const message = document.querySelector('[data-codex-message]').value.trim();
+    const status = document.querySelector('[data-codex-status]');
+    if (!token || !message) {
+      status.textContent = 'Enter the admin token and a task first.';
+      return;
+    }
+    status.textContent = 'Sending...';
+    try {
+      const response = await fetch('/api/agent-instruct', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          agentId: 'Neo',
+          token,
+          instruction: `${message}\n\nCourt compliance snapshot:\n${JSON.stringify(snapshot(), null, 2)}`
+        })
+      });
+      const data = await response.json();
+      status.textContent = response.ok ? `Sent. Instruction ID: ${data.instructionId || 'queued'}` : `Failed: ${data.error || response.status}`;
+    } catch (error) {
+      status.textContent = `Failed: ${error.message}`;
+    }
+  });
+  renderCalls();
+  updateProgress();
+  loadRemoteState();
+})();
+</script>

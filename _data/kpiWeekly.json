@@ -1,0 +1,16 @@
+{
+  "weeks": [
+    {
+      "weekOf": "2026-03-24",
+      "contactsAdded": 0,
+      "emailsSent": 0,
+      "openRate": 0,
+      "clickRate": 0,
+      "discoveryCalls": 0,
+      "demos": 0,
+      "proposals": 0,
+      "pilotsStarted": 0,
+      "contractsSigned": 0
+    }
+  ]
+}

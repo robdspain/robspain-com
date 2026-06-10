@@ -3,6 +3,7 @@ title: "Video 02: When I Almost Quit"
 series: "school-bcba"
 published: true
 step: 2
+videoUrl: ""
 ---
 
 **[Scene: Rob in a comfortable setting, storytelling mode]**

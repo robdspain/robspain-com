@@ -1,0 +1,66 @@
+{
+  "updatedAt": "2026-05-29",
+  "policy": "No source, no number. KPI values stay blank until the active export, API, or query is connected.",
+  "metrics": [
+    {
+      "id": "visits",
+      "label": "Visits",
+      "dailyMetric": "Daily verified website visits",
+      "requiredSource": "Analytics export or API",
+      "activeSource": "Not connected",
+      "status": "needs_source",
+      "nextAction": "Connect an analytics export/API before reporting visits.",
+      "acceptedSources": ["GA4 export/API", "Plausible export/API", "Cloudflare analytics export", "Netlify Analytics export"]
+    },
+    {
+      "id": "opt_ins",
+      "label": "Opt-ins",
+      "dailyMetric": "Daily verified email or lead-capture opt-ins",
+      "requiredSource": "Active capture source or newsletter provider export",
+      "activeSource": "Not connected",
+      "status": "needs_source",
+      "nextAction": "Connect the active capture source or newsletter provider export before reporting opt-ins.",
+      "acceptedSources": ["Newsletter provider export/API", "Form submission export", "CRM lead-capture export"]
+    },
+    {
+      "id": "calls",
+      "label": "Calls",
+      "dailyMetric": "Daily completed fit calls",
+      "requiredSource": "Calendly API/export or completed-call calendar query",
+      "activeSource": "Not connected",
+      "status": "needs_source",
+      "nextAction": "Connect Calendly API/export or define the calendar query used to identify completed fit calls.",
+      "acceptedSources": ["Calendly API/export", "Google Calendar completed-call query"]
+    },
+    {
+      "id": "bookings",
+      "label": "Bookings",
+      "dailyMetric": "Daily booked fit calls",
+      "requiredSource": "Calendly API/export",
+      "activeSource": "Not connected",
+      "status": "needs_source",
+      "nextAction": "Connect Calendly API/export before reporting booked calls.",
+      "acceptedSources": ["Calendly API", "Calendly scheduled-events export"]
+    },
+    {
+      "id": "invoices",
+      "label": "Invoices",
+      "dailyMetric": "Daily invoice count after choosing open invoices or sent invoices",
+      "requiredSource": "Invoice export or API plus metric definition",
+      "activeSource": "Not connected",
+      "status": "needs_source",
+      "nextAction": "Connect invoice export/API and choose whether open invoices or sent invoices is the daily metric.",
+      "acceptedSources": ["Invoice platform export/API", "Accounting export"]
+    },
+    {
+      "id": "sales",
+      "label": "Sales",
+      "dailyMetric": "Daily verified closed sales reconciled to pipeline",
+      "requiredSource": "Payment export/API plus closed-won pipeline rows",
+      "activeSource": "Not connected",
+      "status": "needs_source",
+      "nextAction": "Connect payment exports/APIs and reconcile them to closed-won pipeline rows before reporting sales.",
+      "acceptedSources": ["Payment processor export/API", "CRM closed-won export", "Pipeline spreadsheet export"]
+    }
+  ]
+}

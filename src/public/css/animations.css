@@ -1,0 +1,493 @@
+/* ========================================
+   PREMIUM ANIMATIONS - ROBSPAIN.COM
+   Brand Colors:
+   - Chalkboard Green: #1E3A34
+   - Vintage Gold: #E3B23C
+   - Cream: #FAF3E0
+   - Emerald: #047857
+======================================== */
+
+/* ========================================
+   FADE-IN-UP ANIMATION
+   Usage: Add .fade-in-up to any element
+======================================== */
+.fade-in-up {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
+                transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fade-in-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Staggered delays for multiple elements */
+.fade-in-up:nth-child(1) { transition-delay: 0ms; }
+.fade-in-up:nth-child(2) { transition-delay: 100ms; }
+.fade-in-up:nth-child(3) { transition-delay: 200ms; }
+.fade-in-up:nth-child(4) { transition-delay: 300ms; }
+.fade-in-up:nth-child(5) { transition-delay: 400ms; }
+.fade-in-up:nth-child(6) { transition-delay: 500ms; }
+
+/* ========================================
+   SHIMMER TEXT ANIMATION
+   Usage: Add .shimmer-text to text elements
+======================================== */
+.shimmer-text {
+    background: linear-gradient(
+        120deg,
+        #1E3A34 0%,
+        #E3B23C 40%,
+        #047857 50%,
+        #E3B23C 60%,
+        #1E3A34 100%
+    );
+    background-size: 200% auto;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 3s linear infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 0% center;
+    }
+    100% {
+        background-position: 200% center;
+    }
+}
+
+/* Slower shimmer variant */
+.shimmer-text-slow {
+    background: linear-gradient(
+        120deg,
+        #1E3A34 0%,
+        #E3B23C 40%,
+        #047857 50%,
+        #E3B23C 60%,
+        #1E3A34 100%
+    );
+    background-size: 200% auto;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 6s linear infinite;
+}
+
+/* ========================================
+   HOVER LIFT ANIMATION
+   Usage: Add .hover-lift to cards, buttons
+======================================== */
+.hover-lift {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(30, 58, 52, 0.15),
+                0 10px 20px rgba(30, 58, 52, 0.1);
+}
+
+.hover-lift:active {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(30, 58, 52, 0.1);
+}
+
+/* Subtle lift variant */
+.hover-lift-subtle {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift-subtle:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(30, 58, 52, 0.12);
+}
+
+/* ========================================
+   GRADIENT BACKGROUND ANIMATION
+   Usage: Add .gradient-bg to sections
+======================================== */
+.gradient-bg {
+    background: linear-gradient(
+        135deg,
+        #1E3A34 0%,
+        #047857 50%,
+        #1E3A34 100%
+    );
+    background-size: 200% 200%;
+    animation: gradientShift 8s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Animated gradient overlay */
+.gradient-overlay {
+    position: relative;
+    overflow: hidden;
+}
+
+.gradient-overlay::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(227, 178, 60, 0.2) 50%,
+        transparent 100%
+    );
+    animation: slideRight 3s ease-in-out infinite;
+}
+
+@keyframes slideRight {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+/* ========================================
+   NUMBER COUNTER ANIMATION
+   Usage: Add .number-counter to stat elements
+======================================== */
+.number-counter {
+    display: inline-block;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+}
+
+.number-counter.counting {
+    animation: pulse 0.3s ease-in-out;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* ========================================
+   BUTTON ENHANCEMENTS
+======================================== */
+.btn-premium {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    padding: 14px 32px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, #047857 0%, #059669 100%);
+    color: #FAF3E0;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-premium::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-premium:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn-premium:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(4, 120, 87, 0.3),
+                0 0 40px rgba(227, 178, 60, 0.2);
+}
+
+.btn-premium:active {
+    transform: translateY(0);
+}
+
+/* Gold variant */
+.btn-premium-gold {
+    background: linear-gradient(135deg, #E3B23C 0%, #d4a52e 100%);
+    color: #1E3A34;
+}
+
+.btn-premium-gold:hover {
+    box-shadow: 0 12px 24px rgba(227, 178, 60, 0.3),
+                0 0 40px rgba(4, 120, 87, 0.2);
+}
+
+/* ========================================
+   CARD ENHANCEMENTS
+======================================== */
+.card-premium {
+    position: relative;
+    border-radius: 16px;
+    background: white;
+    padding: 32px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid transparent;
+}
+
+.card-premium::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 16px;
+    padding: 2px;
+    background: linear-gradient(135deg, #047857, #E3B23C);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, 
+                  linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-premium:hover::after {
+    opacity: 1;
+}
+
+.card-premium:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(30, 58, 52, 0.15);
+}
+
+/* ========================================
+   PARALLAX EFFECTS
+======================================== */
+.parallax-slow {
+    transition: transform 0.1s ease-out;
+    will-change: transform;
+}
+
+.parallax-medium {
+    transition: transform 0.15s ease-out;
+    will-change: transform;
+}
+
+.parallax-fast {
+    transition: transform 0.2s ease-out;
+    will-change: transform;
+}
+
+/* ========================================
+   FADE IN VARIANTS
+======================================== */
+.fade-in-left {
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fade-in-left.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.fade-in-right {
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fade-in-right.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.fade-in {
+    opacity: 0;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fade-in.visible {
+    opacity: 1;
+}
+
+/* ========================================
+   SCALE ANIMATIONS
+======================================== */
+.scale-in {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scale-in.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* ========================================
+   BORDER ANIMATIONS
+======================================== */
+.border-draw {
+    position: relative;
+}
+
+.border-draw::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px solid #047857;
+    border-radius: inherit;
+    clip-path: polygon(
+        0 0,
+        0 0,
+        0 100%,
+        0 100%
+    );
+    transition: clip-path 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.border-draw.visible::before {
+    clip-path: polygon(
+        0 0,
+        100% 0,
+        100% 100%,
+        0 100%
+    );
+}
+
+/* ========================================
+   GLOW EFFECTS
+======================================== */
+.glow-on-hover {
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glow-on-hover::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, #047857, #E3B23C);
+    border-radius: inherit;
+    opacity: 0;
+    z-index: -1;
+    filter: blur(20px);
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glow-on-hover:hover::after {
+    opacity: 0.6;
+}
+
+/* ========================================
+   LOADING & SKELETON ANIMATIONS
+======================================== */
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        #f0f0f0 25%,
+        #e0e0e0 50%,
+        #f0f0f0 75%
+    );
+    background-size: 200% 100%;
+    animation: loading 1.5s ease-in-out infinite;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* ========================================
+   RESPONSIVE ADJUSTMENTS
+======================================== */
+@media (max-width: 768px) {
+    .fade-in-up {
+        transform: translateY(20px);
+    }
+    
+    .hover-lift:hover {
+        transform: translateY(-4px);
+    }
+    
+    .card-premium:hover {
+        transform: translateY(-4px) scale(1.01);
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .fade-in-up,
+    .fade-in-left,
+    .fade-in-right,
+    .fade-in {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* ========================================
+   PERFORMANCE OPTIMIZATIONS
+======================================== */
+.fade-in-up,
+.fade-in-left,
+.fade-in-right,
+.hover-lift,
+.parallax-slow,
+.parallax-medium,
+.parallax-fast {
+    will-change: transform, opacity;
+}
+
+/* Remove will-change after animation completes */
+.visible {
+    will-change: auto;
+}

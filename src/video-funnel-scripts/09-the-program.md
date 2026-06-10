@@ -3,6 +3,7 @@ title: "Video 09: The 8-Week Transformation Program"
 series: "school-bcba"
 published: true
 step: 9
+videoUrl: ""
 ---
 
 **[Scene: Rob on camera, presenting the offer]**
@@ -17,7 +18,7 @@ That's why I created the **8-Week Transformation Program.**
 
 **[What it is]**
 
-This is an intensive coaching program designed specifically for school-based BCBAs who are ready to stop surviving and start leading.
+This is an intensive coaching program designed specifically for BCBAs in schools who are ready to stop surviving and start leading.
 
 Over 8 weeks, I'll guide you through the complete Systems Leadership framework—not just the theory, but the actual implementation.
 
@@ -31,7 +32,7 @@ Every week, we meet live. I teach a new module, answer your questions, and help 
 
 I'm giving you everything I've built over 20+ years. Data collection systems. Training materials. Meeting protocols. Communication templates. Documentation workflows.
 
-These aren't generic resources—they're the exact tools I use and have refined over hundreds of implementations.
+These aren't generic resources—they're the exact tools I use and have refined over many implementations.
 
 **[How it works]**
 

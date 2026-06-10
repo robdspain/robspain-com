@@ -1,0 +1,2108 @@
+---
+layout: false
+permalink: /admin/agents/index.html
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neo's Office — Agent HQ</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f0f1a; display: flex; flex-direction: column; min-height: 100vh; font-family: 'Press Start 2P', monospace; overflow: hidden; }
+  h1 { color: #10b981; font-size: 14px; padding: 8px 16px; letter-spacing: 2px; text-align: center; flex-shrink: 0; margin: 0; }
+  .admin-nav { display: flex; justify-content: center; gap: 0; flex-shrink: 0; background: #1a1a2e; border-bottom: 2px solid #334155; }
+  .admin-nav a { color: #94a3b8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; font-weight: 600; padding: 12px 28px; text-decoration: none; border-bottom: 3px solid transparent; transition: all 0.2s; }
+  .admin-nav a:hover { color: #e2e8f0; background: rgba(255,255,255,0.05); }
+  .admin-nav a.active { color: #10b981; border-bottom-color: #10b981; }
+  #system-state { display: flex; align-items: center; justify-content: space-between; padding: 6px 20px; background: #111827; border-bottom: 2px solid #1e3a34; flex-shrink: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  #state-indicator { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: #e2e8f0; }
+  #state-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  #state-dot.healthy { background: #10b981; box-shadow: 0 0 8px #10b981; }
+  #state-dot.backlogged { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
+  #state-dot.blocked { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+  #state-dot.human { background: #3b82f6; box-shadow: 0 0 8px #3b82f6; }
+  #state-stats { display: flex; gap: 16px; font-size: 12px; font-weight: 600; color: #94a3b8; }
+  #state-stats span { padding: 3px 10px; background: #1a1a2e; border-radius: 4px; }
+  .stat-red { color: #ef4444 !important; }
+  .stat-blue { color: #3b82f6 !important; }
+  .stat-green { color: #10b981 !important; }
+  .stat-yellow { color: #f59e0b !important; }
+  #main-container { display: flex; flex: 1; overflow: hidden; }
+  #game-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  #game { image-rendering: auto; -webkit-font-smoothing: antialiased; cursor: crosshair; flex: 1; display: block; width: 100%; }
+  #blocked-panel { width: 340px; background: #1a1a2e; border-left: 3px solid #1e3a34; overflow-y: auto; flex-shrink: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  #blocked-panel h2 { color: #f59e0b; font-size: 16px; font-weight: 800; padding: 16px; border-bottom: 2px solid #334155; text-align: center; font-family: 'Press Start 2P', monospace; }
+  .blocked-item { padding: 14px 16px; border-bottom: 1px solid #334155; transition: background 0.2s; cursor: pointer; }
+  .blocked-item:hover { background: #0f172a; }
+  .blocked-item .priority { font-size: 11px; font-weight: 700; margin-bottom: 6px; letter-spacing: 0.5px; }
+  .blocked-item .text { font-size: 14px; line-height: 1.5; color: #e2e8f0; font-weight: 500; }
+  .blocked-item .type { font-size: 11px; color: #94a3b8; margin-top: 6px; }
+  .priority.CRITICAL { color: #ef4444; }
+  .priority.HIGH { color: #f59e0b; }
+  .priority.MEDIUM { color: #3b82f6; }
+  .priority.LOW { color: #6b7280; }
+  #bottom { display: flex; flex-shrink: 0; max-height: 30vh; }
+  #log { flex: 1; max-height: 30vh; overflow-y: auto; background: #1a1a2e; border: 2px solid #1e3a34; color: #94a3b8; font-size: 8px; padding: 8px; line-height: 1.6; }
+  #log .time { color: #047857; } #log .name { color: #e3b23c; } #log .action { color: #cbd5e1; }
+  #status { display: flex; gap: 8px; padding: 6px 16px; flex-wrap: wrap; justify-content: center; flex-shrink: 0; background: #1a1a2e; border-top: 2px solid #1e3a34; }
+  .agent-badge { background: #0f172a; border: 1px solid #334155; padding: 4px 8px; font-size: 7px; color: #94a3b8; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: border-color 0.2s; }
+  .agent-badge:hover { border-color: #10b981; color: #e2e8f0; }
+  .agent-badge .dot { width: 6px; height: 6px; border-radius: 50%; }
+  a.back { color: #475569; font-size: 8px; text-decoration: none; position: absolute; top: 12px; left: 16px; z-index: 10; }
+  a.back:hover { color: #10b981; }
+  /* Modal */
+  #modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50; align-items: center; justify-content: center; }
+  #modal-overlay.show { display: flex; }
+  #modal { position: relative; background: #1a1a2e; border: 3px solid #10b981; padding: 24px; max-width: 520px; width: 90%; }
+  #modal h2 { color: #10b981; font-size: 16px; margin-bottom: 16px; line-height: 1.4; }
+  #modal-close { position: absolute; top: 10px; right: 12px; background: #0f172a; border: 2px solid #334155; color: #e2e8f0; font-family: 'Press Start 2P', monospace; font-size: 10px; padding: 6px 8px; cursor: pointer; }
+  #modal-close:hover { border-color: #10b981; color: #10b981; }
+  #modal p { color: #e2e8f0; font-size: 15px; margin-bottom: 10px; line-height: 1.7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  #modal-input { width: 100%; background: #0f172a; border: 2px solid #334155; color: #e2e8f0; font-family: 'Press Start 2P', monospace; font-size: 10px; padding: 10px; margin-top: 10px; outline: none; }
+  #modal-input:focus { border-color: #10b981; }
+  #modal-btns { display: flex; gap: 8px; margin-top: 12px; }
+  #modal-btns button { font-family: 'Press Start 2P', monospace; font-size: 10px; padding: 10px 18px; cursor: pointer; border: 2px solid; background: transparent; }
+  #modal-send { color: #10b981; border-color: #10b981; }
+  #modal-send:hover { background: #10b981; color: #0f172a; }
+  #modal-cancel { color: #94a3b8; border-color: #475569; }
+  #modal-cancel:hover { background: #475569; color: #e2e8f0; }
+  /* Tabs */
+  #modal-tabs { display: flex; gap: 2px; margin-bottom: 16px; border-bottom: 2px solid #334155; }
+  .modal-tab { font-family: 'Press Start 2P', monospace; font-size: 9px; padding: 8px 16px; cursor: pointer; border: none; background: transparent; color: #94a3b8; border-bottom: 3px solid transparent; }
+  .modal-tab.active { color: #10b981; border-bottom-color: #10b981; }
+  .modal-tab:hover { color: #e2e8f0; background: rgba(255,255,255,0.05); }
+  /* Sent confirmation */
+  #sent-confirm { display: none; color: #10b981; font-size: 10px; margin-top: 12px; animation: pulse 1s ease-in-out; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+  /* Chat area */
+  #chat-area { display: none; max-height: 300px; overflow-y: auto; background: #0f172a; border: 2px solid #334155; padding: 12px; margin-top: 10px; font-family: 'Courier New', monospace; font-size: 11px; line-height: 1.6; }
+  .chat-msg { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #1e293b; }
+  .chat-msg:last-child { border-bottom: none; }
+  .chat-msg .sender { color: #10b981; font-weight: bold; margin-bottom: 4px; }
+  .chat-msg .time { color: #64748b; font-size: 9px; margin-left: 8px; }
+  .chat-msg .text { color: #e2e8f0; }
+  .typing-indicator { color: #94a3b8; font-style: italic; animation: typing 1.5s infinite; }
+  @keyframes typing { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+  /* Agent hover tooltip */
+  #agent-tooltip { display: none; position: fixed; background: #1a1a2e; border: 2px solid #10b981; padding: 12px 16px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 12px; color: #e2e8f0; z-index: 100; pointer-events: none; min-width: 220px; max-width: 300px; }
+  #agent-tooltip .tt-name { font-size: 14px; font-weight: 700; color: #10b981; margin-bottom: 8px; }
+  #agent-tooltip .tt-row { display: flex; justify-content: space-between; padding: 2px 0; }
+  #agent-tooltip .tt-label { color: #94a3b8; }
+  #agent-tooltip .tt-val { font-weight: 600; }
+  #agent-tooltip .tt-bar { height: 4px; background: #334155; border-radius: 2px; margin-top: 6px; }
+  #agent-tooltip .tt-bar-fill { height: 4px; border-radius: 2px; }
+  /* Project filter bar */
+  #project-filter { display: flex; gap: 4px; padding: 4px 16px; background: #111827; border-bottom: 1px solid #1e3a34; flex-shrink: 0; flex-wrap: wrap; }
+  .pf-btn { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 11px; font-weight: 600; padding: 4px 12px; border: 1px solid #334155; background: transparent; color: #94a3b8; cursor: pointer; border-radius: 3px; }
+  .pf-btn:hover { border-color: #10b981; color: #e2e8f0; }
+  .pf-btn.active { background: #10b981; color: #0f172a; border-color: #10b981; }
+  /* Blocked panel categories */
+  .blocked-category { padding: 8px 14px; color: #94a3b8; font-size: 11px; font-weight: 700; letter-spacing: 1px; border-bottom: 1px solid #1e293b; background: #0f172a; }
+  .blocked-category.decision { color: #3b82f6; }
+  .blocked-category.blocker { color: #ef4444; }
+  .blocked-category.input { color: #f59e0b; }
+  /* SLA timer */
+  .sla-timer { font-size: 10px; color: #f59e0b; margin-top: 4px; }
+  .sla-timer.overdue { color: #ef4444; }
+  /* Event log color coding */
+  #log .ev-complete { color: #10b981; }
+  #log .ev-blocked { color: #ef4444; }
+  #log .ev-waiting { color: #f59e0b; }
+  #log .ev-human { color: #3b82f6; }
+  
+  /* Task panel */
+  #task-panel { display: none; position: fixed; bottom: 0; left: 0; right: 340px; height: 320px; background: #1a1a2e; border-top: 3px solid #1e3a34; z-index: 40; flex-direction: column; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  #task-panel.show { display: flex; }
+  #task-panel-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 2px solid #334155; background: #0f172a; }
+  #task-panel-header h2 { color: #10b981; font-size: 16px; font-weight: 800; font-family: 'Press Start 2P', monospace; margin: 0; }
+  #task-panel-close { background: transparent; border: 2px solid #334155; color: #e2e8f0; font-family: 'Press Start 2P', monospace; font-size: 10px; padding: 6px 12px; cursor: pointer; }
+  #task-panel-close:hover { border-color: #10b981; color: #10b981; }
+  #task-filters { display: flex; gap: 8px; padding: 8px 16px; border-bottom: 1px solid #334155; flex-wrap: wrap; }
+  #task-filters select { background: #0f172a; border: 1px solid #334155; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 3px; outline: none; }
+  #task-filters select:focus { border-color: #10b981; }
+  #task-list { flex: 1; overflow-y: auto; }
+  .task-row { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid #1e293b; cursor: pointer; transition: background 0.2s; }
+  .task-row:hover { background: #0f172a; }
+  .task-row.selected { background: rgba(16, 185, 129, 0.1); border-left: 3px solid #10b981; }
+  .task-status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .task-status-dot.running { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
+  .task-status-dot.queued { background: #94a3b8; }
+  .task-status-dot.blocked { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
+  .task-status-dot.complete { background: #10b981; }
+  .task-status-dot.failed { background: #dc2626; }
+  .task-title { flex: 1; color: #e2e8f0; font-size: 13px; font-weight: 500; }
+  .task-owner { color: #94a3b8; font-size: 11px; font-weight: 600; min-width: 80px; }
+  .task-priority-badge { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 3px; text-transform: uppercase; }
+  .task-priority-badge.high { background: #dc2626; color: #fff; }
+  .task-priority-badge.normal { background: #3b82f6; color: #fff; }
+  .task-priority-badge.low { background: #6b7280; color: #fff; }
+  .task-project-tag { font-size: 10px; font-weight: 600; color: #10b981; background: rgba(16, 185, 129, 0.15); padding: 2px 8px; border-radius: 3px; }
+  
+  /* Task detail drawer */
+  #task-drawer { display: none; position: fixed; top: 0; right: 340px; width: 480px; height: 100vh; background: #1a1a2e; border-left: 3px solid #10b981; z-index: 50; flex-direction: column; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; box-shadow: -4px 0 12px rgba(0,0,0,0.5); }
+  #task-drawer.show { display: flex; }
+  #task-drawer-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 2px solid #334155; background: #0f172a; }
+  #task-drawer-title { color: #10b981; font-size: 14px; font-weight: 700; flex: 1; margin: 0; }
+  #task-drawer-close { background: transparent; border: 2px solid #334155; color: #e2e8f0; font-family: 'Press Start 2P', monospace; font-size: 10px; padding: 6px 8px; cursor: pointer; }
+  #task-drawer-close:hover { border-color: #10b981; color: #10b981; }
+  #task-drawer-body { flex: 1; overflow-y: auto; padding: 20px; }
+  .td-section { margin-bottom: 24px; }
+  .td-label { color: #94a3b8; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .td-value { color: #e2e8f0; font-size: 13px; line-height: 1.6; }
+  .td-status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+  .td-status-badge.running { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+  .td-status-badge.queued { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
+  .td-status-badge.blocked { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+  .td-status-badge.complete { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+  .td-status-badge.failed { background: rgba(220, 38, 38, 0.2); color: #dc2626; }
+  .td-deps { display: flex; flex-wrap: wrap; gap: 8px; }
+  .td-dep-link { background: #0f172a; border: 1px solid #334155; color: #10b981; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 3px; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+  .td-dep-link:hover { background: rgba(16, 185, 129, 0.15); border-color: #10b981; }
+  .td-logs { background: #0f172a; border: 2px solid #334155; border-radius: 4px; padding: 12px; max-height: 200px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 11px; line-height: 1.6; }
+  .td-log-entry { color: #94a3b8; margin-bottom: 6px; }
+  .td-log-entry:last-child { margin-bottom: 0; }
+  .td-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .td-action-btn { font-family: 'Press Start 2P', monospace; font-size: 9px; padding: 8px 14px; cursor: pointer; border: 2px solid; background: transparent; border-radius: 3px; transition: all 0.2s; }
+  .td-action-btn.reassign { color: #3b82f6; border-color: #3b82f6; }
+  .td-action-btn.reassign:hover { background: #3b82f6; color: #0f172a; }
+  .td-action-btn.pause { color: #f59e0b; border-color: #f59e0b; }
+  .td-action-btn.pause:hover { background: #f59e0b; color: #0f172a; }
+  .td-action-btn.resume { color: #10b981; border-color: #10b981; }
+  .td-action-btn.resume:hover { background: #10b981; color: #0f172a; }
+  .td-action-btn.cancel { color: #94a3b8; border-color: #475569; }
+  .td-action-btn.cancel:hover { background: #475569; color: #e2e8f0; }
+  .td-action-btn.escalate { color: #ef4444; border-color: #ef4444; }
+  .td-action-btn.escalate:hover { background: #ef4444; color: #0f172a; }
+  .td-timestamp { color: #64748b; font-size: 11px; }
+  
+  /* Task toggle button */
+  .pf-btn.task-toggle { background: #10b981; color: #0f172a; font-weight: 700; }
+  .pf-btn.task-toggle:hover { background: #059669; }
+  
+  /* Canvas highlight */
+  .agent-highlighted { filter: drop-shadow(0 0 12px #10b981); }
+</style>
+</head>
+<body>
+<nav class="admin-nav">
+  <a href="/admin/tasks/">📋 Tasks</a>
+  <a href="/admin/agents/" class="active">🤖 Agents</a>
+  <a href="/admin/crm/">👥 CRM</a>
+  <a href="/admin/seo/">📊 SEO</a>
+</nav>
+<h1>NEO'S OFFICE -- AGENT HQ</h1>
+<div id="system-state">
+  <div id="state-indicator"><span id="state-dot"></span> <span id="state-label">LOADING...</span></div>
+  <div id="state-stats">
+    <span id="stat-agents">-- agents</span>
+    <span id="stat-queue">-- tasks</span>
+    <span id="stat-blocked" class="stat-red">-- blocked</span>
+    <span id="stat-human" class="stat-blue">-- human</span>
+    <span id="stat-running" class="stat-green">-- running</span>
+  </div>
+</div>
+<div id="project-filter">
+  <button class="pf-btn active" data-filter="all">All</button>
+  <button class="pf-btn" data-filter="content">Content</button>
+  <button class="pf-btn" data-filter="operations">Operations</button>
+  <button class="pf-btn" data-filter="engineering">Engineering</button>
+  <button class="pf-btn" data-filter="leadership">Leadership</button>
+  <button class="pf-btn task-toggle" onclick="toggleTaskPanel()">📋 Tasks</button>
+</div>
+<div id="agent-tooltip">
+  <div class="tt-name"></div>
+  <div class="tt-body"></div>
+</div>
+<div id="main-container">
+  <div id="game-wrapper">
+    <canvas id="game"></canvas>
+    <div id="status"></div>
+    <div id="bottom"><div id="log"></div></div>
+  </div>
+  <div id="blocked-panel">
+    <h2>⚠️ NEEDS ROB</h2>
+    <div id="blocked-list"></div>
+  </div>
+</div>
+
+<div id="modal-overlay">
+  <div id="modal">
+    <button id="modal-close" aria-label="Close">X</button>
+    <h2 id="modal-title">📋 Instruct Agent</h2>
+    <div id="modal-tabs">
+      <button class="modal-tab active" data-tab="instruct">📝 Instruct</button>
+      <button class="modal-tab" data-tab="responses">💬 Responses</button>
+    </div>
+    <div id="instruct-tab">
+      <p id="modal-info"></p>
+      <input id="modal-input" type="text" placeholder="Type instruction..." maxlength="200" />
+      <div id="modal-btns">
+        <button id="modal-send">SEND</button>
+        <button id="modal-cancel">CANCEL</button>
+      </div>
+      <div id="sent-confirm">✓ Sent! Neo will process this instruction.</div>
+    </div>
+    <div id="chat-area"></div>
+  </div>
+</div>
+
+<div id="task-panel">
+  <div id="task-panel-header">
+    <h2>📋 TASK LIST</h2>
+    <button id="task-panel-close" onclick="toggleTaskPanel()">CLOSE</button>
+  </div>
+  <div id="task-filters">
+    <select id="filter-status" onchange="filterTasks()">
+      <option value="all">All Status</option>
+      <option value="running">Running</option>
+      <option value="queued">Queued</option>
+      <option value="blocked">Blocked</option>
+      <option value="complete">Complete</option>
+      <option value="failed">Failed</option>
+    </select>
+    <select id="filter-project" onchange="filterTasks()">
+      <option value="all">All Projects</option>
+      <option value="Content">Content</option>
+      <option value="Operations">Operations</option>
+      <option value="Engineering">Engineering</option>
+      <option value="Leadership">Leadership</option>
+    </select>
+    <select id="filter-owner" onchange="filterTasks()">
+      <option value="all">All Agents</option>
+    </select>
+    <select id="filter-priority" onchange="filterTasks()">
+      <option value="all">All Priority</option>
+      <option value="high">High</option>
+      <option value="normal">Normal</option>
+      <option value="low">Low</option>
+    </select>
+  </div>
+  <div id="task-list"></div>
+</div>
+
+<div id="task-drawer">
+  <div id="task-drawer-header">
+    <h3 id="task-drawer-title">Task Detail</h3>
+    <button id="task-drawer-close" onclick="closeTaskDrawer()">X</button>
+  </div>
+  <div id="task-drawer-body"></div>
+</div>
+
+<script>
+const C = document.getElementById('game');
+const ctx = C.getContext('2d');
+const log = document.getElementById('log');
+const statusBar = document.getElementById('status');
+
+// --- BLOCKED ITEMS ---
+const BLOCKED = [
+  // DECISIONS (need Rob's judgment)
+  { item: "Review 15 writer drafts", type: "APPROVAL", priority: "HIGH", agents: ["Writer"], category: "decision", waitingSince: "2026-02-10T08:00:00", instructions: "3 blog posts + 12 content drafts.<br><a href='https://github.com/robdspain/neo-workspace/tree/master/agents/writer/drafts' target='_blank' style='color:#60a5fa'>View drafts on GitHub</a>" },
+  { item: "Restore behaviorschool.com images", type: "APPROVAL", priority: "MEDIUM", agents: ["BehaviorSchool"], category: "decision", waitingSince: "2026-02-11T14:00:00", instructions: "Images removed during Premium UI redesign. Need to identify + restore." },
+  // BLOCKERS (technical/external)
+  { item: "Apple Sign-In (App Store)", type: "BLOCKER", priority: "HIGH", agents: ["Study App"], category: "blocker", waitingSince: "2026-02-09T10:00:00", instructions: "<a href='https://developer.apple.com/account/resources/identifiers/list/serviceId' target='_blank' style='color:#60a5fa'>Apple Developer</a> - Neo has .p8 file, needs Key ID + Team ID." },
+  { item: "Google API key restriction", type: "BLOCKER", priority: "MEDIUM", agents: ["Writer", "BehaviorSchool"], category: "blocker", waitingSince: "2026-02-10T09:00:00", instructions: "<a href='https://aistudio.google.com/apikeys' target='_blank' style='color:#60a5fa'>AI Studio API Keys</a> - remove HTTP referrer restriction on AIzaSyAH..." },
+  { item: "IBAO certification renewal", type: "BLOCKER", priority: "MEDIUM", agents: ["Docs"], category: "blocker", waitingSince: "2026-02-08T00:00:00", instructions: "3 months left. Need CEU files from Drive." },
+  // INPUT NEEDED
+  { item: "Convex DB for learning marketplace", type: "INPUT", priority: "HIGH", agents: ["Learning"], category: "input", waitingSince: "2026-02-12T22:00:00", instructions: "Run: <code style='color:#10b981'>cd /Volumes/Fast\\ Storage/neo_code_repos/learning-behaviorschool && ./QUICK_MARKETPLACE_SETUP.sh</code>" },
+];
+
+// --- TASKS ---
+const TASKS = [
+  // === REVENUE PRIORITY (THIS WEEKEND) ===
+  { id: 'T001', title: 'study.behaviorschool.com → iOS App Store', status: 'running', priority: 'critical', owner: 'Neo', project: 'Engineering', upstream: [], downstream: ['T002'], createdAt: '2026-03-20T23:13:00Z', completedAt: null, logs: ['Web build passes', 'CocoaPods installed', 'iOS target bumped to 16.0', 'pod install success', 'Needs Apple Dev credentials from Rob'], inputs: 'bcbaaistudytool repo', outputs: 'iOS app on App Store' },
+  { id: 'T002', title: 'Apple Developer credentials needed', status: 'blocked', priority: 'critical', owner: 'Neo', project: 'Engineering', upstream: ['T001'], downstream: [], createdAt: '2026-03-20T23:34:00Z', completedAt: null, logs: ['Checked SENSITIVE_MEMORY.md', 'Checked Keychain', 'Not stored anywhere', 'Waiting on Rob: Apple ID + Team ID + Bundle ID'], inputs: 'Rob provides creds', outputs: 'Xcode signing + App Store submit' },
+  { id: 'T003', title: 'IEP Goal Generator + Goal Bank (Goalbook killer)', status: 'running', priority: 'high', owner: 'Neo', project: 'Engineering', upstream: [], downstream: [], createdAt: '2026-03-20T23:19:00Z', completedAt: null, logs: ['Convex schema committed (015d680)', 'goals + generatedGoals tables', 'Search indexes added', 'UI + backend actions next'], inputs: 'behaviorschool-app repo', outputs: 'Goal bank + AI generator on plan.behaviorschool.com' },
+  { id: 'T004', title: 'ObservationPro → iOS App Store (BehaviorSnap killer)', status: 'queued', priority: 'high', owner: 'Neo', project: 'Engineering', upstream: [], downstream: [], createdAt: '2026-03-20T23:24:00Z', completedAt: null, logs: ['Repo found: /ObservationPro', 'Phase 1+2 already shipped', 'Feature parity with BehaviorSnap needed', 'Integrated with plan.behaviorschool.com'], inputs: 'ObservationPro repo', outputs: 'iOS app on App Store' },
+  { id: 'T005', title: 'District contact enrichment (SELPA directors)', status: 'running', priority: 'high', owner: 'Neo', project: 'Marketing', upstream: [], downstream: ['T006'], createdAt: '2026-03-20T23:27:00Z', completedAt: null, logs: ['45 CA SELPA contacts saved', 'CSV + JSON + report created', 'Next: visit each website for director names + emails', '8 EdJoin hiring districts identified'], inputs: 'CDE SELPA directory', outputs: 'Named contacts with emails for outreach' },
+  { id: 'T006', title: '10 email campaigns approved + scheduled', status: 'running', priority: 'high', owner: 'Neo', project: 'Marketing', upstream: [], downstream: [], createdAt: '2026-03-20T23:16:00Z', completedAt: null, logs: ['10 drafts written', 'Admin UI with approve/schedule/edit live', 'robspain.com/admin/email-campaigns/', 'Rob needs to review + approve each one'], inputs: 'GTM plan', outputs: 'Weekly email sends to district contacts' },
+
+  // === BLOCKED ON ROB ===
+  { id: 'T007', title: 'learning.behaviorschool.com Google auth fix', status: 'blocked', priority: 'high', owner: 'Neo', project: 'Engineering', upstream: [], downstream: [], createdAt: '2026-03-20T15:02:00Z', completedAt: null, logs: ['Diagnosed: config not code', 'Need AUTH_GOOGLE_ID + AUTH_GOOGLE_SECRET in Convex', 'Need redirect URI match in Google Cloud Console', 'R2 upload also needs env vars'], inputs: 'Rob sets Convex env vars', outputs: 'Login + video upload working' },
+  { id: 'T008', title: 'GoDaddy DNS: plan → behaviorschool-pro.netlify.app', status: 'blocked', priority: 'high', owner: 'Neo', project: 'Operations', upstream: [], downstream: [], createdAt: '2026-03-01T00:00:00Z', completedAt: null, logs: ['DNS still pointing to old target', 'Reminder sent multiple times'], inputs: 'Rob updates GoDaddy', outputs: 'plan.behaviorschool.com resolves correctly' },
+  { id: 'T009', title: 'Test Stripe checkout on plan.behaviorschool.com', status: 'blocked', priority: 'high', owner: 'Neo', project: 'Revenue', upstream: [], downstream: [], createdAt: '2026-03-17T00:00:00Z', completedAt: null, logs: ['Live price IDs set', 'Stripe in live mode', 'Needs human test to confirm payment flow'], inputs: 'Rob tries to subscribe', outputs: 'Confirmed working payment flow' },
+
+  // === IN PROGRESS ===
+  { id: 'T010', title: 'Competitor analysis: school BCBA apps', status: 'complete', priority: 'normal', owner: 'Neo', project: 'Research', upstream: [], downstream: [], createdAt: '2026-03-20T23:26:00Z', completedAt: '2026-03-20T23:35:00Z', logs: ['Mapped all competitors', '#1 opportunity: AI FBA/BIP writer', 'BehaviorSnap ripe for disruption', 'Report saved'], inputs: 'Web research', outputs: 'competitor-analysis-school-bcba-apps.md' },
+  { id: 'T011', title: '90-day district GTM plan', status: 'complete', priority: 'high', owner: 'Neo', project: 'Marketing', upstream: [], downstream: ['T006'], createdAt: '2026-03-20T15:09:00Z', completedAt: '2026-03-20T15:10:00Z', logs: ['Full pipeline built', 'CRM architecture defined', 'District pricing 3 tiers', 'First 10 campaigns planned'], inputs: 'Rob direction', outputs: 'Executable GTM playbook' },
+  { id: 'T012', title: 'Supervision research corpus PRD + MVP', status: 'complete', priority: 'normal', owner: 'Neo', project: 'Engineering', upstream: [], downstream: [], createdAt: '2026-03-20T15:02:00Z', completedAt: '2026-03-20T23:22:00Z', logs: ['PRD committed (1dfd257)', 'MVP committed (a9cfe9e)', 'TCO 6th Edition mapping', 'Cleanup verified clean'], inputs: 'behaviorschool-supervision repo', outputs: 'Research corpus feature' },
+  { id: 'T013', title: 'KCUSD Level 2 FBA export fix', status: 'complete', priority: 'normal', owner: 'Neo', project: 'Engineering', upstream: [], downstream: [], createdAt: '2026-03-20T23:22:00Z', completedAt: '2026-03-20T23:22:00Z', logs: ['Fixed import mismatch', 'exportL2FbaToPdf → exportLevel2BspToPdf', 'Committed 8f1383e7'], inputs: 'kcusd-behavior-team repo', outputs: 'Working Level 2 PDF export' },
+  { id: 'T014', title: 'Newsletter: 3 papers every school BCBA should read', status: 'complete', priority: 'normal', owner: 'Neo', project: 'Marketing', upstream: [], downstream: [], createdAt: '2026-03-20T15:03:00Z', completedAt: '2026-03-20T15:04:00Z', logs: ['Cron job set for Mon 7 AM PT', 'Job ID: f4a750e5'], inputs: 'Email draft', outputs: 'Scheduled send Monday morning' },
+  { id: 'T015', title: 'Training data map for fine-tuning (10 AI functions)', status: 'complete', priority: 'normal', owner: 'Neo', project: 'Research', upstream: [], downstream: [], createdAt: '2026-03-20T23:44:00Z', completedAt: '2026-03-20T23:45:00Z', logs: ['10 functions mapped', '3-tier data strategy', 'Autoresearch loop designed'], inputs: 'System audit', outputs: 'training-data-map.md' },
+  { id: 'T016', title: 'Admin dashboard: email campaigns + KPI + briefing + calendar', status: 'complete', priority: 'high', owner: 'Neo', project: 'Operations', upstream: [], downstream: [], createdAt: '2026-03-20T23:16:00Z', completedAt: '2026-03-20T23:53:00Z', logs: ['Email campaigns: approve/schedule/edit', 'KPI: 3 weeks data + auto-update', 'Morning briefing: rewritten', 'Content calendar: 27 items, 5 weeks', 'All deployed to robspain.com'], inputs: 'Task data', outputs: 'Live admin pages' },
+
+  // === QUEUED ===
+  { id: 'T017', title: 'Admin tools migration to Convex (plan.behaviorschool.com)', status: 'queued', priority: 'normal', owner: 'Neo', project: 'Engineering', upstream: [], downstream: [], createdAt: '2026-03-20T23:45:00Z', completedAt: null, logs: ['11ty is wrong tool for admin', 'Need real-time editing', 'Convex tables + Next.js pages'], inputs: 'Current admin data', outputs: 'Dynamic admin on plan.behaviorschool.com' },
+  { id: 'T018', title: 'Karpathy autoresearch integration study', status: 'queued', priority: 'low', owner: 'Neo', project: 'Research', upstream: [], downstream: [], createdAt: '2026-03-20T23:21:00Z', completedAt: null, logs: ['github.com/karpathy/autoresearch', '630-line script, MIT, 45k stars', 'Apply to BIP quality iteration, goal generation, exam questions'], inputs: 'Autoresearch repo', outputs: 'Integration plan for all 4 properties' },
+  { id: 'T019', title: 'IEP Goal Generator standalone product', status: 'queued', priority: 'normal', owner: 'Neo', project: 'Engineering', upstream: ['T003'], downstream: [], createdAt: '2026-03-20T23:40:00Z', completedAt: null, logs: ['goals.behaviorschool.com or /iep-goals free tool', 'Lead gen funnel: teachers discover us through goals', 'Same Convex backend as Pro'], inputs: 'Goal Generator in Pro', outputs: 'Standalone goal tool for teachers' },
+  { id: 'T020', title: 'KCUSD → BehaviorSchool Pro feature graduation', status: 'running', priority: 'normal', owner: 'Neo', project: 'Engineering', upstream: [], downstream: [], createdAt: '2026-03-20T23:16:00Z', completedAt: null, logs: ['Standing rule: all KCUSD improvements port to Pro', 'Level 3 BIP still needs export fix', 'Continuous process'], inputs: 'KCUSD repo changes', outputs: 'Features in plan.behaviorschool.com' },
+];
+
+function getSLA(waitingSince) {
+  if (!waitingSince) return '';
+  const ms = Date.now() - new Date(waitingSince).getTime();
+  const hours = Math.floor(ms / 3600000);
+  const days = Math.floor(hours / 24);
+  if (days > 0) return days + 'd ' + (hours % 24) + 'h waiting';
+  if (hours > 0) return hours + 'h waiting';
+  return Math.floor(ms / 60000) + 'm waiting';
+}
+
+function renderBlockedPanel() {
+  const panel = document.getElementById('blocked-list');
+  const categories = [
+    { key: 'decision', label: 'NEEDS DECISION', icon: '!!' },
+    { key: 'blocker', label: 'BLOCKERS', icon: '!!' },
+    { key: 'input', label: 'NEEDS INPUT', icon: '??' },
+  ];
+  let html = '';
+  categories.forEach(cat => {
+    const items = BLOCKED.filter(b => b.category === cat.key);
+    if (items.length === 0) return;
+    html += '<div class="blocked-category ' + cat.key + '">' + cat.label + ' (' + items.length + ')</div>';
+    items.forEach((item, i) => {
+      const idx = BLOCKED.indexOf(item);
+      const sla = getSLA(item.waitingSince);
+      const overdue = sla.includes('d') ? ' overdue' : '';
+      html += '<div class="blocked-item" onclick="showBlockerDetail(' + idx + ')">' +
+        '<div class="priority ' + item.priority + '">' + item.priority + '</div>' +
+        '<div class="text">' + item.item + '</div>' +
+        '<div class="type">' + item.type + ' -- ' + item.agents.join(', ') + '</div>' +
+        (sla ? '<div class="sla-timer' + overdue + '">' + sla + '</div>' : '') +
+        '</div>';
+    });
+  });
+  panel.innerHTML = html;
+}
+renderBlockedPanel();
+
+function showBlockerDetail(idx) {
+  const b = BLOCKED[idx];
+  const overlay = document.getElementById('modal-overlay');
+  const title = document.getElementById('modal-title');
+  const info = document.getElementById('modal-info');
+  const input = document.getElementById('modal-input');
+  title.textContent = '!! ' + b.priority + ': ' + b.item;
+  info.innerHTML = '<strong style="color:#f59e0b">Blocked agents:</strong> ' + b.agents.join(', ') + '<br><br><strong style="color:#10b981">What Rob needs to do:</strong><br>' + b.instructions;
+  // Allow Rob to respond/comment on blockers
+  input.style.display = '';
+  input.placeholder = 'Reply to Neo about this blocker...';
+  document.getElementById('modal-send').style.display = '';
+  // Override send to handle blocker response
+  selectedAgent = { name: 'Neo', icon: '!!' };
+  modalInput.value = '';
+  overlay.classList.add('show');
+  input.focus();
+}
+
+// Reset modal for agent instructions
+function closeModal() {
+  document.getElementById('modal-input').style.display = '';
+  document.getElementById('modal-send').style.display = '';
+  document.getElementById('modal-overlay').classList.remove('show');
+  document.getElementById('sent-confirm').style.display = 'none';
+  if (pollInterval) clearInterval(pollInterval);
+  selectedAgent = null;
+  // Reset to instruct tab
+  document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.modal-tab[data-tab="instruct"]').classList.add('active');
+  document.getElementById('instruct-tab').style.display = '';
+  document.getElementById('chat-area').style.display = 'none';
+  currentTab = 'instruct';
+}
+
+document.getElementById('modal-cancel').onclick = closeModal;
+document.getElementById('modal-close').onclick = closeModal;
+
+// --- FULLSCREEN CANVAS ---
+let SCALE = 1;
+let W = 640, H = 480;
+let DPR = 1;
+function resizeCanvas() {
+  const header = document.querySelector('h1');
+  const status = document.getElementById('status');
+  const bottom = document.getElementById('bottom');
+  const gameWrapper = document.getElementById('game-wrapper');
+  const nav = document.querySelector('.admin-nav');
+  const sysState = document.getElementById('system-state');
+  const projFilter = document.getElementById('project-filter');
+  const taskPanel = document.getElementById('task-panel');
+  const topHeight = (nav ? nav.offsetHeight : 0) + (header ? header.offsetHeight : 30) + (sysState ? sysState.offsetHeight : 0) + (projFilter ? projFilter.offsetHeight : 0);
+  const taskPanelHeight = (taskPanel && taskPanel.classList.contains('show')) ? taskPanel.offsetHeight : 0;
+  const avail = window.innerHeight - topHeight - (status ? status.offsetHeight : 30) - (bottom ? bottom.offsetHeight : 120) - taskPanelHeight - 10;
+  const aspect = 640 / 480;
+  const wrapperWidth = gameWrapper ? gameWrapper.offsetWidth : window.innerWidth - 280;
+  let cw = wrapperWidth;
+  let ch = Math.max(avail, 200);
+  if (cw / ch > aspect) { cw = ch * aspect; } else { ch = cw / aspect; }
+  // Increase internal pixel density to approximate 72 PPI output
+  const TARGET_PPI = 72;
+  const CSS_PPI = 96;
+  const ppiScale = TARGET_PPI / CSS_PPI;
+  DPR = Math.min((window.devicePixelRatio || 1) / ppiScale, 3);
+  C.style.width = wrapperWidth + 'px';
+  C.style.height = ch + 'px';
+  C.width = Math.round(640 * DPR);
+  C.height = Math.round(480 * DPR);
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  SCALE = wrapperWidth / 640;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+// --- CLICK TO SELECT AGENT ---
+let selectedAgent = null;
+const modal = document.getElementById('modal-overlay');
+const modalTitle = document.getElementById('modal-title');
+const modalInfo = document.getElementById('modal-info');
+const modalInput = document.getElementById('modal-input');
+
+// Close when clicking outside modal
+modal.addEventListener('click', (e) => {
+  if (e.target === modal) closeModal();
+});
+
+C.addEventListener('click', (e) => {
+  const rect = C.getBoundingClientRect();
+  const mx = (e.clientX - rect.left) / rect.width * 640;
+  const my = (e.clientY - rect.top) / rect.height * 480;
+  // Find closest agent within 25px
+  let closest = null, closestDist = 25;
+  AGENTS.forEach(a => {
+    const d = Math.hypot(a.x - mx, a.y - my);
+    if (d < closestDist) { closest = a; closestDist = d; }
+  });
+  if (closest) openAgentModal(closest);
+});
+
+function openAgentModal(agent) {
+  selectedAgent = agent;
+  document.getElementById('modal-input').style.display = '';
+  document.getElementById('modal-send').style.display = '';
+  modalTitle.textContent = agent.icon + ' ' + agent.name + ' — ' + agent.role;
+  // Show real task if available from activity data
+  const realTask = (window.agentActivity && window.agentActivity.agents && window.agentActivity.agents[agent.name])
+    ? window.agentActivity.agents[agent.name].task
+    : null;
+  const statusEmoji = {working:'🟢',idle:'⚪',waiting:'🟡',blocked:'🔴',deployed:'✅'}[agent.state] || '⚪';
+  modalInfo.innerHTML = '<strong style="color:#10b981">Status:</strong> ' + statusEmoji + ' ' + agent.state +
+    (realTask ? '<br><br><strong style="color:#f59e0b">Current task:</strong> ' + realTask : '') +
+    '<br><br>Type an instruction below and hit SEND:';
+  modalInput.value = '';
+  modal.classList.add('show');
+  modalInput.focus();
+}
+
+// Tab switching
+let currentTab = 'instruct';
+let pollInterval = null;
+const ADMIN_TOKEN = '8ebd24bbfa5d0c4fb2cc069c475ee1b80c42368292ea269346ff7060fa09109b';
+
+document.querySelectorAll('.modal-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const targetTab = tab.dataset.tab;
+    document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentTab = targetTab;
+    
+    if (targetTab === 'instruct') {
+      document.getElementById('instruct-tab').style.display = '';
+      document.getElementById('chat-area').style.display = 'none';
+      if (pollInterval) clearInterval(pollInterval);
+    } else if (targetTab === 'responses') {
+      document.getElementById('instruct-tab').style.display = 'none';
+      document.getElementById('chat-area').style.display = 'block';
+      loadResponses();
+      // Poll every 5 seconds
+      if (pollInterval) clearInterval(pollInterval);
+      pollInterval = setInterval(loadResponses, 5000);
+    }
+  });
+});
+
+document.getElementById('modal-send').onclick = sendInstruction;
+modalInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendInstruction(); if (e.key === 'Escape') { closeModal(); } });
+
+async function sendInstruction() {
+  if (!selectedAgent || !modalInput.value.trim()) return;
+  const msg = modalInput.value.trim();
+  const sendBtn = document.getElementById('modal-send');
+  const confirm = document.getElementById('sent-confirm');
+  
+  // Disable button while sending
+  sendBtn.disabled = true;
+  sendBtn.textContent = 'SENDING...';
+  
+  try {
+    const response = await fetch('/api/agent-instruct', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${ADMIN_TOKEN}`
+      },
+      body: JSON.stringify({
+        agentId: selectedAgent.name,
+        instruction: msg,
+        token: ADMIN_TOKEN
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (response.ok && result.ok) {
+      // Show confirmation
+      confirm.style.display = 'block';
+      modalInput.value = '';
+      
+      // Visual feedback on agent
+      addLog('<span class="name">Rob</span> → <span class="name">' + selectedAgent.name + '</span>: <span class="action">"' + msg + '"</span>');
+      selectedAgent.bubble = '📨 Queued for Neo';
+      selectedAgent.bubbleTimer = 200;
+      spawnParticles(selectedAgent.x, selectedAgent.y, selectedAgent.color, 10);
+      
+      // Hide confirmation after 3 seconds
+      setTimeout(() => {
+        confirm.style.display = 'none';
+      }, 3000);
+    } else {
+      alert('Failed to send instruction: ' + (result.error || 'Unknown error'));
+    }
+  } catch (err) {
+    console.error('Send error:', err);
+    alert('Failed to send instruction: ' + err.message);
+  } finally {
+    sendBtn.disabled = false;
+    sendBtn.textContent = 'SEND';
+  }
+}
+
+async function loadResponses() {
+  if (!selectedAgent) return;
+  const chatArea = document.getElementById('chat-area');
+  
+  try {
+    const response = await fetch(`/api/agent-responses?agentId=${encodeURIComponent(selectedAgent.name)}&token=${ADMIN_TOKEN}`);
+    const result = await response.json();
+    
+    if (response.ok && result.ok) {
+      if (!result.responses || result.responses.length === 0) {
+        chatArea.innerHTML = '<div class="typing-indicator">⏳ Awaiting response from Neo...</div>';
+      } else {
+        // Render chat messages
+        chatArea.innerHTML = result.responses.map(r => {
+          const time = new Date(r.timestamp).toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'});
+          return `
+            <div class="chat-msg">
+              <div class="sender">${r.from || selectedAgent.name}<span class="time">${time}</span></div>
+              <div class="text">${r.message}</div>
+            </div>
+          `;
+        }).join('');
+        
+        // Scroll to bottom
+        chatArea.scrollTop = chatArea.scrollHeight;
+      }
+    } else {
+      chatArea.innerHTML = '<div style="color:#ef4444">Failed to load responses.</div>';
+    }
+  } catch (err) {
+    console.error('Load responses error:', err);
+    chatArea.innerHTML = '<div style="color:#ef4444">Error: ' + err.message + '</div>';
+  }
+}
+
+// Status bar badges also clickable
+statusBar.addEventListener('click', (e) => {
+  const badge = e.target.closest('.agent-badge');
+  if (!badge) return;
+  const name = badge.dataset.agent;
+  const agent = AGENTS.find(a => a.name === name);
+  if (agent) openAgentModal(agent);
+});
+
+// --- COLORS (NES palette) ---
+const PAL = {
+  floor: '#2a2a3e', wall: '#1e3a34', carpet: '#1a2332', desk: '#5c4033',
+  chair: '#3d2b1f', monitor: '#0f172a', monitorGlow: '#10b981',
+  water: '#0ea5e9', waterBase: '#475569', plant: '#059669',
+  confTable: '#4a3728', whiteboard: '#e2e8f0', doorFrame: '#8b7355'
+};
+
+// --- AGENTS ---
+const AGENTS = [
+  // --- LEADERSHIP ---
+  { name: 'Neo', role: 'Chief of Staff', color: '#10b981', accent: '#059669', icon: '🕶️', x: 320, y: 55, state: 'working', desk: {x:296,y:35}, speed: 1.2, dept: 'leadership' },
+  { name: 'Council', role: 'Strategy', color: '#fbbf24', accent: '#f59e0b', icon: '👑', x: 390, y: 55, state: 'working', desk: {x:376,y:35}, speed: 0.6, dept: 'leadership' },
+
+  // --- CONTENT & MARKETING ---
+  { name: 'Writer', role: 'Content', color: '#8b5cf6', accent: '#7c3aed', icon: '✍️', x: 80, y: 140, state: 'working', desk: {x:60,y:120}, speed: 0.8, dept: 'content' },
+  { name: 'SEO', role: 'AEO + GEO', color: '#22d3ee', accent: '#06b6d4', icon: '🔎', x: 150, y: 140, state: 'working', desk: {x:136,y:120}, speed: 0.8, dept: 'content' },
+  { name: 'Scout', role: 'Research', color: '#f59e0b', accent: '#d97706', icon: '🔍', x: 220, y: 140, state: 'working', desk: {x:206,y:120}, speed: 0.9, dept: 'content' },
+  { name: 'Browser', role: 'Web Agent', color: '#14b8a6', accent: '#0d9488', icon: '🌐', x: 290, y: 140, state: 'working', desk: {x:276,y:120}, speed: 0.95, dept: 'content' },
+
+  // --- OPERATIONS ---
+  { name: 'Analyst', role: 'Analytics', color: '#ec4899', accent: '#db2777', icon: '📊', x: 400, y: 140, state: 'working', desk: {x:386,y:120}, speed: 0.7, dept: 'operations' },
+  { name: 'Planner', role: 'Task Chains', color: '#f97316', accent: '#ea580c', icon: '📋', x: 470, y: 140, state: 'working', desk: {x:456,y:120}, speed: 0.85, dept: 'operations' },
+  { name: 'Docs', role: 'Documents', color: '#a855f7', accent: '#9333ea', icon: '📄', x: 540, y: 140, state: 'working', desk: {x:526,y:120}, speed: 0.75, dept: 'operations' },
+  { name: 'BAE SIG', role: 'CalABA Ops', color: '#fbbf24', accent: '#f59e0b', icon: '🎓', x: 400, y: 200, state: 'working', desk: {x:386,y:180}, speed: 0.7, dept: 'operations' },
+  { name: 'KCUSD', role: 'Schools', color: '#4ade80', accent: '#22c55e', icon: '🏫', x: 470, y: 200, state: 'working', desk: {x:456,y:180}, speed: 0.65, dept: 'operations' },
+
+  // --- ENGINEERING ---
+  { name: 'Engineer', role: 'Developer', color: '#06b6d4', accent: '#0891b2', icon: '⚙️', x: 80, y: 280, state: 'working', desk: {x:60,y:260}, speed: 1.0, dept: 'engineering' },
+  { name: 'Study App', role: 'study.beh...', color: '#fb923c', accent: '#ea580c', icon: '📱', x: 150, y: 280, state: 'working', desk: {x:136,y:260}, speed: 0.75, dept: 'engineering' },
+  { name: 'BehaviorSchool', role: 'behaviorschool', color: '#047857', accent: '#065f46', icon: '📗', x: 220, y: 280, state: 'working', desk: {x:206,y:260}, speed: 0.7, dept: 'engineering' },
+  { name: 'Learning', role: 'Marketplace', color: '#38bdf8', accent: '#0284c7', icon: '📚', x: 290, y: 280, state: 'working', desk: {x:276,y:260}, speed: 0.65, dept: 'engineering' },
+  { name: 'Pro', role: 'plan.beh...', color: '#a78bfa', accent: '#7c3aed', icon: '💎', x: 360, y: 280, state: 'working', desk: {x:346,y:260}, speed: 0.7, dept: 'engineering' },
+  { name: 'Supervision', role: 'supervision', color: '#f472b6', accent: '#db2777', icon: '👥', x: 430, y: 280, state: 'working', desk: {x:416,y:260}, speed: 0.65, dept: 'engineering' },
+  { name: 'Toolchest', role: 'toolchest', color: '#facc15', accent: '#eab308', icon: '🧰', x: 500, y: 280, state: 'working', desk: {x:486,y:260}, speed: 0.7, dept: 'engineering' },
+  { name: 'RobSpain.com', role: 'robspain.com', color: '#34d399', accent: '#10b981', icon: '🌿', x: 80, y: 340, state: 'working', desk: {x:60,y:320}, speed: 0.7, dept: 'engineering' },
+  { name: 'VideoGen', role: 'video gen', color: '#f87171', accent: '#ef4444', icon: '🎬', x: 150, y: 340, state: 'working', desk: {x:136,y:320}, speed: 0.8, dept: 'engineering' },
+  { name: 'RBT Study', role: 'rbtstudy', color: '#fb923c', accent: '#ea580c', icon: '📖', x: 220, y: 340, state: 'working', desk: {x:206,y:320}, speed: 0.7, dept: 'engineering' },
+];
+
+// --- DEPARTMENT COLORS ---
+const DEPT_COLORS = {
+  leadership: { bg: 'rgba(16,185,129,0.08)', border: '#10b981', label: 'LEADERSHIP' },
+  content: { bg: 'rgba(139,92,246,0.08)', border: '#8b5cf6', label: 'CONTENT & MARKETING' },
+  operations: { bg: 'rgba(236,72,153,0.08)', border: '#ec4899', label: 'OPERATIONS' },
+  engineering: { bg: 'rgba(6,182,212,0.08)', border: '#06b6d4', label: 'ENGINEERING' },
+};
+
+// --- OFFICE LAYOUT ---
+const ROOMS = {
+  leadership: { x: 260, y: 25, w: 180, h: 55, label: '' },
+  content: { x: 40, y: 100, w: 310, h: 70, label: '' },
+  operations: { x: 370, y: 100, w: 220, h: 130, label: '' },
+  engineering: { x: 40, y: 245, w: 550, h: 130, label: '' },
+  confRoom: { x: 40, y: 390, w: 180, h: 70, label: 'CONF ROOM' },
+  coffeeBar: { x: 520, y: 385, w: 90, h: 70, label: '' },
+};
+
+const CONF_TABLE = { x: 80, y: 410, w: 100, h: 40 };
+const COFFEE_POS = { x: 560, y: 415 };
+const WHITEBOARD = { x: 50, y: 392, w: 160, h: 8 };
+
+// --- TASK MANAGEMENT ---
+let selectedTaskId = null;
+let taskFilters = { status: 'all', project: 'all', owner: 'all', priority: 'all' };
+
+function toggleTaskPanel() {
+  const panel = document.getElementById('task-panel');
+  const isShowing = panel.classList.contains('show');
+  if (isShowing) {
+    panel.classList.remove('show');
+  } else {
+    panel.classList.add('show');
+    renderTaskList();
+  }
+}
+
+function filterTasks() {
+  taskFilters.status = document.getElementById('filter-status').value;
+  taskFilters.project = document.getElementById('filter-project').value;
+  taskFilters.owner = document.getElementById('filter-owner').value;
+  taskFilters.priority = document.getElementById('filter-priority').value;
+  renderTaskList();
+}
+
+function getFilteredTasks() {
+  return TASKS.filter(t => {
+    if (taskFilters.status !== 'all' && t.status !== taskFilters.status) return false;
+    if (taskFilters.project !== 'all' && t.project !== taskFilters.project) return false;
+    if (taskFilters.owner !== 'all' && t.owner !== taskFilters.owner) return false;
+    if (taskFilters.priority !== 'all' && t.priority !== taskFilters.priority) return false;
+    return true;
+  });
+}
+
+function renderTaskList() {
+  const listEl = document.getElementById('task-list');
+  const filtered = getFilteredTasks();
+  
+  if (filtered.length === 0) {
+    listEl.innerHTML = '<div style="padding:20px;text-align:center;color:#94a3b8;">No tasks match filters</div>';
+    return;
+  }
+  
+  listEl.innerHTML = filtered.map(t => {
+    const selected = selectedTaskId === t.id ? ' selected' : '';
+    return `
+      <div class="task-row${selected}" onclick="openTaskDetail('${t.id}')">
+        <div class="task-status-dot ${t.status}"></div>
+        <div class="task-title">${t.title}</div>
+        <div class="task-owner">${t.owner}</div>
+        <div class="task-priority-badge ${t.priority}">${t.priority}</div>
+        <div class="task-project-tag">${t.project}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openTaskDetail(taskId) {
+  selectedTaskId = taskId;
+  const task = TASKS.find(t => t.id === taskId);
+  if (!task) return;
+  
+  const drawer = document.getElementById('task-drawer');
+  const body = document.getElementById('task-drawer-body');
+  
+  // Highlight owner agent on canvas
+  AGENTS.forEach(a => {
+    a._highlighted = (a.name === task.owner);
+  });
+  
+  const createdDate = new Date(task.createdAt).toLocaleString();
+  const completedDate = task.completedAt ? new Date(task.completedAt).toLocaleString() : 'N/A';
+  
+  const upstreamLinks = task.upstream.map(id => {
+    const upTask = TASKS.find(t => t.id === id);
+    return upTask ? `<a class="td-dep-link" onclick="openTaskDetail('${id}')">${id}: ${upTask.title}</a>` : '';
+  }).join('');
+  
+  const downstreamLinks = task.downstream.map(id => {
+    const downTask = TASKS.find(t => t.id === id);
+    return downTask ? `<a class="td-dep-link" onclick="openTaskDetail('${id}')">${id}: ${downTask.title}</a>` : '';
+  }).join('');
+  
+  body.innerHTML = `
+    <div class="td-section">
+      <div class="td-label">Status</div>
+      <div class="td-status-badge ${task.status}">${task.status}</div>
+    </div>
+    <div class="td-section">
+      <div class="td-label">Owner</div>
+      <div class="td-value">${task.owner}</div>
+    </div>
+    <div class="td-section">
+      <div class="td-label">Priority</div>
+      <div class="td-value"><span class="task-priority-badge ${task.priority}">${task.priority}</span></div>
+    </div>
+    <div class="td-section">
+      <div class="td-label">Project</div>
+      <div class="td-value"><span class="task-project-tag">${task.project}</span></div>
+    </div>
+    ${task.upstream.length > 0 ? `
+    <div class="td-section">
+      <div class="td-label">Upstream Dependencies</div>
+      <div class="td-deps">${upstreamLinks || '<div class="td-value">None</div>'}</div>
+    </div>` : ''}
+    ${task.downstream.length > 0 ? `
+    <div class="td-section">
+      <div class="td-label">Downstream Dependencies</div>
+      <div class="td-deps">${downstreamLinks || '<div class="td-value">None</div>'}</div>
+    </div>` : ''}
+    <div class="td-section">
+      <div class="td-label">Created</div>
+      <div class="td-timestamp">${createdDate}</div>
+    </div>
+    <div class="td-section">
+      <div class="td-label">Completed</div>
+      <div class="td-timestamp">${completedDate}</div>
+    </div>
+    <div class="td-section">
+      <div class="td-label">Inputs</div>
+      <div class="td-value">${task.inputs}</div>
+    </div>
+    <div class="td-section">
+      <div class="td-label">Outputs</div>
+      <div class="td-value">${task.outputs}</div>
+    </div>
+    <div class="td-section">
+      <div class="td-label">Logs</div>
+      <div class="td-logs">
+        ${task.logs.map(log => `<div class="td-log-entry">> ${log}</div>`).join('')}
+      </div>
+    </div>
+    <div class="td-section">
+      <div class="td-label">Actions</div>
+      <div class="td-actions">
+        <button class="td-action-btn reassign" onclick="taskAction('reassign', '${task.id}')">Reassign</button>
+        ${task.status === 'running' ? '<button class="td-action-btn pause" onclick="taskAction(\'pause\', \'' + task.id + '\')">Pause</button>' : ''}
+        ${task.status === 'queued' || task.status === 'blocked' ? '<button class="td-action-btn resume" onclick="taskAction(\'resume\', \'' + task.id + '\')">Resume</button>' : ''}
+        <button class="td-action-btn cancel" onclick="taskAction('cancel', '${task.id}')">Cancel</button>
+        <button class="td-action-btn escalate" onclick="taskAction('escalate', '${task.id}')">Escalate</button>
+      </div>
+    </div>
+  `;
+  
+  document.getElementById('task-drawer-title').textContent = `${task.id}: ${task.title}`;
+  drawer.classList.add('show');
+  renderTaskList(); // Refresh to show selected state
+}
+
+function closeTaskDrawer() {
+  selectedTaskId = null;
+  document.getElementById('task-drawer').classList.remove('show');
+  // Remove highlights
+  AGENTS.forEach(a => { a._highlighted = false; });
+  renderTaskList();
+}
+
+function taskAction(action, taskId) {
+  console.log(`Task action: ${action} on ${taskId}`);
+  // TODO Phase 2: real backend integration
+  alert(`Action "${action}" on task ${taskId} - Phase 2 will implement backend.`);
+}
+
+// Populate owner filter dropdown
+function initTaskFilters() {
+  const ownerSet = new Set(TASKS.map(t => t.owner));
+  const ownerFilter = document.getElementById('filter-owner');
+  Array.from(ownerSet).sort().forEach(owner => {
+    const opt = document.createElement('option');
+    opt.value = owner;
+    opt.textContent = owner;
+    ownerFilter.appendChild(opt);
+  });
+}
+initTaskFilters();
+
+// --- MESSAGES ---
+// NO fake work messages — agents only show their real task from data
+// NO fake meeting topics — meetings only happen from real handoffs
+
+// Coffee bar = agents that are idle or waiting on blockers (commiserating)
+// Generate real conversation from agent data
+function getCoffeeChat(a1, a2, data) {
+  const r1 = data.agents[a1.name] || {};
+  const r2 = data.agents[a2.name] || {};
+  // Use real task/blocker info
+  if (r1.status === 'blocked' && r1.blocker) {
+    return [r1.blocker, "Ouch. Flagged for Rob?"];
+  }
+  if (r2.status === 'blocked' && r2.blocker) {
+    return ["How's your queue?", "Blocked: " + r2.blocker];
+  }
+  if (r1.task && r2.task) {
+    return ["Working on: " + r1.task.slice(0, 40), "Me: " + r2.task.slice(0, 40)];
+  }
+  if (r1.task) {
+    return [r1.task.slice(0, 45), "Nice. I'm free."];
+  }
+  if (r2.task) {
+    return ["Anything going on?", r2.task.slice(0, 45)];
+  }
+  return ["Quiet day.", "Too quiet."];
+}
+
+// --- STATE ---
+let tick = 0;
+let meetingActive = false;
+let meetingTopic = '';
+let meetingAgents = [];
+let meetingTimer = 0;
+let coffeeBreakChat = null;
+let coffeeBreakTimer = 0;
+let particles = [];
+
+function addLog(msg) {
+  const t = new Date().toLocaleTimeString('en-US', {hour12:false, hour:'2-digit', minute:'2-digit'});
+  log.innerHTML += `<span class="time">[${t}]</span> ${msg}<br>`;
+  log.scrollTop = log.scrollHeight;
+}
+
+function rand(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+function pick(arr) { return arr[rand(0, arr.length - 1)]; }
+function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+
+// --- DRAWING (16-BIT STYLE) ---
+function drawPixelRect(x, y, w, h, color) {
+  ctx.fillStyle = color;
+  ctx.fillRect(Math.floor(x), Math.floor(y), w, h);
+}
+
+function drawGradientRect(x, y, w, h, color1, color2) {
+  const grad = ctx.createLinearGradient(x, y, x, y + h);
+  grad.addColorStop(0, color1);
+  grad.addColorStop(1, color2);
+  ctx.fillStyle = grad;
+  ctx.fillRect(Math.floor(x), Math.floor(y), w, h);
+}
+
+function drawRoundedRect(x, y, w, h, color, shadow = false) {
+  if (shadow) {
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.beginPath();
+    ctx.roundRect(x + 2, y + 2, w, h, 3);
+    ctx.fill();
+  }
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.roundRect(x, y, w, h, 3);
+  ctx.fill();
+}
+
+function drawOffice() {
+  // Floor: rich wood-tile pattern
+  const floorGrad = ctx.createLinearGradient(0, 0, 0, 480);
+  floorGrad.addColorStop(0, '#1c1c32');
+  floorGrad.addColorStop(0.5, '#181830');
+  floorGrad.addColorStop(1, '#14142a');
+  ctx.fillStyle = floorGrad;
+  ctx.fillRect(0, 0, 640, 480);
+  
+  // Tile grid overlay
+  ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+  ctx.lineWidth = 0.5;
+  for (let gx = 0; gx < 640; gx += 32) {
+    ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, 480); ctx.stroke();
+  }
+  for (let gy = 0; gy < 480; gy += 32) {
+    ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(640, gy); ctx.stroke();
+  }
+
+  // Draw rooms with richer gradients + inner glow
+  Object.values(ROOMS).forEach(r => {
+    // Room floor — subtle carpet texture
+    const roomGrad = ctx.createRadialGradient(r.x + r.w/2, r.y + r.h/2, 10, r.x + r.w/2, r.y + r.h/2, Math.max(r.w, r.h));
+    roomGrad.addColorStop(0, '#30304a');
+    roomGrad.addColorStop(1, '#24243a');
+    ctx.fillStyle = roomGrad;
+    ctx.beginPath();
+    ctx.roundRect(r.x, r.y, r.w, r.h, 4);
+    ctx.fill();
+    // Border with depth
+    ctx.strokeStyle = '#3d5a50';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(r.x, r.y, r.w, r.h);
+    ctx.strokeStyle = 'rgba(16,185,129,0.15)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(r.x + 1, r.y + 1, r.w - 2, r.h - 2);
+    if (r.label) {
+      ctx.fillStyle = '#5a6b7a';
+      ctx.font = '6px "Press Start 2P"';
+      ctx.fillText(r.label, r.x + 6, r.y + r.h - 4);
+    }
+  });
+
+  // Department labels
+  if (typeof DEPT_COLORS !== 'undefined') {
+    Object.entries(ROOMS).forEach(([key, r]) => {
+      const dept = DEPT_COLORS[key];
+      if (dept) {
+        // Department colored border
+        ctx.strokeStyle = dept.border;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(r.x, r.y, r.w, r.h);
+        // Department label top-left (large, readable)
+        ctx.fillStyle = dept.border;
+        ctx.font = 'bold 9px "Press Start 2P"';
+        ctx.fillText(dept.label, r.x + 6, r.y - 4);
+        // Subtle fill
+        ctx.fillStyle = dept.bg;
+        ctx.fillRect(r.x + 1, r.y + 1, r.w - 2, r.h - 2);
+      }
+    });
+  }
+
+  // Conference room — warm lighting
+  const confGrad = ctx.createRadialGradient(380, 225, 10, 380, 225, 90);
+  confGrad.addColorStop(0, '#2e2e50');
+  confGrad.addColorStop(1, '#222240');
+  ctx.fillStyle = confGrad;
+  ctx.beginPath();
+  ctx.roundRect(ROOMS.confRoom.x, ROOMS.confRoom.y, ROOMS.confRoom.w, ROOMS.confRoom.h, 4);
+  ctx.fill();
+
+  // Hallways with subtle lighting
+  [[280, 160, 80, 12], [280, 230, 80, 17], [50, 230, 200, 17], [50, 305, 200, 12]].forEach(([hx,hy,hw,hh]) => {
+    const hGrad = ctx.createLinearGradient(hx, hy, hx + hw, hy);
+    hGrad.addColorStop(0, '#22223a');
+    hGrad.addColorStop(0.5, '#282844');
+    hGrad.addColorStop(1, '#22223a');
+    ctx.fillStyle = hGrad;
+    ctx.fillRect(hx, hy, hw, hh);
+  });
+
+  // --- FURNITURE (16-bit SNES quality) ---
+
+  // Desks with wood grain, monitor glow, and desk accessories
+  // Status-dependent colors for visual indicators
+  const deskStatusColors = {
+    working: { wood1: '#7a6050', wood2: '#6e5545', wood3: '#5c4033', edge: 'rgba(255,255,255,0.08)' },
+    deployed: { wood1: '#7a6050', wood2: '#6e5545', wood3: '#5c4033', edge: 'rgba(255,255,255,0.08)' },
+    waiting: { wood1: '#7a6050', wood2: '#6e5545', wood3: '#5c4033', edge: 'rgba(255,255,255,0.08)' },
+    idle: { wood1: '#5a5060', wood2: '#4e4555', wood3: '#3c3043', edge: 'rgba(128,128,160,0.12)' },
+    blocked: { wood1: '#6a3030', wood2: '#5e2525', wood3: '#4c1a1a', edge: 'rgba(255,80,80,0.15)' },
+  };
+  const monitorStatusColors = {
+    working: null,   // uses agent.color (default)
+    deployed: null,  // uses agent.color
+    waiting: '#f59e0b',  // amber
+    idle: '#3a3a4e',     // dim/off
+    blocked: '#ef4444',  // red
+  };
+  AGENTS.forEach(a => {
+    const dx = a.desk.x, dy = a.desk.y;
+    const isNeo = a.name === 'Neo';
+    const dw = isNeo ? 48 : 36, dh = isNeo ? 32 : 24;
+    
+    // Get real status
+    const realData = window.agentActivity && window.agentActivity.agents && window.agentActivity.agents[a.name];
+    const agentStatus = (realData && realData.status) || 'working';
+    const deskColors = deskStatusColors[agentStatus] || deskStatusColors.working;
+    const monitorColor = monitorStatusColors[agentStatus];
+    
+    // Desk shadow
+    ctx.fillStyle = agentStatus === 'blocked' ? 'rgba(80,0,0,0.4)' : 'rgba(0,0,0,0.3)';
+    ctx.beginPath();
+    ctx.roundRect(dx - (isNeo?4:2) + 2, dy - (isNeo?4:2) + 2, dw, dh, 3);
+    ctx.fill();
+    
+    // Desk surface with wood grain (tinted by status)
+    const woodGrad = ctx.createLinearGradient(dx, dy, dx + dw, dy + dh);
+    woodGrad.addColorStop(0, deskColors.wood1);
+    woodGrad.addColorStop(0.3, deskColors.wood2);
+    woodGrad.addColorStop(0.6, deskColors.wood1);
+    woodGrad.addColorStop(1, deskColors.wood3);
+    ctx.fillStyle = woodGrad;
+    ctx.beginPath();
+    ctx.roundRect(dx - (isNeo?4:2), dy - (isNeo?4:2), dw, dh, 3);
+    ctx.fill();
+    // Wood grain lines
+    ctx.strokeStyle = 'rgba(90,64,51,0.4)';
+    ctx.lineWidth = 0.5;
+    for (let g = 0; g < 3; g++) {
+      const gy = dy + g * (dh/3);
+      ctx.beginPath(); ctx.moveTo(dx, gy); ctx.lineTo(dx + dw - 6, gy); ctx.stroke();
+    }
+    // Desk edge highlight
+    ctx.strokeStyle = deskColors.edge;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(dx - (isNeo?4:2), dy - (isNeo?4:2));
+    ctx.lineTo(dx - (isNeo?4:2) + dw, dy - (isNeo?4:2));
+    ctx.stroke();
+    
+    // Monitor with bezel
+    const mx = isNeo ? dx + 8 : dx + 6;
+    const my = isNeo ? dy : dy + 2;
+    const mw = isNeo ? 20 : 14, mh = isNeo ? 12 : 10;
+    // Monitor bezel
+    ctx.fillStyle = '#2a2a3e';
+    ctx.beginPath();
+    ctx.roundRect(mx - 1, my - 1, mw + 2, mh + 2, 2);
+    ctx.fill();
+    // Screen
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(mx, my, mw, mh);
+    // Screen glow (status-dependent: agent color for working/deployed, amber for waiting, dim for idle, red for blocked)
+    const screenColor = monitorColor || a.color;
+    const glowGrad = ctx.createRadialGradient(mx + mw/2, my + mh/2, 2, mx + mw/2, my + mh/2, mw);
+    glowGrad.addColorStop(0, screenColor);
+    glowGrad.addColorStop(1, 'rgba(15,23,42,0.1)');
+    ctx.fillStyle = glowGrad;
+    ctx.fillRect(mx + 1, my + 1, mw - 2, mh - 2);
+    
+    // Blocked: red pulse ring around monitor
+    if (agentStatus === 'blocked') {
+      const pulse = 0.4 + Math.sin(Date.now() / 400) * 0.3;
+      ctx.strokeStyle = `rgba(239, 68, 68, ${pulse})`;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(mx - 3, my - 3, mw + 6, mh + 6, 3);
+      ctx.stroke();
+    }
+    // Idle: dim "off" scanlines on monitor
+    if (agentStatus === 'idle') {
+      ctx.fillStyle = 'rgba(0,0,0,0.4)';
+      for (let sl = 0; sl < mh; sl += 2) {
+        ctx.fillRect(mx, my + sl, mw, 1);
+      }
+    }
+    // Monitor stand
+    ctx.fillStyle = '#3a3a4e';
+    ctx.fillRect(mx + mw/2 - 2, my + mh, 4, 3);
+    
+    // Keyboard (small rectangle in front of monitor)
+    ctx.fillStyle = '#2c2c3e';
+    ctx.beginPath();
+    ctx.roundRect(mx + 1, my + mh + 4, mw - 2, 4, 1);
+    ctx.fill();
+    // Key dots on keyboard
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    for (let ki = 0; ki < 3; ki++) {
+      ctx.fillRect(mx + 3 + ki * 4, my + mh + 5, 2, 1);
+    }
+
+    // Desk chair (behind desk, below)
+    const chairX = dx + dw/2 - 5;
+    const chairY = dy + dh + 2;
+    // Seat
+    ctx.fillStyle = '#2a2a42';
+    ctx.beginPath();
+    ctx.roundRect(chairX, chairY, 10, 5, 2);
+    ctx.fill();
+    // Back rest
+    ctx.fillStyle = '#22223a';
+    ctx.beginPath();
+    ctx.roundRect(chairX + 1, chairY + 5, 8, 6, 2);
+    ctx.fill();
+    // Chair wheels (3 dots)
+    ctx.fillStyle = '#1a1a2e';
+    ctx.beginPath(); ctx.arc(chairX + 2, chairY + 12, 1.5, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(chairX + 5, chairY + 13, 1.5, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(chairX + 8, chairY + 12, 1.5, 0, Math.PI*2); ctx.fill();
+
+    // Coffee mug (small detail)
+    if (Math.abs(a.x - (dx + 12)) < 30) {
+      ctx.fillStyle = '#e2e8f0';
+      ctx.beginPath();
+      ctx.roundRect(dx + dw - 10, dy + 2, 5, 6, 1);
+      ctx.fill();
+      ctx.fillStyle = a.color;
+      ctx.fillRect(dx + dw - 9, dy + 3, 3, 2);
+    }
+  });
+
+  // Conference table — polished wood with reflection
+  const ctGrad = ctx.createLinearGradient(CONF_TABLE.x, CONF_TABLE.y, CONF_TABLE.x, CONF_TABLE.y + CONF_TABLE.h);
+  ctGrad.addColorStop(0, '#6a5740');
+  ctGrad.addColorStop(0.5, '#5a4738');
+  ctGrad.addColorStop(1, '#4a3728');
+  ctx.fillStyle = ctGrad;
+  ctx.beginPath();
+  ctx.roundRect(CONF_TABLE.x, CONF_TABLE.y, CONF_TABLE.w, CONF_TABLE.h, 4);
+  ctx.fill();
+  // Table reflection
+  ctx.fillStyle = 'rgba(255,255,255,0.05)';
+  ctx.beginPath();
+  ctx.roundRect(CONF_TABLE.x + 5, CONF_TABLE.y + 3, CONF_TABLE.w - 10, CONF_TABLE.h/3, 2);
+  ctx.fill();
+  // Chairs with cushions
+  for (let i = 0; i < 4; i++) {
+    const cx = CONF_TABLE.x + 10 + i * 22;
+    // Top chairs
+    ctx.fillStyle = '#3d2b1f';
+    ctx.beginPath(); ctx.roundRect(cx, CONF_TABLE.y - 10, 12, 8, 2); ctx.fill();
+    ctx.fillStyle = '#5a4738';
+    ctx.beginPath(); ctx.roundRect(cx + 2, CONF_TABLE.y - 8, 8, 4, 1); ctx.fill();
+    // Bottom chairs
+    ctx.fillStyle = '#3d2b1f';
+    ctx.beginPath(); ctx.roundRect(cx, CONF_TABLE.y + CONF_TABLE.h + 2, 12, 8, 2); ctx.fill();
+    ctx.fillStyle = '#5a4738';
+    ctx.beginPath(); ctx.roundRect(cx + 2, CONF_TABLE.y + CONF_TABLE.h + 4, 8, 4, 1); ctx.fill();
+  }
+
+  // Whiteboard with frame and content
+  // Frame
+  ctx.fillStyle = '#b0a890';
+  ctx.beginPath();
+  ctx.roundRect(WHITEBOARD.x - 2, WHITEBOARD.y - 2, WHITEBOARD.w + 4, WHITEBOARD.h + 14, 2);
+  ctx.fill();
+  // Board surface
+  const wbGrad = ctx.createLinearGradient(WHITEBOARD.x, WHITEBOARD.y, WHITEBOARD.x, WHITEBOARD.y + 12);
+  wbGrad.addColorStop(0, '#f8f8fc');
+  wbGrad.addColorStop(1, '#e8e8f0');
+  ctx.fillStyle = wbGrad;
+  ctx.fillRect(WHITEBOARD.x, WHITEBOARD.y, WHITEBOARD.w, WHITEBOARD.h + 10);
+  ctx.fillStyle = '#059669';
+  ctx.font = '6px "Press Start 2P"';
+  ctx.fillText(meetingActive ? meetingTopic : 'AGENT HQ — SHIP IT', WHITEBOARD.x + 4, WHITEBOARD.y + 8);
+  // Marker tray
+  ctx.fillStyle = '#8a8a9a';
+  ctx.fillRect(WHITEBOARD.x + 10, WHITEBOARD.y + WHITEBOARD.h + 10, 60, 2);
+  // Colored markers
+  ['#ef4444','#22c55e','#3b82f6'].forEach((mc, mi) => {
+    ctx.fillStyle = mc;
+    ctx.fillRect(WHITEBOARD.x + 15 + mi * 12, WHITEBOARD.y + WHITEBOARD.h + 7, 8, 3);
+  });
+
+  // Coffee Bar
+  // Counter
+  const barGrad = ctx.createLinearGradient(COFFEE_POS.x - 25, COFFEE_POS.y - 10, COFFEE_POS.x + 25, COFFEE_POS.y + 20);
+  barGrad.addColorStop(0, '#5C4033');
+  barGrad.addColorStop(1, '#3E2723');
+  ctx.fillStyle = barGrad;
+  ctx.beginPath();
+  ctx.roundRect(COFFEE_POS.x - 25, COFFEE_POS.y - 10, 50, 30, 4);
+  ctx.fill();
+  // Counter top highlight
+  ctx.fillStyle = '#8D6E63';
+  ctx.beginPath();
+  ctx.roundRect(COFFEE_POS.x - 24, COFFEE_POS.y - 10, 48, 4, 2);
+  ctx.fill();
+  // Espresso machine
+  ctx.fillStyle = '#37474F';
+  ctx.beginPath();
+  ctx.roundRect(COFFEE_POS.x - 8, COFFEE_POS.y - 22, 16, 14, 2);
+  ctx.fill();
+  // Machine top
+  ctx.fillStyle = '#546E7A';
+  ctx.beginPath();
+  ctx.roundRect(COFFEE_POS.x - 6, COFFEE_POS.y - 24, 12, 4, 2);
+  ctx.fill();
+  // Steam (animated)
+  const steamPhase = (tick % 80) / 80;
+  for (let si = 0; si < 3; si++) {
+    const sp = (steamPhase + si * 0.33) % 1;
+    ctx.globalAlpha = 0.3 - sp * 0.3;
+    ctx.fillStyle = '#e2e8f0';
+    ctx.beginPath();
+    ctx.arc(COFFEE_POS.x - 2 + si * 4 + Math.sin(sp * 6) * 2, COFFEE_POS.y - 26 - sp * 12, 2 - sp, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  // Coffee cups on counter
+  const cupColors = ['#e2e8f0', '#ffcc80', '#ef9a9a'];
+  cupColors.forEach((cc, ci) => {
+    ctx.fillStyle = cc;
+    ctx.beginPath();
+    ctx.roundRect(COFFEE_POS.x - 20 + ci * 14, COFFEE_POS.y - 4, 6, 7, 1);
+    ctx.fill();
+    // Cup handle
+    ctx.strokeStyle = cc;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(COFFEE_POS.x - 14 + ci * 14, COFFEE_POS.y, 2, -Math.PI/2, Math.PI/2);
+    ctx.stroke();
+  });
+  // Coffee bar label
+  ctx.fillStyle = '#BCAAA4';
+  ctx.font = '5px "Press Start 2P"';
+  ctx.fillText('COFFEE', COFFEE_POS.x - 18, COFFEE_POS.y + 28);
+
+  // Plants — more detailed with multiple leaves
+  [[55, 35], [580, 35], [55, 250], [580, 250], [55, 320]].forEach(([px, py]) => {
+    // Pot with rim
+    ctx.fillStyle = '#8B4513';
+    ctx.beginPath(); ctx.roundRect(px - 1, py + 2, 10, 10, 2); ctx.fill();
+    ctx.fillStyle = '#A0522D';
+    ctx.fillRect(px - 2, py + 2, 12, 3);
+    // Soil
+    ctx.fillStyle = '#3E2723';
+    ctx.fillRect(px, py + 3, 8, 2);
+    // Leaves (3 layers)
+    const leafColors = ['#059669', '#10b981', '#34d399'];
+    leafColors.forEach((lc, li) => {
+      ctx.fillStyle = lc;
+      ctx.beginPath();
+      ctx.arc(px + 4 + (li-1)*3, py - li*2, 5 - li, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  });
+
+  // Labels (coffee bar label drawn above in coffee bar section)
+
+  // Neo's office label with glow
+  ctx.shadowColor = '#10b981';
+  ctx.shadowBlur = 6;
+  ctx.fillStyle = '#10b981';
+  ctx.fillText("NEO", 315, 42);
+  ctx.shadowBlur = 0;
+
+  // Agent count
+  ctx.fillStyle = '#475569';
+  ctx.font = '5px "Press Start 2P"';
+  ctx.fillText(AGENTS.length + ' AGENTS ONLINE', 250, 475);
+}
+
+function drawAgent(a) {
+  const bx = Math.floor(a.x);
+  const by = Math.floor(a.y);
+
+  // Filter dimming: fade agents not in selected department
+  if (a._filtered) {
+    ctx.globalAlpha = 0.15;
+  }
+
+  // Highlight when task is selected
+  if (a._highlighted) {
+    const pulse = 0.5 + Math.sin(Date.now() / 300) * 0.3;
+    ctx.shadowColor = '#10b981';
+    ctx.shadowBlur = 16 + Math.sin(Date.now() / 200) * 8;
+    ctx.fillStyle = `rgba(16, 185, 129, ${pulse})`;
+    ctx.beginPath();
+    ctx.arc(bx, by, 18, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
+  // Escalation glow for long-blocked agents
+  const realInfo = window.agentActivity && window.agentActivity.agents && window.agentActivity.agents[a.name];
+  if (realInfo && realInfo.status === 'blocked') {
+    const pulse = 0.3 + Math.sin(Date.now() / 300) * 0.25;
+    ctx.shadowColor = '#ef4444';
+    ctx.shadowBlur = 12 + Math.sin(Date.now() / 200) * 6;
+    ctx.fillStyle = 'rgba(239,68,68,' + pulse + ')';
+    ctx.beginPath();
+    ctx.arc(bx, by, 16, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
+  // Drop shadow (16-bit style with blur)
+  ctx.save();
+  ctx.shadowColor = 'rgba(0,0,0,0.5)';
+  ctx.shadowBlur = 4;
+  ctx.shadowOffsetX = 2;
+  ctx.shadowOffsetY = 3;
+  ctx.fillStyle = 'rgba(0,0,0,0.2)';
+  ctx.beginPath();
+  ctx.ellipse(bx + 3, by + 13, 8, 3, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  // Body with gradient (16-bit smooth shading)
+  const bodyGrad = ctx.createLinearGradient(bx - 4, by - 2, bx + 8, by + 12);
+  bodyGrad.addColorStop(0, a.color);
+  bodyGrad.addColorStop(1, a.accent);
+  ctx.fillStyle = bodyGrad;
+  ctx.beginPath();
+  ctx.roundRect(bx - 4, by - 2, 12, 14, 2);
+  ctx.fill();
+
+  // Head (rounded, with gradient for depth)
+  const headGrad = ctx.createRadialGradient(bx + 1, by - 5, 2, bx + 2, by - 4, 7);
+  headGrad.addColorStop(0, lightenColor(a.accent, 20));
+  headGrad.addColorStop(1, a.accent);
+  ctx.fillStyle = headGrad;
+  ctx.beginPath();
+  ctx.arc(bx + 2, by - 4, 6, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Eyes (white with highlights)
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.arc(bx, by - 5, 2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(bx + 5, by - 5, 2, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Pupils
+  ctx.fillStyle = '#000';
+  ctx.beginPath();
+  ctx.arc(bx + 0.5, by - 4.5, 1.2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(bx + 5.5, by - 4.5, 1.2, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Eye highlights (16-bit detail)
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.fillRect(bx - 0.5, by - 6, 1, 1);
+  ctx.fillRect(bx + 4.5, by - 6, 1, 1);
+
+  // Walking animation (smoother with more frames)
+  if (a.state === 'walking' || a.state === 'toMeeting' || a.state === 'toCoffee' || a.state === 'toDesk') {
+    const legPhase = (tick * 0.15) % (Math.PI * 2);
+    const leftLeg = Math.sin(legPhase) * 4;
+    const rightLeg = Math.sin(legPhase + Math.PI) * 4;
+    
+    // Left leg with gradient
+    const leftGrad = ctx.createLinearGradient(bx - 2, by + 12, bx, by + 16);
+    leftGrad.addColorStop(0, a.accent);
+    leftGrad.addColorStop(1, darkenColor(a.accent, 15));
+    ctx.fillStyle = leftGrad;
+    ctx.beginPath();
+    ctx.roundRect(bx - 2, by + 12, 4, 4 + Math.abs(leftLeg), 1);
+    ctx.fill();
+    
+    // Right leg with gradient
+    const rightGrad = ctx.createLinearGradient(bx + 3, by + 12, bx + 5, by + 16);
+    rightGrad.addColorStop(0, a.accent);
+    rightGrad.addColorStop(1, darkenColor(a.accent, 15));
+    ctx.fillStyle = rightGrad;
+    ctx.beginPath();
+    ctx.roundRect(bx + 3, by + 12, 4, 4 + Math.abs(rightLeg), 1);
+    ctx.fill();
+  } else {
+    // Standing legs with gradient
+    const legGrad = ctx.createLinearGradient(bx - 2, by + 12, bx + 5, by + 16);
+    legGrad.addColorStop(0, a.accent);
+    legGrad.addColorStop(1, darkenColor(a.accent, 15));
+    ctx.fillStyle = legGrad;
+    ctx.beginPath();
+    ctx.roundRect(bx - 2, by + 12, 4, 4, 1);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.roundRect(bx + 3, by + 12, 4, 4, 1);
+    ctx.fill();
+  }
+
+  // Status indicator dot
+  const real = window.agentActivity && window.agentActivity.agents[a.name];
+  if (real) {
+    const statusColors = {working:'#22c55e',idle:'#6b7280',waiting:'#f59e0b',blocked:'#ef4444',deployed:'#10b981'};
+    const sc = statusColors[real.status] || '#6b7280';
+    ctx.fillStyle = sc;
+    ctx.beginPath();
+    ctx.arc(bx + 10, by - 14, 3, 0, Math.PI * 2);
+    ctx.fill();
+    // Pulse for working
+    if (real.status === 'working') {
+      ctx.globalAlpha = 0.3 + Math.sin(tick * 0.1) * 0.2;
+      ctx.beginPath();
+      ctx.arc(bx + 10, by - 14, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  // Dim idle/blocked agents
+  if (real && (real.status === 'idle')) {
+    ctx.globalAlpha = 0.5;
+  }
+
+  // Name tag (pixel font preserved)
+  ctx.fillStyle = a.color;
+  ctx.font = '6px "Press Start 2P"';
+  const nameW = ctx.measureText(a.name).width;
+  ctx.fillText(a.name, bx - nameW / 2 + 3, by - 12);
+  ctx.globalAlpha = 1;
+}
+
+// Helper functions for color manipulation
+function lightenColor(hex, percent) {
+  const num = parseInt(hex.replace('#',''), 16);
+  const amt = Math.round(2.55 * percent);
+  const R = Math.min(255, (num >> 16) + amt);
+  const G = Math.min(255, ((num >> 8) & 0x00FF) + amt);
+  const B = Math.min(255, (num & 0x0000FF) + amt);
+  return '#' + ((R << 16) | (G << 8) | B).toString(16).padStart(6, '0');
+}
+
+function darkenColor(hex, percent) {
+  const num = parseInt(hex.replace('#',''), 16);
+  const amt = Math.round(2.55 * percent);
+  const R = Math.max(0, (num >> 16) - amt);
+  const G = Math.max(0, ((num >> 8) & 0x00FF) - amt);
+  const B = Math.max(0, (num & 0x0000FF) - amt);
+  return '#' + ((R << 16) | (G << 8) | B).toString(16).padStart(6, '0');
+}
+
+function drawBubble(x, y, text, color) {
+  ctx.font = '6px "Press Start 2P"';
+  const w = Math.min(ctx.measureText(text).width + 12, 160);
+  const bx = x - w / 2;
+  const by = y - 28;
+
+  ctx.fillStyle = 'rgba(15,23,42,0.9)';
+  ctx.fillRect(bx, by, w, 16);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1;
+  ctx.strokeRect(bx, by, w, 16);
+
+  // Tail
+  ctx.fillStyle = 'rgba(15,23,42,0.9)';
+  ctx.fillRect(x - 3, by + 16, 6, 4);
+
+  ctx.fillStyle = color;
+  const displayText = text.length > 26 ? text.substring(0, 24) + '..' : text;
+  ctx.fillText(displayText, bx + 6, by + 11);
+}
+
+function drawParticles() {
+  particles = particles.filter(p => p.life > 0);
+  particles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.05; // Gravity
+    p.vx *= 0.98; // Air resistance
+    p.life--;
+    
+    // 16-bit style: smooth alpha blending with glow
+    const alpha = p.life / p.maxLife;
+    ctx.globalAlpha = alpha;
+    
+    // Glow effect
+    const glowGrad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 2);
+    glowGrad.addColorStop(0, p.color);
+    glowGrad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = glowGrad;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size * 2, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Core particle
+    ctx.fillStyle = p.color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+}
+
+function spawnParticles(x, y, color, count) {
+  for (let i = 0; i < count; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = Math.random() * 2 + 0.5;
+    particles.push({
+      x, y, 
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 1,
+      life: rand(20, 40), 
+      maxLife: 40, 
+      color,
+      size: Math.random() * 1.5 + 1
+    });
+  }
+}
+
+// --- AI BEHAVIOR ---
+function moveToward(agent, tx, ty) {
+  const dx = tx - agent.x;
+  const dy = ty - agent.y;
+  const d = Math.hypot(dx, dy);
+  if (d < 3) return true;
+  agent.x += (dx / d) * agent.speed;
+  agent.y += (dy / d) * agent.speed;
+  return false;
+}
+
+function updateAgents() {
+  const hasRealData = !!window.agentActivity;
+  AGENTS.forEach(a => {
+    switch (a.state) {
+      case 'working':
+        // Show current task from TASKS array
+        const currentTask = TASKS.find(t => t.owner === a.name && (t.status === 'running' || t.status === 'queued'));
+        if (currentTask && rand(0, 300) === 0) {
+          a.bubble = currentTask.title;
+          a.bubbleTimer = 200;
+        }
+        
+        if (hasRealData) {
+          // Fallback to agentActivity data if no task in TASKS
+          if (!currentTask) {
+            const real = window.agentActivity.agents[a.name];
+            if (real && rand(0, 300) === 0) {
+              a.bubble = real.task;
+              a.bubbleTimer = 200;
+            }
+          }
+          // Agents roam between departments when idle or working
+          if (rand(0, 600) === 0 && !meetingActive) {
+            a.state = 'walking';
+            // 30% chance to visit another department, 70% stay near desk
+            if (rand(0, 9) < 3) {
+              // Pick a random other agent's desk area to visit
+              const other = AGENTS[rand(0, AGENTS.length - 1)];
+              a.targetX = other.desk.x + rand(-15, 25);
+              a.targetY = other.desk.y + rand(-5, 25);
+            } else {
+              a.targetX = a.desk.x + rand(-25, 25);
+              a.targetY = a.desk.y + rand(-10, 20);
+            }
+          }
+        } else if (!currentTask) {
+          // No data and no task — agents sit at desk, no fake activity
+          a.bubble = null;
+          a.bubbleTimer = 0;
+        }
+        break;
+
+      case 'walking':
+        if (moveToward(a, a.targetX, a.targetY)) {
+          a.state = 'toDesk';
+        }
+        break;
+
+      case 'toDesk':
+        if (moveToward(a, a.desk.x + 12, a.desk.y + 20)) {
+          a.state = 'working';
+          spawnParticles(a.x, a.y, a.color, 5);
+        }
+        break;
+
+      case 'toMeeting':
+        {
+          const idx = meetingAgents.indexOf(a);
+          const seat = getMeetingSeat(idx);
+          if (moveToward(a, seat.x, seat.y)) {
+            a.state = 'inMeeting';
+          }
+        }
+        break;
+
+      case 'inMeeting':
+        // Show the handoff topic — no fake chatter
+        if (!a.bubble && rand(0, 30) === 0) {
+          a.bubble = meetingTopic;
+          a.bubbleTimer = 150;
+        }
+        break;
+
+      case 'toCoffee':
+        {
+          const wx = COFFEE_POS.x + rand(-20, 20);
+          const wy = COFFEE_POS.y + rand(10, 25);
+          if (moveToward(a, wx, wy)) {
+            a.state = 'atCoffee';
+            a.waterTimer = rand(100, 200);
+          }
+        }
+        break;
+
+      case 'atCoffee':
+        a.waterTimer--;
+        if (a.waterTimer <= 0) {
+          a.state = 'toDesk';
+        }
+        break;
+    }
+
+    // Bubble timer
+    if (a.bubbleTimer > 0) a.bubbleTimer--;
+    if (a.bubbleTimer === 0) a.bubble = null;
+  });
+}
+
+function getMeetingSeat(idx) {
+  const seats = [
+    { x: CONF_TABLE.x + 15, y: CONF_TABLE.y - 16 },
+    { x: CONF_TABLE.x + 45, y: CONF_TABLE.y - 16 },
+    { x: CONF_TABLE.x + 75, y: CONF_TABLE.y - 16 },
+    { x: CONF_TABLE.x + 15, y: CONF_TABLE.y + CONF_TABLE.h + 8 },
+    { x: CONF_TABLE.x + 45, y: CONF_TABLE.y + CONF_TABLE.h + 8 },
+    { x: CONF_TABLE.x + 75, y: CONF_TABLE.y + CONF_TABLE.h + 8 },
+  ];
+  return seats[idx % seats.length];
+}
+
+function triggerMeeting() {
+  if (meetingActive) return;
+  // Only trigger meetings from REAL handoff data
+  const data = window.agentActivity;
+  if (!data || !data.handoffs || data.handoffs.length === 0) return;
+
+  // Pick a real handoff event
+  const handoff = data.handoffs[window._handoffIdx || 0];
+  window._handoffIdx = ((window._handoffIdx || 0) + 1) % data.handoffs.length;
+
+  meetingActive = true;
+  meetingTopic = handoff.topic;
+  meetingTimer = rand(300, 500);
+
+  // Find the actual agents involved
+  meetingAgents = AGENTS.filter(a => handoff.agents.includes(a.name));
+  if (meetingAgents.length < 2) { meetingActive = false; return; }
+
+  meetingAgents.forEach(a => { a.state = 'toMeeting'; });
+  addLog(`<span class="name">${meetingAgents.map(a=>a.name).join(', ')}</span> <span class="action">→ Handoff: "${meetingTopic}"</span>`);
+  spawnParticles(280, 350, '#e3b23c', 15);
+}
+
+function endMeeting() {
+  meetingActive = false;
+  meetingAgents.forEach(a => { a.state = 'toDesk'; });
+  addLog(`<span class="action">Meeting ended: "${meetingTopic}"</span>`);
+  meetingAgents = [];
+  meetingTopic = '';
+}
+
+function triggerCoffeeBreak() {
+  if (coffeeBreakChat) return;
+  const data = window.agentActivity;
+  if (!data) return;
+
+  // Coffee bar = idle or blocked agents only (they have nothing better to do)
+  const idleAgents = AGENTS.filter(a => {
+    const real = data.agents[a.name];
+    return real && (real.status === 'idle' || real.status === 'blocked');
+  });
+  if (idleAgents.length < 2) return;
+
+  const pair = idleAgents.sort(() => Math.random() - 0.5).slice(0, 2);
+  coffeeBreakChat = pair;
+  coffeeBreakTimer = rand(150, 250);
+  pair.forEach(a => { a.state = 'toCoffee'; });
+
+  // Pick contextual chat from real agent data
+  const anyBlocked = pair.some(a => { const r = data.agents[a.name]; return r && r.status === 'blocked'; });
+  const chat = getCoffeeChat(pair[0], pair[1], data);
+
+  setTimeout(() => {
+    if (pair[0]) { pair[0].bubble = chat[0]; pair[0].bubbleTimer = 120; }
+  }, 2000);
+  setTimeout(() => {
+    if (pair[1]) { pair[1].bubble = chat[1]; pair[1].bubbleTimer = 120; }
+  }, 3500);
+  addLog(`<span class="name">${pair[0].name}</span> and <span class="name">${pair[1].name}</span> <span class="action">→ Coffee bar ☕ (${anyBlocked ? 'blocked' : 'idle'})</span>`);
+}
+
+// --- MAIN LOOP ---
+function update() {
+  tick++;
+  updateAgents();
+
+  // Only trigger from real data — no random timers
+  if (window.agentActivity) {
+    if (tick % 3000 === 300 && !meetingActive) triggerMeeting();
+    if (tick % 2000 === 200 && !coffeeBreakChat) triggerCoffeeBreak();
+  }
+  // No data = no movement. Period.
+
+  // Meeting timer
+  if (meetingActive) {
+    meetingTimer--;
+    if (meetingTimer <= 0) endMeeting();
+  }
+
+  // Coffee bar timer
+  if (coffeeBreakChat) {
+    coffeeBreakTimer--;
+    if (coffeeBreakTimer <= 0) {
+      coffeeBreakChat.forEach(a => { if (a.state === 'atCoffee') a.state = 'toDesk'; });
+      coffeeBreakChat = null;
+    }
+  }
+}
+
+function render() {
+  drawOffice();
+  // Draw dependency lines between agents
+  drawDepLines();
+  // Sort agents by Y for depth
+  const sorted = [...AGENTS].sort((a, b) => a.y - b.y);
+  sorted.forEach(a => {
+    drawAgent(a);
+    if (a.bubble && a.bubbleTimer > 0) {
+      drawBubble(a.x + 3, a.y - 10, a.bubble, a.color);
+    }
+  });
+  drawParticles();
+
+  // Meeting indicator
+  if (meetingActive) {
+    ctx.fillStyle = '#e3b23c';
+    ctx.font = '7px "Press Start 2P"';
+    ctx.fillText('📢 MEETING', 245, 288);
+  }
+}
+
+function gameLoop() {
+  try {
+    update();
+    render();
+  } catch (err) {
+    console.error('Render error:', err);
+    // Draw error indicator instead of black screen
+    ctx.fillStyle = '#1a1a2e';
+    ctx.fillRect(0, 0, 640, 480);
+    ctx.fillStyle = '#ef4444';
+    ctx.font = '10px "Press Start 2P"';
+    ctx.fillText('RENDER ERROR', 200, 240);
+    ctx.font = '6px "Press Start 2P"';
+    ctx.fillText(err.message, 50, 260);
+  }
+  requestAnimationFrame(gameLoop);
+}
+
+// --- STATUS BAR ---
+function updateStatus() {
+  statusBar.innerHTML = AGENTS.map(a => {
+    const real = window.agentActivity && window.agentActivity.agents[a.name];
+    let stateLabel;
+    if (real) {
+      stateLabel = {working:'🟢',idle:'⚪',waiting:'🟡',blocked:'🔴',deployed:'✅'}[real.status] || '❓';
+    } else {
+      stateLabel = {working:'💻',walking:'🚶',toMeeting:'🏃',inMeeting:'🗣️',toCoffee:'🚶',atCoffee:'☕',toDesk:'🏃'}[a.state] || '?';
+    }
+    return `<div class="agent-badge" data-agent="${a.name}"><span class="dot" style="background:${a.color}"></span>${a.icon} ${a.name} ${stateLabel}</div>`;
+  }).join('');
+}
+setInterval(updateStatus, 500);
+
+// --- LOAD REAL ACTIVITY DATA ---
+// --- SYSTEM STATE BAR ---
+function updateSystemState(data) {
+  const dot = document.getElementById('state-dot');
+  const label = document.getElementById('state-label');
+  const agents = data && data.agents ? Object.keys(data.agents) : [];
+  const statuses = agents.map(n => (data.agents[n] || {}).status || 'working');
+  
+  const total = AGENTS.length;
+  const blocked = statuses.filter(s => s === 'blocked').length;
+  const waiting = statuses.filter(s => s === 'waiting').length;
+  const idle = statuses.filter(s => s === 'idle').length;
+  const running = statuses.filter(s => s === 'working' || s === 'deployed').length;
+  const queueDepth = data && data.recentActivity ? data.recentActivity.length : 0;
+
+  // Determine system health
+  let health = 'healthy', healthText = 'HEALTHY';
+  if (blocked >= 3) { health = 'blocked'; healthText = 'BLOCKED'; }
+  else if (blocked > 0 || waiting > 2) { health = 'backlogged'; healthText = 'BACKLOGGED'; }
+  else if (waiting > 0) { health = 'human'; healthText = 'HUMAN PENDING'; }
+
+  dot.className = health;
+  label.textContent = healthText;
+  document.getElementById('stat-agents').textContent = total + ' agents';
+  document.getElementById('stat-queue').textContent = queueDepth + ' tasks';
+  document.getElementById('stat-blocked').textContent = blocked + ' blocked';
+  document.getElementById('stat-human').textContent = waiting + ' waiting';
+  document.getElementById('stat-running').textContent = running + ' running';
+}
+
+// --- DEPENDENCY LINES ---
+let depLines = [];
+function updateDepLines(data) {
+  depLines = [];
+  if (!data || !data.agents) return;
+  // Build dependency lines from handoffs
+  if (data.handoffs) {
+    data.handoffs.forEach(h => {
+      if (h.agents && h.agents.length >= 2) {
+        const a1 = AGENTS.find(a => a.name === h.agents[0]);
+        const a2 = AGENTS.find(a => a.name === h.agents[1]);
+        if (a1 && a2) {
+          const status = h.status || 'passing';
+          depLines.push({ from: a1, to: a2, status, topic: h.topic || '' });
+        }
+      }
+    });
+  }
+  // Auto-detect: blocked agents get red lines to their blockers
+  Object.entries(data.agents).forEach(([name, info]) => {
+    if (info.status === 'blocked' && info.blockedBy) {
+      const a1 = AGENTS.find(a => a.name === name);
+      const a2 = AGENTS.find(a => a.name === info.blockedBy);
+      if (a1 && a2) depLines.push({ from: a1, to: a2, status: 'blocked' });
+    }
+  });
+}
+
+function drawDepLines() {
+  const lineColors = {
+    passing: '#10b981',
+    waiting: '#f59e0b',
+    blocked: '#ef4444',
+    human: '#3b82f6',
+  };
+  depLines.forEach(line => {
+    const color = lineColors[line.status] || '#10b981';
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5;
+    ctx.globalAlpha = 0.5 + Math.sin(tick / 30) * 0.2;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(line.from.x, line.from.y);
+    ctx.lineTo(line.to.x, line.to.y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+    
+    // Animated pulse dot traveling along the line
+    const progress = (tick % 120) / 120;
+    const px = line.from.x + (line.to.x - line.from.x) * progress;
+    const py = line.from.y + (line.to.y - line.from.y) * progress;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(px, py, 3, 0, Math.PI * 2);
+    ctx.fill();
+    // Glow on pulse
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 6;
+    ctx.beginPath();
+    ctx.arc(px, py, 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  });
+}
+
+window.agentActivity = null;
+fetch('/.netlify/functions/agent-webhook')
+  .then(r => { if (!r.ok) throw new Error('API'); return r; })
+  .catch(() => fetch('/data/agent-activity.json'))  // fallback to static
+  .then(r => r.json())
+  .then(data => {
+    window.agentActivity = data;
+    // Update agent states and bubbles with real data
+    AGENTS.forEach(a => {
+      const real = data.agents[a.name];
+      if (real) {
+        a.bubble = real.task;
+        a.bubbleTimer = 600; // Show for a long time
+        if (real.status === 'blocked') a.state = 'working'; // still show them, but bubble shows blocked
+      }
+    });
+    // Log recent activity
+    if (data.recentActivity) {
+      data.recentActivity.slice().reverse().forEach(act => {
+        addLog('<span class="time">[' + act.time + ']</span> <span class="name">' + act.agent + '</span> <span class="action">' + act.action + '</span>');
+      });
+    }
+    updateSystemState(data);
+    updateDepLines(data);
+    syncBlockedQueue(data);
+    addLog('<span class="action">Loaded real agent activity data.</span>');
+  })
+  .catch(() => {
+    addLog('<span class="action">Data loading -- agents at desks.</span>');
+  });
+
+// --- AUTO-REFRESH LIVE DATA (every 5s) ---
+setInterval(() => {
+  fetch('/.netlify/functions/agent-webhook')
+    .then(r => { if (!r.ok) throw new Error('API'); return r; })
+    .catch(() => fetch('/data/agent-activity.json'))
+    .then(r => r.json())
+    .then(data => {
+      window.agentActivity = data;
+      AGENTS.forEach(a => {
+        const real = data.agents[a.name];
+        if (real) {
+          const oldBubble = a.bubble;
+          a.bubble = real.task;
+          a.bubbleTimer = 600;
+          if (real.status === 'blocked') a.state = 'working';
+          // Flash update in log if task changed
+          if (oldBubble !== real.task) {
+            addLog('<span class="name">' + a.name + '</span> <span class="action">' + real.task + '</span>');
+          }
+        }
+      });
+      updateSystemState(data);
+      updateDepLines(data);
+      syncBlockedQueue(data);
+      triggerAgentMovements(data);
+    })
+    .catch(() => {}); // silent fail on refresh
+}, 5000); // Poll every 5s for near-real-time updates
+
+// --- SYNC BLOCKED QUEUE FROM WEBHOOK ---
+let lastBlockedCount = 0;
+function syncBlockedQueue(data) {
+  if (!data || !data.blockedQueue) return;
+  
+  // Map webhook blockedQueue to BLOCKED format
+  const newBlocked = data.blockedQueue.map(item => ({
+    item: item.text,
+    priority: item.priority || 'MEDIUM',
+    agents: [item.agent || 'System'],
+    category: item.type === 'decision' ? 'decision' : item.type === 'blocker' ? 'blocker' : 'input',
+    type: item.type || 'blocker',
+    instructions: 'Resolve this item to unblock ' + (item.agent || 'the task'),
+    waitingSince: new Date(item.timestamp || Date.now()),
+  }));
+  
+  // Update BLOCKED array
+  if (newBlocked.length > 0) {
+    BLOCKED = newBlocked;
+    renderBlockedPanel();
+    
+    // Flash notification if new blockers appeared
+    if (newBlocked.length > lastBlockedCount) {
+      addLog('<span class="ev-blocked">⚠️ New blocker added to queue</span>');
+    }
+    lastBlockedCount = newBlocked.length;
+  }
+}
+
+// --- TRIGGER AGENT MOVEMENTS BASED ON STATUS CHANGES ---
+const prevStatuses = {};
+function triggerAgentMovements(data) {
+  if (!data || !data.agents) return;
+  
+  Object.entries(data.agents).forEach(([name, info]) => {
+    const agent = AGENTS.find(a => a.name === name);
+    if (!agent) return;
+    
+    const prevStatus = prevStatuses[name];
+    const newStatus = info.status;
+    
+    // Status changed — trigger animation
+    if (prevStatus && prevStatus !== newStatus) {
+      switch (newStatus) {
+        case 'working':
+          agent.state = 'toDesk';
+          spawnParticles(agent.x, agent.y, agent.color, 8);
+          addLog('<span class="name">' + name + '</span> <span class="ev-complete">→ Started working</span>');
+          break;
+        case 'blocked':
+          agent.state = 'working';
+          spawnParticles(agent.x, agent.y, '#ef4444', 12);
+          addLog('<span class="name">' + name + '</span> <span class="ev-blocked">→ Blocked!</span>');
+          break;
+        case 'waiting':
+          agent.state = 'working';
+          spawnParticles(agent.x, agent.y, '#f59e0b', 6);
+          addLog('<span class="name">' + name + '</span> <span class="ev-waiting">→ Waiting for input</span>');
+          break;
+        case 'idle':
+          // Maybe trigger coffee break
+          if (Math.random() < 0.3) {
+            agent.state = 'toCoffee';
+          }
+          break;
+        case 'deployed':
+          spawnParticles(agent.x, agent.y, '#10b981', 20);
+          addLog('<span class="name">' + name + '</span> <span class="ev-complete">🚀 Deployed!</span>');
+          break;
+      }
+    }
+    
+    prevStatuses[name] = newStatus;
+  });
+}
+
+// --- PROJECT FILTER ---
+let activeFilter = 'all';
+document.querySelectorAll('.pf-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.pf-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter;
+    AGENTS.forEach(a => { a._filtered = activeFilter !== 'all' && a.dept !== activeFilter; });
+  });
+});
+
+// --- AGENT HOVER TOOLTIP ---
+const tooltip = document.getElementById('agent-tooltip');
+C.addEventListener('mousemove', (e) => {
+  const rect = C.getBoundingClientRect();
+  const mx = (e.clientX - rect.left) / rect.width * 640;
+  const my = (e.clientY - rect.top) / rect.height * 480;
+  let found = null;
+  AGENTS.forEach(a => {
+    if (Math.hypot(a.x - mx, a.y - my) < 20) found = a;
+  });
+  if (found) {
+    const data = window.agentActivity && window.agentActivity.agents && window.agentActivity.agents[found.name];
+    const ttName = tooltip.querySelector('.tt-name');
+    const ttBody = tooltip.querySelector('.tt-body');
+    ttName.textContent = found.icon + ' ' + found.name + ' -- ' + found.role;
+    ttName.style.color = found.color;
+    let rows = '';
+    rows += '<div class="tt-row"><span class="tt-label">Dept:</span><span class="tt-val">' + (found.dept || 'N/A') + '</span></div>';
+    rows += '<div class="tt-row"><span class="tt-label">Status:</span><span class="tt-val" style="color:' + ({working:'#10b981',idle:'#94a3b8',blocked:'#ef4444',waiting:'#f59e0b',deployed:'#10b981'}[data ? data.status : 'working'] || '#94a3b8') + '">' + (data ? data.status : 'working') + '</span></div>';
+    if (data && data.task) rows += '<div class="tt-row"><span class="tt-label">Task:</span><span class="tt-val" style="font-size:10px">' + data.task.slice(0, 50) + '</span></div>';
+    if (data && data.blocker) rows += '<div class="tt-row"><span class="tt-label">Blocker:</span><span class="tt-val stat-red">' + data.blocker.slice(0, 40) + '</span></div>';
+    if (data && data.lastRun) rows += '<div class="tt-row"><span class="tt-label">Last run:</span><span class="tt-val">' + data.lastRun + '</span></div>';
+    // Load bar
+    const load = data && data.queueDepth ? data.queueDepth : 0;
+    const loadPct = Math.min(load * 20, 100);
+    const loadColor = loadPct > 60 ? '#ef4444' : loadPct > 30 ? '#f59e0b' : '#10b981';
+    rows += '<div class="tt-row"><span class="tt-label">Load:</span><span class="tt-val">' + load + ' tasks</span></div>';
+    rows += '<div class="tt-bar"><div class="tt-bar-fill" style="width:' + loadPct + '%;background:' + loadColor + '"></div></div>';
+    ttBody.innerHTML = rows;
+    tooltip.style.display = 'block';
+    tooltip.style.left = (e.clientX + 16) + 'px';
+    tooltip.style.top = (e.clientY - 10) + 'px';
+    // Keep tooltip on screen
+    const tr = tooltip.getBoundingClientRect();
+    if (tr.right > window.innerWidth) tooltip.style.left = (e.clientX - tr.width - 10) + 'px';
+    if (tr.bottom > window.innerHeight) tooltip.style.top = (e.clientY - tr.height - 10) + 'px';
+  } else {
+    tooltip.style.display = 'none';
+  }
+});
+C.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+
+// --- INIT ---
+// Quick canvas test
+ctx.fillStyle = '#10b981';
+ctx.font = '10px monospace';
+ctx.fillText('Agent HQ initializing...', 200, 240);
+addLog('<span class="action">Agent HQ online. ' + AGENTS.length + ' agents reporting.</span>');
+
+// No fake events -- everything waits for real data
+
+gameLoop();
+</script>
+</body>
+</html>

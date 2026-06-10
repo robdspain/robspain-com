@@ -1,0 +1,640 @@
+---
+layout: base.njk
+title: Newsletter Playbook
+---
+
+<style>
+.playbook-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    padding-top: 120px;
+}
+.playbook-header {
+    background: linear-gradient(135deg, #1f4d3f 0%, #2a6350 100%);
+    color: white;
+    padding: 3rem;
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+}
+.playbook-header h1 {
+    font-size: 2.5rem;
+    margin: 0 0 1rem 0;
+}
+.playbook-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin: 0;
+}
+.section-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid #e5e7eb;
+}
+.section-card h2 {
+    color: #1f4d3f;
+    font-size: 1.5rem;
+    margin: 0 0 1.5rem 0;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #E3B23C;
+}
+.section-card h3 {
+    color: #374151;
+    font-size: 1.1rem;
+    margin: 1.5rem 0 0.75rem 0;
+}
+.template-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    margin: 1rem 0;
+}
+.email-sequence {
+    display: grid;
+    gap: 1rem;
+}
+.email-card {
+    background: #fefefe;
+    border-left: 4px solid #E3B23C;
+    padding: 1.25rem;
+    border-radius: 0 0.5rem 0.5rem 0;
+}
+.email-card .day {
+    font-size: 0.75rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+.email-card .subject {
+    font-weight: 600;
+    color: #1f4d3f;
+    margin-bottom: 0.5rem;
+}
+.email-card .purpose {
+    font-size: 0.9rem;
+    color: #4b5563;
+    margin-bottom: 0.75rem;
+}
+.email-card .outline {
+    font-size: 0.85rem;
+    color: #6b7280;
+    background: #f9fafb;
+    padding: 0.75rem;
+    border-radius: 0.25rem;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+th, td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+th {
+    background: #f9fafb;
+    font-weight: 600;
+    color: #374151;
+}
+tr:hover {
+    background: #f9fafb;
+}
+.metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+}
+.metric-box {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    text-align: center;
+}
+.metric-box .value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1f4d3f;
+}
+.metric-box .label {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+}
+.formula-list {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+}
+.formula-list li {
+    padding: 0.75rem;
+    background: #f8fafc;
+    margin-bottom: 0.5rem;
+    border-radius: 0.25rem;
+    display: flex;
+    flex-direction: column;
+}
+.formula-list .formula {
+    font-weight: 600;
+    color: #1f4d3f;
+}
+.formula-list .example {
+    font-size: 0.9rem;
+    color: #6b7280;
+    font-style: italic;
+}
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+.badge-green { background: #dcfce7; color: #166534; }
+.badge-yellow { background: #fef3c7; color: #92400e; }
+.badge-blue { background: #dbeafe; color: #1e40af; }
+.nav-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+.nav-tab {
+    padding: 0.5rem 1rem;
+    background: #f3f4f6;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #374151;
+    transition: all 0.2s;
+}
+.nav-tab:hover, .nav-tab.active {
+    background: #1f4d3f;
+    color: white;
+}
+.copy-btn {
+    background: #E3B23C;
+    color: #1f4d3f;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    float: right;
+    margin-top: -0.5rem;
+}
+.copy-btn:hover {
+    background: #d4a235;
+}
+</style>
+
+<div class="playbook-container">
+    <div class="playbook-header">
+        <h1>📧 Newsletter Playbook</h1>
+        <p>Complete strategy, templates, and sequences for the Behavior School newsletter. Based on B2B email best practices for professional audiences.</p>
+    </div>
+
+    <!-- Quick Metrics -->
+    <div class="section-card">
+        <h2>📊 Target Metrics</h2>
+        <div class="metric-grid">
+            <div class="metric-box">
+                <div class="value">42%+</div>
+                <div class="label">Open Rate</div>
+            </div>
+            <div class="metric-box">
+                <div class="value">3-4%</div>
+                <div class="label">Click Rate</div>
+            </div>
+            <div class="metric-box">
+                <div class="value">&lt;0.3%</div>
+                <div class="label">Unsubscribe</div>
+            </div>
+            <div class="metric-box">
+                <div class="value">Tue 6:30a</div>
+                <div class="label">Send Time (PT)</div>
+            </div>
+            <div class="metric-box">
+                <div class="value">&lt;3 min</div>
+                <div class="label">Read Time</div>
+            </div>
+            <div class="metric-box">
+                <div class="value">30-40</div>
+                <div class="label">Subject Chars</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Weekly Template -->
+    <div class="section-card">
+        <h2>📝 Weekly Digest Template</h2>
+        <button class="copy-btn" onclick="copyTemplate('weekly-template')">Copy Template</button>
+        <p>The "One Big Thing" format. 200-350 words core content, under 3 minutes to read.</p>
+        
+        <div class="template-box" id="weekly-template">Subject: [40 chars max, value-first]
+Preview: [Extends the subject line, 40-90 chars]
+
+---
+
+Hey [First Name],
+
+[1-2 sentences of context. Why this topic matters this week.]
+
+---
+
+## [This Week's Topic Title]
+
+[200-350 words of practical, actionable content.
+
+Structure: Problem → Insight → Action Step
+
+Use short paragraphs (2-3 sentences max).
+Include one specific example or scenario.
+End with a clear "try this" action.]
+
+---
+
+### Quick Hits
+
+→ [Link title]: [One-line description]
+→ [Link title]: [One-line description]  
+→ [Link title]: [One-line description]
+
+---
+
+[Soft CTA: "If you're prepping for the BCBA exam, we just 
+added 200 new practice questions. Check them out here."]
+
+— Rob
+
+---
+Unsubscribe | Update preferences
+Behavior School LLC | behaviorschool.com</div>
+
+        <h3>4-Week Content Rotation</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Week</th>
+                    <th>Category</th>
+                    <th>Example Topics</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge badge-green">Week 1</span></td>
+                    <td>Practical Strategy</td>
+                    <td>FBA shortcuts, classroom data collection systems</td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-blue">Week 2</span></td>
+                    <td>Research Spotlight</td>
+                    <td>New study translated to plain language</td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-yellow">Week 3</span></td>
+                    <td>Career/Professional</td>
+                    <td>Supervision tips, advocacy, salary data</td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-green">Week 4</span></td>
+                    <td>Tool/Template</td>
+                    <td>Free downloadable (data sheet, checklist)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Subject Lines -->
+    <div class="section-card">
+        <h2>✍️ Subject Line Formulas</h2>
+        <p><strong>Target:</strong> 30-40 characters (7 words or fewer). Front-load the value.</p>
+        
+        <ul class="formula-list">
+            <li>
+                <span class="formula">Specific number + outcome</span>
+                <span class="example">"3 FBA shortcuts for school teams"</span>
+            </li>
+            <li>
+                <span class="formula">Question the reader has</span>
+                <span class="example">"Is your BIP actually being followed?"</span>
+            </li>
+            <li>
+                <span class="formula">This week's actionable tip</span>
+                <span class="example">"Try this before your next IEP meeting"</span>
+            </li>
+            <li>
+                <span class="formula">Curated resource</span>
+                <span class="example">"The data sheet template I use daily"</span>
+            </li>
+            <li>
+                <span class="formula">Contrarian/surprising</span>
+                <span class="example">"Stop graphing everything"</span>
+            </li>
+        </ul>
+
+        <h3>What to Avoid</h3>
+        <ul>
+            <li>ALL CAPS or excessive punctuation</li>
+            <li>"Newsletter #47" or "Monthly Update" (zero value)</li>
+            <li>Clickbait that doesn't deliver</li>
+            <li>Emojis (test carefully with professionals)</li>
+        </ul>
+    </div>
+
+    <!-- Welcome Sequence -->
+    <div class="section-card">
+        <h2>👋 Welcome Sequence (5 Emails, 10 Days)</h2>
+        <p>Goal: Deliver immediate value, set expectations, soft-introduce the product.</p>
+        
+        <div class="email-sequence">
+            <div class="email-card">
+                <div class="day">Email 1 — Immediate (within 1 minute)</div>
+                <div class="subject">Subject: Here's your [lead magnet name]</div>
+                <div class="purpose">Purpose: Deliver the promised resource + set expectations</div>
+                <div class="outline">
+• Deliver the lead magnet (download link, prominent)
+• "I'm Rob. I build tools for BCBAs in schools."
+• What to expect: "Every Tuesday, you'll get one practical tip you can use that week."
+• Sign-off: "Talk soon, — Rob"
+                </div>
+            </div>
+
+            <div class="email-card">
+                <div class="day">Email 2 — Day 2</div>
+                <div class="subject">Subject: The one thing I wish I knew as a new district BCBA</div>
+                <div class="purpose">Purpose: Build personal connection + credibility</div>
+                <div class="outline">
+• Short personal story (3-4 paragraphs max)
+• One actionable takeaway related to the story
+• No product mention
+• Invite reply: "What's your biggest challenge right now?"
+                </div>
+            </div>
+
+            <div class="email-card">
+                <div class="day">Email 3 — Day 4</div>
+                <div class="subject">Subject: [Specific useful content related to lead magnet]</div>
+                <div class="purpose">Purpose: Deliver more value, build the "worth opening" habit</div>
+                <div class="outline">
+• Teach something complementary to the lead magnet
+• Include a mini case study or example
+• Link to a relevant blog post
+• No product mention
+                </div>
+            </div>
+
+            <div class="email-card">
+                <div class="day">Email 4 — Day 7</div>
+                <div class="subject">Subject: How I built [product name] (and why)</div>
+                <div class="purpose">Purpose: Introduce the product through origin story</div>
+                <div class="outline">
+• Origin story: what problem prompted building the tool
+• How it works (brief, 2-3 sentences)
+• Who it's for (and who it's NOT for)
+• Link: "See how it works" (not "Buy now")
+                </div>
+            </div>
+
+            <div class="email-card">
+                <div class="day">Email 5 — Day 10</div>
+                <div class="subject">Subject: You're officially on the Tuesday list</div>
+                <div class="purpose">Purpose: Transition to weekly newsletter</div>
+                <div class="outline">
+• "Starting next Tuesday, you'll get the weekly email"
+• Recap the format they'll receive
+• Preference center link for adjustments
+• Soft CTA: mention product with specific benefit
+                </div>
+            </div>
+        </div>
+
+        <h3>Welcome Sequence Targets</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Target</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Email 1 open rate</td><td>60%+</td></tr>
+                <tr><td>Lead magnet click rate (Email 1)</td><td>70%+</td></tr>
+                <tr><td>Reply rate (Email 2)</td><td>2-5%</td></tr>
+                <tr><td>Sequence completion (open Email 5)</td><td>60%+</td></tr>
+                <tr><td>Total unsubscribes across sequence</td><td>&lt;2%</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Lead Magnets -->
+    <div class="section-card">
+        <h2>🎁 Lead Magnets (by Expected Conversion)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Offer</th>
+                    <th>Format</th>
+                    <th>Conv. Rate</th>
+                    <th>Placement</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Free Practice Questions (10 BCBA exam Qs)</td>
+                    <td>PDF/Quiz</td>
+                    <td><span class="badge badge-green">12-18%</span></td>
+                    <td>behaviorstudytools.com, search pages</td>
+                </tr>
+                <tr>
+                    <td>5-Minute FBA Screener</td>
+                    <td>Web tool</td>
+                    <td><span class="badge badge-green">10-15%</span></td>
+                    <td>Dedicated landing page, social</td>
+                </tr>
+                <tr>
+                    <td>School BCBA Starter Kit</td>
+                    <td>PDF bundle</td>
+                    <td><span class="badge badge-yellow">8-12%</span></td>
+                    <td>Homepage hero, blog sidebar</td>
+                </tr>
+                <tr>
+                    <td>Weekly BCBA Brief (newsletter)</td>
+                    <td>Email signup</td>
+                    <td><span class="badge badge-blue">3-5%</span></td>
+                    <td>Blog footer, about page</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Form Copy</h3>
+        <p><strong>Headline:</strong> "Join 500+ BCBAs who get one actionable tip every Tuesday"</p>
+        <p><strong>Button:</strong> "Send me the tips" (not "Subscribe")</p>
+        <p><strong>Fields:</strong> Email only (collect name in welcome sequence)</p>
+    </div>
+
+    <!-- Timing -->
+    <div class="section-card">
+        <h2>📅 Send Schedule</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Period</th>
+                    <th>Frequency</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>School year (Sep-Jun)</td>
+                    <td>Weekly</td>
+                    <td>Tuesday 6:30 AM PT / 9:30 AM ET</td>
+                </tr>
+                <tr>
+                    <td>Summer (Jul-Aug)</td>
+                    <td>Biweekly</td>
+                    <td>Career/professional content focus</td>
+                </tr>
+                <tr>
+                    <td>Holiday weeks</td>
+                    <td>Skip</td>
+                    <td>Thanksgiving, winter break, spring break</td>
+                </tr>
+                <tr>
+                    <td>BACB exam windows</td>
+                    <td>2x/week</td>
+                    <td>Exam-focused content (temporary)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Why Tuesday 6:30 AM PT?</h3>
+        <ul>
+            <li>Tuesday/Wednesday are top B2B days (Monday = IEP meetings)</li>
+            <li>9:30 AM ET hits morning scan window for largest timezone clusters</li>
+            <li>Avoids 8 AM crush of school system notifications</li>
+            <li>A/B test against 3:30 PM ET (after-school) in Phase 2</li>
+        </ul>
+    </div>
+
+    <!-- Segmentation -->
+    <div class="section-card">
+        <h2>🏷️ Segmentation Model</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Segment</th>
+                    <th>Criteria</th>
+                    <th>Content Adjustment</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Role: BCBA</td>
+                    <td>Self-reported</td>
+                    <td>Full newsletter content</td>
+                </tr>
+                <tr>
+                    <td>Role: RBT</td>
+                    <td>Self-reported</td>
+                    <td>Simpler language, implementation focus</td>
+                </tr>
+                <tr>
+                    <td>Role: Student/Candidate</td>
+                    <td>Self-reported</td>
+                    <td>Add exam prep, study tips</td>
+                </tr>
+                <tr>
+                    <td>Active (60 days)</td>
+                    <td>Opened or clicked in last 60 days</td>
+                    <td>Standard sends</td>
+                </tr>
+                <tr>
+                    <td>Cooling (60-90 days)</td>
+                    <td>No opens in 60-90 days</td>
+                    <td>Re-engagement sequence</td>
+                </tr>
+                <tr>
+                    <td>Cold (90+ days)</td>
+                    <td>No opens in 90+ days</td>
+                    <td>Sunset sequence, then suppress</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Re-engagement -->
+    <div class="section-card">
+        <h2>🔄 Re-engagement Sequence (60-90 day inactive)</h2>
+        <div class="email-sequence">
+            <div class="email-card">
+                <div class="day">Email 1</div>
+                <div class="subject">Subject: Still interested? Here's what you've missed</div>
+                <div class="outline">Curated best-of content from the last few months</div>
+            </div>
+            <div class="email-card">
+                <div class="day">Email 2 — 7 days later</div>
+                <div class="subject">Subject: Should I stop sending these?</div>
+                <div class="outline">Direct and honest. Give them an easy out or a reason to stay.</div>
+            </div>
+            <div class="email-card">
+                <div class="day">Email 3 — 7 days later (if no engagement)</div>
+                <div class="subject">Subject: This is your last email from us</div>
+                <div class="outline">Auto-suppress after this. Protects sender reputation.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- List Hygiene -->
+    <div class="section-card">
+        <h2>🧹 List Hygiene Protocol</h2>
+        
+        <h3>Ongoing (Automated)</h3>
+        <ul>
+            <li>Remove hard bounces immediately</li>
+            <li>Suppress soft bounces after 3 consecutive failures</li>
+            <li>Flag spam complaints for immediate removal</li>
+            <li>Verify new emails at capture (real-time validation)</li>
+        </ul>
+
+        <h3>Monthly</h3>
+        <ul>
+            <li>Review bounce rate (target: under 2%)</li>
+            <li>Review spam complaint rate (target: under 0.1%)</li>
+            <li>Identify cold subscribers (no engagement 90 days)</li>
+        </ul>
+
+        <h3>Quarterly</h3>
+        <ul>
+            <li>Run re-engagement campaign for cooling segment</li>
+            <li>Sunset cold subscribers who don't re-engage</li>
+            <li>Audit segment definitions</li>
+            <li>Clean duplicate records</li>
+        </ul>
+    </div>
+
+</div>
+
+<script>
+function copyTemplate(id) {
+    const text = document.getElementById(id).innerText;
+    navigator.clipboard.writeText(text).then(() => {
+        const btn = event.target;
+        btn.innerText = 'Copied!';
+        setTimeout(() => btn.innerText = 'Copy Template', 2000);
+    });
+}
+</script>

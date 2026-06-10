@@ -4,6 +4,7 @@
 
 [functions]
   directory = "src/netlify/functions"
+  included_files = ["src/netlify/functions/crm.db", "_site/admin/**"]
 
 [[redirects]]
   from = "http:///*"
@@ -12,6 +13,7 @@
   force = true
 
 [[redirects]]
+<<<<<<< HEAD
   from = "/index.html"
   to = "/"
   status = 301
@@ -45,6 +47,23 @@
   from = "/admin/finance/"
   to = "/admin/family/"
   status = 301
+=======
+  from = "/admin"
+  to = "/.netlify/functions/admin-gate?path=dashboard/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/admin/api/admin-convex"
+  to = "/.netlify/functions/admin-convex"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/admin/*"
+  to = "/.netlify/functions/admin-gate?path=:splat"
+  status = 200
+>>>>>>> origin/main
   force = true
 
 [[redirects]]
@@ -56,3 +75,157 @@
   from = "/callback"
   to = "/.netlify/functions/callback"
   status = 200
+<<<<<<< HEAD
+=======
+
+[[redirects]]
+  from = "/api/r2/multipart/init"
+  to = "/.netlify/functions/r2-presign-init"
+  status = 200
+
+[[redirects]]
+  from = "/api/r2/multipart/part"
+  to = "/.netlify/functions/r2-presign-part"
+  status = 200
+
+[[redirects]]
+  from = "/api/r2/multipart/complete"
+  to = "/.netlify/functions/r2-presign-complete"
+  status = 200
+
+[[redirects]]
+  from = "/api/r2/multipart/abort"
+  to = "/.netlify/functions/r2-presign-abort"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin-data"
+  to = "/.netlify/functions/admin-data"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin-convex"
+  to = "/.netlify/functions/admin-convex"
+  status = 200
+
+[[redirects]]
+  from = "/api/kpi-integrations"
+  to = "/.netlify/functions/kpi-integrations"
+  status = 200
+
+[[redirects]]
+  from = "/api/r2/list"
+  to = "/.netlify/functions/r2-list"
+  status = 200
+
+[[redirects]]
+  from = "/api/r2/delete"
+  to = "/.netlify/functions/r2-delete"
+  status = 200
+
+[[redirects]]
+  from = "/api/research-stream"
+  to = "/.netlify/functions/research-stream"
+  status = 200
+
+[[redirects]]
+  from = "/api/crm"
+  to = "/.netlify/functions/crm"
+  status = 200
+
+[[redirects]]
+  from = "/api/crm/*"
+  to = "/.netlify/functions/crm"
+  status = 200
+
+[[redirects]]
+  from = "/api/agent-instruct"
+  to = "/.netlify/functions/agent-instruct"
+  status = 200
+
+[[redirects]]
+  from = "/api/agent-respond"
+  to = "/.netlify/functions/agent-respond"
+  status = 200
+
+[[redirects]]
+  from = "/api/agent-responses"
+  to = "/.netlify/functions/agent-responses"
+  status = 200
+
+[[redirects]]
+  from = "/api/agent-instructions"
+  to = "/.netlify/functions/agent-instructions-list"
+  status = 200
+
+[[redirects]]
+  from = "/api/neo-home-command"
+  to = "/.netlify/functions/neo-home-command"
+  status = 200
+
+[[redirects]]
+  from = "/api/seo-audit"
+  to = "/.netlify/functions/seo-audit"
+  status = 200
+
+[[redirects]]
+  from = "/api/seo-keywords"
+  to = "/.netlify/functions/seo-keywords"
+  status = 200
+
+[[redirects]]
+  from = "/api/behaviorschool-submissions"
+  to = "/.netlify/functions/behaviorschool-submissions"
+  status = 200
+
+[[redirects]]
+  from = "/api/agent-webhook"
+  to = "/.netlify/functions/agent-webhook"
+  status = 200
+
+# Neo Dashboard API
+[[redirects]]
+  from = "/api/projects"
+  to = "/.netlify/functions/dashboard-api"
+  status = 200
+
+[[redirects]]
+  from = "/api/projects/*"
+  to = "/.netlify/functions/dashboard-api"
+  status = 200
+
+[[redirects]]
+  from = "/api/quick-wins"
+  to = "/.netlify/functions/dashboard-api"
+  status = 200
+
+[[redirects]]
+  from = "/api/quick-wins/*"
+  to = "/.netlify/functions/dashboard-api"
+  status = 200
+
+[[redirects]]
+  from = "/api/content"
+  to = "/.netlify/functions/dashboard-api"
+  status = 200
+
+[[redirects]]
+  from = "/api/content/*"
+  to = "/.netlify/functions/dashboard-api"
+  status = 200
+
+[[redirects]]
+  from = "/api/sync"
+  to = "/.netlify/functions/dashboard-api"
+  status = 200
+
+[[redirects]]
+  from = "/api/home-search"
+  to = "/.netlify/functions/home-search"
+  status = 200
+
+[[redirects]]
+  from = "/api/home-search/*"
+  to = "/.netlify/functions/home-search"
+  status = 200
+>>>>>>> origin/main

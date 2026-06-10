@@ -1,0 +1,19 @@
+{
+  "name": "Neo Home Command Center",
+  "short_name": "Neo Home",
+  "description": "Private command surface for Rob and Cristal's home automations.",
+  "start_url": "/admin/home/",
+  "scope": "/admin/home/",
+  "display": "standalone",
+  "background_color": "#07111f",
+  "theme_color": "#0b1220",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

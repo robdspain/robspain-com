@@ -13,7 +13,6 @@
   force = true
 
 [[redirects]]
-<<<<<<< HEAD
   from = "/index.html"
   to = "/"
   status = 301
@@ -47,7 +46,9 @@
   from = "/admin/finance/"
   to = "/admin/family/"
   status = 301
-=======
+  force = true
+
+[[redirects]]
   from = "/admin"
   to = "/.netlify/functions/admin-gate?path=dashboard/"
   status = 200
@@ -63,7 +64,6 @@
   from = "/admin/*"
   to = "/.netlify/functions/admin-gate?path=:splat"
   status = 200
->>>>>>> origin/main
   force = true
 
 [[redirects]]
@@ -75,8 +75,6 @@
   from = "/callback"
   to = "/.netlify/functions/callback"
   status = 200
-<<<<<<< HEAD
-=======
 
 [[redirects]]
   from = "/api/r2/multipart/init"
@@ -228,4 +226,3 @@
   from = "/api/home-search/*"
   to = "/.netlify/functions/home-search"
   status = 200
->>>>>>> origin/main

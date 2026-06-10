@@ -135,21 +135,6 @@
     {% endif %}
 
     <!-- SEO & Social Meta Tags -->
-<<<<<<< HEAD
-    <meta property="og:title" content="{{ resolvedTitle }}">
-    <meta property="og:description" content="{{ resolvedDescription }}">
-    <meta property="og:image" content="{{ resolvedImage | absoluteUrl }}">
-    <meta property="og:url" content="{{ resolvedUrl | absoluteUrl }}">
-    <meta property="og:type" content="{% if layout == "post.njk" %}article{% else %}website{% endif %}">
-    <meta property="og:site_name" content="Rob Spain, BCBA">
-    <meta property="og:locale" content="en_US">
-    
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{ resolvedTitle }}">
-    <meta name="twitter:description" content="{{ resolvedDescription }}">
-    <meta name="twitter:image" content="{{ resolvedImage | absoluteUrl }}">
-    <meta name="twitter:site" content="@robspainBCBA">
-=======
     <meta property="og:title" content="{{ seo.metaTitle or title or "Rob Spain - School BCBA" }}">
     <meta property="og:description" content="{{ seo.metaDesc or description or "Rob Spain, School BCBA." }}">
     <meta property="og:image" content="https://robspain.com{{ seo.socialImage or image or "/images/profile-Rob.png" }}">
@@ -160,7 +145,6 @@
     <meta name="twitter:title" content="{{ seo.metaTitle or title or "Rob Spain - School BCBA" }}">
     <meta name="twitter:description" content="{{ seo.metaDesc or description or "Rob Spain, School BCBA." }}">
     <meta name="twitter:image" content="https://robspain.com{{ seo.socialImage or image or "/images/profile-Rob.png" }}">
->>>>>>> origin/main
     <meta name="twitter:creator" content="@robspainBCBA">
 
     <script type="application/ld+json">
@@ -209,65 +193,7 @@
       "description": "{{ seo.metaDesc or description or 'Rob Spain, School BCBA.' }}"
     }
     {% endif %}
-<<<<<<< HEAD
-    {% if page.url == "/" %}
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "Person",
-          "@id": "https://robspain.com/#rob-spain",
-          "name": "Rob Spain",
-          "alternateName": "Rob Spain, BCBA",
-          "url": "https://robspain.com/",
-          "jobTitle": "School BCBA",
-          "description": "{{ resolvedDescription }}",
-          "worksFor": {
-            "@type": "Organization",
-            "name": "Behavior School",
-            "url": "https://behaviorschool.com"
-          },
-          "sameAs": [
-            "https://www.linkedin.com/in/robspain/",
-            "https://twitter.com/robspainBCBA",
-            "https://www.instagram.com/robdspain/",
-            "https://behaviorschool.com"
-          ]
-        },
-        {
-          "@type": "WebSite",
-          "@id": "https://robspain.com/#website",
-          "url": "https://robspain.com/",
-          "name": "Rob Spain, BCBA",
-          "description": "{{ resolvedDescription }}",
-          "publisher": {
-            "@id": "https://robspain.com/#rob-spain"
-          }
-        }
-      ]
-    }
     </script>
-    {% endif %}
-    {% if page.url == "/blog/" %}
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Blog",
-      "name": "Rob Spain School BCBA Blog",
-      "url": "https://robspain.com/blog/",
-      "description": "{{ resolvedDescription }}",
-      "publisher": {
-        "@type": "Person",
-        "name": "Rob Spain",
-        "url": "https://robspain.com"
-      }
-    }
-    </script>
-    {% endif %}
-=======
-    </script>
->>>>>>> origin/main
 
     <!-- Meta tags and other head content can go here -->
 </head>
@@ -287,10 +213,7 @@
                 </a>
                 <div class="nav-links-premium">
                     <a href="/#about" class="nav-link-premium">ABOUT</a>
-<<<<<<< HEAD
-=======
                     <a href="/transformation-program/" class="nav-link-premium">PROGRAM</a>
->>>>>>> origin/main
                     <a href="/blog/" class="nav-link-premium">BLOG</a>
                     <a href="/cv/" class="nav-link-premium">CV</a>
                 </div>
@@ -335,13 +258,10 @@
                             <i class="fas fa-rocket"></i>
                             Transformation Program
                         </a>
-<<<<<<< HEAD
-=======
                         <a href="https://reunifyscience.com" target="_blank" class="footer-link">
                             <i class="fas fa-hands-helping"></i>
                             ReunifyScience
                         </a>
->>>>>>> origin/main
                         <a href="/cv/" class="footer-link">
                             <i class="fas fa-file-alt"></i>
                             Professional CV
@@ -393,15 +313,7 @@
                             <p><strong>ACE Provider #:</strong> OP-25-11420</p>
                         </div>
                         <div class="bacb-logos">
-<<<<<<< HEAD
-                            <div class="ace-logo-badge" aria-label="BACB ACE Authorized Continuing Education Provider">
-                                <span>BACB</span>
-                                <strong>ACE</strong>
-                                <small>Provider</small>
-                            </div>
-=======
                             <img src="/images/BACB_ACE-Logo.jpg" alt="BACB ACE Authorized Continuing Education Provider" class="ace-logo" loading="lazy" decoding="async" style="display: block; max-width: 60px; height: auto;">
->>>>>>> origin/main
                         </div>
                     </div>
                 </div>
@@ -420,13 +332,7 @@
     <script src="/newsletter-signup.js"></script>
     <script src="/video-funnel.js"></script>
     <script src="/contact-form.js"></script>
-<<<<<<< HEAD
-    {% if page.url and page.url.indexOf("/admin/") == 0 %}
-    <script src="/admin-auth.js"></script>
-    {% endif %}
-=======
     <script src="/email-capture.js"></script>
->>>>>>> origin/main
     <script>
       (function(){
         var el = document.getElementById('current-year');

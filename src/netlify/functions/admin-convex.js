@@ -136,11 +136,24 @@ exports.handler = async (event) => {
     const key = cleanKey(event.queryStringParameters?.key);
     if (!key) return json(400, { error: 'Missing or invalid key' });
 
+    // 1. Try Convex if configured
+    if (convexUrl()) {
+      try {
+        const item = await convexCall('query', 'adminItems:get', { key });
+        return json(200, { key, item, source: 'convex' });
+      } catch (error) {
+        console.warn('Convex GET failed, falling back to Blobs:', error.message);
+      }
+    }
+
+    // 2. Fallback to Netlify Blobs
     try {
-      const item = await convexCall('query', 'adminItems:get', { key });
-      return json(200, { key, item, source: 'convex' });
-    } catch (error) {
-      return json(error.statusCode || 500, { error: error.message });
+      const { getStore } = require('@netlify/blobs');
+      const store = getStore('admin-kv');
+      const item = await store.get(key, { type: 'json' });
+      return json(200, { key, item: item || null, source: 'blobs' });
+    } catch (blobsError) {
+      return json(500, { error: blobsError.message });
     }
   }
 
@@ -155,15 +168,33 @@ exports.handler = async (event) => {
     const key = cleanKey(payload.key || event.queryStringParameters?.key);
     if (!key) return json(400, { error: 'Missing or invalid key' });
 
+    // 1. Try Convex if configured
+    if (convexUrl()) {
+      try {
+        const result = await convexCall('mutation', 'adminItems:put', {
+          key,
+          value: payload.value,
+          updatedBy: session.email,
+        });
+        return json(200, { success: true, ...result, source: 'convex' });
+      } catch (error) {
+        console.warn('Convex PUT failed, falling back to Blobs:', error.message);
+      }
+    }
+
+    // 2. Fallback to Netlify Blobs
     try {
-      const result = await convexCall('mutation', 'adminItems:put', {
-        key,
+      const { getStore } = require('@netlify/blobs');
+      const store = getStore('admin-kv');
+      const data = {
         value: payload.value,
-        updatedBy: session.email,
-      });
-      return json(200, { success: true, ...result, source: 'convex' });
-    } catch (error) {
-      return json(error.statusCode || 500, { error: error.message });
+        updatedAt: new Date().toISOString(),
+        updatedBy: session.email
+      };
+      await store.setJSON(key, data);
+      return json(200, { success: true, updatedAt: data.updatedAt, source: 'blobs' });
+    } catch (blobsError) {
+      return json(500, { error: blobsError.message });
     }
   }
 

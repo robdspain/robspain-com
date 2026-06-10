@@ -71,11 +71,48 @@ function loginPage(error) {
   return '<!doctype html>' +
     '<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">' +
     '<title>Admin Login</title><script src="https://accounts.google.com/gsi/client" async defer></script>' +
-    '<style>:root{color-scheme:light}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f5f1e8;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#173b2a}.card{width:min(560px,calc(100vw - 32px));padding:42px;border:1px solid rgba(23,59,42,.14);border-radius:18px;background:rgba(255,255,250,.9);box-shadow:0 24px 70px rgba(23,59,42,.12)}h1{margin:0 0 14px;font-size:clamp(30px,5vw,40px);line-height:1.05;letter-spacing:0}p{margin:0 0 28px;color:#46584e;font-size:18px;line-height:1.45}.google-wrap{display:flex;justify-content:center}.error{margin:0 0 20px;color:#b42318;font-size:15px}</style>' +
+    '<style>' +
+    ':root{color-scheme:light}' +
+    'body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f5f1e8;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#173b2a}' +
+    '.card{width:min(560px,calc(100vw - 32px));padding:42px;border:1px solid rgba(23,59,42,.14);border-radius:18px;background:rgba(255,255,250,.9);box-shadow:0 24px 70px rgba(23,59,42,.12);text-align:center}' +
+    'h1{margin:0 0 14px;font-size:clamp(30px,5vw,40px);line-height:1.05;letter-spacing:0;text-align:left}' +
+    'p{margin:0 0 28px;color:#46584e;font-size:18px;line-height:1.45;text-align:left}' +
+    '.google-wrap{display:flex;justify-content:center}' +
+    '.fallback-wrap{display:flex;justify-content:center;margin-top:10px}' +
+    '.fallback-btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;width:100%;max-width:280px;height:40px;border:1px solid #dadce0;border-radius:20px;background:#ffffff;color:#3c4043;font-family:inherit;font-size:14px;font-weight:600;text-decoration:none;transition:background .2s,border-color .2s;box-shadow:0 1px 2px 0 rgba(60,64,67,0.3),0 1px 3px 1px rgba(60,64,67,0.15);cursor:pointer}' +
+    '.fallback-btn:hover{background:#f8f9fa;border-color:#d2e3fc}' +
+    '.google-icon-svg{width:18px;height:18px;background:url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="%23EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="%234285F4" d="M46.5 24c0-1.63-.15-3.2-.42-4.73H24v9h12.75c-.55 2.87-2.17 5.3-4.61 6.93l7.2 5.58C43.5 36.42 46.5 30.72 46.5 24z"/><path fill="%23FBBC05" d="M10.54 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24s.92 7.54 2.56 10.78l7.98-6.19z"/><path fill="%2334A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.2-5.58c-2.12 1.39-4.8 2.29-8.69 2.29-6.26 0-11.57-4.22-13.46-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>\') no-repeat center;background-size:contain}' +
+    '.error{margin:0 0 20px;color:#b42318;font-size:15px;text-align:left}' +
+    '</style>' +
     '</head><body><main class="card"><h1>Rob Spain Admin</h1><p>Sign in with Google as ' + escapeHtml(allowedEmail()) + ' to continue.</p>' + errorHtml +
     '<div id="g_id_onload" data-client_id="' + escapeHtml(clientId) + '" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>' +
     '<div class="google-wrap"><div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="continue_with" data-shape="pill" data-logo_alignment="right"></div></div>' +
-    '</main><script>async function handleCredentialResponse(response){const result=await fetch(window.location.href,{method:"POST",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({credential:response.credential})});if(result.ok){window.location.reload();return;}const message=await result.text();document.body.innerHTML="<main class=\\"card\\"><h1>Admin Login</h1><p class=\\"error\\">"+message.replace(/[&<>\"\']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\\\"":"&quot;","\'":"&#39;"}[c];})+"</p><p><a href=\\""+window.location.pathname+"\\">Try again</a></p></main>";}</script></body></html>';
+    '<div id="fallback-wrap" class="fallback-wrap" style="display:none;"><a id="fallback-login-link" href="#" class="fallback-btn"><span class="google-icon-svg"></span><span>Sign in with Google</span></a></div>' +
+    '</main><script>' +
+    'const clientId = "' + escapeHtml(clientId) + '";' +
+    'const redirectUri = window.location.origin + window.location.pathname;' +
+    'const nonce = Math.random().toString(36).substring(2);' +
+    'const oauthUrl = "https://accounts.google.com/o/oauth2/v2/auth?client_id=" + encodeURIComponent(clientId) + "&redirect_uri=" + encodeURIComponent(redirectUri) + "&response_type=id_token&scope=openid%20email&nonce=" + nonce;' +
+    'document.getElementById("fallback-login-link").href = oauthUrl;' +
+    'const params = new URLSearchParams(window.location.hash.substring(1));' +
+    'const idToken = params.get("id_token");' +
+    'if (idToken) {' +
+    '  window.location.hash = "";' +
+    '  handleCredentialResponse({ credential: idToken });' +
+    '}' +
+    'setTimeout(() => {' +
+    '  const sdkButton = document.querySelector(".g_id_signin iframe");' +
+    '  if (!sdkButton) {' +
+    '    document.getElementById("fallback-wrap").style.display = "flex";' +
+    '  }' +
+    '}, 1500);' +
+    'async function handleCredentialResponse(response){' +
+    '  const result=await fetch(window.location.href,{method:"POST",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({credential:response.credential})});' +
+    '  if(result.ok){window.location.reload();return;}' +
+    '  const message=await result.text();' +
+    '  document.body.innerHTML="<main class=\\"card\\"><h1>Admin Login</h1><p class=\\"error\\">"+message.replace(/[&<>\\\"\\\']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\\\"":"&quot;","\\\'":"&#39;"}[c];})+"</p><p><a href=\\""+window.location.pathname+"\\">Try again</a></p></main>";' +
+    '}' +
+    '</script></body></html>';
 }
 
 async function verifyCredential(credential) {

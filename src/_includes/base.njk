@@ -116,6 +116,7 @@
     </div>
     {% endif %}
     <!-- Premium Navigation -->
+    {% if not hide_public_nav %}
     <nav class="nav-premium">
         <div class="container">
             <div class="nav-content-premium">
@@ -131,11 +132,13 @@
             </div>
         </div>
     </nav>
+    {% endif %}
 
     <main>
         {{ content | safe }}
     </main>
 
+    {% if not hide_public_nav %}
     <footer class="footer">
         <div class="container">
             <!-- Email Signup Section -->
@@ -238,6 +241,7 @@
             </div>
         </div>
     </footer>
+    {% endif %}
     <script src="/js/animations.js"></script>
     <script src="/premium-interactions.js"></script>
     <script src="/newsletter-signup.js"></script>

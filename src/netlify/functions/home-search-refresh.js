@@ -84,8 +84,8 @@ const ZIP_AREA_MAP = {
 const SEARCH_POLYGONS = [
   {
     name: 'Fresno City',
-    // Covers central Fresno including Old Fig, Sunnyside, and general areas
-    poly: '-119.92 36.68,-119.68 36.68,-119.68 36.84,-119.92 36.84,-119.92 36.68',
+    // Covers the entire Fresno city limits (OSM bounds)
+    poly: '-119.985 36.633,-119.603 36.633,-119.603 36.924,-119.985 36.924,-119.985 36.633',
   },
   {
     name: 'East/Rural Fresno County',

@@ -2,125 +2,735 @@
 layout: base.njk
 title: Home Search - Rob Spain
 permalink: /admin/home-search/
+hide_public_nav: true
 ---
 
 <style>
-  .hs { max-width: 1300px; margin: 0 auto; padding: 20px; }
-  .hs * { box-sizing: border-box; }
-  .hs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; gap: 8px; }
-  .hs-header h2 { font-size: 24px; font-weight: 700; color: #1e293b; margin: 0; }
-  .hs-header .meta { color: #64748b; font-size: 13px; }
-  .hs-controls { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
-  .hs-controls select, .hs-controls input { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 13px; color: #1e293b; background: #fff; }
-  .hs-controls select:focus, .hs-controls input:focus { outline: none; border-color: #3b82f6; }
-  .hs-btn { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
-  .hs-btn-primary { background: #3b82f6; color: #fff; }
-  .hs-btn-primary:hover { background: #2563eb; }
-  .hs-btn-green { background: #22c55e; color: #fff; }
-  .hs-btn-green:hover { background: #16a34a; }
-  .hs-btn-outline { background: #fff; color: #64748b; border: 1px solid #e2e8f0; }
-  .hs-btn-outline:hover { border-color: #64748b; color: #1e293b; }
-  .hs-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
-  .hs-stat-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; text-align: center; }
-  .hs-stat-card .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 4px; }
-  .hs-stat-card .value { font-size: 24px; font-weight: 700; color: #1e293b; }
-  .hs-stat-card .value.blue { color: #3b82f6; }
-  .hs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
-  .hs-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; transition: box-shadow 0.2s, transform 0.2s; position: relative; }
-  .hs-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); transform: translateY(-2px); }
-  .hs-card.favorited { border-color: #f59e0b; }
-  .hs-card-img { width: 100%; height: 200px; object-fit: cover; background: #f1f5f9; display: block; }
-  .hs-card-img-placeholder { width: 100%; height: 200px; background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 14px; }
-  .hs-card-body { padding: 16px; }
-  .hs-card-price { font-size: 22px; font-weight: 700; color: #1e293b; margin-bottom: 4px; }
-  .hs-card-address { font-size: 14px; color: #475569; margin-bottom: 8px; line-height: 1.4; }
-  .hs-card-details { display: flex; gap: 16px; font-size: 13px; color: #64748b; margin-bottom: 8px; }
-  .hs-card-details span { display: flex; align-items: center; gap: 4px; }
-  .hs-card-desc { font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 12px; max-height: 60px; overflow: hidden; text-overflow: ellipsis; }
-  .hs-card-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
-  .hs-tag { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; background: rgba(59,130,246,0.1); color: #3b82f6; }
-  .hs-tag.pool { background: rgba(6,182,212,0.1); color: #0891b2; }
-  .hs-tag.fixer { background: rgba(234,179,8,0.1); color: #ca8a04; }
-  .hs-tag.rural { background: rgba(34,197,94,0.1); color: #16a34a; }
-  .hs-card-actions { display: flex; gap: 8px; }
-  .hs-card-actions a, .hs-card-actions button { flex: 1; text-align: center; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; transition: all 0.15s; }
-  .hs-card-actions .view-link { background: rgba(59,130,246,0.1); color: #3b82f6; }
-  .hs-card-actions .view-link:hover { background: rgba(59,130,246,0.2); }
-  .hs-card-actions .share-btn { background: rgba(34,197,94,0.1); color: #16a34a; }
-  .hs-card-actions .share-btn:hover { background: rgba(34,197,94,0.2); }
-  .hs-card-actions .fav-btn { background: rgba(234,179,8,0.1); color: #ca8a04; }
-  .hs-card-actions .fav-btn:hover { background: rgba(234,179,8,0.2); }
-  .hs-card-actions .fav-btn.active { background: #f59e0b; color: #fff; }
-  .hs-empty { text-align: center; padding: 60px 20px; color: #64748b; }
-  .hs-empty h3 { font-size: 18px; color: #1e293b; margin-bottom: 8px; }
-  .hs-loading { text-align: center; padding: 40px; color: #64748b; font-size: 14px; }
-  .hs-toast { position: fixed; bottom: 20px; right: 20px; background: #16a34a; color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; opacity: 0; transition: opacity 0.3s; z-index: 100; pointer-events: none; }
-  .hs-toast.show { opacity: 1; }
-  .hs-share-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; }
-  .hs-share-modal.open { display: flex; }
-  .hs-share-content { background: #fff; border-radius: 12px; padding: 24px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
-  .hs-share-content h3 { margin: 0 0 12px; font-size: 18px; }
-  .hs-share-content textarea { width: 100%; height: 200px; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; font-size: 13px; font-family: inherit; resize: vertical; }
-  .hs-share-actions { display: flex; gap: 8px; margin-top: 12px; }
-  .hs-area-badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; background: rgba(139,92,246,0.1); color: #7c3aed; }
-  .hs-new-badge { position: absolute; top: 12px; right: 12px; background: #ef4444; color: #fff; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 700; z-index: 1; }
+  .nav-premium, .footer {
+    display: none !important;
+  }
+  .family-nav {
+    background: #fffdf8;
+    border: 1px solid #d9d1c4;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 20px rgba(18, 54, 40, 0.04);
+    border-radius: 16px;
+  }
+  .family-nav-brand {
+    font-size: 16px;
+    font-weight: 800;
+    color: #123628;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .family-nav-links {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .family-nav-link {
+    font-size: 13px;
+    font-weight: 700;
+    color: #526158;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .family-nav-link:hover {
+    background: rgba(31, 77, 63, 0.06);
+    color: #1f4d3f;
+  }
+  .family-nav-link.active {
+    background: #1f4d3f;
+    color: #fffdf8;
+  }
+  .compliance-page {
+    background: #f6f2ea;
+    color: #17221d;
+    min-height: 100vh;
+    padding: 2rem 1rem 5rem;
+  }
+  .compliance-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .back-link {
+    display: inline-block;
+    color: #1f4d3f;
+    text-decoration: none;
+    margin-bottom: 1.5rem;
+    font-weight: 650;
+    transition: color 0.15s;
+  }
+  .back-link:hover {
+    color: #123628;
+  }
+  .hs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #d9d1c4;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .hs-header h2 {
+    font-size: 24px;
+    font-weight: 750;
+    color: #123628;
+    margin: 0;
+  }
+  .hs-header .meta {
+    color: #526158;
+    font-size: 13px;
+    margin-top: 4px;
+  }
+  .hs-controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .hs-controls select, .hs-controls input {
+    padding: 10px 12px;
+    border: 1px solid #d9d1c4;
+    border-radius: 12px;
+    font-size: 13px;
+    color: #17221d;
+    background: #fffdf8;
+    transition: all 0.2s;
+  }
+  .hs-controls select:focus, .hs-controls input:focus {
+    outline: none;
+    border-color: #1f4d3f;
+    box-shadow: 0 0 0 3px rgba(31, 77, 63, 0.12);
+  }
+  .hs-btn {
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+  .hs-btn-primary {
+    background: #1f4d3f;
+    color: #fff;
+  }
+  .hs-btn-primary:hover {
+    background: #123628;
+  }
+  .hs-btn-green {
+    background: #1f4d3f;
+    color: #fff;
+  }
+  .hs-btn-green:hover {
+    background: #123628;
+  }
+  .hs-btn-outline {
+    background: #fffdf8;
+    color: #526158;
+    border: 1px solid #d9d1c4;
+  }
+  .hs-btn-outline:hover {
+    border-color: #526158;
+    color: #17221d;
+  }
+  .hs-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .hs-stat-card {
+    background: #fffdf8;
+    border: 1px solid #d9d1c4;
+    border-radius: 22px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(18, 54, 40, 0.04);
+  }
+  .hs-stat-card .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #526158;
+    margin-bottom: 4px;
+    font-weight: 700;
+  }
+  .hs-stat-card .value {
+    font-size: 24px;
+    font-weight: 800;
+    color: #123628;
+  }
+  .hs-stat-card .value.green {
+    color: #1f4d3f;
+  }
+  
+  /* Layout columns */
+  .hs-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  @media (min-width: 1024px) {
+    .hs-layout {
+      grid-template-columns: 1fr 380px;
+    }
+  }
+
+  .hs-listings-column {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hs-calculator-column {
+    position: sticky;
+    top: 24px;
+  }
+
+  .hs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+  .hs-card {
+    background: #fffdf8;
+    border: 1px solid #d9d1c4;
+    border-radius: 22px;
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(18, 54, 40, 0.06);
+  }
+  .hs-card:hover {
+    box-shadow: 0 14px 35px rgba(18, 54, 40, 0.12);
+    transform: translateY(-2px);
+  }
+  .hs-card.favorited {
+    border-color: #e4b63d;
+  }
+  .hs-card-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    background: #f1f5f9;
+    display: block;
+  }
+  .hs-card-img-placeholder {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, #fffdf8 0%, #e8dfd2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #526158;
+    font-size: 14px;
+  }
+  .hs-card-body {
+    padding: 18px;
+  }
+  .hs-card-price {
+    font-size: 22px;
+    font-weight: 800;
+    color: #123628;
+    margin-bottom: 4px;
+  }
+  .hs-card-address {
+    font-size: 14px;
+    color: #43524a;
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+  .hs-card-details {
+    display: flex;
+    gap: 16px;
+    font-size: 13px;
+    color: #526158;
+    margin-bottom: 10px;
+  }
+  .hs-card-details span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .hs-card-desc {
+    font-size: 13px;
+    color: #526158;
+    line-height: 1.5;
+    margin-bottom: 12px;
+    max-height: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .hs-card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+  .hs-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(31, 77, 63, 0.08);
+    color: #1f4d3f;
+  }
+  .hs-tag.pool {
+    background: rgba(6, 182, 212, 0.1);
+    color: #0891b2;
+  }
+  .hs-tag.fixer {
+    background: rgba(228, 182, 61, 0.12);
+    color: #b28510;
+  }
+  .hs-tag.rural {
+    background: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+  }
+  .hs-card-actions {
+    display: flex;
+    gap: 6px;
+  }
+  .hs-card-actions a, .hs-card-actions button {
+    flex: 1;
+    text-align: center;
+    padding: 8px 4px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+  }
+  .hs-card-actions .view-link {
+    background: rgba(31, 77, 63, 0.08);
+    color: #1f4d3f;
+  }
+  .hs-card-actions .view-link:hover {
+    background: rgba(31, 77, 63, 0.16);
+  }
+  .hs-card-actions .calc-btn {
+    background: rgba(228, 182, 61, 0.12);
+    color: #b28510;
+  }
+  .hs-card-actions .calc-btn:hover {
+    background: rgba(228, 182, 61, 0.22);
+  }
+  .hs-card-actions .share-btn {
+    background: rgba(31, 77, 63, 0.08);
+    color: #1f4d3f;
+  }
+  .hs-card-actions .share-btn:hover {
+    background: rgba(31, 77, 63, 0.16);
+  }
+  .hs-card-actions .fav-btn {
+    background: rgba(228, 182, 61, 0.08);
+    color: #b28510;
+    flex: 0 0 36px;
+  }
+  .hs-card-actions .fav-btn:hover {
+    background: rgba(228, 182, 61, 0.18);
+  }
+  .hs-card-actions .fav-btn.active {
+    background: #e4b63d;
+    color: #fff;
+  }
+  .hs-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #526158;
+  }
+  .hs-empty h3 {
+    font-size: 18px;
+    color: #123628;
+    margin-bottom: 8px;
+  }
+  .hs-loading {
+    text-align: center;
+    padding: 40px;
+    color: #526158;
+    font-size: 14px;
+  }
+  .hs-toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #1f4d3f;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 100;
+    pointer-events: none;
+  }
+  .hs-toast.show {
+    opacity: 1;
+  }
+  .hs-share-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .hs-share-modal.open {
+    display: flex;
+  }
+  .hs-share-content {
+    background: #fffdf8;
+    border: 1px solid #d9d1c4;
+    border-radius: 22px;
+    padding: 24px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  }
+  .hs-share-content h3 {
+    margin: 0 0 12px;
+    font-size: 18px;
+    color: #123628;
+  }
+  .hs-share-content textarea {
+    width: 100%;
+    height: 200px;
+    border: 1px solid #d9d1c4;
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 13px;
+    font-family: inherit;
+    resize: vertical;
+    background: #fffdf8;
+    color: #17221d;
+  }
+  .hs-share-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .hs-area-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(139,92,246,0.1);
+    color: #7c3aed;
+  }
+  .hs-new-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #ef4444;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 800;
+    z-index: 1;
+  }
+
+  /* Mortgage Calculator Style */
+  .hs-calculator-card {
+    background: #fffdf8;
+    border: 1px solid #d9d1c4;
+    border-radius: 22px;
+    padding: 20px;
+    box-shadow: 0 14px 35px rgba(18, 54, 40, 0.08);
+  }
+  .hs-calculator-card h3 {
+    margin: 0 0 16px;
+    font-size: 18px;
+    color: #123628;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .hs-calculator-card label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #526158;
+    margin-bottom: 4px;
+    font-weight: 700;
+  }
+  .hs-calculator-card input, .hs-calculator-card select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d9d1c4;
+    border-radius: 12px;
+    font-size: 14px;
+    color: #17221d;
+    background: #fffdf8;
+    margin-bottom: 12px;
+    outline: none;
+    transition: all 0.2s;
+  }
+  .hs-calculator-card input:focus, .hs-calculator-card select:focus {
+    border-color: #1f4d3f;
+    box-shadow: 0 0 0 3px rgba(31, 77, 63, 0.12);
+  }
+  .calc-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .calc-results {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e8e2d5;
+  }
+  .calc-result-row.total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    font-weight: 750;
+    color: #123628;
+    margin-bottom: 12px;
+  }
+  .calc-result-row.total strong {
+    font-size: 22px;
+    color: #1f4d3f;
+  }
+  .calc-breakdown-bar {
+    display: flex;
+    height: 10px;
+    background: #e8dfd2;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .calc-breakdown-bar .bar-fill {
+    height: 100%;
+  }
+  .calc-breakdown-bar .bar-pi { background: #1f4d3f; }
+  .calc-breakdown-bar .bar-tax { background: #e4b63d; }
+  .calc-breakdown-bar .bar-ins { background: #8ba4b8; }
+  
+  .calc-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 13px;
+  }
+  .calc-legend span {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #43524a;
+  }
+  .calc-legend .dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+  .calc-legend .dot-pi { background: #1f4d3f; }
+  .calc-legend .dot-tax { background: #e4b63d; }
+  .calc-legend .dot-ins { background: #8ba4b8; }
+  .calc-home-indicator {
+    font-size: 11px;
+    color: #123628;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background: rgba(31, 77, 63, 0.06);
+    border: 1px solid rgba(31, 77, 63, 0.12);
+    border-radius: 10px;
+    display: none;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
   @media (max-width: 600px) {
     .hs-grid { grid-template-columns: 1fr; }
-    .hs-controls { flex-direction: column; }
+    .hs-controls { flex-direction: column; align-items: stretch; }
+    .hs-controls select, .hs-controls input, .hs-controls button { width: 100%; }
     .hs-stats { grid-template-columns: 1fr 1fr; }
   }
 </style>
 
-<div class="hs">
-  <div class="hs-header">
-    <div>
-      <h2>Home Search <span style="font-size:14px;color:#64748b;font-weight:400;">Fresno County</span></h2>
-      <div class="meta">Fixer-uppers with pool &bull; Old Fig, Sunnyside, Rural areas &bull; Mid-century &amp; farmhouse style</div>
+<div class="compliance-page">
+  <div class="compliance-container">
+    <nav class="family-nav">
+      <a href="/admin/dashboard/" class="family-nav-brand">
+        <i class="fas fa-people-roof" style="color:#1f4d3f;"></i>
+        <span>Family Command</span>
+      </a>
+      <div class="family-nav-links">
+        <a href="/admin/family/" class="family-nav-link"><i class="fas fa-wallet"></i> Finance</a>
+        <a href="/admin/court-compliance/" class="family-nav-link"><i class="fas fa-clipboard-check"></i> Custody</a>
+        <a href="/admin/home-search/" class="family-nav-link active"><i class="fas fa-home"></i> Home Search</a>
+        <a href="/admin/home/" class="family-nav-link"><i class="fas fa-house-signal"></i> Home Command</a>
+        <a href="/admin/dashboard/" class="family-nav-link"><i class="fas fa-gauge"></i> Admin</a>
+      </div>
+    </nav>
+
+    <div class="hs-header">
+      <div>
+        <h2>Home Search <span style="font-size:14px;color:#526158;font-weight:400;">Fresno County</span></h2>
+        <div class="meta">Fixer-uppers with pool &bull; Old Fig, Sunnyside, Rural areas &bull; Mid-century &amp; farmhouse style</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="meta" id="lastSearched">Loading...</div>
+        <div class="meta" id="searchCount"></div>
+      </div>
     </div>
-    <div style="text-align:right;">
-      <div class="meta" id="lastSearched">Loading...</div>
-      <div class="meta" id="searchCount"></div>
+
+    <!-- Summary Stats -->
+    <div class="hs-stats" id="statsRow">
+      <div class="hs-stat-card"><div class="label">Listings</div><div class="value" id="statTotal">--</div></div>
+      <div class="hs-stat-card"><div class="label">Price Range</div><div class="value green" id="statRange" style="font-size:16px;">--</div></div>
+      <div class="hs-stat-card"><div class="label">Avg Sq Ft</div><div class="value" id="statSqft">--</div></div>
+      <div class="hs-stat-card"><div class="label">Favorites</div><div class="value" style="color:#e4b63d;" id="statFavs">0</div></div>
+      <div class="hs-stat-card"><div class="label">New Today</div><div class="value" style="color:#1f4d3f;" id="statNew">0</div></div>
     </div>
-  </div>
 
-  <!-- Summary Stats -->
-  <div class="hs-stats" id="statsRow">
-    <div class="hs-stat-card"><div class="label">Listings</div><div class="value" id="statTotal">--</div></div>
-    <div class="hs-stat-card"><div class="label">Price Range</div><div class="value blue" id="statRange" style="font-size:16px;">--</div></div>
-    <div class="hs-stat-card"><div class="label">Avg Sq Ft</div><div class="value" id="statSqft">--</div></div>
-    <div class="hs-stat-card"><div class="label">Favorites</div><div class="value" style="color:#f59e0b;" id="statFavs">0</div></div>
-    <div class="hs-stat-card"><div class="label">New Today</div><div class="value" style="color:#22c55e;" id="statNew">0</div></div>
-  </div>
+    <div class="hs-layout">
+      <!-- Main Listing Column -->
+      <div class="hs-listings-column">
+        <!-- Controls -->
+        <div class="hs-controls">
+          <select id="sortBy" onchange="renderListings()">
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="sqft-desc">Sq Ft: Largest</option>
+            <option value="beds-desc">Beds: Most</option>
+            <option value="date-desc">Newest First</option>
+          </select>
+          <select id="filterArea" onchange="renderListings()">
+            <option value="all">All Areas</option>
+            <option value="old-fig">Old Fig</option>
+            <option value="sunnyside">Sunnyside</option>
+            <option value="rural">Rural / Country</option>
+            <option value="other">Other</option>
+          </select>
+          <select id="filterView" onchange="renderListings()">
+            <option value="all">All Listings</option>
+            <option value="favorites">Favorites Only</option>
+            <option value="new">New Today</option>
+          </select>
+          <input type="text" id="searchBox" placeholder="Search address..." oninput="renderListings()" style="flex:1;min-width:120px;">
+          <button class="hs-btn hs-btn-green" onclick="openShareModal()">Share Favorites with Cristal</button>
+        </div>
 
-  <!-- Controls -->
-  <div class="hs-controls">
-    <select id="sortBy" onchange="renderListings()">
-      <option value="price-asc">Price: Low to High</option>
-      <option value="price-desc">Price: High to Low</option>
-      <option value="sqft-desc">Sq Ft: Largest</option>
-      <option value="beds-desc">Beds: Most</option>
-      <option value="date-desc">Newest First</option>
-    </select>
-    <select id="filterArea" onchange="renderListings()">
-      <option value="all">All Areas</option>
-      <option value="old-fig">Old Fig</option>
-      <option value="sunnyside">Sunnyside</option>
-      <option value="rural">Rural / Country</option>
-      <option value="other">Other</option>
-    </select>
-    <select id="filterView" onchange="renderListings()">
-      <option value="all">All Listings</option>
-      <option value="favorites">Favorites Only</option>
-      <option value="new">New Today</option>
-    </select>
-    <input type="text" id="searchBox" placeholder="Search address..." oninput="renderListings()" style="flex:1;min-width:120px;">
-    <div style="flex:1;"></div>
-    <button class="hs-btn hs-btn-green" onclick="openShareModal()">Share Favorites with Cristal</button>
-  </div>
+        <!-- Listing Grid -->
+        <div id="listingsContainer">
+          <div class="hs-loading">Loading listings...</div>
+        </div>
+      </div>
 
-  <!-- Listing Grid -->
-  <div id="listingsContainer">
-    <div class="hs-loading">Loading listings...</div>
+      <!-- Sidebar Calculator Column -->
+      <div class="hs-calculator-column">
+        <div class="hs-calculator-card">
+          <h3><i class="fas fa-calculator" style="color:#1f4d3f;"></i> Mortgage Calculator</h3>
+          <div class="calc-home-indicator" id="calcHomeIndicator"></div>
+          
+          <div class="calc-form">
+            <div class="calc-group">
+              <label for="calcPrice">Home Price ($)</label>
+              <input type="number" id="calcPrice" value="450000" oninput="calculateMortgage()">
+            </div>
+            
+            <div class="calc-row-2">
+              <div class="calc-group">
+                <label for="calcDownPercent">Down (%)</label>
+                <input type="number" id="calcDownPercent" value="20" min="0" max="100" oninput="updateDownAmount()">
+              </div>
+              <div class="calc-group">
+                <label for="calcDownAmount">Down ($)</label>
+                <input type="number" id="calcDownAmount" value="90000" oninput="updateDownPercent()">
+              </div>
+            </div>
+
+            <div class="calc-row-2">
+              <div class="calc-group">
+                <label for="calcRate">Rate (%)</label>
+                <input type="number" id="calcRate" value="6.5" step="0.05" oninput="calculateMortgage()">
+              </div>
+              <div class="calc-group">
+                <label for="calcTerm">Term</label>
+                <select id="calcTerm" onchange="calculateMortgage()">
+                  <option value="30">30 Years</option>
+                  <option value="20">20 Years</option>
+                  <option value="15">15 Years</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="calc-row-2">
+              <div class="calc-group">
+                <label for="calcTax">Tax (%/yr)</label>
+                <input type="number" id="calcTax" value="1.2" step="0.05" oninput="calculateMortgage()">
+              </div>
+              <div class="calc-group">
+                <label for="calcInsurance">Ins ($/yr)</label>
+                <input type="number" id="calcInsurance" value="1200" step="50" oninput="calculateMortgage()">
+              </div>
+            </div>
+          </div>
+
+          <div class="calc-results">
+            <div class="calc-result-row total">
+              <span>Est. Payment</span>
+              <strong id="resTotalPayment">$0</strong>
+            </div>
+            
+            <div class="calc-breakdown-bar" aria-hidden="true">
+              <div class="bar-fill bar-pi" id="barPi" style="width: 70%"></div>
+              <div class="bar-fill bar-tax" id="barTax" style="width: 20%"></div>
+              <div class="bar-fill bar-ins" id="barIns" style="width: 10%"></div>
+            </div>
+
+            <div class="calc-legend">
+              <span>
+                <span style="display:flex;align-items:center;"><span class="dot dot-pi"></span>P &amp; I</span>
+                <strong id="resPi">$0</strong>
+              </span>
+              <span>
+                <span style="display:flex;align-items:center;"><span class="dot dot-tax"></span>Taxes (Est.)</span>
+                <strong id="resTax">$0</strong>
+              </span>
+              <span>
+                <span style="display:flex;align-items:center;"><span class="dot dot-ins"></span>Insurance</span>
+                <strong id="resIns">$0</strong>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -128,7 +738,7 @@ permalink: /admin/home-search/
 <div class="hs-share-modal" id="shareModal">
   <div class="hs-share-content">
     <h3>Share with Cristal</h3>
-    <p style="font-size:13px;color:#64748b;margin:0 0 12px;">Review the message below, then copy or send via text/email.</p>
+    <p style="font-size:13px;color:#526158;margin:0 0 12px;">Review the message below, then copy or send via text/email.</p>
     <textarea id="shareText" readonly></textarea>
     <div class="hs-share-actions">
       <button class="hs-btn hs-btn-primary" onclick="copyShareText()">Copy to Clipboard</button>
@@ -345,6 +955,7 @@ async function loadData() {
   updateMeta();
   updateStats();
   renderListings();
+  calculateMortgage();
 }
 
 function updateMeta() {
@@ -365,8 +976,8 @@ function updateStats() {
   if (allListings.length > 0) {
     const prices = allListings.map(l => l.price).filter(p => p > 0).sort((a, b) => a - b);
     if (prices.length > 0) {
-      const fmt = p => '$' + (p >= 1000000 ? (p / 1000000).toFixed(1) + 'M' : Math.round(p / 1000) + 'K');
-      document.getElementById('statRange').textContent = fmt(prices[0]) + ' - ' + fmt(prices[prices.length - 1]);
+      const fmtVal = p => '$' + (p >= 1000000 ? (p / 1000000).toFixed(1) + 'M' : Math.round(p / 100) + 'k');
+      document.getElementById('statRange').textContent = fmtVal(prices[0]) + ' - ' + fmtVal(prices[prices.length - 1]);
     }
     const sqfts = allListings.map(l => l.sqft).filter(s => s > 0);
     if (sqfts.length > 0) {
@@ -431,6 +1042,9 @@ function renderListings() {
     const isFav = favorites.has(l.id);
     const isNew = l.addedAt && new Date(l.addedAt).toDateString() === today;
     const areaLabels = { 'old-fig': 'Old Fig', 'sunnyside': 'Sunnyside', 'rural': 'Rural', 'other': '' };
+    
+    // Escape single quotes in address for javascript call
+    const escapedAddr = (l.address || '').replace(/'/g, "\\'");
 
     return `<div class="hs-card ${isFav ? 'favorited' : ''}">
       ${isNew ? '<span class="hs-new-badge">NEW</span>' : ''}
@@ -453,9 +1067,10 @@ function renderListings() {
         </div>
         <div class="hs-card-desc">${l.description || ''}</div>
         <div class="hs-card-actions">
-          ${l.listingUrl ? `<a class="view-link" href="${l.listingUrl}" target="_blank" rel="noopener">View Listing</a>` : '<span class="view-link" style="opacity:0.5">No link</span>'}
-          <button class="share-btn" onclick="shareSingle('${l.id}')">Send to Cristal</button>
-          <button class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFav('${l.id}')"> ${isFav ? '★' : '☆'}</button>
+          ${l.listingUrl ? `<a class="view-link" href="${l.listingUrl}" target="_blank" rel="noopener">View</a>` : '<span class="view-link" style="opacity:0.5">No link</span>'}
+          <button class="calc-btn" onclick="populateCalculator(${l.price}, '${escapedAddr}')"><i class="fas fa-calculator"></i> Calc</button>
+          <button class="share-btn" onclick="shareSingle('${l.id}')">Send</button>
+          <button class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFav('${l.id}')">${isFav ? '★' : '☆'}</button>
         </div>
       </div>
     </div>`;
@@ -471,7 +1086,6 @@ function toggleFav(id) {
 }
 
 async function saveFavorites() {
-  // Save to localStorage as fallback
   const value = [...favorites];
   localStorage.setItem('hs-favorites', JSON.stringify(value));
   try {
@@ -547,6 +1161,91 @@ function showToast(msg) {
   el.textContent = msg;
   el.classList.add('show');
   setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+/* Mortgage Calculator logic */
+function calculateMortgage() {
+  const price = parseFloat(document.getElementById('calcPrice').value) || 0;
+  const down = parseFloat(document.getElementById('calcDownAmount').value) || 0;
+  const rate = parseFloat(document.getElementById('calcRate').value) || 0;
+  const termYears = parseFloat(document.getElementById('calcTerm').value) || 30;
+  const taxRate = parseFloat(document.getElementById('calcTax').value) || 0;
+  const insuranceYr = parseFloat(document.getElementById('calcInsurance').value) || 0;
+
+  const loanAmount = Math.max(0, price - down);
+  
+  let monthlyPI = 0;
+  if (loanAmount > 0) {
+    const monthlyRate = (rate / 100) / 12;
+    const numberOfPayments = termYears * 12;
+    if (monthlyRate === 0) {
+      monthlyPI = loanAmount / numberOfPayments;
+    } else {
+      monthlyPI = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+    }
+  }
+
+  const monthlyTax = (price * (taxRate / 100)) / 12;
+  const monthlyIns = insuranceYr / 12;
+  
+  const totalPayment = monthlyPI + monthlyTax + monthlyIns;
+
+  document.getElementById('resPi').textContent = '$' + Math.round(monthlyPI).toLocaleString();
+  document.getElementById('resTax').textContent = '$' + Math.round(monthlyTax).toLocaleString();
+  document.getElementById('resIns').textContent = '$' + Math.round(monthlyIns).toLocaleString();
+  document.getElementById('resTotalPayment').textContent = '$' + Math.round(totalPayment).toLocaleString();
+
+  const total = monthlyPI + monthlyTax + monthlyIns;
+  if (total > 0) {
+    const piPct = (monthlyPI / total) * 100;
+    const taxPct = (monthlyTax / total) * 100;
+    const insPct = (monthlyIns / total) * 100;
+    
+    document.getElementById('barPi').style.width = piPct + '%';
+    document.getElementById('barTax').style.width = taxPct + '%';
+    document.getElementById('barIns').style.width = insPct + '%';
+  } else {
+    document.getElementById('barPi').style.width = '0%';
+    document.getElementById('barTax').style.width = '0%';
+    document.getElementById('barIns').style.width = '0%';
+  }
+}
+
+function updateDownAmount() {
+  const price = parseFloat(document.getElementById('calcPrice').value) || 0;
+  const pct = parseFloat(document.getElementById('calcDownPercent').value) || 0;
+  const amt = Math.round(price * (pct / 100));
+  document.getElementById('calcDownAmount').value = amt;
+  calculateMortgage();
+}
+
+function updateDownPercent() {
+  const price = parseFloat(document.getElementById('calcPrice').value) || 0;
+  const amt = parseFloat(document.getElementById('calcDownAmount').value) || 0;
+  let pct = 0;
+  if (price > 0) {
+    pct = parseFloat(((amt / price) * 100).toFixed(1));
+  }
+  document.getElementById('calcDownPercent').value = pct;
+  calculateMortgage();
+}
+
+function populateCalculator(price, address) {
+  document.getElementById('calcPrice').value = price;
+  
+  const pct = parseFloat(document.getElementById('calcDownPercent').value) || 0;
+  const amt = Math.round(price * (pct / 100));
+  document.getElementById('calcDownAmount').value = amt;
+  
+  const indicator = document.getElementById('calcHomeIndicator');
+  indicator.style.display = 'block';
+  indicator.textContent = 'Listing: ' + address;
+  
+  calculateMortgage();
+  
+  if (window.innerWidth < 1024) {
+    document.querySelector('.hs-calculator-column').scrollIntoView({ behavior: 'smooth' });
+  }
 }
 
 // Load favorites from localStorage on init

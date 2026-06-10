@@ -2,11 +2,24 @@
 layout: base.njk
 title: Court Compliance Tracker - Rob Spain
 permalink: /admin/court-compliance/
+hide_public_nav: true
 ---
 
 <div class="compliance-page">
   <div class="compliance-container">
-    <a class="back-link" href="/admin/dashboard/">Back to admin dashboard</a>
+    <nav class="family-nav">
+      <a href="/admin/dashboard/" class="family-nav-brand">
+        <i class="fas fa-people-roof" style="color:#1f4d3f;"></i>
+        <span>Family Command</span>
+      </a>
+      <div class="family-nav-links">
+        <a href="/admin/family/" class="family-nav-link"><i class="fas fa-wallet"></i> Finance</a>
+        <a href="/admin/court-compliance/" class="family-nav-link active"><i class="fas fa-clipboard-check"></i> Custody</a>
+        <a href="/admin/home-search/" class="family-nav-link"><i class="fas fa-home"></i> Home Search</a>
+        <a href="/admin/home/" class="family-nav-link"><i class="fas fa-house-signal"></i> Home Command</a>
+        <a href="/admin/dashboard/" class="family-nav-link"><i class="fas fa-gauge"></i> Admin</a>
+      </div>
+    </nav>
 
     <section class="hero-card">
       <p class="eyebrow">Court compliance tracker</p>
@@ -680,11 +693,60 @@ I am documenting this neutrally for compliance tracking and counsel review.</pre
 </div>
 
 <style>
+.nav-premium, .footer {
+  display: none !important;
+}
+.family-nav {
+  background: #fffdf8;
+  border: 1px solid #d9d1c4;
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(18, 54, 40, 0.04);
+  border-radius: 16px;
+}
+.family-nav-brand {
+  font-size: 16px;
+  font-weight: 800;
+  color: #123628;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.family-nav-links {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.family-nav-link {
+  font-size: 13px;
+  font-weight: 700;
+  color: #526158;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.family-nav-link:hover {
+  background: rgba(31, 77, 63, 0.06);
+  color: #1f4d3f;
+}
+.family-nav-link.active {
+  background: #1f4d3f;
+  color: #fffdf8;
+}
 .compliance-page {
   background: #f6f2ea;
   color: #17221d;
   min-height: 100vh;
-  padding: 3rem 1rem 5rem;
+  padding: 2rem 1rem 5rem;
 }
 .compliance-container {
   max-width: 1120px;

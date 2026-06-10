@@ -2,172 +2,255 @@
 layout: base.njk
 title: Family & Finance Command Center - Rob Spain
 permalink: /admin/family/
+hide_public_nav: true
 ---
 
 <style>
-  .fin-dash { max-width: 1200px; margin: 0 auto; padding: 20px; }
+  .nav-premium, .footer {
+    display: none !important;
+  }
+  .family-nav {
+    background: #fffdf8;
+    border: 1px solid #d9d1c4;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 20px rgba(18, 54, 40, 0.04);
+    border-radius: 16px;
+  }
+  .family-nav-brand {
+    font-size: 16px;
+    font-weight: 800;
+    color: #123628;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .family-nav-links {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .family-nav-link {
+    font-size: 13px;
+    font-weight: 700;
+    color: #526158;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .family-nav-link:hover {
+    background: rgba(31, 77, 63, 0.06);
+    color: #1f4d3f;
+  }
+  .family-nav-link.active {
+    background: #1f4d3f;
+    color: #fffdf8;
+  }
+  .compliance-page {
+    background: #f6f2ea;
+    color: #17221d;
+    min-height: 100vh;
+    padding: 2rem 1rem 5rem;
+  }
+  .compliance-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
   .fin-dash * { box-sizing: border-box; }
-  .fin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; gap: 8px; }
-  .fin-header h2 { font-size: 24px; font-weight: 700; color: #1e293b; margin: 0; }
-  .fin-header .updated { color: #64748b; font-size: 13px; }
-  .fin-tabs { display: flex; gap: 4px; margin-bottom: 20px; flex-wrap: wrap; }
-  .fin-tab { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; background: #f8fafc; color: #64748b; transition: all 0.2s; }
-  .fin-tab:hover { border-color: #64748b; color: #1e293b; }
-  .fin-tab.active { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+  .fin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #d9d1c4; flex-wrap: wrap; gap: 8px; }
+  .fin-header h2 { font-size: 24px; font-weight: 750; color: #123628; margin: 0; }
+  .fin-header .updated { color: #526158; font-size: 13px; }
+  .fin-tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+  .fin-tab { padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; border: 1px solid #d9d1c4; background: #fffdf8; color: #526158; transition: all 0.2s; }
+  .fin-tab:hover { border-color: #526158; color: #17221d; }
+  .fin-tab.active { background: #1f4d3f; border-color: #1f4d3f; color: #fff; }
   .fin-panel { display: none; }
   .fin-panel.active { display: block; }
-  .fin-grid { display: grid; gap: 16px; }
+  .fin-grid { display: grid; gap: 18px; }
   .fin-grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
   .fin-grid-2 { grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); }
   .fin-grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
-  .fin-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; }
-  .fin-card h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin: 0 0 12px 0; font-weight: 500; }
-  .fin-stat { font-size: 28px; font-weight: 700; }
-  .fin-stat.green { color: #22c55e; }
-  .fin-stat.red { color: #ef4444; }
-  .fin-stat.yellow { color: #eab308; }
-  .fin-stat.blue { color: #3b82f6; }
-  .fin-sub { font-size: 13px; color: #64748b; margin-top: 4px; }
-  .fin-table { width: 100%; border-collapse: collapse; font-size: 14px; color: #1e293b; }
-  .fin-table th { text-align: left; padding: 8px 12px; color: #64748b; font-weight: 500; font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; }
-  .fin-table td { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; }
+  .fin-card { background: #fffdf8; border: 1px solid #d9d1c4; border-radius: 22px; padding: 20px; box-shadow: 0 14px 35px rgba(18, 54, 40, 0.08); }
+  .fin-card h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: #526158; margin: 0 0 12px 0; font-weight: 700; }
+  .fin-stat { font-size: 28px; font-weight: 800; color: #123628; }
+  .fin-stat.green { color: #1f4d3f; }
+  .fin-stat.red { color: #b91c1c; }
+  .fin-stat.yellow { color: #d97706; }
+  .fin-stat.blue { color: #0369a1; }
+  .fin-sub { font-size: 13px; color: #526158; margin-top: 4px; }
+  .fin-table { width: 100%; border-collapse: collapse; font-size: 14px; color: #17221d; }
+  .fin-table th { text-align: left; padding: 8px 12px; color: #526158; font-weight: 700; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #d9d1c4; }
+  .fin-table td { padding: 12px 12px; border-bottom: 1px solid #e8e2d5; }
   .fin-table tr:last-child td { border-bottom: none; }
   .fin-table .amt { text-align: right; font-variant-numeric: tabular-nums; }
-  .fin-badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: all 0.15s; user-select: none; }
-  .fin-badge:hover { transform: scale(1.08); filter: brightness(0.9); }
-  .fin-badge:active { transform: scale(0.95); }
-  .fin-badge.overdue { background: rgba(239,68,68,0.15); color: #ef4444; }
-  .fin-badge.current { background: rgba(34,197,94,0.15); color: #22c55e; }
-  .fin-badge.upcoming { background: rgba(59,130,246,0.15); color: #3b82f6; }
-  .fin-badge.autopay { background: rgba(168,85,247,0.15); color: #a855f7; }
-  .fin-badge.paid { background: rgba(34,197,94,0.25); color: #16a34a; }
-  .sync-bar { display: none; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 10px 16px; margin-bottom: 16px; font-size: 13px; color: #1e40af; align-items: center; justify-content: space-between; }
+  
+  .fin-badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: all 0.15s; user-select: none; }
+  .fin-badge:hover { transform: scale(1.05); filter: brightness(0.95); }
+  .fin-badge.overdue { background: #fee2e2; color: #991b1b; }
+  .fin-badge.current { background: #d1fae5; color: #065f46; }
+  .fin-badge.upcoming { background: #dbeafe; color: #1e40af; }
+  .fin-badge.autopay { background: #f3e8ff; color: #6b21a8; }
+  .fin-badge.paid { background: #d1fae5; color: #065f46; }
+  
+  .sync-bar { display: none; background: #ecf4ef; border: 1px solid #d9d1c4; border-radius: 12px; padding: 10px 16px; margin-bottom: 16px; font-size: 13px; color: #123628; align-items: center; justify-content: space-between; }
   .sync-bar.visible { display: flex; }
-  .sync-bar button { padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; background: #3b82f6; color: #fff; }
-  .sync-bar button:hover { background: #2563eb; }
-  .toast-msg { position: fixed; bottom: 20px; right: 20px; background: #16a34a; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; opacity: 0; transition: opacity 0.3s; z-index: 100; }
+  .sync-bar button { padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; border: none; background: #1f4d3f; color: #fff; }
+  .sync-bar button:hover { background: #123628; }
+  
+  .toast-msg { position: fixed; bottom: 20px; right: 20px; background: #1f4d3f; color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 700; opacity: 0; transition: opacity 0.3s; z-index: 100; }
   .toast-msg.show { opacity: 1; }
-  .fin-alert { border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 14px; color: #1e293b; }
-  .fin-alert.danger { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); }
-  .fin-alert.warn { background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.3); }
-  .fin-alert.info { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); }
+  
+  .fin-alert { border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; font-size: 14px; color: #17221d; }
+  .fin-alert.danger { background: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; }
+  .fin-alert.warn { background: #fef3c7; border: 1px solid #fcd34d; color: #92400e; }
+  .fin-alert.info { background: #dbeafe; border: 1px solid #bfdbfe; color: #1e40af; }
+  
   .fin-section { margin-top: 24px; }
-  .fin-bar-bg { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-top: 8px; }
+  .fin-bar-bg { height: 8px; background: #e8dfd2; border-radius: 4px; overflow: hidden; margin-top: 8px; }
   .fin-bar { height: 100%; border-radius: 4px; }
-  .fin-bar.green { background: #22c55e; }
-  .fin-bar.red { background: #ef4444; }
-  .fin-bar.yellow { background: #eab308; }
-  .fin-bar.blue { background: #3b82f6; }
-  .fin-bar.purple { background: #a855f7; }
-  .fin-deficit { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 12px; padding: 20px; margin-top: 24px; text-align: center; }
-  .fin-deficit .label { font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 8px; }
-  .fin-deficit .amount { font-size: 36px; font-weight: 700; color: #ef4444; }
-  .fin-deficit .note { font-size: 13px; color: #64748b; margin-top: 8px; }
+  .fin-bar.green { background: #1f4d3f; }
+  .fin-bar.red { background: #b91c1c; }
+  .fin-bar.yellow { background: #e4b63d; }
+  .fin-bar.blue { background: #8ba4b8; }
+  .fin-bar.purple { background: #7c3aed; }
+  
+  .fin-deficit { background: rgba(185, 28, 28, 0.06); border: 1px solid rgba(185, 28, 28, 0.15); border-radius: 22px; padding: 20px; margin-top: 24px; text-align: center; }
+  .fin-deficit .label { font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: #526158; margin-bottom: 8px; font-weight: 700; }
+  .fin-deficit .amount { font-size: 36px; font-weight: 800; color: #b91c1c; }
+  .fin-deficit .note { font-size: 13px; color: #526158; margin-top: 8px; }
+  
   /* Editable cells */
-  .editable { cursor: pointer; position: relative; border-radius: 4px; padding: 2px 4px; margin: -2px -4px; }
-  .editable:hover { background: rgba(59,130,246,0.08); }
-  .editable input, .editable select { font: inherit; border: 1px solid #3b82f6; border-radius: 4px; padding: 2px 6px; width: 100%; background: #fff; outline: none; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
+  .editable { cursor: pointer; position: relative; border-radius: 4px; padding: 2px 4px; margin: -2px -4px; transition: background 0.15s; }
+  .editable:hover { background: rgba(31, 77, 63, 0.08); }
+  .editable input, .editable select { font: inherit; border: 1px solid #d9d1c4; border-radius: 8px; padding: 4px 8px; width: 100%; background: #fffdf8; outline: none; box-shadow: 0 0 0 2px rgba(31, 77, 63, 0.06); }
   .editable input[type="number"] { width: 90px; text-align: right; }
+  
   /* Action buttons */
-  .btn-sm { padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
-  .btn-add { background: #3b82f6; color: #fff; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; }
-  .btn-add:hover { background: #2563eb; }
-  .btn-pay { background: rgba(34,197,94,0.15); color: #16a34a; }
-  .btn-pay:hover { background: rgba(34,197,94,0.3); }
-  .btn-del { background: rgba(239,68,68,0.1); color: #ef4444; }
-  .btn-del:hover { background: rgba(239,68,68,0.2); }
-  .btn-edit { background: rgba(59,130,246,0.1); color: #3b82f6; }
-  .btn-edit:hover { background: rgba(59,130,246,0.2); }
+  .btn-sm { padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; border: none; transition: all 0.15s; }
+  .btn-add { background: #1f4d3f; color: #fff; padding: 8px 16px; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; transition: all 0.2s; }
+  .btn-add:hover { background: #123628; }
+  .btn-pay { background: rgba(31, 77, 63, 0.08); color: #1f4d3f; }
+  .btn-pay:hover { background: rgba(31, 77, 63, 0.16); }
+  .btn-del { background: rgba(185, 28, 28, 0.08); color: #b91c1c; }
+  .btn-del:hover { background: rgba(185, 28, 28, 0.16); }
+  .btn-edit { background: rgba(31, 77, 63, 0.08); color: #1f4d3f; }
+  .btn-edit:hover { background: rgba(31, 77, 63, 0.16); }
+  
   /* Modal */
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: center; justify-content: center; }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; }
   .modal-overlay.open { display: flex; }
-  .modal { background: #fff; border-radius: 16px; padding: 24px; width: 90%; max-width: 480px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
-  .modal h3 { font-size: 18px; font-weight: 700; color: #1e293b; margin: 0 0 16px; }
-  .modal label { display: block; font-size: 13px; font-weight: 500; color: #64748b; margin-bottom: 4px; margin-top: 12px; }
-  .modal input, .modal select { width: 100%; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; color: #1e293b; }
-  .modal input:focus, .modal select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
+  .modal { background: #fffdf8; border: 1px solid #d9d1c4; border-radius: 22px; padding: 24px; width: 90%; max-width: 480px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); }
+  .modal h3 { font-size: 18px; font-weight: 750; color: #123628; margin: 0 0 16px; }
+  .modal label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: #526158; margin-bottom: 4px; margin-top: 12px; }
+  .modal input, .modal select { width: 100%; padding: 10px 12px; border: 1px solid #d9d1c4; border-radius: 12px; font-size: 14px; color: #17221d; background: #fffdf8; }
+  .modal input:focus, .modal select:focus { outline: none; border-color: #1f4d3f; box-shadow: 0 0 0 3px rgba(31, 77, 63, 0.12); }
   .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
-  .modal-actions button { padding: 8px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
-  .modal-actions .btn-cancel { background: #f1f5f9; color: #64748b; }
-  .modal-actions .btn-cancel:hover { background: #e2e8f0; }
-  .modal-actions .btn-save { background: #3b82f6; color: #fff; }
-  .modal-actions .btn-save:hover { background: #2563eb; }
-  .modal-actions .btn-danger { background: #ef4444; color: #fff; }
-  .modal-actions .btn-danger:hover { background: #dc2626; }
+  .modal-actions button { padding: 10px 20px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; }
+  .modal-actions .btn-cancel { background: #fffdf8; border: 1px solid #d9d1c4; color: #526158; }
+  .modal-actions .btn-cancel:hover { border-color: #526158; color: #17221d; }
+  .modal-actions .btn-save { background: #1f4d3f; color: #fff; }
+  .modal-actions .btn-save:hover { background: #123628; }
+  .modal-actions .btn-danger { background: #b91c1c; color: #fff; }
+  .modal-actions .btn-danger:hover { background: #991b1b; }
+  
   /* Envelope styles */
-  .envelope { border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; margin-bottom: 8px; position: relative; overflow: hidden; }
+  .envelope { border: 1px solid #d9d1c4; border-radius: 16px; padding: 12px 16px; margin-bottom: 8px; position: relative; overflow: hidden; background: #fffdf8; }
   .envelope::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; border-radius: 8px 0 0 8px; }
-  .envelope.p1::before { width: 4px; background: #ef4444; }
-  .envelope.p2::before { width: 4px; background: #eab308; }
-  .envelope.p3::before { width: 4px; background: #3b82f6; }
-  .envelope.p4::before { width: 4px; background: #22c55e; }
+  .envelope.p1::before { width: 4px; background: #b91c1c; }
+  .envelope.p2::before { width: 4px; background: #e4b63d; }
+  .envelope.p3::before { width: 4px; background: #8ba4b8; }
+  .envelope.p4::before { width: 4px; background: #1f4d3f; }
   .envelope.unfunded { opacity: 0.5; border-style: dashed; }
   .envelope .env-row { display: flex; justify-content: space-between; align-items: center; }
-  .envelope .env-name { font-size: 14px; font-weight: 500; padding-left: 8px; }
-  .envelope .env-amt { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
-  .envelope .env-bar { height: 4px; background: #e2e8f0; border-radius: 2px; margin-top: 6px; margin-left: 8px; overflow: hidden; }
+  .envelope .env-name { font-size: 14px; font-weight: 600; padding-left: 8px; color: #17221d; }
+  .envelope .env-amt { font-size: 14px; font-weight: 750; font-variant-numeric: tabular-nums; color: #123628; }
+  .envelope .env-bar { height: 4px; background: #e8dfd2; border-radius: 2px; margin-top: 6px; margin-left: 8px; overflow: hidden; }
   .envelope .env-fill { height: 100%; border-radius: 2px; }
-  .env-priority { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin: 16px 0 8px; padding-bottom: 4px; border-bottom: 1px solid #e2e8f0; }
-  .env-priority.p1 { color: #ef4444; }
-  .env-priority.p2 { color: #eab308; }
-  .env-priority.p3 { color: #3b82f6; }
-  .env-priority.p4 { color: #22c55e; }
+  .env-priority { font-size: 11px; font-weight: 750; text-transform: uppercase; letter-spacing: 0.05em; color: #526158; margin: 20px 0 10px; padding-bottom: 4px; border-bottom: 1px solid #d9d1c4; }
+  .env-priority.p1 { color: #b91c1c; }
+  .env-priority.p2 { color: #e4b63d; }
+  .env-priority.p3 { color: #8ba4b8; }
+  .env-priority.p4 { color: #1f4d3f; }
+  
   /* Calendar styles */
-  .cal-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #e2e8f0; }
+  .cal-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #e8e2d5; }
   .cal-row:last-child { border-bottom: none; }
-  .cal-day { width: 48px; height: 48px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+  .cal-day { width: 48px; height: 48px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 750; flex-shrink: 0; }
   .cal-day .month { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
   .cal-day .date { font-size: 18px; line-height: 1; }
-  .cal-day.danger { background: rgba(239,68,68,0.15); color: #ef4444; }
-  .cal-day.warn { background: rgba(234,179,8,0.15); color: #eab308; }
-  .cal-day.ok { background: rgba(59,130,246,0.15); color: #3b82f6; }
-  .cal-day.done { background: rgba(34,197,94,0.15); color: #22c55e; }
+  .cal-day.danger { background: #fee2e2; color: #991b1b; }
+  .cal-day.warn { background: #fef3c7; color: #92400e; }
+  .cal-day.ok { background: #dbeafe; color: #1e40af; }
+  .cal-day.done { background: #d1fae5; color: #065f46; }
   .cal-info { flex: 1; }
-  .cal-info .name { font-size: 14px; font-weight: 500; }
-  .cal-info .detail { font-size: 12px; color: #64748b; margin-top: 2px; }
-  .cal-amt { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
+  .cal-info .name { font-size: 14px; font-weight: 600; color: #17221d; }
+  .cal-info .detail { font-size: 12px; color: #526158; margin-top: 2px; }
+  .cal-amt { font-size: 14px; font-weight: 750; font-variant-numeric: tabular-nums; text-align: right; color: #123628; }
+  
   /* Net worth chart */
   .nw-chart { display: flex; align-items: flex-end; gap: 2px; height: 120px; padding: 0 4px; }
   .nw-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
   .nw-bar { width: 100%; border-radius: 3px 3px 0 0; min-height: 2px; transition: height 0.3s; }
-  .nw-label { font-size: 10px; color: #64748b; margin-top: 4px; text-align: center; }
+  .nw-label { font-size: 10px; color: #526158; margin-top: 4px; text-align: center; }
+  
   /* Import area */
-  .import-zone { border: 2px dashed #e2e8f0; border-radius: 12px; padding: 32px; text-align: center; cursor: pointer; transition: all 0.2s; }
-  .import-zone:hover { border-color: #3b82f6; background: rgba(59,130,246,0.05); }
-  .import-zone.dragover { border-color: #22c55e; background: rgba(34,197,94,0.05); }
-  .import-zone h4 { color: #1e293b; margin: 0 0 8px; font-size: 16px; }
-  .import-zone p { color: #64748b; margin: 0; font-size: 13px; }
+  .import-zone { border: 2px dashed #d9d1c4; background: #fffdf8; border-radius: 16px; padding: 32px; text-align: center; cursor: pointer; transition: all 0.2s; }
+  .import-zone:hover { border-color: #1f4d3f; background: rgba(31, 77, 63, 0.04); }
+  .import-zone.dragover { border-color: #1f4d3f; background: rgba(31, 77, 63, 0.08); }
+  .import-zone h4 { color: #123628; margin: 0 0 8px; font-size: 16px; font-weight: 750; }
+  .import-zone p { color: #526158; margin: 0; font-size: 13px; }
   .txn-list { max-height: 300px; overflow-y: auto; margin-top: 12px; }
-  .txn-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #e2e8f0; font-size: 13px; }
-  .txn-row .txn-date { color: #64748b; width: 80px; flex-shrink: 0; }
-  .txn-row .txn-desc { flex: 1; padding: 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .txn-row .txn-amt { font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; width: 80px; flex-shrink: 0; }
-  .txn-row .txn-amt.debit { color: #ef4444; }
-  .txn-row .txn-amt.credit { color: #22c55e; }
-  .txn-summary { display: flex; gap: 16px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 13px; }
-  .txn-summary span { color: #64748b; }
+  .txn-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e8e2d5; font-size: 13px; }
+  .txn-row .txn-date { color: #526158; width: 80px; flex-shrink: 0; }
+  .txn-row .txn-desc { flex: 1; padding: 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #17221d; }
+  .txn-row .txn-amt { font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; width: 80px; flex-shrink: 0; }
+  .txn-row .txn-amt.debit { color: #b91c1c; }
+  .txn-row .txn-amt.credit { color: #1f4d3f; }
+  .txn-summary { display: flex; gap: 16px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #d9d1c4; font-size: 13px; }
+  .txn-summary span { color: #526158; }
+  
   /* Payment history */
-  .payment-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #e2e8f0; font-size: 13px; }
+  .payment-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #e8e2d5; font-size: 13px; }
   .payment-row:last-child { border-bottom: none; }
-  .payment-row .pay-date { color: #64748b; width: 70px; flex-shrink: 0; }
-  .payment-row .pay-name { flex: 1; font-weight: 500; }
-  .payment-row .pay-amt { font-weight: 700; color: #22c55e; font-variant-numeric: tabular-nums; }
-  .payment-row .pay-from { font-size: 11px; color: #94a3b8; margin-left: 8px; }
-  @media (max-width: 600px) { .fin-grid-4 { grid-template-columns: 1fr 1fr; } .fin-grid-2, .fin-grid-3 { grid-template-columns: 1fr; } .fin-tabs { gap: 2px; } .fin-tab { padding: 6px 10px; font-size: 12px; } }
+  .payment-row .pay-date { color: #526158; width: 70px; flex-shrink: 0; }
+  .payment-row .pay-name { flex: 1; font-weight: 600; color: #17221d; }
+  .payment-row .pay-amt { font-weight: 750; color: #1f4d3f; font-variant-numeric: tabular-nums; }
+  .payment-row .pay-from { font-size: 11px; color: #8ba4b8; margin-left: 8px; }
+  @media (max-width: 600px) { .fin-grid-4 { grid-template-columns: 1fr 1fr; } .fin-grid-2, .fin-grid-3 { grid-template-columns: 1fr; } .fin-tabs { gap: 4px; } .fin-tab { padding: 8px 12px; font-size: 12px; } }
 </style>
 
-<div class="fin-dash">
-  <div class="fin-header" style="flex-direction: column; align-items: flex-start; gap: 12px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 8px;">
-      <h2>Family &amp; Finance Command Center</h2>
-      <span class="updated" id="lastUpdated">Updated: loading...</span>
-    </div>
-    <div class="family-quick-links" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
-      <a href="/admin/home/" class="fin-tab" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 12px;"><i class="fas fa-house-signal"></i> Home Command</a>
-      <a href="/admin/court-compliance/" class="fin-tab" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 12px;"><i class="fas fa-clipboard-check"></i> Custody Tracker</a>
-      <a href="/admin/home-search/" class="fin-tab" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 12px;"><i class="fas fa-home"></i> Home Search</a>
-    </div>
-  </div>
+<div class="compliance-page">
+  <div class="compliance-container">
+    <nav class="family-nav">
+      <a href="/admin/dashboard/" class="family-nav-brand">
+        <i class="fas fa-people-roof" style="color:#1f4d3f;"></i>
+        <span>Family Command</span>
+      </a>
+      <div class="family-nav-links">
+        <a href="/admin/family/" class="family-nav-link active"><i class="fas fa-wallet"></i> Finance</a>
+        <a href="/admin/court-compliance/" class="family-nav-link"><i class="fas fa-clipboard-check"></i> Custody</a>
+        <a href="/admin/home-search/" class="family-nav-link"><i class="fas fa-home"></i> Home Search</a>
+        <a href="/admin/home/" class="family-nav-link"><i class="fas fa-house-signal"></i> Home Command</a>
+        <a href="/admin/dashboard/" class="family-nav-link"><i class="fas fa-gauge"></i> Admin</a>
+      </div>
+    </nav>
+
+    <div class="fin-dash">
+      <div class="fin-header" style="flex-direction: column; align-items: flex-start; gap: 12px; border-bottom: none; margin-bottom: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 8px;">
+          <h2 style="font-size: 24px; font-weight: 750; color: #123628; margin: 0;">Family &amp; Finance Command Center</h2>
+          <span class="updated" id="lastUpdated">Updated: loading...</span>
+        </div>
+      </div>
 
   <!-- Tab Navigation -->
   <div class="fin-tabs">
@@ -396,6 +479,8 @@ permalink: /admin/family/
     </select>
     <label>Account (paid from)</label>
     <input type="text" id="billAccount" placeholder="e.g. EECU Checking">
+    <label>Payment Website URL</label>
+    <input type="url" id="billPayUrl" placeholder="https://www.pge.com/">
     <label>Notes</label>
     <input type="text" id="billNotes" placeholder="Optional notes">
     <div class="modal-actions">
@@ -432,6 +517,8 @@ permalink: /admin/family/
     </div>
   </div>
 </div>
+</div>
+</div>
 
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -453,28 +540,28 @@ function setConvexStatus(message, isError) {
 function defaultState() {
   return {
     bills: [
-      { id:'rent', name:'Valley Vista (Rent)', dueDay:1, amount:2445, status:'upcoming', priority:1, account:'EECU Checking', notes:'' },
-      { id:'childsupport', name:'Child Support / DCSS', dueDay:1, amount:2100, status:'current', priority:1, account:'Payroll/DCSS', notes:'Court-ordered support baseline; set to $0 here if already withheld from net pay' },
-      { id:'support', name:'Supporting Hands', dueDay:null, amount:1800, status:'current', priority:1, account:'EECU Checking', notes:'Childcare — no longer on Apple Card' },
-      { id:'auto', name:'EECU Auto Loan', dueDay:5, amount:499, status:'autopay', priority:1, account:'EECU Checking', notes:'' },
-      { id:'groceries', name:'Groceries / Household', dueDay:null, amount:500, status:'current', priority:1, account:'EECU Checking', notes:'Planning floor from prior monthly budget' },
-      { id:'fuel', name:'Fuel / Transportation', dueDay:null, amount:250, status:'current', priority:1, account:'EECU Checking', notes:'Monthly operating reserve; adjust from card/bank imports' },
-      { id:'familytherapy', name:'Child / Family Therapy Reserve', dueDay:null, amount:260, status:'current', priority:1, account:'EECU Checking', notes:'Assumes Rob half-share of four $130 sessions; update to actual order/provider cadence' },
-      { id:'apple', name:'Apple Card Min', dueDay:27, amount:366, status:'paid', priority:2, account:'EECU Checking', notes:'' },
-      { id:'collier', name:'Phillip M. Collier', dueDay:null, amount:375, status:'current', priority:4, account:'Apple Card', notes:'2-3x/mo' },
-      { id:'toggle', name:'Toggle Insurance', dueDay:26, amount:202, status:'paid', priority:2, account:'EECU Debit', notes:'Car insurance' },
-      { id:'pge', name:'PG&E', dueDay:14, amount:200, status:'upcoming', priority:1, account:'EECU Checking', notes:'Payment plan' },
-      { id:'att', name:'AT&T Wireless', dueDay:null, amount:129, status:'current', priority:2, account:'EECU Checking', notes:'' },
-      { id:'fresno', name:'City of Fresno', dueDay:1, amount:121, status:'overdue', priority:1, account:'EECU Checking', notes:'Water/sewer — shutoff risk' },
-      { id:'xfinity', name:'Xfinity', dueDay:1, amount:95, status:'paid', priority:1, account:'EECU Checking', notes:'' },
-      { id:'discover', name:'Discover Min', dueDay:18, amount:83, status:'upcoming', priority:2, account:'EECU Checking', notes:'' },
-      { id:'loc', name:'EECU LOC Min', dueDay:26, amount:75, status:'upcoming', priority:2, account:'EECU Checking', notes:'' },
-      { id:'principal', name:'Principal Insurance', dueDay:null, amount:35, status:'current', priority:2, account:'Auto-deduct', notes:'' },
-      { id:'allstate', name:'Allstate Insurance', dueDay:null, amount:25, status:'current', priority:2, account:'Auto-deduct', notes:'' },
-      { id:'ofw', name:'OurFamilyWizard', dueDay:null, amount:9, status:'current', priority:3, account:'EECU Checking', notes:'Annual renewal normalized to monthly budget' },
-      { id:'netflix', name:'Netflix', dueDay:null, amount:18, status:'current', priority:3, account:'Apple Card', notes:'Streaming subscription' },
-      { id:'apple_services', name:'Apple Services', dueDay:null, amount:30, status:'current', priority:3, account:'Apple Card', notes:'Recurring services rounded from historical statements' },
-      { id:'legalreserve', name:'Legal Fee Reserve', dueDay:null, amount:750, status:'current', priority:4, account:'EECU Checking', notes:'Working reserve against active 2026 Tipton invoices; pause before adding new card debt' },
+      { id:'rent', name:'Valley Vista (Rent)', dueDay:1, amount:2445, status:'upcoming', priority:1, account:'EECU Checking', payUrl:'', notes:'' },
+      { id:'childsupport', name:'Child Support / DCSS', dueDay:1, amount:2100, status:'current', priority:1, account:'Payroll/DCSS', payUrl:'https://www.childsupport.ca.gov/payment-options/', notes:'Court-ordered support baseline; set to $0 here if already withheld from net pay' },
+      { id:'support', name:'Supporting Hands', dueDay:null, amount:1800, status:'current', priority:1, account:'EECU Checking', payUrl:'https://supportinghandspediatrictherapy.com/', notes:'Childcare — no longer on Apple Card' },
+      { id:'auto', name:'EECU Auto Loan', dueDay:5, amount:499, status:'autopay', priority:1, account:'EECU Checking', payUrl:'https://www.myeecu.org/', notes:'' },
+      { id:'groceries', name:'Groceries / Household', dueDay:null, amount:500, status:'current', priority:1, account:'EECU Checking', payUrl:'', notes:'Planning floor from prior monthly budget' },
+      { id:'fuel', name:'Fuel / Transportation', dueDay:null, amount:250, status:'current', priority:1, account:'EECU Checking', payUrl:'', notes:'Monthly operating reserve; adjust from card/bank imports' },
+      { id:'familytherapy', name:'Child / Family Therapy Reserve', dueDay:null, amount:260, status:'current', priority:1, account:'EECU Checking', payUrl:'', notes:'Assumes Rob half-share of four $130 sessions; update to actual order/provider cadence' },
+      { id:'apple', name:'Apple Card Min', dueDay:27, amount:366, status:'paid', priority:2, account:'EECU Checking', payUrl:'https://card.apple.com/', notes:'' },
+      { id:'collier', name:'Phillip M. Collier', dueDay:null, amount:375, status:'current', priority:4, account:'Apple Card', payUrl:'', notes:'2-3x/mo' },
+      { id:'toggle', name:'Toggle Insurance', dueDay:26, amount:202, status:'paid', priority:2, account:'EECU Debit', payUrl:'https://www.gettoggle.com/', notes:'Car insurance' },
+      { id:'pge', name:'PG&E', dueDay:14, amount:200, status:'upcoming', priority:1, account:'EECU Checking', payUrl:'https://www.pge.com/', notes:'Payment plan' },
+      { id:'att', name:'AT&T Wireless', dueDay:null, amount:129, status:'current', priority:2, account:'EECU Checking', payUrl:'https://www.att.com/', notes:'' },
+      { id:'fresno', name:'City of Fresno', dueDay:1, amount:121, status:'overdue', priority:1, account:'EECU Checking', payUrl:'https://www.fresno.gov/utilitypayments', notes:'Water/sewer — shutoff risk' },
+      { id:'xfinity', name:'Xfinity', dueDay:1, amount:95, status:'paid', priority:1, account:'EECU Checking', payUrl:'https://www.xfinity.com/', notes:'' },
+      { id:'discover', name:'Discover Min', dueDay:18, amount:83, status:'upcoming', priority:2, account:'EECU Checking', payUrl:'https://www.discover.com/', notes:'' },
+      { id:'loc', name:'EECU LOC Min', dueDay:26, amount:75, status:'upcoming', priority:2, account:'EECU Checking', payUrl:'https://www.myeecu.org/', notes:'' },
+      { id:'principal', name:'Principal Insurance', dueDay:null, amount:35, status:'current', priority:2, account:'Auto-deduct', payUrl:'https://www.principal.com/', notes:'' },
+      { id:'allstate', name:'Allstate Insurance', dueDay:null, amount:25, status:'current', priority:2, account:'Auto-deduct', payUrl:'https://www.allstate.com/', notes:'' },
+      { id:'ofw', name:'OurFamilyWizard', dueDay:null, amount:9, status:'current', priority:3, account:'EECU Checking', payUrl:'https://www.ourfamilywizard.com/', notes:'Annual renewal normalized to monthly budget' },
+      { id:'netflix', name:'Netflix', dueDay:null, amount:18, status:'current', priority:3, account:'Apple Card', payUrl:'https://www.netflix.com/', notes:'Streaming subscription' },
+      { id:'apple_services', name:'Apple Services', dueDay:null, amount:30, status:'current', priority:3, account:'Apple Card', payUrl:'https://www.apple.com/', notes:'Recurring services rounded from historical statements' },
+      { id:'legalreserve', name:'Legal Fee Reserve', dueDay:null, amount:750, status:'current', priority:4, account:'EECU Checking', payUrl:'', notes:'Working reserve against active 2026 Tipton invoices; pause before adding new card debt' },
     ],
     accounts: [
       { id:'checking', name:'EECU Checking', type:'checking', balance:4009, notes:'After paycheck + payments' },
@@ -549,14 +636,14 @@ function applyCurrentFinanceCorrections(state) {
   }
 
   const requiredBudgetBills = [
-    { id:'childsupport', name:'Child Support / DCSS', dueDay:1, amount:2100, status:'current', priority:1, account:'Payroll/DCSS', notes:'Court-ordered support baseline; set to $0 here if already withheld from net pay' },
-    { id:'groceries', name:'Groceries / Household', dueDay:null, amount:500, status:'current', priority:1, account:'EECU Checking', notes:'Planning floor from prior monthly budget' },
-    { id:'fuel', name:'Fuel / Transportation', dueDay:null, amount:250, status:'current', priority:1, account:'EECU Checking', notes:'Monthly operating reserve; adjust from card/bank imports' },
-    { id:'familytherapy', name:'Child / Family Therapy Reserve', dueDay:null, amount:260, status:'current', priority:1, account:'EECU Checking', notes:'Assumes Rob half-share of four $130 sessions; update to actual order/provider cadence' },
-    { id:'ofw', name:'OurFamilyWizard', dueDay:null, amount:9, status:'current', priority:3, account:'EECU Checking', notes:'Annual renewal normalized to monthly budget' },
-    { id:'netflix', name:'Netflix', dueDay:null, amount:18, status:'current', priority:3, account:'Apple Card', notes:'Streaming subscription' },
-    { id:'apple_services', name:'Apple Services', dueDay:null, amount:30, status:'current', priority:3, account:'Apple Card', notes:'Recurring services rounded from historical statements' },
-    { id:'legalreserve', name:'Legal Fee Reserve', dueDay:null, amount:750, status:'current', priority:4, account:'EECU Checking', notes:'Working reserve against active 2026 Tipton invoices; pause before adding new card debt' },
+    { id:'childsupport', name:'Child Support / DCSS', dueDay:1, amount:2100, status:'current', priority:1, account:'Payroll/DCSS', notes:'Court-ordered support baseline; set to $0 here if already withheld from net pay', payUrl:'https://www.childsupport.ca.gov/payment-options/' },
+    { id:'groceries', name:'Groceries / Household', dueDay:null, amount:500, status:'current', priority:1, account:'EECU Checking', notes:'Planning floor from prior monthly budget', payUrl:'' },
+    { id:'fuel', name:'Fuel / Transportation', dueDay:null, amount:250, status:'current', priority:1, account:'EECU Checking', notes:'Monthly operating reserve; adjust from card/bank imports', payUrl:'' },
+    { id:'familytherapy', name:'Child / Family Therapy Reserve', dueDay:null, amount:260, status:'current', priority:1, account:'EECU Checking', notes:'Assumes Rob half-share of four $130 sessions; update to actual order/provider cadence', payUrl:'' },
+    { id:'ofw', name:'OurFamilyWizard', dueDay:null, amount:9, status:'current', priority:3, account:'EECU Checking', notes:'Annual renewal normalized to monthly budget', payUrl:'https://www.ourfamilywizard.com/' },
+    { id:'netflix', name:'Netflix', dueDay:null, amount:18, status:'current', priority:3, account:'Apple Card', notes:'Streaming subscription', payUrl:'https://www.netflix.com/' },
+    { id:'apple_services', name:'Apple Services', dueDay:null, amount:30, status:'current', priority:3, account:'Apple Card', notes:'Recurring services rounded from historical statements', payUrl:'https://www.apple.com/' },
+    { id:'legalreserve', name:'Legal Fee Reserve', dueDay:null, amount:750, status:'current', priority:4, account:'EECU Checking', notes:'Working reserve against active 2026 Tipton invoices; pause before adding new card debt', payUrl:'' },
   ];
 
   requiredBudgetBills.forEach(required => {
@@ -569,9 +656,36 @@ function applyCurrentFinanceCorrections(state) {
     existing.priority = required.priority;
     existing.account = required.account;
     existing.notes = required.notes;
+    if (required.payUrl && !existing.payUrl) existing.payUrl = required.payUrl;
     if (existing.amount == null || existing.amount === 0) existing.amount = required.amount;
     if (!existing.status) existing.status = required.status;
     if (existing.dueDay === undefined) existing.dueDay = required.dueDay;
+  });
+
+  const defaultUrls = {
+    rent: '',
+    childsupport: 'https://www.childsupport.ca.gov/payment-options/',
+    support: 'https://supportinghandspediatrictherapy.com/',
+    auto: 'https://www.myeecu.org/',
+    apple: 'https://card.apple.com/',
+    toggle: 'https://www.gettoggle.com/',
+    pge: 'https://www.pge.com/',
+    att: 'https://www.att.com/',
+    fresno: 'https://www.fresno.gov/utilitypayments',
+    xfinity: 'https://www.xfinity.com/',
+    discover: 'https://www.discover.com/',
+    loc: 'https://www.myeecu.org/',
+    principal: 'https://www.principal.com/',
+    allstate: 'https://www.allstate.com/',
+    ofw: 'https://www.ourfamilywizard.com/',
+    netflix: 'https://www.netflix.com/',
+    apple_services: 'https://www.apple.com/'
+  };
+
+  state.bills?.forEach(b => {
+    if (defaultUrls[b.id] && !b.payUrl) {
+      b.payUrl = defaultUrls[b.id];
+    }
   });
 
   const kcusd = state.income?.find(i => i.id === 'kcusd' || /Kings Canyon/i.test(i.name || ''));
@@ -713,8 +827,12 @@ function renderBills() {
   const tbody = document.getElementById('billsBody');
   tbody.innerHTML = STATE.bills.map((b, i) => {
     const dueStr = b.dueDay ? ordinal(b.dueDay) : 'Monthly';
+    const linkHtml = b.payUrl ? `<a href="${esc(b.payUrl)}" target="_blank" class="pay-link" title="Pay online: ${esc(b.payUrl)}" style="margin-left: 6px; color: #1f4d3f; opacity: 0.7; text-decoration: none;"><i class="fas fa-external-link-alt" style="font-size: 11px;"></i></a>` : '';
     return `<tr>
-      <td><span class="editable" onclick="editBill('${b.id}')" title="Click to edit">${esc(b.name)}</span></td>
+      <td>
+        <span class="editable" onclick="editBill('${b.id}')" title="Click to edit">${esc(b.name)}</span>
+        ${linkHtml}
+      </td>
       <td>${dueStr}</td>
       <td class="amt">${fmt(b.amount)}</td>
       <td><span class="fin-badge ${b.status}" onclick="cycleBill('${b.id}')" title="Click to change status">${STATUS_LABELS[b.status]}</span></td>
@@ -965,16 +1083,24 @@ function renderCalendar() {
 
   let html = '<div class="fin-card"><h3>Overdue & Paid</h3>';
   overdue.forEach(b => {
+    const linkHtml = b.payUrl ? `<a href="${esc(b.payUrl)}" target="_blank" style="color:#1f4d3f;margin-left:6px;text-decoration:none;" title="Pay online"><i class="fas fa-external-link-alt" style="font-size:11px;"></i></a>` : '';
     html += `<div class="cal-row">
       <div class="cal-day danger"><span class="month">${monthNames[month]}</span><span class="date">${b.dueDay || '?'}</span></div>
-      <div class="cal-info"><div class="name">${esc(b.name)}</div><div class="detail">${esc(b.notes || '')}</div></div>
+      <div class="cal-info">
+        <div class="name">${esc(b.name)}${linkHtml}</div>
+        <div class="detail">${esc(b.notes || '')}</div>
+      </div>
       <div class="cal-amt" style="color:#ef4444">${fmt(b.amount)}</div>
     </div>`;
   });
   paid.forEach(b => {
+    const linkHtml = b.payUrl ? `<a href="${esc(b.payUrl)}" target="_blank" style="color:#1f4d3f;margin-left:6px;text-decoration:none;" title="Pay online"><i class="fas fa-external-link-alt" style="font-size:11px;"></i></a>` : '';
     html += `<div class="cal-row">
       <div class="cal-day done"><span class="month">${monthNames[month]}</span><span class="date">${b.dueDay || '?'}</span></div>
-      <div class="cal-info"><div class="name">${esc(b.name)}</div><div class="detail">Paid</div></div>
+      <div class="cal-info">
+        <div class="name">${esc(b.name)}${linkHtml}</div>
+        <div class="detail">Paid</div>
+      </div>
       <div class="cal-amt" style="color:#22c55e">${fmt(b.amount)} paid</div>
     </div>`;
   });
@@ -983,9 +1109,13 @@ function renderCalendar() {
   html += '<div class="fin-card"><h3>Upcoming This Month</h3>';
   upcoming.sort((a, b) => (a.dueDay || 99) - (b.dueDay || 99)).forEach(b => {
     const isPast = b.dueDay < now.getDate();
+    const linkHtml = b.payUrl ? `<a href="${esc(b.payUrl)}" target="_blank" style="color:#1f4d3f;margin-left:6px;text-decoration:none;" title="Pay online"><i class="fas fa-external-link-alt" style="font-size:11px;"></i></a>` : '';
     html += `<div class="cal-row">
       <div class="cal-day ${isPast ? 'warn' : 'ok'}"><span class="month">${monthNames[month]}</span><span class="date">${b.dueDay}</span></div>
-      <div class="cal-info"><div class="name">${esc(b.name)}</div><div class="detail">${esc(b.account || '')} ${esc(b.notes || '')}</div></div>
+      <div class="cal-info">
+        <div class="name">${esc(b.name)}${linkHtml}</div>
+        <div class="detail">${esc(b.account || '')} ${esc(b.notes || '')}</div>
+      </div>
       <div class="cal-amt">${fmt(b.amount)}</div>
     </div>`;
   });
@@ -1102,6 +1232,7 @@ function openAddBillModal() {
   document.getElementById('billStatus').value = 'upcoming';
   document.getElementById('billPriority').value = '3';
   document.getElementById('billAccount').value = 'EECU Checking';
+  document.getElementById('billPayUrl').value = '';
   document.getElementById('billNotes').value = '';
   document.getElementById('deleteBillBtn').style.display = 'none';
   document.getElementById('addBillModal').classList.add('open');
@@ -1118,6 +1249,7 @@ function editBill(id) {
   document.getElementById('billStatus').value = bill.status;
   document.getElementById('billPriority').value = bill.priority;
   document.getElementById('billAccount').value = bill.account || '';
+  document.getElementById('billPayUrl').value = bill.payUrl || '';
   document.getElementById('billNotes').value = bill.notes || '';
   document.getElementById('deleteBillBtn').style.display = 'inline-block';
   document.getElementById('addBillModal').classList.add('open');
@@ -1136,6 +1268,7 @@ function saveBill() {
     status: document.getElementById('billStatus').value,
     priority: parseInt(document.getElementById('billPriority').value),
     account: document.getElementById('billAccount').value.trim(),
+    payUrl: document.getElementById('billPayUrl').value.trim(),
     notes: document.getElementById('billNotes').value.trim(),
   };
 

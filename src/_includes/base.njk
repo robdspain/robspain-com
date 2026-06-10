@@ -43,96 +43,7 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://robspain.com{{ page.url | url }}">
 
-    {% if page.url and page.url.indexOf("/admin/") == 0 %}
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-    <style>
-      html.admin-auth-pending body > *:not(.admin-auth-screen):not(#netlify-identity-widget):not(.netlify-identity-widget):not([id*="netlify"]):not([class*="netlify-identity"]):not([class*="identity"]) {
-        visibility: hidden;
-      }
-      #netlify-identity-widget,
-      #netlify-identity-widget *,
-      .netlify-identity-widget,
-      .netlify-identity-widget *,
-      [class*="netlify-identity"],
-      [class*="netlify-identity"] *,
-      [class*="identity"],
-      [class*="identity"] * {
-        visibility: visible !important;
-      }
-      .admin-auth-screen {
-        position: fixed;
-        inset: 0;
-        z-index: 9990;
-        display: grid;
-        place-items: center;
-        padding: 2rem;
-        background: rgba(248, 250, 252, 0.98);
-        color: #0f172a;
-        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      }
-      .admin-auth-card {
-        width: min(100%, 440px);
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 2rem;
-        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
-        text-align: center;
-      }
-      .admin-auth-mark {
-        width: 56px;
-        height: 56px;
-        display: grid;
-        place-items: center;
-        margin: 0 auto 1rem;
-        border: 1px solid #e2e8f0;
-        border-radius: 50%;
-        background: white;
-        font-size: 1.6rem;
-        font-weight: 900;
-        color: #4285f4;
-      }
-      .admin-auth-card h1 {
-        margin: 0 0 0.75rem;
-        font-size: 1.7rem;
-        color: #0f172a;
-      }
-      .admin-auth-card p {
-        margin: 0 0 1.5rem;
-        color: #475569;
-        line-height: 1.6;
-      }
-      .admin-auth-card button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.7rem;
-        width: 100%;
-        border: 1px solid #cbd5e1;
-        border-radius: 8px;
-        padding: 0.85rem 1.1rem;
-        background: white;
-        color: #0f172a;
-        font-weight: 800;
-        cursor: pointer;
-      }
-      .admin-auth-card button:hover {
-        background: #f8fafc;
-      }
-      .admin-auth-google-icon {
-        display: inline-grid;
-        place-items: center;
-        width: 22px;
-        height: 22px;
-        border-radius: 50%;
-        color: #4285f4;
-        font-weight: 900;
-      }
-    </style>
-    <script>
-      document.documentElement.classList.add("admin-auth-pending");
-    </script>
-    {% endif %}
+
 
     <!-- SEO & Social Meta Tags -->
     <meta property="og:title" content="{{ seo.metaTitle or title or "Rob Spain - School BCBA" }}">
@@ -333,9 +244,7 @@
     <script src="/video-funnel.js"></script>
     <script src="/contact-form.js"></script>
     <script src="/email-capture.js"></script>
-    {% if page.url and page.url.indexOf("/admin/") == 0 %}
-    <script src="/admin-auth.js"></script>
-    {% endif %}
+
     <script>
       (function(){
         var el = document.getElementById('current-year');

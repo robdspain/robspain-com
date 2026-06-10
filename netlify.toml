@@ -12,6 +12,42 @@
   force = true
 
 [[redirects]]
+  from = "/index.html"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/blog.html"
+  to = "/blog/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/cv.html"
+  to = "/cv/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/privacy.html"
+  to = "/privacy/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/terms.html"
+  to = "/terms/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/admin/finance/"
+  to = "/admin/family/"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/auth"
   to = "/.netlify/functions/auth"
   status = 200

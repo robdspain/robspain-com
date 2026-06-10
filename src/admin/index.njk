@@ -12,8 +12,12 @@ permalink: /admin/dashboard/
                 Admin <span class="text-gradient">Dashboard</span>
             </h2>
             <p class="section-description-premium">
-                Manage your content and preview your onboarding sequences from one central location.
+                Manage business content, publishing workflows, and audience tools from one central location.
             </p>
+            <div class="dashboard-switcher">
+                <span class="switch-pill active">Business</span>
+                <a href="/admin/family/" class="switch-pill">Family</a>
+            </div>
         </div>
 
         <div class="dashboard-grid-premium animate-fade-up stagger-1">
@@ -68,6 +72,33 @@ permalink: /admin/dashboard/
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
     margin-top: 3rem;
+}
+
+.dashboard-switcher {
+    display: inline-flex;
+    gap: 0.5rem;
+    padding: 0.35rem;
+    margin-top: 1.5rem;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+}
+
+.switch-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 110px;
+    padding: 0.65rem 1rem;
+    border-radius: 8px;
+    color: #475569;
+    text-decoration: none;
+    font-weight: 800;
+}
+
+.switch-pill.active {
+    background: #0f172a;
+    color: white;
 }
 
 .dashboard-card-premium {

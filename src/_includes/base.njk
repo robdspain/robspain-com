@@ -1,10 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% set resolvedTitle = seo.metaTitle or title or "Rob Spain - School BCBA" %}
+    {% set resolvedDescription = seo.metaDesc or description or "Rob Spain, School BCBA helping educators transform challenging behaviors." %}
+    {% set resolvedImage = seo.socialImage or (image | postImage) %}
+    {% set resolvedUrl = canonical or page.url %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title | default("Rob Spain - School BCBA") }}</title>
-    <meta name="description" content="{{ description | default("Rob Spain, School BCBA helping educators transform challenging behaviors.") }}">
+    <title>{{ resolvedTitle }}</title>
+    <meta name="description" content="{{ resolvedDescription }}">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Rob Spain, BCBA, IBA">
+    <link rel="canonical" href="{{ resolvedUrl | absoluteUrl }}">
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/favicon.png">
@@ -28,17 +35,111 @@
     <link rel="stylesheet" href="{{ extra_css }}">
     {% endif %}
 
+    {% if page.url and page.url.indexOf("/admin/") == 0 %}
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <style>
+      html.admin-auth-pending body > *:not(.admin-auth-screen):not(#netlify-identity-widget):not(.netlify-identity-widget):not([id*="netlify"]):not([class*="netlify-identity"]):not([class*="identity"]) {
+        visibility: hidden;
+      }
+      #netlify-identity-widget,
+      #netlify-identity-widget *,
+      .netlify-identity-widget,
+      .netlify-identity-widget *,
+      [class*="netlify-identity"],
+      [class*="netlify-identity"] *,
+      [class*="identity"],
+      [class*="identity"] * {
+        visibility: visible !important;
+      }
+      .admin-auth-screen {
+        position: fixed;
+        inset: 0;
+        z-index: 9990;
+        display: grid;
+        place-items: center;
+        padding: 2rem;
+        background: rgba(248, 250, 252, 0.98);
+        color: #0f172a;
+        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      .admin-auth-card {
+        width: min(100%, 440px);
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+        text-align: center;
+      }
+      .admin-auth-mark {
+        width: 56px;
+        height: 56px;
+        display: grid;
+        place-items: center;
+        margin: 0 auto 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 50%;
+        background: white;
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: #4285f4;
+      }
+      .admin-auth-card h1 {
+        margin: 0 0 0.75rem;
+        font-size: 1.7rem;
+        color: #0f172a;
+      }
+      .admin-auth-card p {
+        margin: 0 0 1.5rem;
+        color: #475569;
+        line-height: 1.6;
+      }
+      .admin-auth-card button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.7rem;
+        width: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 0.85rem 1.1rem;
+        background: white;
+        color: #0f172a;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .admin-auth-card button:hover {
+        background: #f8fafc;
+      }
+      .admin-auth-google-icon {
+        display: inline-grid;
+        place-items: center;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        color: #4285f4;
+        font-weight: 900;
+      }
+    </style>
+    <script>
+      document.documentElement.classList.add("admin-auth-pending");
+    </script>
+    {% endif %}
+
     <!-- SEO & Social Meta Tags -->
-    <meta property="og:title" content="{{ seo.metaTitle or title or "Rob Spain - School BCBA" }}">
-    <meta property="og:description" content="{{ seo.metaDesc or description or "Rob Spain, School BCBA." }}">
-    <meta property="og:image" content="{{ seo.socialImage or image or "/public/images/profile-Rob.png" }}">
-    <meta property="og:url" content="https://robspain.com{{ page.url }}">
-    <meta property="og:type" content="article">
+    <meta property="og:title" content="{{ resolvedTitle }}">
+    <meta property="og:description" content="{{ resolvedDescription }}">
+    <meta property="og:image" content="{{ resolvedImage | absoluteUrl }}">
+    <meta property="og:url" content="{{ resolvedUrl | absoluteUrl }}">
+    <meta property="og:type" content="{% if layout == "post.njk" %}article{% else %}website{% endif %}">
+    <meta property="og:site_name" content="Rob Spain, BCBA">
+    <meta property="og:locale" content="en_US">
     
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{ seo.metaTitle or title or "Rob Spain - School BCBA" }}">
-    <meta name="twitter:description" content="{{ seo.metaDesc or description or "Rob Spain, School BCBA." }}">
-    <meta name="twitter:image" content="{{ seo.socialImage or image or "/public/images/profile-Rob.png" }}">
+    <meta name="twitter:title" content="{{ resolvedTitle }}">
+    <meta name="twitter:description" content="{{ resolvedDescription }}">
+    <meta name="twitter:image" content="{{ resolvedImage | absoluteUrl }}">
+    <meta name="twitter:site" content="@robspainBCBA">
     <meta name="twitter:creator" content="@robspainBCBA">
 
     {% if layout == "post.njk" %}
@@ -46,16 +147,87 @@
     {
       "@context": "https://schema.org",
       "@type": "BlogPosting",
-      "headline": "{{ seo.metaTitle or title }}",
-      "image": ["https://robspain.com{{ image }}"],
+      "mainEntityOfPage": "{{ resolvedUrl | absoluteUrl }}",
+      "headline": "{{ resolvedTitle }}",
+      "image": ["{{ resolvedImage | absoluteUrl }}"],
       "datePublished": "{{ date.toISOString() }}",
+      "dateModified": "{{ date.toISOString() }}",
       "author": {
         "@type": "Person",
         "name": "Rob Spain",
-        "url": "https://robspain.com"
+        "url": "https://robspain.com/cv/",
+        "jobTitle": "School BCBA",
+        "sameAs": [
+          "https://www.linkedin.com/in/robspain/",
+          "https://twitter.com/robspainBCBA",
+          "https://behaviorschool.com"
+        ]
       },
-      "description": "{{ seo.metaDesc or description }}"{% if tags or keywords %},
+      "publisher": {
+        "@type": "Organization",
+        "name": "Rob Spain, BCBA",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://robspain.com/public/images/icon/robspain-icon.png"
+        }
+      },
+      "description": "{{ resolvedDescription }}"{% if tags or keywords %},
       "keywords": "{{ (tags or keywords) | join(', ') }}"{% endif %}
+    }
+    </script>
+    {% endif %}
+    {% if page.url == "/" %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Person",
+          "@id": "https://robspain.com/#rob-spain",
+          "name": "Rob Spain",
+          "alternateName": "Rob Spain, BCBA",
+          "url": "https://robspain.com/",
+          "jobTitle": "School BCBA",
+          "description": "{{ resolvedDescription }}",
+          "worksFor": {
+            "@type": "Organization",
+            "name": "Behavior School",
+            "url": "https://behaviorschool.com"
+          },
+          "sameAs": [
+            "https://www.linkedin.com/in/robspain/",
+            "https://twitter.com/robspainBCBA",
+            "https://www.instagram.com/robdspain/",
+            "https://behaviorschool.com"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://robspain.com/#website",
+          "url": "https://robspain.com/",
+          "name": "Rob Spain, BCBA",
+          "description": "{{ resolvedDescription }}",
+          "publisher": {
+            "@id": "https://robspain.com/#rob-spain"
+          }
+        }
+      ]
+    }
+    </script>
+    {% endif %}
+    {% if page.url == "/blog/" %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      "name": "Rob Spain School BCBA Blog",
+      "url": "https://robspain.com/blog/",
+      "description": "{{ resolvedDescription }}",
+      "publisher": {
+        "@type": "Person",
+        "name": "Rob Spain",
+        "url": "https://robspain.com"
+      }
     }
     </script>
     {% endif %}
@@ -72,8 +244,8 @@
                 </a>
                 <div class="nav-links-premium">
                     <a href="/#about" class="nav-link-premium">ABOUT</a>
-                    <a href="/blog.html" class="nav-link-premium">BLOG</a>
-                    <a href="/cv.html" class="nav-link-premium">CV</a>
+                    <a href="/blog/" class="nav-link-premium">BLOG</a>
+                    <a href="/cv/" class="nav-link-premium">CV</a>
                 </div>
             </div>
         </div>
@@ -109,7 +281,7 @@
                             <i class="fas fa-rocket"></i>
                             Transformation Program
                         </a>
-                        <a href="/cv.html" class="footer-link">
+                        <a href="/cv/" class="footer-link">
                             <i class="fas fa-file-alt"></i>
                             Professional CV
                         </a>
@@ -145,11 +317,11 @@
                             <i class="fas fa-envelope"></i>
                             Contact Form
                         </a>
-                        <a href="/privacy.html" class="footer-link">
+                        <a href="/privacy/" class="footer-link">
                             <i class="fas fa-shield-alt"></i>
                             Privacy Policy
                         </a>
-                        <a href="/terms.html" class="footer-link">
+                        <a href="/terms/" class="footer-link">
                             <i class="fas fa-file-contract"></i>
                             Terms of Service
                         </a>
@@ -161,10 +333,11 @@
                             <p><strong>Valid:</strong> 01/30/25 - 01/31/26</p>
                         </div>
                         <div class="bacb-logos">
-                            <picture>
-                                <source srcset="/public/images/BACB_ACE-Logo.webp" type="image/webp">
-                                <img src="/public/images/BACB_ACE-Logo.jpg" alt="BACB ACE Authorized Continuing Education Provider" class="ace-logo" loading="lazy" decoding="async" style="display: block; max-width: 60px; height: auto;">
-                            </picture>
+                            <div class="ace-logo-badge" aria-label="BACB ACE Authorized Continuing Education Provider">
+                                <span>BACB</span>
+                                <strong>ACE</strong>
+                                <small>Provider</small>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -179,8 +352,12 @@
         </div>
     </footer>
     <script src="/premium-interactions.js"></script>
+    <script src="/newsletter-signup.js"></script>
     <script src="/video-funnel.js"></script>
     <script src="/contact-form.js"></script>
+    {% if page.url and page.url.indexOf("/admin/") == 0 %}
+    <script src="/admin-auth.js"></script>
+    {% endif %}
     <script>
       (function(){
         var el = document.getElementById('current-year');

@@ -419,6 +419,7 @@ hide_public_nav: true
         <div class="statement-toolbar">
           <input type="url" id="appleDriveFolder" placeholder="Google Drive folder URL for Apple Card statements" onchange="saveAppleDriveFolder(this.value)">
           <button class="btn-add" onclick="openAppleDriveFolder()">Open Drive</button>
+          <button class="btn-add" onclick="applyAppleCardDriveSnapshot(true)">Import Drive Snapshot</button>
         </div>
         <div class="statement-summary" id="statementSummary"></div>
         <div id="appleStatementList"></div>
@@ -436,7 +437,7 @@ hide_public_nav: true
           <li>Drop the CSV into the Import tab so spending and balances can be refreshed.</li>
         </ol>
         <div style="padding:12px;background:rgba(31,77,63,0.08);border:1px solid rgba(31,77,63,0.18);border-radius:8px;font-size:12px;color:#526158;line-height:1.6;">
-          <strong style="color:#1f4d3f;">Current gap:</strong> The historical dashboard note says Apple Card data covers Mar 2025 through Mar 2026. The tracker starts with Apr 2026 and May 2026 as missing because those are the completed months after that range.
+          <strong style="color:#1f4d3f;">Drive snapshot:</strong> The linked Google Drive folder has PDF statements from Jan 2025 through May 2026. Click Import Drive Snapshot after adding or replacing files so the tracker marks those months as uploaded.
         </div>
       </div>
     </div>
@@ -582,6 +583,26 @@ const STORE_KEY = 'spain-finance-v2';
 const STATUS_CYCLE = ['overdue','upcoming','current','autopay','paid'];
 const STATUS_LABELS = {overdue:'Overdue',upcoming:'Upcoming',current:'Active',autopay:'Autopay',paid:'Paid'};
 const PRIORITY_LABELS = {1:'P1 Survival',2:'P2 Insurance/Debt',3:'P3 Necessities',4:'P4 On Credit'};
+const APPLE_CARD_DRIVE_FOLDER_URL = 'https://drive.google.com/drive/u/0/folders/1H56BpX45Qw-IknCPW9Jqk1fE7qeWS2Wf';
+const APPLE_CARD_DRIVE_FILES = [
+  { month:'2025-01', title:'Apple Card Statement - January 2025.pdf', url:'https://drive.google.com/file/d/1obKzhwV8TItpC4LSX4AMSeBJxYt6IX1V/view?usp=drivesdk' },
+  { month:'2025-02', title:'Apple Card Statement - February 2025.pdf', url:'https://drive.google.com/file/d/1UWLqhkznrSfbni7GBaTznb7a07g6RUlU/view?usp=drivesdk' },
+  { month:'2025-03', title:'Apple Card Statement - March 2025.pdf', url:'https://drive.google.com/file/d/16zZZh1hkxV62RXGUxw3WY-Ynp9PW2PJU/view?usp=drivesdk' },
+  { month:'2025-04', title:'Apple Card Statement - April 2025.pdf', url:'https://drive.google.com/file/d/1Qpsp2y63AeY99tcBDq_hoeyuXJh4IjTJ/view?usp=drivesdk' },
+  { month:'2025-05', title:'Apple Card Statement - May 2025.pdf', url:'https://drive.google.com/file/d/1f4jkxd0Im6hpK8m5Ipp3DKlZmA1B2mzx/view?usp=drivesdk' },
+  { month:'2025-06', title:'Apple Card Statement - June 2025.pdf', url:'https://drive.google.com/file/d/12iztc2iAc1frgTrJyiKw7HoyT6-Tk3uL/view?usp=drivesdk' },
+  { month:'2025-07', title:'Apple Card Statement - July 2025.pdf', url:'https://drive.google.com/file/d/1TaLYEb2SDA7HOd2pd7DZNqZgevjErdRW/view?usp=drivesdk' },
+  { month:'2025-08', title:'Apple Card Statement - August 2025.pdf', url:'https://drive.google.com/file/d/1VdhnPecDjhduxLgSQ_OtK0tnlAO7wFig/view?usp=drivesdk' },
+  { month:'2025-09', title:'Apple Card Statement - September 2025.pdf', url:'https://drive.google.com/file/d/1GW1Jdxcl2l8NjHPLk58LgRu7DnOx8Cz1/view?usp=drivesdk' },
+  { month:'2025-10', title:'Apple Card Statement - October 2025.pdf', url:'https://drive.google.com/file/d/1vrSQglLveCEiq4UTKnR__MhSttYeBL1h/view?usp=drivesdk' },
+  { month:'2025-11', title:'Apple Card Statement - November 2025.pdf', url:'https://drive.google.com/file/d/1zV7HS211Y4Hzo3XobcMUxlSz7mMzGvUt/view?usp=drivesdk' },
+  { month:'2025-12', title:'Apple Card Statement - December 2025.pdf', url:'https://drive.google.com/file/d/1DCmabhJ_s6uQ411p7EiIaoUqI4nn9mhG/view?usp=drivesdk' },
+  { month:'2026-01', title:'Apple Card Statement - January 2026.pdf', url:'https://drive.google.com/file/d/1EovQDbG_E1GyGKW5VK9bE58Bvs3gkXOX/view?usp=drivesdk' },
+  { month:'2026-02', title:'Apple Card Statement - February 2026 (1).pdf', url:'https://drive.google.com/file/d/1al9iS5VEAJUEln55jxpPd0czlbyT558V/view?usp=drivesdk' },
+  { month:'2026-03', title:'Apple Card Statement - March 2026.pdf', url:'https://drive.google.com/file/d/19Kwz7j1BVsOX1vVnEFp7cWmqOq16M22H/view?usp=drivesdk' },
+  { month:'2026-04', title:'Apple Card Statement - April 2026.pdf', url:'https://drive.google.com/file/d/1c-V56_4fphLGyGBJCRtx4x1GXXwnLngV/view?usp=drivesdk' },
+  { month:'2026-05', title:'Apple Card Statement - May 2026.pdf', url:'https://drive.google.com/file/d/1rf4_ZdFmr1rQ-QaiTrGwtZz1hz8hE1GJ/view?usp=drivesdk' }
+];
 let financeSyncTimer = null;
 
 function setConvexStatus(message, isError) {
@@ -637,7 +658,7 @@ function defaultState() {
       { id:'p4', billName:'OFW Basic Plan', amount:110, date:'2026-03-03', fromAccount:'EECU Checking', notes:'Renewed' },
     ],
     statementFolders: {
-      appleCard: ''
+      appleCard: APPLE_CARD_DRIVE_FOLDER_URL
     },
     statements: {
       appleCard: []
@@ -687,6 +708,8 @@ function applyCurrentFinanceCorrections(state) {
   state.statementFolders = state.statementFolders || {};
   state.statements = state.statements || {};
   state.statements.appleCard = normalizeAppleStatements(state.statements.appleCard || []);
+  if (!state.statementFolders.appleCard) state.statementFolders.appleCard = APPLE_CARD_DRIVE_FOLDER_URL;
+  applyAppleCardDriveSnapshot(false, state);
 
   const fpu = state.income?.find(i => i.id === 'fpu' || /FPU|Fresno Pacific/i.test(i.name || ''));
   if (fpu) {
@@ -763,7 +786,7 @@ function applyCurrentFinanceCorrections(state) {
 function normalizeAppleStatements(existing) {
   const byMonth = new Map((existing || []).map(item => [item.month, item]));
   const expected = [];
-  const start = new Date(2025, 2, 1); // March 2025
+  const start = new Date(2025, 0, 1); // January 2025
   const today = new Date();
   const end = new Date(today.getFullYear(), today.getMonth() - 1, 1);
   for (let cursor = new Date(start); cursor <= end; cursor.setMonth(cursor.getMonth() + 1)) {
@@ -780,6 +803,35 @@ function normalizeAppleStatements(existing) {
     });
   }
   return expected.sort((a, b) => b.month.localeCompare(a.month));
+}
+
+function applyAppleCardDriveSnapshot(showMessage, targetState) {
+  const state = targetState || STATE;
+  state.statementFolders = state.statementFolders || {};
+  state.statements = state.statements || {};
+  state.statementFolders.appleCard = state.statementFolders.appleCard || APPLE_CARD_DRIVE_FOLDER_URL;
+  state.statements.appleCard = normalizeAppleStatements(state.statements.appleCard || []);
+
+  APPLE_CARD_DRIVE_FILES.forEach(file => {
+    let item = state.statements.appleCard.find(statement => statement.month === file.month);
+    if (!item) {
+      item = { month: file.month, status: 'missing', fileName: '', driveUrl: '', updatedAt: '', notes: '' };
+      state.statements.appleCard.push(item);
+    }
+    const keepImported = item.status === 'imported';
+    item.status = keepImported ? 'imported' : 'uploaded';
+    item.fileName = file.title;
+    item.driveUrl = file.url;
+    item.notes = keepImported ? item.notes : 'PDF statement found in the Apple Card Google Drive folder.';
+    item.updatedAt = item.updatedAt || new Date().toISOString();
+  });
+
+  state.statements.appleCard = normalizeAppleStatements(state.statements.appleCard);
+  if (!targetState) {
+    saveState(state);
+    renderAll();
+  }
+  if (showMessage) showToast(`Imported ${APPLE_CARD_DRIVE_FILES.length} Apple Card Drive files`);
 }
 
 

@@ -217,6 +217,24 @@ hide_public_nav: true
   .txn-row .txn-amt.credit { color: #1f4d3f; }
   .txn-summary { display: flex; gap: 16px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #d9d1c4; font-size: 13px; }
   .txn-summary span { color: #526158; }
+
+  /* Statement tracking */
+  .statement-toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+  .statement-toolbar input { flex: 1; min-width: 260px; padding: 10px 12px; border: 1px solid #d9d1c4; border-radius: 12px; background: #fffdf8; color: #17221d; font: inherit; font-size: 13px; }
+  .statement-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .statement-stat { border: 1px solid #d9d1c4; border-radius: 16px; padding: 14px; background: #fffdf8; }
+  .statement-stat .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #526158; font-weight: 750; }
+  .statement-stat .value { margin-top: 4px; font-size: 24px; font-weight: 800; color: #123628; }
+  .statement-row { display: grid; grid-template-columns: 110px 1fr auto; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid #e8e2d5; }
+  .statement-row:last-child { border-bottom: none; }
+  .statement-month { font-weight: 750; color: #17221d; }
+  .statement-detail { font-size: 12px; color: #526158; line-height: 1.45; }
+  .statement-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+  .statement-badge { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 750; text-transform: uppercase; }
+  .statement-badge.missing { background: #fee2e2; color: #991b1b; }
+  .statement-badge.downloaded { background: #fef3c7; color: #92400e; }
+  .statement-badge.uploaded { background: #d1fae5; color: #065f46; }
+  .statement-badge.imported { background: #dbeafe; color: #1e40af; }
   
   /* Payment history */
   .payment-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #e8e2d5; font-size: 13px; }
@@ -259,6 +277,7 @@ hide_public_nav: true
     <div class="fin-tab" onclick="showPanel('envelopes', this)">Envelopes</div>
     <div class="fin-tab" onclick="showPanel('calendar', this)">Bill Calendar</div>
     <div class="fin-tab" onclick="showPanel('networth', this)">Net Worth</div>
+    <div class="fin-tab" onclick="showPanel('statements', this)">Statements</div>
     <div class="fin-tab" onclick="showPanel('import', this)">Import</div>
   </div>
 
@@ -384,6 +403,41 @@ hide_public_nav: true
       <div class="fin-card">
         <h3>Debt Payoff Projection</h3>
         <div id="debtPayoff"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ STATEMENTS TAB ═══════════════════════ -->
+  <div id="panel-statements" class="fin-panel">
+    <div class="fin-alert warn">
+      <strong>Apple Card statements:</strong> The dashboard history is only reliable through the last statement marked imported or uploaded. Download missing Apple Card CSV/PDF files, upload them to Google Drive, then mark the month uploaded here.
+    </div>
+
+    <div class="fin-grid fin-grid-2">
+      <div class="fin-card">
+        <h3>Apple Card Statement Coverage</h3>
+        <div class="statement-toolbar">
+          <input type="url" id="appleDriveFolder" placeholder="Google Drive folder URL for Apple Card statements" onchange="saveAppleDriveFolder(this.value)">
+          <button class="btn-add" onclick="openAppleDriveFolder()">Open Drive</button>
+        </div>
+        <div class="statement-summary" id="statementSummary"></div>
+        <div id="appleStatementList"></div>
+      </div>
+
+      <div class="fin-card">
+        <h3>Download + Upload Workflow</h3>
+        <ol style="font-size:13px;color:#526158;padding-left:20px;line-height:1.8;margin-top:0;">
+          <li>Use <a href="https://card.apple.com/" target="_blank" rel="noopener">card.apple.com</a> in Chrome for PDF statements and date-range transaction exports.</li>
+          <li>Click Statements, download each missing monthly PDF, then use Export Transactions for the same date range.</li>
+          <li>Use Wallet on iPhone or iPad if the web export does not show the CSV option.</li>
+          <li>For Wallet: Apple Card > Card Balance > statement month > Export Transactions.</li>
+          <li>Save files using <strong>Apple Card YYYY-MM</strong> in the name.</li>
+          <li>Upload the files to the Google Drive folder, then mark the month uploaded.</li>
+          <li>Drop the CSV into the Import tab so spending and balances can be refreshed.</li>
+        </ol>
+        <div style="padding:12px;background:rgba(31,77,63,0.08);border:1px solid rgba(31,77,63,0.18);border-radius:8px;font-size:12px;color:#526158;line-height:1.6;">
+          <strong style="color:#1f4d3f;">Current gap:</strong> The historical dashboard note says Apple Card data covers Mar 2025 through Mar 2026. The tracker starts with Apr 2026 and May 2026 as missing because those are the completed months after that range.
+        </div>
       </div>
     </div>
   </div>
@@ -582,6 +636,12 @@ function defaultState() {
       { id:'p3', billName:'Apple Card', amount:960, date:'2026-03-30', fromAccount:'EECU Checking', notes:'Exceeds $366 min' },
       { id:'p4', billName:'OFW Basic Plan', amount:110, date:'2026-03-03', fromAccount:'EECU Checking', notes:'Renewed' },
     ],
+    statementFolders: {
+      appleCard: ''
+    },
+    statements: {
+      appleCard: []
+    },
     lastUpdated: '2026-04-01T00:00:00Z',
   };
 }
@@ -598,6 +658,8 @@ function loadState() {
         accounts: saved.accounts || def.accounts,
         income: saved.income || def.income,
         payments: saved.payments || def.payments,
+        statementFolders: saved.statementFolders || def.statementFolders,
+        statements: saved.statements || def.statements,
         lastUpdated: saved.lastUpdated || def.lastUpdated,
       };
       applyCurrentFinanceCorrections(merged);
@@ -622,6 +684,10 @@ function loadState() {
 }
 
 function applyCurrentFinanceCorrections(state) {
+  state.statementFolders = state.statementFolders || {};
+  state.statements = state.statements || {};
+  state.statements.appleCard = normalizeAppleStatements(state.statements.appleCard || []);
+
   const fpu = state.income?.find(i => i.id === 'fpu' || /FPU|Fresno Pacific/i.test(i.name || ''));
   if (fpu) {
     fpu.amount = 0;
@@ -692,6 +758,28 @@ function applyCurrentFinanceCorrections(state) {
   if (kcusd && /biweekly/i.test(kcusd.frequency || '')) {
     kcusd.frequency = 'Monthly net estimate';
   }
+}
+
+function normalizeAppleStatements(existing) {
+  const byMonth = new Map((existing || []).map(item => [item.month, item]));
+  const expected = [];
+  const start = new Date(2025, 2, 1); // March 2025
+  const today = new Date();
+  const end = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+  for (let cursor = new Date(start); cursor <= end; cursor.setMonth(cursor.getMonth() + 1)) {
+    const month = cursor.toISOString().slice(0, 7);
+    const saved = byMonth.get(month) || {};
+    const historical = month <= '2026-03';
+    expected.push({
+      month,
+      status: saved.status || (historical ? 'imported' : 'missing'),
+      fileName: saved.fileName || '',
+      driveUrl: saved.driveUrl || '',
+      updatedAt: saved.updatedAt || '',
+      notes: saved.notes || (historical ? 'Included in original historical Apple Card dataset.' : '')
+    });
+  }
+  return expected.sort((a, b) => b.month.localeCompare(a.month));
 }
 
 
@@ -773,6 +861,7 @@ function renderAll() {
   renderCalendar();
   renderNetWorth();
   renderDebtPayoff();
+  renderStatements();
   document.getElementById('lastUpdated').textContent = 'Updated: ' + new Date(STATE.lastUpdated).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
 }
 
@@ -1209,6 +1298,56 @@ function renderDebtPayoff() {
   `;
 }
 
+function renderStatements() {
+  STATE.statements.appleCard = normalizeAppleStatements(STATE.statements.appleCard || []);
+  const folderInput = document.getElementById('appleDriveFolder');
+  if (folderInput) folderInput.value = STATE.statementFolders.appleCard || '';
+
+  const items = STATE.statements.appleCard;
+  const counts = items.reduce((acc, item) => {
+    acc[item.status] = (acc[item.status] || 0) + 1;
+    return acc;
+  }, {});
+  const latestCovered = items
+    .filter(item => item.status === 'uploaded' || item.status === 'imported')
+    .sort((a, b) => b.month.localeCompare(a.month))[0];
+  const missing = items.filter(item => item.status === 'missing');
+
+  const summary = document.getElementById('statementSummary');
+  if (summary) {
+    summary.innerHTML = `
+      <div class="statement-stat"><div class="label">Missing</div><div class="value" style="color:#b91c1c;">${counts.missing || 0}</div></div>
+      <div class="statement-stat"><div class="label">Downloaded</div><div class="value" style="color:#d97706;">${counts.downloaded || 0}</div></div>
+      <div class="statement-stat"><div class="label">Uploaded</div><div class="value" style="color:#1f4d3f;">${counts.uploaded || 0}</div></div>
+      <div class="statement-stat"><div class="label">Latest Covered</div><div class="value" style="font-size:18px;">${latestCovered ? formatMonth(latestCovered.month) : 'None'}</div></div>
+    `;
+  }
+
+  const list = document.getElementById('appleStatementList');
+  if (!list) return;
+  list.innerHTML = `
+    ${missing.length ? `<div class="fin-alert danger"><strong>Need now:</strong> ${missing.map(item => formatMonth(item.month)).join(', ')}</div>` : '<div class="fin-alert info"><strong>Apple Card coverage complete:</strong> No missing completed months are currently listed.</div>'}
+    ${items.map(item => `
+      <div class="statement-row">
+        <div class="statement-month">${formatMonth(item.month)}</div>
+        <div>
+          <span class="statement-badge ${esc(item.status)}">${esc(item.status)}</span>
+          <div class="statement-detail">
+            ${item.fileName ? `File: ${esc(item.fileName)}<br>` : ''}
+            ${item.driveUrl ? `<a href="${esc(item.driveUrl)}" target="_blank" rel="noopener">Drive file</a><br>` : ''}
+            ${item.notes ? esc(item.notes) : 'Download PDF + CSV, upload to Drive, then import CSV.'}
+          </div>
+        </div>
+        <div class="statement-actions">
+          <button class="btn-sm btn-edit" onclick="setAppleStatementStatus('${item.month}','downloaded')">Downloaded</button>
+          <button class="btn-sm btn-pay" onclick="setAppleStatementStatus('${item.month}','uploaded')">Uploaded</button>
+          <button class="btn-sm btn-del" onclick="setAppleStatementStatus('${item.month}','missing')">Missing</button>
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
 // ═══════════════════════════════════════════════════════════════
 // ACTIONS
 // ═══════════════════════════════════════════════════════════════
@@ -1385,6 +1524,36 @@ function editIncomeAmount(id) {
   showToast(inc.name + ' → ' + fmt(num));
 }
 
+function saveAppleDriveFolder(value) {
+  STATE.statementFolders.appleCard = value.trim();
+  saveState(STATE);
+  showToast('Apple Card Drive folder saved');
+}
+
+function openAppleDriveFolder() {
+  const url = STATE.statementFolders.appleCard;
+  if (!url) {
+    showToast('Paste the Google Drive folder URL first');
+    return;
+  }
+  window.open(url, '_blank', 'noopener');
+}
+
+function setAppleStatementStatus(month, status, fileName) {
+  STATE.statements.appleCard = normalizeAppleStatements(STATE.statements.appleCard || []);
+  const item = STATE.statements.appleCard.find(statement => statement.month === month);
+  if (!item) return;
+  item.status = status;
+  if (fileName) item.fileName = fileName;
+  item.updatedAt = new Date().toISOString();
+  if (status === 'downloaded' && !item.notes) item.notes = 'Downloaded locally; upload PDF/CSV to Google Drive.';
+  if (status === 'uploaded') item.notes = 'Uploaded to Google Drive.';
+  if (status === 'imported') item.notes = 'CSV imported into this dashboard.';
+  saveState(STATE);
+  renderAll();
+  showToast(formatMonth(month) + ' marked ' + status);
+}
+
 // ═══════════════════════════════════════════════════════════════
 // UTILITIES
 // ═══════════════════════════════════════════════════════════════
@@ -1417,6 +1586,11 @@ function ordinal(n) {
   return n + (s[(v - 20) % 10] || s[v] || s[0]);
 }
 
+function formatMonth(month) {
+  const [year, monthNum] = month.split('-').map(Number);
+  return new Date(year, monthNum - 1, 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+}
+
 // Close modals on overlay click
 document.querySelectorAll('.modal-overlay').forEach(overlay => {
   overlay.addEventListener('click', function(e) {
@@ -1442,8 +1616,10 @@ function handleFile(file) {
     if (lines.length < 2) return;
     const header = lines[0].toLowerCase();
     let txns = [];
+    let source = 'unknown';
 
     if (header.includes('transaction date') && header.includes('merchant')) {
+      source = 'apple-card';
       for (let i = 1; i < lines.length; i++) {
         const cols = parseCSVLine(lines[i]);
         if (cols.length < 7) continue;
@@ -1463,6 +1639,7 @@ function handleFile(file) {
 
     const totalOut = txns.filter(t => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
     const totalIn = txns.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0);
+    if (source === 'apple-card') markAppleStatementFromImport(file.name, txns);
 
     document.getElementById('importResults').style.display = 'block';
     document.getElementById('importTitle').textContent = file.name;
@@ -1483,6 +1660,34 @@ function handleFile(file) {
     if (txns.length > 100) list.innerHTML += '<div style="text-align:center;padding:8px;color:#64748b;font-size:12px;">Showing first 100 of ' + txns.length + '</div>';
   };
   reader.readAsText(file);
+}
+
+function markAppleStatementFromImport(fileName, txns) {
+  const month = inferStatementMonth(fileName, txns);
+  if (!month) return;
+  STATE.statements.appleCard = normalizeAppleStatements(STATE.statements.appleCard || []);
+  const item = STATE.statements.appleCard.find(statement => statement.month === month);
+  if (!item) return;
+  item.status = 'imported';
+  item.fileName = fileName;
+  item.updatedAt = new Date().toISOString();
+  item.notes = 'CSV imported into this dashboard. Upload matching PDF/CSV to Google Drive if not already done.';
+  saveState(STATE);
+}
+
+function inferStatementMonth(fileName, txns) {
+  const fromName = String(fileName || '').match(/(20\d{2})[-_ ]?(0[1-9]|1[0-2])/);
+  if (fromName) return fromName[1] + '-' + fromName[2];
+  const dates = txns
+    .map(t => String(t.date || '').match(/(20\d{2})[-/](0?[1-9]|1[0-2])[-/](0?[1-9]|[12]\d|3[01])/))
+    .filter(Boolean)
+    .map(match => match[1] + '-' + match[2].padStart(2, '0'));
+  if (!dates.length) return '';
+  const counts = dates.reduce((acc, month) => {
+    acc[month] = (acc[month] || 0) + 1;
+    return acc;
+  }, {});
+  return Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
 }
 
 function parseCSVLine(line) {

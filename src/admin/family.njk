@@ -235,6 +235,11 @@ hide_public_nav: true
   .statement-badge.downloaded { background: #fef3c7; color: #92400e; }
   .statement-badge.uploaded { background: #d1fae5; color: #065f46; }
   .statement-badge.imported { background: #dbeafe; color: #1e40af; }
+  .statement-account { margin-top: 18px; padding-top: 18px; border-top: 1px solid #e8e2d5; }
+  .statement-account:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+  .statement-account-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; margin-bottom: 12px; flex-wrap: wrap; }
+  .statement-account-title { font-size: 15px; font-weight: 800; color: #123628; }
+  .statement-account-note { font-size: 12px; color: #526158; margin-top: 3px; line-height: 1.45; }
   
   /* Payment history */
   .payment-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #e8e2d5; font-size: 13px; }
@@ -386,7 +391,7 @@ hide_public_nav: true
   <div id="panel-networth" class="fin-panel">
 
     <div class="fin-alert info">
-      <strong>Net worth tracker:</strong> Assets minus debts over time. Based on EECU + Apple Card statement data (Mar 2025 — Mar 2026).
+      <strong>Net worth tracker:</strong> Assets minus debts over time. Keep this current by tracking EECU, Discover, and Apple Card statements.
     </div>
 
     <div class="fin-grid fin-grid-2">
@@ -410,34 +415,26 @@ hide_public_nav: true
   <!-- ═══════════════════════ STATEMENTS TAB ═══════════════════════ -->
   <div id="panel-statements" class="fin-panel">
     <div class="fin-alert warn">
-      <strong>Apple Card statements:</strong> The dashboard history is only reliable through the last statement marked imported or uploaded. Download missing Apple Card CSV/PDF files, upload them to Google Drive, then mark the month uploaded here.
+      <strong>Statement coverage:</strong> Track EECU, Discover, and Apple Card statements here. A month is only fully useful for budgeting once it is uploaded to Drive and, when CSV is available, imported into the dashboard.
     </div>
 
-    <div class="fin-grid fin-grid-2">
+    <div class="fin-grid">
       <div class="fin-card">
-        <h3>Apple Card Statement Coverage</h3>
-        <div class="statement-toolbar">
-          <input type="url" id="appleDriveFolder" placeholder="Google Drive folder URL for Apple Card statements" onchange="saveAppleDriveFolder(this.value)">
-          <button class="btn-add" onclick="openAppleDriveFolder()">Open Drive</button>
-          <button class="btn-add" onclick="applyAppleCardDriveSnapshot(true)">Import Drive Snapshot</button>
-        </div>
-        <div class="statement-summary" id="statementSummary"></div>
-        <div id="appleStatementList"></div>
+        <h3>Statement Coverage</h3>
+        <div id="statementAccounts"></div>
       </div>
 
       <div class="fin-card">
         <h3>Download + Upload Workflow</h3>
         <ol style="font-size:13px;color:#526158;padding-left:20px;line-height:1.8;margin-top:0;">
-          <li>Use <a href="https://card.apple.com/" target="_blank" rel="noopener">card.apple.com</a> in Chrome for PDF statements and date-range transaction exports.</li>
-          <li>Click Statements, download each missing monthly PDF, then use Export Transactions for the same date range.</li>
-          <li>Use Wallet on iPhone or iPad if the web export does not show the CSV option.</li>
-          <li>For Wallet: Apple Card > Card Balance > statement month > Export Transactions.</li>
-          <li>Save files using <strong>Apple Card YYYY-MM</strong> in the name.</li>
+          <li>Use each account site for monthly statements: EECU online banking, Discover, and <a href="https://card.apple.com/" target="_blank" rel="noopener">card.apple.com</a>.</li>
+          <li>Download the statement PDF and the transaction CSV/export when available.</li>
+          <li>Save files with the account and month in the name, for example <strong>EECU 2026-05</strong> or <strong>Discover 2026-05</strong>.</li>
           <li>Upload the files to the Google Drive folder, then mark the month uploaded.</li>
-          <li>Drop the CSV into the Import tab so spending and balances can be refreshed.</li>
+          <li>Drop CSV exports into the Import tab so spending and balances can be refreshed.</li>
         </ol>
         <div style="padding:12px;background:rgba(31,77,63,0.08);border:1px solid rgba(31,77,63,0.18);border-radius:8px;font-size:12px;color:#526158;line-height:1.6;">
-          <strong style="color:#1f4d3f;">Drive snapshot:</strong> The linked Google Drive folder has PDF statements from Jan 2025 through May 2026. Click Import Drive Snapshot after adding or replacing files so the tracker marks those months as uploaded.
+          <strong style="color:#1f4d3f;">Apple Drive snapshot:</strong> The linked Apple Card folder has PDF statements from Jan 2025 through May 2026. EECU and Discover are ready for their Drive folder links as soon as those folders are organized.
         </div>
       </div>
     </div>
@@ -447,7 +444,7 @@ hide_public_nav: true
   <div id="panel-import" class="fin-panel">
 
     <div class="fin-alert info">
-      <strong>Transaction import:</strong> Drop CSV files from EECU or Apple Card to analyze spending. Files are processed locally in your browser — nothing is uploaded.
+      <strong>Transaction import:</strong> Drop CSV files from EECU, Discover, or Apple Card to analyze spending. Files are processed locally in your browser — nothing is uploaded.
     </div>
 
     <div class="fin-grid fin-grid-2">
@@ -455,8 +452,8 @@ hide_public_nav: true
         <div class="import-zone" id="importZone" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" onclick="document.getElementById('fileInput').click()">
           <input type="file" id="fileInput" accept=".csv" style="display:none" onchange="handleFile(this.files[0])">
           <h4>Drop CSV Here</h4>
-          <p>EECU checking export or Apple Card CSV</p>
-          <p style="margin-top:8px;font-size:11px;">Supports: EECU (.csv), Apple Card (.csv)</p>
+          <p>EECU, Discover, or Apple Card CSV</p>
+          <p style="margin-top:8px;font-size:11px;">Supports: EECU, Discover, Apple Card (.csv)</p>
         </div>
         <div id="importResults" style="display:none;margin-top:16px;">
           <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -584,6 +581,11 @@ const STATUS_CYCLE = ['overdue','upcoming','current','autopay','paid'];
 const STATUS_LABELS = {overdue:'Overdue',upcoming:'Upcoming',current:'Active',autopay:'Autopay',paid:'Paid'};
 const PRIORITY_LABELS = {1:'P1 Survival',2:'P2 Insurance/Debt',3:'P3 Necessities',4:'P4 On Credit'};
 const APPLE_CARD_DRIVE_FOLDER_URL = 'https://drive.google.com/drive/u/0/folders/1H56BpX45Qw-IknCPW9Jqk1fE7qeWS2Wf';
+const STATEMENT_SOURCES = [
+  { key:'eecu', label:'EECU', folderLabel:'EECU Drive folder URL', note:'Checking, savings, auto loan, LOC, and EECU card statements.' },
+  { key:'discover', label:'Discover', folderLabel:'Discover Drive folder URL', note:'Discover card statements and transaction exports.' },
+  { key:'appleCard', label:'Apple Card', folderLabel:'Apple Card Drive folder URL', note:'Apple Card PDFs in Drive; CSV exports still go through the Import tab.' }
+];
 const APPLE_CARD_DRIVE_FILES = [
   { month:'2025-01', title:'Apple Card Statement - January 2025.pdf', url:'https://drive.google.com/file/d/1obKzhwV8TItpC4LSX4AMSeBJxYt6IX1V/view?usp=drivesdk' },
   { month:'2025-02', title:'Apple Card Statement - February 2025.pdf', url:'https://drive.google.com/file/d/1UWLqhkznrSfbni7GBaTznb7a07g6RUlU/view?usp=drivesdk' },
@@ -658,9 +660,13 @@ function defaultState() {
       { id:'p4', billName:'OFW Basic Plan', amount:110, date:'2026-03-03', fromAccount:'EECU Checking', notes:'Renewed' },
     ],
     statementFolders: {
+      eecu: '',
+      discover: '',
       appleCard: APPLE_CARD_DRIVE_FOLDER_URL
     },
     statements: {
+      eecu: [],
+      discover: [],
       appleCard: []
     },
     lastUpdated: '2026-04-01T00:00:00Z',
@@ -707,7 +713,10 @@ function loadState() {
 function applyCurrentFinanceCorrections(state) {
   state.statementFolders = state.statementFolders || {};
   state.statements = state.statements || {};
-  state.statements.appleCard = normalizeAppleStatements(state.statements.appleCard || []);
+  STATEMENT_SOURCES.forEach(source => {
+    if (state.statementFolders[source.key] === undefined) state.statementFolders[source.key] = '';
+    state.statements[source.key] = normalizeStatements(state.statements[source.key] || [], source.key);
+  });
   if (!state.statementFolders.appleCard) state.statementFolders.appleCard = APPLE_CARD_DRIVE_FOLDER_URL;
   applyAppleCardDriveSnapshot(false, state);
 
@@ -783,7 +792,7 @@ function applyCurrentFinanceCorrections(state) {
   }
 }
 
-function normalizeAppleStatements(existing) {
+function normalizeStatements(existing, sourceKey) {
   const byMonth = new Map((existing || []).map(item => [item.month, item]));
   const expected = [];
   const start = new Date(2025, 0, 1); // January 2025
@@ -792,7 +801,7 @@ function normalizeAppleStatements(existing) {
   for (let cursor = new Date(start); cursor <= end; cursor.setMonth(cursor.getMonth() + 1)) {
     const month = cursor.toISOString().slice(0, 7);
     const saved = byMonth.get(month) || {};
-    const historical = month <= '2026-03';
+    const historical = sourceKey === 'appleCard' && month <= '2026-03';
     expected.push({
       month,
       status: saved.status || (historical ? 'imported' : 'missing'),
@@ -810,7 +819,7 @@ function applyAppleCardDriveSnapshot(showMessage, targetState) {
   state.statementFolders = state.statementFolders || {};
   state.statements = state.statements || {};
   state.statementFolders.appleCard = state.statementFolders.appleCard || APPLE_CARD_DRIVE_FOLDER_URL;
-  state.statements.appleCard = normalizeAppleStatements(state.statements.appleCard || []);
+  state.statements.appleCard = normalizeStatements(state.statements.appleCard || [], 'appleCard');
 
   APPLE_CARD_DRIVE_FILES.forEach(file => {
     let item = state.statements.appleCard.find(statement => statement.month === file.month);
@@ -826,7 +835,7 @@ function applyAppleCardDriveSnapshot(showMessage, targetState) {
     item.updatedAt = item.updatedAt || new Date().toISOString();
   });
 
-  state.statements.appleCard = normalizeAppleStatements(state.statements.appleCard);
+  state.statements.appleCard = normalizeStatements(state.statements.appleCard, 'appleCard');
   if (!targetState) {
     saveState(state);
     renderAll();
@@ -1351,11 +1360,14 @@ function renderDebtPayoff() {
 }
 
 function renderStatements() {
-  STATE.statements.appleCard = normalizeAppleStatements(STATE.statements.appleCard || []);
-  const folderInput = document.getElementById('appleDriveFolder');
-  if (folderInput) folderInput.value = STATE.statementFolders.appleCard || '';
+  const container = document.getElementById('statementAccounts');
+  if (!container) return;
+  container.innerHTML = STATEMENT_SOURCES.map(source => renderStatementSource(source)).join('');
+}
 
-  const items = STATE.statements.appleCard;
+function renderStatementSource(source) {
+  STATE.statements[source.key] = normalizeStatements(STATE.statements[source.key] || [], source.key);
+  const items = STATE.statements[source.key];
   const counts = items.reduce((acc, item) => {
     acc[item.status] = (acc[item.status] || 0) + 1;
     return acc;
@@ -1364,21 +1376,31 @@ function renderStatements() {
     .filter(item => item.status === 'uploaded' || item.status === 'imported')
     .sort((a, b) => b.month.localeCompare(a.month))[0];
   const missing = items.filter(item => item.status === 'missing');
+  const snapshotButton = source.key === 'appleCard'
+    ? '<button class="btn-add" onclick="applyAppleCardDriveSnapshot(true)">Import Drive Snapshot</button>'
+    : '';
 
-  const summary = document.getElementById('statementSummary');
-  if (summary) {
-    summary.innerHTML = `
+  return `
+    <section class="statement-account">
+      <div class="statement-account-head">
+        <div>
+          <div class="statement-account-title">${esc(source.label)}</div>
+          <div class="statement-account-note">${esc(source.note)}</div>
+        </div>
+        <span class="statement-badge ${missing.length ? 'missing' : 'uploaded'}">${missing.length ? `${missing.length} missing` : 'covered'}</span>
+      </div>
+      <div class="statement-toolbar">
+        <input type="url" value="${esc(STATE.statementFolders[source.key] || '')}" placeholder="${esc(source.folderLabel)}" onchange="saveStatementFolder('${source.key}', this.value)">
+        <button class="btn-add" onclick="openStatementFolder('${source.key}')">Open Drive</button>
+        ${snapshotButton}
+      </div>
+      <div class="statement-summary">
       <div class="statement-stat"><div class="label">Missing</div><div class="value" style="color:#b91c1c;">${counts.missing || 0}</div></div>
       <div class="statement-stat"><div class="label">Downloaded</div><div class="value" style="color:#d97706;">${counts.downloaded || 0}</div></div>
       <div class="statement-stat"><div class="label">Uploaded</div><div class="value" style="color:#1f4d3f;">${counts.uploaded || 0}</div></div>
       <div class="statement-stat"><div class="label">Latest Covered</div><div class="value" style="font-size:18px;">${latestCovered ? formatMonth(latestCovered.month) : 'None'}</div></div>
-    `;
-  }
-
-  const list = document.getElementById('appleStatementList');
-  if (!list) return;
-  list.innerHTML = `
-    ${missing.length ? `<div class="fin-alert danger"><strong>Need now:</strong> ${missing.map(item => formatMonth(item.month)).join(', ')}</div>` : '<div class="fin-alert info"><strong>Apple Card coverage complete:</strong> No missing completed months are currently listed.</div>'}
+      </div>
+    ${missing.length ? `<div class="fin-alert danger"><strong>Need now:</strong> ${missing.slice(0, 6).map(item => formatMonth(item.month)).join(', ')}${missing.length > 6 ? ` and ${missing.length - 6} more` : ''}</div>` : `<div class="fin-alert info"><strong>${esc(source.label)} coverage complete:</strong> No missing completed months are currently listed.</div>`}
     ${items.map(item => `
       <div class="statement-row">
         <div class="statement-month">${formatMonth(item.month)}</div>
@@ -1391,12 +1413,13 @@ function renderStatements() {
           </div>
         </div>
         <div class="statement-actions">
-          <button class="btn-sm btn-edit" onclick="setAppleStatementStatus('${item.month}','downloaded')">Downloaded</button>
-          <button class="btn-sm btn-pay" onclick="setAppleStatementStatus('${item.month}','uploaded')">Uploaded</button>
-          <button class="btn-sm btn-del" onclick="setAppleStatementStatus('${item.month}','missing')">Missing</button>
+          <button class="btn-sm btn-edit" onclick="setStatementStatus('${source.key}','${item.month}','downloaded')">Downloaded</button>
+          <button class="btn-sm btn-pay" onclick="setStatementStatus('${source.key}','${item.month}','uploaded')">Uploaded</button>
+          <button class="btn-sm btn-del" onclick="setStatementStatus('${source.key}','${item.month}','missing')">Missing</button>
         </div>
       </div>
     `).join('')}
+    </section>
   `;
 }
 
@@ -1576,14 +1599,14 @@ function editIncomeAmount(id) {
   showToast(inc.name + ' → ' + fmt(num));
 }
 
-function saveAppleDriveFolder(value) {
-  STATE.statementFolders.appleCard = value.trim();
+function saveStatementFolder(sourceKey, value) {
+  STATE.statementFolders[sourceKey] = value.trim();
   saveState(STATE);
-  showToast('Apple Card Drive folder saved');
+  showToast(statementSourceLabel(sourceKey) + ' Drive folder saved');
 }
 
-function openAppleDriveFolder() {
-  const url = STATE.statementFolders.appleCard;
+function openStatementFolder(sourceKey) {
+  const url = STATE.statementFolders[sourceKey];
   if (!url) {
     showToast('Paste the Google Drive folder URL first');
     return;
@@ -1591,9 +1614,9 @@ function openAppleDriveFolder() {
   window.open(url, '_blank', 'noopener');
 }
 
-function setAppleStatementStatus(month, status, fileName) {
-  STATE.statements.appleCard = normalizeAppleStatements(STATE.statements.appleCard || []);
-  const item = STATE.statements.appleCard.find(statement => statement.month === month);
+function setStatementStatus(sourceKey, month, status, fileName) {
+  STATE.statements[sourceKey] = normalizeStatements(STATE.statements[sourceKey] || [], sourceKey);
+  const item = STATE.statements[sourceKey].find(statement => statement.month === month);
   if (!item) return;
   item.status = status;
   if (fileName) item.fileName = fileName;
@@ -1603,7 +1626,7 @@ function setAppleStatementStatus(month, status, fileName) {
   if (status === 'imported') item.notes = 'CSV imported into this dashboard.';
   saveState(STATE);
   renderAll();
-  showToast(formatMonth(month) + ' marked ' + status);
+  showToast(statementSourceLabel(sourceKey) + ' ' + formatMonth(month) + ' marked ' + status);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1643,6 +1666,10 @@ function formatMonth(month) {
   return new Date(year, monthNum - 1, 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 }
 
+function statementSourceLabel(sourceKey) {
+  return STATEMENT_SOURCES.find(source => source.key === sourceKey)?.label || sourceKey;
+}
+
 // Close modals on overlay click
 document.querySelectorAll('.modal-overlay').forEach(overlay => {
   overlay.addEventListener('click', function(e) {
@@ -1668,10 +1695,10 @@ function handleFile(file) {
     if (lines.length < 2) return;
     const header = lines[0].toLowerCase();
     let txns = [];
-    let source = 'unknown';
+    let source = detectStatementSource(file.name, header);
 
     if (header.includes('transaction date') && header.includes('merchant')) {
-      source = 'apple-card';
+      source = 'appleCard';
       for (let i = 1; i < lines.length; i++) {
         const cols = parseCSVLine(lines[i]);
         if (cols.length < 7) continue;
@@ -1691,7 +1718,7 @@ function handleFile(file) {
 
     const totalOut = txns.filter(t => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
     const totalIn = txns.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0);
-    if (source === 'apple-card') markAppleStatementFromImport(file.name, txns);
+    if (source !== 'unknown') markStatementFromImport(source, file.name, txns);
 
     document.getElementById('importResults').style.display = 'block';
     document.getElementById('importTitle').textContent = file.name;
@@ -1714,11 +1741,19 @@ function handleFile(file) {
   reader.readAsText(file);
 }
 
-function markAppleStatementFromImport(fileName, txns) {
+function detectStatementSource(fileName, header) {
+  const haystack = `${fileName || ''} ${header || ''}`.toLowerCase();
+  if (haystack.includes('apple') || haystack.includes('merchant')) return 'appleCard';
+  if (haystack.includes('discover')) return 'discover';
+  if (haystack.includes('eecu') || haystack.includes('educational employees') || haystack.includes('checking') || haystack.includes('share draft')) return 'eecu';
+  return 'unknown';
+}
+
+function markStatementFromImport(sourceKey, fileName, txns) {
   const month = inferStatementMonth(fileName, txns);
   if (!month) return;
-  STATE.statements.appleCard = normalizeAppleStatements(STATE.statements.appleCard || []);
-  const item = STATE.statements.appleCard.find(statement => statement.month === month);
+  STATE.statements[sourceKey] = normalizeStatements(STATE.statements[sourceKey] || [], sourceKey);
+  const item = STATE.statements[sourceKey].find(statement => statement.month === month);
   if (!item) return;
   item.status = 'imported';
   item.fileName = fileName;

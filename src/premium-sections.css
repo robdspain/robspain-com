@@ -627,14 +627,167 @@
     position: relative;
 }
 
-.projects-image-placeholder {
-    aspect-ratio: 4/3;
-    background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%);
+.study-tools-promo {
+    aspect-ratio: 4 / 3;
+    background:
+        radial-gradient(circle at 88% 12%, rgba(244, 197, 66, 0.24), transparent 9rem),
+        radial-gradient(circle at 8% 86%, rgba(16, 185, 129, 0.22), transparent 10rem),
+        linear-gradient(135deg, #062719 0%, #0f6b55 58%, #10231f 100%);
+    border: 1px solid rgba(16, 185, 129, 0.34);
     border-radius: var(--radius-2xl);
-    display: flex;
+    box-shadow: 0 28px 80px rgba(15, 49, 40, 0.2);
+    color: white;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    overflow: hidden;
+    padding: clamp(1.1rem, 3vw, 1.6rem);
+    position: relative;
+    text-decoration: none;
+}
+
+.study-tools-promo::before {
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+    background-size: 28px 28px;
+    content: "";
+    inset: 0;
+    opacity: 0.42;
+    pointer-events: none;
+    position: absolute;
+}
+
+.study-tools-promo > * {
+    position: relative;
+    z-index: 1;
+}
+
+.study-tools-promo__header,
+.study-tools-promo__footer {
     align-items: center;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.study-tools-promo__header span {
+    color: #bdf7df;
+    font-size: 0.82rem;
+    font-weight: 900;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.study-tools-promo__header i {
+    align-items: center;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    display: inline-flex;
+    height: 2.25rem;
     justify-content: center;
-    border: 2px solid var(--gray-300);
+    width: 2.25rem;
+}
+
+.study-tools-promo__screen {
+    align-self: center;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    border-radius: 1.25rem;
+    box-shadow: 0 20px 50px rgba(4, 20, 15, 0.26);
+    color: #15231f;
+    display: grid;
+    gap: 0.85rem;
+    margin: 1.1rem 0;
+    padding: 1rem;
+}
+
+.study-tools-promo__metric {
+    align-items: center;
+    display: flex;
+    gap: 0.85rem;
+}
+
+.study-tools-promo__metric strong {
+    align-items: center;
+    background: #0f6b55;
+    border-radius: 1rem;
+    color: white;
+    display: flex;
+    font-size: 2.4rem;
+    height: 4rem;
+    justify-content: center;
+    line-height: 1;
+    width: 4rem;
+}
+
+.study-tools-promo__metric span,
+.study-tools-promo__footer span {
+    color: #dffbf0;
+    font-weight: 800;
+}
+
+.study-tools-promo__metric span {
+    color: #51645e;
+}
+
+.study-tools-promo__question {
+    background: #f2faf6;
+    border: 1px solid rgba(15, 107, 85, 0.13);
+    border-radius: 1rem;
+    padding: 0.85rem;
+}
+
+.study-tools-promo__pill {
+    background: #d8fae9;
+    border-radius: 999px;
+    color: #0f6b55;
+    display: inline-flex;
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.55rem;
+    padding: 0.35rem 0.65rem;
+    text-transform: uppercase;
+}
+
+.study-tools-promo__question p {
+    color: #33443f;
+    font-size: 0.94rem;
+    font-weight: 650;
+    line-height: 1.45;
+    margin: 0;
+}
+
+.study-tools-promo__answers {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.study-tools-promo__answers span {
+    background: linear-gradient(90deg, #dffbf0, #f8faf8);
+    border-radius: 999px;
+    display: block;
+    height: 0.72rem;
+}
+
+.study-tools-promo__answers span:nth-child(2) {
+    width: 82%;
+}
+
+.study-tools-promo__answers span:nth-child(3) {
+    width: 68%;
+}
+
+.study-tools-promo__footer strong {
+    align-items: center;
+    background: #ffffff;
+    border-radius: 999px;
+    color: #0f6b55;
+    display: inline-flex;
+    font-size: 0.92rem;
+    min-height: 2.65rem;
+    padding: 0.65rem 1rem;
 }
 
 .projects-content {

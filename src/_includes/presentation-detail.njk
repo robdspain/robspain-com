@@ -1,0 +1,348 @@
+<article class="presentation-page">
+  <section class="presentation-hero">
+    <div class="presentation-hero__content">
+      <a class="presentation-back" href="/#interviews">
+        <i class="fas fa-arrow-left" aria-hidden="true"></i>
+        Presentations
+      </a>
+      <p class="presentation-eyebrow">{{ presentation.eyebrow }}</p>
+      <h1>{{ presentation.heading or title }}</h1>
+      <p class="presentation-summary">{{ presentation.summary }}</p>
+      <div class="presentation-meta-grid" aria-label="Presentation details">
+        <div>
+          <span>Event</span>
+          <strong>{{ presentation.event }}</strong>
+        </div>
+        <div>
+          <span>Date</span>
+          <strong>{{ presentation.dateLabel }}</strong>
+        </div>
+        <div>
+          <span>Time</span>
+          <strong>{{ presentation.timeLabel }}</strong>
+        </div>
+        <div>
+          <span>Location</span>
+          <strong>{{ presentation.location }}</strong>
+        </div>
+      </div>
+    </div>
+    <figure class="presentation-visual">
+      <img src="{{ presentation.image }}" alt="{{ presentation.imageAlt }}">
+    </figure>
+  </section>
+
+  <section class="presentation-body">
+    <div class="presentation-main">
+      <div class="presentation-card presentation-overview-card">
+        <p class="presentation-kicker">Session Description</p>
+        <h2>{{ presentation.descriptionTitle }}</h2>
+        {% for paragraph in presentation.description %}
+          <p>{{ paragraph }}</p>
+        {% endfor %}
+      </div>
+
+      <div class="presentation-card">
+        <p class="presentation-kicker">What This Covers</p>
+        <div class="presentation-topic-grid">
+          {% for topic in presentation.topics %}
+            <div class="presentation-topic">
+              <span>{{ loop.index }}</span>
+              <p>{{ topic }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <aside class="presentation-sidebar">
+      <div class="presentation-card">
+        <p class="presentation-kicker">Presenters</p>
+        <div class="presentation-speakers">
+          {% for presenter in presentation.presenters %}
+            <div class="presentation-speaker">
+              <div class="presentation-avatar" aria-hidden="true">{{ presenter.initials }}</div>
+              <div>
+                <strong>{{ presenter.name }}</strong>
+                <span>{{ presenter.role }}</span>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="presentation-card presentation-resource-card">
+        <p class="presentation-kicker">Resources</p>
+        <h2>Presentation Materials</h2>
+        <div class="presentation-actions">
+          {% for resource in presentation.resources %}
+            <a class="{{ 'presentation-button presentation-button--secondary' if loop.index > 1 else 'presentation-button' }}" href="{{ resource.url }}" target="_blank" rel="noopener">
+              <i class="{{ resource.icon }}" aria-hidden="true"></i>
+              {{ resource.label }}
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    </aside>
+  </section>
+</article>
+
+<style>
+  .presentation-page {
+    background:
+      radial-gradient(circle at top left, rgba(16, 185, 129, 0.14), transparent 34rem),
+      linear-gradient(180deg, #f6fbf8 0%, #ffffff 46%, #f4f7f5 100%);
+    color: #17231f;
+  }
+
+  .presentation-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 0.96fr);
+    gap: clamp(2rem, 5vw, 5.5rem);
+    align-items: center;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: clamp(3rem, 7vw, 6rem) 2rem clamp(2.75rem, 5vw, 4.5rem);
+  }
+
+  .presentation-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #0f6b55;
+    font-weight: 800;
+    text-decoration: none;
+    margin-bottom: 2rem;
+  }
+
+  .presentation-eyebrow,
+  .presentation-kicker {
+    color: #0f8a69;
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+    margin: 0 0 0.9rem;
+    text-transform: uppercase;
+  }
+
+  .presentation-hero h1 {
+    font-size: clamp(2.7rem, 6vw, 5.8rem);
+    line-height: 0.92;
+    letter-spacing: 0;
+    margin: 0 0 1.5rem;
+    max-width: 900px;
+  }
+
+  .presentation-summary {
+    color: #51645e;
+    font-size: clamp(1.05rem, 1.5vw, 1.35rem);
+    line-height: 1.65;
+    margin: 0 0 2rem;
+    max-width: 720px;
+  }
+
+  .presentation-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+  }
+
+  .presentation-meta-grid div {
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(15, 107, 85, 0.16);
+    border-radius: 18px;
+    box-shadow: 0 18px 50px rgba(15, 49, 40, 0.08);
+    padding: 1rem;
+  }
+
+  .presentation-meta-grid span,
+  .presentation-speaker span {
+    color: #667871;
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .presentation-meta-grid strong {
+    display: block;
+    font-size: 1rem;
+    line-height: 1.35;
+    margin-top: 0.35rem;
+  }
+
+  .presentation-visual {
+    background: #10231f;
+    border: 1px solid rgba(15, 107, 85, 0.25);
+    border-radius: 30px;
+    box-shadow: 0 30px 90px rgba(15, 49, 40, 0.18);
+    margin: 0;
+    overflow: hidden;
+    padding: 0.65rem;
+  }
+
+  .presentation-visual img {
+    aspect-ratio: 16 / 9;
+    background: #f8faf8;
+    border-radius: 22px;
+    display: block;
+    height: auto;
+    object-fit: contain;
+    width: 100%;
+  }
+
+  .presentation-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 1.4rem;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 2rem clamp(4rem, 8vw, 7rem);
+  }
+
+  .presentation-main,
+  .presentation-sidebar {
+    display: grid;
+    gap: 1.4rem;
+    align-content: start;
+  }
+
+  .presentation-card {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(15, 107, 85, 0.14);
+    border-radius: 24px;
+    box-shadow: 0 24px 70px rgba(15, 49, 40, 0.08);
+    padding: clamp(1.4rem, 3vw, 2.2rem);
+  }
+
+  .presentation-card h2 {
+    font-size: clamp(1.5rem, 2vw, 2.1rem);
+    line-height: 1.15;
+    margin: 0 0 1rem;
+  }
+
+  .presentation-card p {
+    color: #51645e;
+    font-size: 1.02rem;
+    line-height: 1.72;
+    margin: 0 0 1rem;
+  }
+
+  .presentation-card p:last-child {
+    margin-bottom: 0;
+  }
+
+  .presentation-topic-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+  }
+
+  .presentation-topic {
+    background: #f2faf6;
+    border: 1px solid rgba(15, 107, 85, 0.12);
+    border-radius: 18px;
+    padding: 1rem;
+  }
+
+  .presentation-topic span {
+    align-items: center;
+    background: #0f6b55;
+    border-radius: 999px;
+    color: #fff;
+    display: inline-flex;
+    font-weight: 900;
+    height: 2rem;
+    justify-content: center;
+    margin-bottom: 0.8rem;
+    width: 2rem;
+  }
+
+  .presentation-topic p {
+    color: #20332e;
+    font-weight: 700;
+    line-height: 1.45;
+    margin: 0;
+  }
+
+  .presentation-speakers {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .presentation-speaker {
+    align-items: center;
+    display: grid;
+    gap: 0.85rem;
+    grid-template-columns: 48px 1fr;
+  }
+
+  .presentation-avatar {
+    align-items: center;
+    background: linear-gradient(135deg, #0f6b55, #10b981);
+    border-radius: 16px;
+    color: white;
+    display: flex;
+    font-size: 0.86rem;
+    font-weight: 900;
+    height: 48px;
+    justify-content: center;
+    width: 48px;
+  }
+
+  .presentation-speaker strong {
+    display: block;
+    line-height: 1.25;
+  }
+
+  .presentation-actions {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1.2rem;
+  }
+
+  .presentation-button {
+    align-items: center;
+    background: #0f6b55;
+    border: 2px solid #0f6b55;
+    border-radius: 999px;
+    color: #fff;
+    display: inline-flex;
+    gap: 0.65rem;
+    justify-content: center;
+    min-height: 3.2rem;
+    padding: 0.85rem 1.2rem;
+    text-decoration: none;
+    font-weight: 900;
+  }
+
+  .presentation-button--secondary {
+    background: #fff;
+    color: #0f6b55;
+  }
+
+  @media (max-width: 920px) {
+    .presentation-hero,
+    .presentation-body {
+      grid-template-columns: 1fr;
+    }
+
+    .presentation-sidebar {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .presentation-hero,
+    .presentation-body {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    .presentation-meta-grid,
+    .presentation-topic-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

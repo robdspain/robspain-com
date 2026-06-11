@@ -6,6 +6,12 @@
 /posts/  /blog/ 302
 /contact  /#contact 302
 
+# Presentation detail pages
+/presentations/calaba-2026-pbis-panel  /presentations/calaba-2026-pbis-panel/index.html  200
+/presentations/calaba-2026-pbis-panel/  /presentations/calaba-2026-pbis-panel/index.html  200
+/presentations/pbis-ca-2025-bcbas-pbis  /presentations/pbis-ca-2025-bcbas-pbis/index.html  200
+/presentations/pbis-ca-2025-bcbas-pbis/  /presentations/pbis-ca-2025-bcbas-pbis/index.html  200
+
 # Current BehaviorSchool product redirects
 /bcba-study-tools  https://behaviorschool.com/study 301
 /bcba-study-tools/  https://behaviorschool.com/study 301

@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">CALABA 2026 Beyond Observable Behavior thumbnail</title>
+  <desc id="desc">Dark conference slide style background with ACT and functional assessment concepts.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071827"/>
+      <stop offset="0.48" stop-color="#0b2c34"/>
+      <stop offset="1" stop-color="#062719"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f4c542"/>
+      <stop offset="1" stop-color="#1fd18b"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="42%" cy="46%" r="52%">
+      <stop offset="0" stop-color="#1fd18b" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#1fd18b" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000" flood-opacity="0.32"/>
+    </filter>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <rect width="1280" height="720" fill="url(#glow)"/>
+  <g opacity="0.18" stroke="#7ee7c2" stroke-width="1.2">
+    <path d="M0 126c158-38 272 62 432 20 142-38 200-142 360-110 160 32 228 160 488 86" fill="none"/>
+    <path d="M0 612c136-44 242 18 372-18 178-50 186-196 398-166 164 24 242 118 510 56" fill="none"/>
+    <path d="M140 0v720M300 0v720M460 0v720M620 0v720M780 0v720M940 0v720M1100 0v720"/>
+    <path d="M0 120h1280M0 240h1280M0 360h1280M0 480h1280M0 600h1280"/>
+  </g>
+  <g transform="translate(78 78)">
+    <text x="0" y="0" fill="#a7f3d0" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="800" letter-spacing="5">CALABA 2026</text>
+    <text x="0" y="86" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="66" font-weight="900">Beyond Observable</text>
+    <text x="0" y="160" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="66" font-weight="900">Behavior</text>
+    <rect x="0" y="202" width="540" height="6" rx="3" fill="url(#accent)"/>
+    <text x="0" y="270" fill="#c9d7d4" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="600">Measuring the function of thought</text>
+    <text x="0" y="314" fill="#c9d7d4" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="600">in school-based assessment</text>
+  </g>
+  <g transform="translate(700 118)" filter="url(#softShadow)">
+    <rect x="0" y="0" width="420" height="420" rx="34" fill="#0d2230" stroke="#1fd18b" stroke-opacity="0.72" stroke-width="3"/>
+    <circle cx="210" cy="176" r="84" fill="none" stroke="#f4c542" stroke-width="12" stroke-dasharray="126 34"/>
+    <circle cx="210" cy="176" r="116" fill="none" stroke="#d9fff1" stroke-width="8" stroke-dasharray="180 62" opacity="0.92"/>
+    <path d="M150 192c0-46 28-84 70-96 18 8 32 24 40 44 31 13 52 44 52 80 0 48-39 87-87 87h-72c-24 0-43-19-43-43 0-22 16-40 40-44z" fill="#e7fff6" opacity="0.95"/>
+    <path d="M275 308h78" stroke="#1fd18b" stroke-width="12" stroke-linecap="round"/>
+    <path d="M314 269v78" stroke="#1fd18b" stroke-width="12" stroke-linecap="round"/>
+    <g fill="#102f3c" stroke="#7ee7c2" stroke-width="2">
+      <rect x="48" y="304" width="122" height="58" rx="14"/>
+      <rect x="232" y="52" width="128" height="62" rx="14"/>
+    </g>
+    <text x="70" y="340" fill="#c9fff0" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800">ACT</text>
+    <text x="258" y="89" fill="#c9fff0" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800">FBA</text>
+  </g>
+  <g transform="translate(78 612)">
+    <text fill="#8aa49d" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">Rob Spain, BCBA | Sacramento</text>
+  </g>
+</svg>

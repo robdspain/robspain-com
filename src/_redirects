@@ -1,12 +1,6 @@
 # API routes
 /api/newsletter  /.netlify/functions/newsletter  200
 
-# CalABA 2026 — redirect to BehaviorSchool
-/calaba-2026  https://behaviorschool.com/calaba-2026 302
-/calaba-2026/  https://behaviorschool.com/calaba-2026 302
-
-
-
 # Redirect common 404 pages to appropriate locations
 /about  /#about 302
 /posts/  /blog/ 302
@@ -21,4 +15,3 @@
 /supervision-tools/  https://behaviorschool.com/supervisors 301
 /behavior-tools  https://behaviorschool.com/behavior-tools 301
 /behavior-tools/  https://behaviorschool.com/behavior-tools 301
-

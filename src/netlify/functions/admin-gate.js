@@ -99,7 +99,7 @@ function loginPage(error) {
     '</head><body><main class="card"><h1>Rob Spain Admin</h1><p>Sign in with Google ' + escapeHtml(allowedEmailsDescription()) + ' to continue.</p>' + errorHtml +
     '<div id="g_id_onload" data-client_id="' + escapeHtml(clientId) + '" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>' +
     '<div class="google-wrap"><div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="continue_with" data-shape="pill" data-logo_alignment="right"></div></div>' +
-    '<div id="fallback-wrap" class="fallback-wrap" style="display:none;"><a id="fallback-login-link" href="#" class="fallback-btn"><span class="google-icon-svg"></span><span>Sign in with Google</span></a></div>' +
+    '<div id="fallback-wrap" class="fallback-wrap"><a id="fallback-login-link" href="#" class="fallback-btn"><span class="google-icon-svg"></span><span>Continue with Google</span></a></div>' +
     '</main><script>' +
     'const clientId = "' + escapeHtml(clientId) + '";' +
     'const redirectUri = window.location.origin + window.location.pathname;' +

@@ -114,7 +114,9 @@ function loginPage(error) {
     '}' +
     'setTimeout(() => {' +
     '  const sdkButton = document.querySelector(".g_id_signin iframe");' +
-    '  if (!sdkButton) {' +
+    '  if (sdkButton) {' +
+    '    document.getElementById("fallback-wrap").style.display = "none";' +
+    '  } else {' +
     '    document.getElementById("fallback-wrap").style.display = "flex";' +
     '  }' +
     '}, 1500);' +

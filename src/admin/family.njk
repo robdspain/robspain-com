@@ -240,6 +240,29 @@ hide_public_nav: true
   .statement-account-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; margin-bottom: 12px; flex-wrap: wrap; }
   .statement-account-title { font-size: 15px; font-weight: 800; color: #123628; }
   .statement-account-note { font-size: 12px; color: #526158; margin-top: 3px; line-height: 1.45; }
+
+  /* Advisor */
+  .advisor-hero { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr); gap: 18px; margin-bottom: 18px; }
+  .advisor-decision { border: 1px solid #d9d1c4; background: #fffdf8; border-radius: 22px; padding: 22px; box-shadow: 0 14px 35px rgba(18, 54, 40, 0.08); }
+  .advisor-decision h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: #526158; margin: 0 0 10px; font-weight: 800; }
+  .advisor-headline { font-size: 28px; line-height: 1.15; font-weight: 850; color: #123628; margin-bottom: 8px; }
+  .advisor-copy { font-size: 14px; color: #526158; line-height: 1.6; max-width: 720px; }
+  .advisor-list { display: grid; gap: 10px; }
+  .advisor-item { border: 1px solid #e8e2d5; background: #fffdf8; border-radius: 16px; padding: 12px 14px; display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; }
+  .advisor-rank { width: 28px; height: 28px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 850; background: #ecf4ef; color: #1f4d3f; }
+  .advisor-item.critical .advisor-rank { background: #fee2e2; color: #991b1b; }
+  .advisor-item.warn .advisor-rank { background: #fef3c7; color: #92400e; }
+  .advisor-title { font-size: 14px; font-weight: 800; color: #17221d; }
+  .advisor-note { font-size: 12px; color: #526158; line-height: 1.45; margin-top: 2px; }
+  .advisor-amount { font-size: 15px; font-weight: 850; color: #123628; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+  .advisor-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+  .advisor-pill.red { background: #fee2e2; color: #991b1b; }
+  .advisor-pill.yellow { background: #fef3c7; color: #92400e; }
+  .advisor-pill.green { background: #d1fae5; color: #065f46; }
+  .advisor-pill.blue { background: #dbeafe; color: #1e40af; }
+  .advisor-controls { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .advisor-controls button { padding: 8px 12px; border-radius: 10px; border: 1px solid #d9d1c4; background: #fffdf8; color: #1f4d3f; font-size: 12px; font-weight: 800; cursor: pointer; }
+  .advisor-controls button:hover { border-color: #1f4d3f; background: rgba(31, 77, 63, 0.06); }
   
   /* Payment history */
   .payment-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #e8e2d5; font-size: 13px; }
@@ -248,7 +271,8 @@ hide_public_nav: true
   .payment-row .pay-name { flex: 1; font-weight: 600; color: #17221d; }
   .payment-row .pay-amt { font-weight: 750; color: #1f4d3f; font-variant-numeric: tabular-nums; }
   .payment-row .pay-from { font-size: 11px; color: #8ba4b8; margin-left: 8px; }
-  @media (max-width: 600px) { .fin-grid-4 { grid-template-columns: 1fr 1fr; } .fin-grid-2, .fin-grid-3 { grid-template-columns: 1fr; } .fin-tabs { gap: 4px; } .fin-tab { padding: 8px 12px; font-size: 12px; } }
+  @media (max-width: 800px) { .advisor-hero { grid-template-columns: 1fr; } }
+  @media (max-width: 600px) { .fin-grid-4 { grid-template-columns: 1fr 1fr; } .fin-grid-2, .fin-grid-3 { grid-template-columns: 1fr; } .fin-tabs { gap: 4px; } .fin-tab { padding: 8px 12px; font-size: 12px; } .advisor-item { grid-template-columns: auto 1fr; } .advisor-amount { grid-column: 2; text-align: left; } }
 </style>
 
 <div class="compliance-page">
@@ -278,6 +302,7 @@ hide_public_nav: true
   <!-- Tab Navigation -->
   <div class="fin-tabs">
     <div class="fin-tab active" onclick="showPanel('overview', this)">Overview</div>
+    <div class="fin-tab" onclick="showPanel('advisor', this)">Advisor</div>
     <div class="fin-tab" onclick="showPanel('payments', this)">Payments</div>
     <div class="fin-tab" onclick="showPanel('envelopes', this)">Envelopes</div>
     <div class="fin-tab" onclick="showPanel('calendar', this)">Bill Calendar</div>
@@ -342,6 +367,38 @@ hide_public_nav: true
 
     <!-- Deficit Summary -->
     <div class="fin-deficit" id="deficitSummary"></div>
+  </div>
+
+  <!-- ═══════════════════════ ADVISOR TAB ═══════════════════════ -->
+  <div id="panel-advisor" class="fin-panel">
+    <div class="advisor-hero">
+      <div class="advisor-decision" id="advisorDecision"></div>
+      <div class="advisor-decision" id="advisorCashPlan"></div>
+    </div>
+
+    <div class="fin-grid fin-grid-2">
+      <div class="fin-card">
+        <h3>Pay These First</h3>
+        <div id="advisorBillOrder" class="advisor-list"></div>
+      </div>
+      <div class="fin-card">
+        <h3>Debt Paydown Order</h3>
+        <div id="advisorDebtOrder" class="advisor-list"></div>
+      </div>
+    </div>
+
+    <div class="fin-section">
+      <div class="fin-grid fin-grid-2">
+        <div class="fin-card">
+          <h3>Move To Business Account</h3>
+          <div id="advisorBusinessCharges" class="advisor-list"></div>
+        </div>
+        <div class="fin-card">
+          <h3>Six-Month Family Budget Gap</h3>
+          <div id="advisorSixMonth"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- ═══════════════════════ PAYMENTS TAB ═══════════════════════ -->
@@ -605,6 +662,14 @@ const APPLE_CARD_DRIVE_FILES = [
   { month:'2026-04', title:'Apple Card Statement - April 2026.pdf', url:'https://drive.google.com/file/d/1c-V56_4fphLGyGBJCRtx4x1GXXwnLngV/view?usp=drivesdk' },
   { month:'2026-05', title:'Apple Card Statement - May 2026.pdf', url:'https://drive.google.com/file/d/1rf4_ZdFmr1rQ-QaiTrGwtZz1hz8hE1GJ/view?usp=drivesdk' }
 ];
+const BUSINESS_CHARGE_RULES = [
+  { pattern:/openai|chatgpt/i, label:'OpenAI / ChatGPT', action:'Move to Behavior School business card; keep receipts for software expense tracking.' },
+  { pattern:/anthropic|claude/i, label:'Anthropic / Claude', action:'Move to Behavior School business card; classify as AI/software tools.' },
+  { pattern:/godaddy|namecheap|domain|domains|google domains|squarespace domains/i, label:'Domain names', action:'Move domain renewals to business account and track renewal dates.' },
+  { pattern:/netlify|vercel|cloudflare|github|google workspace|workspace|zapier|stripe|sendgrid/i, label:'Business web/software tools', action:'Move platform charges to the business account if they support Behavior School or robspain.com.' },
+  { pattern:/behavior school|behaviorschool|robspain.com|robspain/i, label:'Rob Spain / Behavior School operating cost', action:'Review whether this should be paid from the business account.' }
+];
+const CASH_RESERVE_FLOOR = 300;
 let financeSyncTimer = null;
 
 function setConvexStatus(message, isError) {
@@ -659,6 +724,13 @@ function defaultState() {
       { id:'p3', billName:'Apple Card', amount:960, date:'2026-03-30', fromAccount:'EECU Checking', notes:'Exceeds $366 min' },
       { id:'p4', billName:'OFW Basic Plan', amount:110, date:'2026-03-03', fromAccount:'EECU Checking', notes:'Renewed' },
     ],
+    transactions: [],
+    householdPlan: {
+      reserveFloor: CASH_RESERVE_FLOOR,
+      sixMonthHorizon: 6,
+      contributionTarget: 0,
+      notes: 'Use this to make the monthly gap explicit before bills fall behind.'
+    },
     statementFolders: {
       eecu: '',
       discover: '',
@@ -685,6 +757,8 @@ function loadState() {
         accounts: saved.accounts || def.accounts,
         income: saved.income || def.income,
         payments: saved.payments || def.payments,
+        transactions: saved.transactions || def.transactions,
+        householdPlan: saved.householdPlan || def.householdPlan,
         statementFolders: saved.statementFolders || def.statementFolders,
         statements: saved.statements || def.statements,
         lastUpdated: saved.lastUpdated || def.lastUpdated,
@@ -713,6 +787,10 @@ function loadState() {
 function applyCurrentFinanceCorrections(state) {
   state.statementFolders = state.statementFolders || {};
   state.statements = state.statements || {};
+  state.transactions = Array.isArray(state.transactions) ? state.transactions : [];
+  state.householdPlan = state.householdPlan || { reserveFloor: CASH_RESERVE_FLOOR, sixMonthHorizon: 6, contributionTarget: 0, notes: '' };
+  if (!state.householdPlan.reserveFloor && state.householdPlan.reserveFloor !== 0) state.householdPlan.reserveFloor = CASH_RESERVE_FLOOR;
+  if (!state.householdPlan.sixMonthHorizon) state.householdPlan.sixMonthHorizon = 6;
   STATEMENT_SOURCES.forEach(source => {
     if (state.statementFolders[source.key] === undefined) state.statementFolders[source.key] = '';
     state.statements[source.key] = normalizeStatements(state.statements[source.key] || [], source.key);
@@ -912,6 +990,7 @@ function fmtDate(d) {
 function renderAll() {
   renderSummary();
   renderAlerts();
+  renderAdvisor();
   renderBills();
   renderAccounts();
   renderIncome();
@@ -971,6 +1050,152 @@ function renderAlerts() {
     html += `<div class="fin-alert danger"><strong>Overdue (${overdue.length}):</strong> ${overdue.map(b => b.name + ' ' + fmt(b.amount)).join(', ')}</div>`;
   }
   document.getElementById('alertsContainer').innerHTML = html;
+}
+
+function renderAdvisor() {
+  const cash = getCashAvailable();
+  const reserveFloor = Number(STATE.householdPlan?.reserveFloor ?? CASH_RESERVE_FLOOR);
+  const spendableCash = Math.max(0, cash - reserveFloor);
+  const totalIncome = STATE.income.reduce((s, i) => s + Number(i.amount || 0), 0);
+  const totalBills = STATE.bills.reduce((s, b) => s + Number(b.amount || 0), 0);
+  const deficit = totalBills - totalIncome;
+  const sixMonthGap = Math.max(0, deficit) * Number(STATE.householdPlan?.sixMonthHorizon || 6);
+  const billPlan = buildBillPayPlan(spendableCash);
+  const urgentUnfunded = billPlan.filter(item => !item.funded && item.bill.priority <= 2);
+  const businessCharges = findBusinessCharges();
+  const debtPlan = buildDebtPlan();
+
+  const decisionTone = urgentUnfunded.length ? 'red' : deficit > 0 ? 'yellow' : 'green';
+  const decisionText = urgentUnfunded.length
+    ? `Pay only the highest-priority bills until ${fmt(urgentUnfunded.reduce((s, item) => s + item.remainingShort, 0))} more cash is found.`
+    : deficit > 0
+      ? `The immediate bills can be staged, but the monthly plan is short by ${fmt(deficit)}.`
+      : 'The monthly plan is currently covered if balances and bill amounts are current.';
+
+  const decision = document.getElementById('advisorDecision');
+  if (decision) {
+    decision.innerHTML = `
+      <h3>Plain-English Recommendation</h3>
+      <div class="advisor-headline">${esc(decisionText)}</div>
+      <div class="advisor-copy">
+        Keep at least ${fmt(reserveFloor)} in checking as a floor. Do not make extra debt payments until P1 survival bills, P2 minimums, and any overdue utility/legal/custody-related obligations are covered. Business software and domain charges should move off personal cards so the personal budget stops absorbing business costs.
+      </div>
+      <div class="advisor-controls">
+        <button onclick="activatePanel('calendar')">Open Bill Calendar</button>
+        <button onclick="activatePanel('import')">Import Transactions</button>
+        <button onclick="editReserveFloor()">Edit Cash Floor</button>
+      </div>
+      <div style="margin-top:14px;"><span class="advisor-pill ${decisionTone}">${urgentUnfunded.length ? 'Cash triage' : deficit > 0 ? 'Monthly gap' : 'Covered'}</span></div>
+    `;
+  }
+
+  const cashPlan = document.getElementById('advisorCashPlan');
+  if (cashPlan) {
+    const fundedTotal = billPlan.filter(item => item.funded).reduce((s, item) => s + item.bill.amount, 0);
+    const unfundedTotal = billPlan.filter(item => !item.funded).reduce((s, item) => s + item.bill.amount, 0);
+    cashPlan.innerHTML = `
+      <h3>Available Cash Plan</h3>
+      <div style="display:grid;gap:12px;">
+        <div><div class="fin-sub">Cash in checking/savings</div><div class="fin-stat ${cash > reserveFloor ? 'yellow' : 'red'}">${fmt(cash)}</div></div>
+        <div><div class="fin-sub">Spendable after ${fmt(reserveFloor)} floor</div><div class="fin-stat ${spendableCash > 0 ? 'green' : 'red'}">${fmt(spendableCash)}</div></div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;"><span>Can fund now</span><strong>${fmt(fundedTotal)}</strong></div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;"><span>Still unfunded</span><strong style="color:#b91c1c;">${fmt(unfundedTotal)}</strong></div>
+      </div>
+    `;
+  }
+
+  renderAdvisorBillOrder(billPlan);
+  renderAdvisorDebtOrder(debtPlan);
+  renderAdvisorBusinessCharges(businessCharges);
+  renderAdvisorSixMonth(totalIncome, totalBills, deficit, sixMonthGap, businessCharges);
+}
+
+function renderAdvisorBillOrder(plan) {
+  const target = document.getElementById('advisorBillOrder');
+  if (!target) return;
+  const visible = plan.slice(0, 10);
+  target.innerHTML = visible.length ? visible.map((item, index) => {
+    const cls = item.bill.status === 'overdue' || (!item.funded && item.bill.priority <= 2) ? 'critical' : item.bill.priority <= 2 ? 'warn' : '';
+    const status = item.funded ? 'Fund now' : 'Needs cash';
+    const dueText = item.bill.dueDay ? `Due ${ordinal(item.bill.dueDay)}` : 'Monthly/variable';
+    return `
+      <div class="advisor-item ${cls}">
+        <div class="advisor-rank">${index + 1}</div>
+        <div>
+          <div class="advisor-title">${esc(item.bill.name)} <span class="advisor-pill ${item.funded ? 'green' : 'red'}">${status}</span></div>
+          <div class="advisor-note">${dueText}. ${esc(item.reason)} ${item.bill.notes ? esc(item.bill.notes) : ''}</div>
+        </div>
+        <div class="advisor-amount">${fmt(item.bill.amount)}</div>
+      </div>`;
+  }).join('') : '<div class="advisor-note">No unpaid bills are currently listed.</div>';
+}
+
+function renderAdvisorDebtOrder(plan) {
+  const target = document.getElementById('advisorDebtOrder');
+  if (!target) return;
+  target.innerHTML = plan.length ? plan.map((item, index) => `
+    <div class="advisor-item ${index === 0 ? 'critical' : index === 1 ? 'warn' : ''}">
+      <div class="advisor-rank">${index + 1}</div>
+      <div>
+        <div class="advisor-title">${esc(item.name)}</div>
+        <div class="advisor-note">${esc(item.reason)} Minimum estimate: ${item.minPay ? fmt(item.minPay) : 'unknown'}.</div>
+      </div>
+      <div class="advisor-amount">${fmt(item.balance)}</div>
+    </div>
+  `).join('') : '<div class="advisor-note">No debt accounts are currently listed.</div>';
+}
+
+function renderAdvisorBusinessCharges(charges) {
+  const target = document.getElementById('advisorBusinessCharges');
+  if (!target) return;
+  if (!charges.length) {
+    target.innerHTML = `
+      <div class="advisor-item warn">
+        <div class="advisor-rank">!</div>
+        <div>
+          <div class="advisor-title">No matching imports yet</div>
+          <div class="advisor-note">Import Apple Card, Discover, and EECU CSV files. I will flag OpenAI, Anthropic, domain, hosting, and business-platform charges here.</div>
+        </div>
+        <div class="advisor-amount">$0</div>
+      </div>`;
+    return;
+  }
+  target.innerHTML = charges.slice(0, 12).map((charge, index) => `
+    <div class="advisor-item warn">
+      <div class="advisor-rank">${index + 1}</div>
+      <div>
+        <div class="advisor-title">${esc(charge.label)}</div>
+        <div class="advisor-note">${esc(charge.desc)} ${charge.source ? `from ${esc(charge.source)}` : ''}. ${esc(charge.action)}</div>
+      </div>
+      <div class="advisor-amount">${fmt(charge.amount)}</div>
+    </div>
+  `).join('');
+}
+
+function renderAdvisorSixMonth(totalIncome, totalBills, deficit, sixMonthGap, businessCharges) {
+  const target = document.getElementById('advisorSixMonth');
+  if (!target) return;
+  const monthlyGap = Math.max(0, deficit);
+  const businessLeak = businessCharges.reduce((s, item) => s + item.amount, 0);
+  const contributionTarget = Number(STATE.householdPlan?.contributionTarget || 0) || monthlyGap;
+  target.innerHTML = `
+    <div style="display:grid;gap:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;"><span class="fin-sub">Monthly income</span><strong style="font-size:20px;color:#1f4d3f;">${fmt(totalIncome)}</strong></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;"><span class="fin-sub">Monthly bills/obligations</span><strong style="font-size:20px;color:#123628;">${fmt(totalBills)}</strong></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;"><span class="fin-sub">Monthly gap</span><strong style="font-size:24px;color:${monthlyGap ? '#b91c1c' : '#1f4d3f'};">${monthlyGap ? fmt(monthlyGap) : '$0'}</strong></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;"><span class="fin-sub">Six-month gap</span><strong style="font-size:24px;color:${sixMonthGap ? '#b91c1c' : '#1f4d3f'};">${fmt(sixMonthGap)}</strong></div>
+      <div class="fin-alert ${monthlyGap ? 'danger' : 'info'}" style="margin:4px 0 0;">
+        <strong>Household contribution target:</strong> ${fmt(contributionTarget)}/mo closes the current budget gap before debt payoff. If that cannot happen, the dashboard should force a choice: defer lower-priority bills, reduce costs, or use a temporary family/settlement/tax bridge.
+      </div>
+      <div class="fin-alert warn" style="margin:0;">
+        <strong>Business leakage watch:</strong> ${businessLeak ? `${fmt(businessLeak)} detected in imported transactions.` : 'Import current card/bank CSVs to quantify business charges.'}
+      </div>
+      <div class="advisor-controls">
+        <button onclick="editContributionTarget()">Edit Contribution Target</button>
+        <button onclick="activatePanel('statements')">Check Statement Coverage</button>
+      </div>
+    </div>
+  `;
 }
 
 function renderBills() {
@@ -1423,6 +1648,136 @@ function renderStatementSource(source) {
   `;
 }
 
+function getCashAvailable() {
+  return STATE.accounts
+    .filter(account => account.type === 'checking' || account.type === 'savings')
+    .reduce((sum, account) => sum + Math.max(0, Number(account.balance || 0)), 0);
+}
+
+function buildBillPayPlan(spendableCash) {
+  let remaining = spendableCash;
+  return STATE.bills
+    .filter(bill => bill.status !== 'paid' && bill.amount > 0)
+    .map(bill => ({ bill, score: billUrgencyScore(bill), reason: billUrgencyReason(bill) }))
+    .sort((a, b) => b.score - a.score || Number(a.bill.dueDay || 99) - Number(b.bill.dueDay || 99))
+    .map(item => {
+      const funded = remaining >= item.bill.amount;
+      if (funded) remaining -= item.bill.amount;
+      return {
+        ...item,
+        funded,
+        remainingCash: remaining,
+        remainingShort: funded ? 0 : Math.max(0, item.bill.amount - remaining)
+      };
+    });
+}
+
+function billUrgencyScore(bill) {
+  let score = (5 - Number(bill.priority || 4)) * 100;
+  if (bill.status === 'overdue') score += 500;
+  if (bill.status === 'autopay') score += 75;
+  if (bill.status === 'current') score += 50;
+  const days = daysUntilDue(bill.dueDay);
+  if (days !== null) score += Math.max(0, 45 - days) * 5;
+  if (/rent|vista|pge|pg&e|fresno|xfinity|therapy|supporting|child support|dcss|auto loan/i.test(bill.name || '')) score += 80;
+  if (/legal|tipton|court|ofw|familywizard/i.test(`${bill.name || ''} ${bill.notes || ''}`)) score += 40;
+  return score;
+}
+
+function billUrgencyReason(bill) {
+  if (bill.status === 'overdue') return 'Overdue or already at risk.';
+  if (bill.priority === 1) return 'Survival/custody/utility obligation.';
+  if (bill.priority === 2) return 'Minimum payment or insurance; protect credit and coverage.';
+  if (bill.priority === 3) return 'Useful, but should wait until P1/P2 are covered.';
+  return 'Lower-priority or credit-funded item; do not pay ahead while cash is tight.';
+}
+
+function daysUntilDue(dueDay) {
+  if (!dueDay) return null;
+  const today = new Date();
+  let due = new Date(today.getFullYear(), today.getMonth(), Number(dueDay));
+  if (due < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
+    due = new Date(today.getFullYear(), today.getMonth() + 1, Number(dueDay));
+  }
+  return Math.ceil((due - today) / 86400000);
+}
+
+function buildDebtPlan() {
+  return STATE.accounts
+    .filter(account => account.balance < 0)
+    .map(account => {
+      const balance = Math.abs(Number(account.balance || 0));
+      const bill = STATE.bills.find(b => accountBillMatch(account, b));
+      const kindScore = debtKindScore(account);
+      return {
+        name: account.name,
+        balance,
+        minPay: bill ? Number(bill.amount || 0) : 0,
+        score: kindScore + Math.min(balance / 1000, 20),
+        reason: debtReason(account)
+      };
+    })
+    .sort((a, b) => b.score - a.score);
+}
+
+function accountBillMatch(account, bill) {
+  const haystack = `${account.name || ''} ${bill.name || ''}`.toLowerCase();
+  if (account.id === 'applecard' && haystack.includes('apple')) return true;
+  if (account.id === 'discover' && haystack.includes('discover')) return true;
+  if (account.type === 'loc' && /loc|line of credit/i.test(haystack)) return true;
+  if (account.type === 'loan' && /auto|loan/i.test(haystack)) return true;
+  return false;
+}
+
+function debtKindScore(account) {
+  const text = `${account.id || ''} ${account.name || ''} ${account.type || ''}`.toLowerCase();
+  if (/apple|discover|credit/.test(text)) return 300;
+  if (/loc|line of credit/.test(text)) return 220;
+  if (/loan|auto/.test(text)) return 80;
+  return 150;
+}
+
+function debtReason(account) {
+  const text = `${account.id || ''} ${account.name || ''} ${account.type || ''}`.toLowerCase();
+  if (/apple/.test(text)) return 'Highest-risk revolving debt; do not add new charges and attack after survival bills are current.';
+  if (/discover|credit/.test(text)) return 'Likely high-interest revolving debt; pay minimum first, then extra after Apple if Apple APR is higher.';
+  if (/loc|line of credit/.test(text)) return 'Useful emergency buffer; pay down after high-interest cards so available credit stays open.';
+  if (/loan|auto/.test(text)) return 'Keep current, but do not accelerate while cash is tight unless rate or repossession risk changes.';
+  return 'Pay minimum until exact APR is known.';
+}
+
+function findBusinessCharges() {
+  const imported = (STATE.transactions || [])
+    .filter(txn => Number(txn.amount || 0) < 0)
+    .map(txn => {
+      const desc = String(txn.desc || '');
+      const rule = BUSINESS_CHARGE_RULES.find(item => item.pattern.test(desc));
+      if (!rule) return null;
+      return {
+        label: rule.label,
+        action: rule.action,
+        desc,
+        amount: Math.abs(Number(txn.amount || 0)),
+        source: txn.source || txn.fileName || '',
+        date: txn.date || ''
+      };
+    })
+    .filter(Boolean);
+
+  const manualWatch = [
+    { label:'OpenAI / ChatGPT', desc:'Known recurring AI tool to verify in card imports', amount:0, source:'Watchlist', action:'Move to Behavior School business card if still on personal card.' },
+    { label:'Anthropic / Claude', desc:'Known recurring AI tool to verify in card imports', amount:0, source:'Watchlist', action:'Move to Behavior School business card if still on personal card.' },
+    { label:'Domain names', desc:'Domain renewals and hosting should not stay on personal cards', amount:0, source:'Watchlist', action:'Move GoDaddy/domain/hosting renewals to the business account.' }
+  ];
+
+  const deduped = [];
+  [...imported, ...manualWatch].forEach(item => {
+    const key = `${item.label}|${item.desc}|${item.amount}|${item.date}`;
+    if (!deduped.some(existing => `${existing.label}|${existing.desc}|${existing.amount}|${existing.date}` === key)) deduped.push(item);
+  });
+  return deduped.sort((a, b) => b.amount - a.amount);
+}
+
 // ═══════════════════════════════════════════════════════════════
 // ACTIONS
 // ═══════════════════════════════════════════════════════════════
@@ -1629,6 +1984,51 @@ function setStatementStatus(sourceKey, month, status, fileName) {
   showToast(statementSourceLabel(sourceKey) + ' ' + formatMonth(month) + ' marked ' + status);
 }
 
+function editReserveFloor() {
+  const current = Number(STATE.householdPlan?.reserveFloor ?? CASH_RESERVE_FLOOR);
+  const val = prompt('Minimum checking/savings cash floor before paying optional bills:', current);
+  if (val === null) return;
+  const num = parseFloat(val);
+  if (isNaN(num) || num < 0) return;
+  STATE.householdPlan.reserveFloor = num;
+  saveState(STATE);
+  renderAll();
+  showToast('Cash floor set to ' + fmt(num));
+}
+
+function editContributionTarget() {
+  const totalIncome = STATE.income.reduce((s, i) => s + Number(i.amount || 0), 0);
+  const totalBills = STATE.bills.reduce((s, b) => s + Number(b.amount || 0), 0);
+  const suggested = Math.max(0, totalBills - totalIncome);
+  const current = Number(STATE.householdPlan?.contributionTarget || suggested);
+  const val = prompt('Monthly household contribution target to close the budget gap:', current);
+  if (val === null) return;
+  const num = parseFloat(val);
+  if (isNaN(num) || num < 0) return;
+  STATE.householdPlan.contributionTarget = num;
+  saveState(STATE);
+  renderAll();
+  showToast('Contribution target set to ' + fmt(num) + '/mo');
+}
+
+function saveImportedTransactions(fileName, source, txns) {
+  const importedAt = new Date().toISOString();
+  const normalized = txns.map(txn => ({
+    id: `txn_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    fileName,
+    source,
+    importedAt,
+    date: txn.date || '',
+    desc: txn.desc || '',
+    amount: Number(txn.amount || 0)
+  }));
+  const existingKeys = new Set((STATE.transactions || []).map(txn => `${txn.fileName}|${txn.date}|${txn.desc}|${txn.amount}`));
+  const fresh = normalized.filter(txn => !existingKeys.has(`${txn.fileName}|${txn.date}|${txn.desc}|${txn.amount}`));
+  STATE.transactions = [...fresh, ...(STATE.transactions || [])].slice(0, 2500);
+  if (fresh.length) saveState(STATE);
+  return fresh.length;
+}
+
 // ═══════════════════════════════════════════════════════════════
 // UTILITIES
 // ═══════════════════════════════════════════════════════════════
@@ -1638,6 +2038,11 @@ function showPanel(name, el) {
   document.querySelectorAll('.fin-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('panel-' + name).classList.add('active');
   if (el) el.classList.add('active');
+}
+
+function activatePanel(name) {
+  const tab = Array.from(document.querySelectorAll('.fin-tab')).find(item => item.getAttribute('onclick')?.includes(`'${name}'`));
+  showPanel(name, tab);
 }
 
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
@@ -1719,10 +2124,11 @@ function handleFile(file) {
     const totalOut = txns.filter(t => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
     const totalIn = txns.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0);
     if (source !== 'unknown') markStatementFromImport(source, file.name, txns);
+    const newTransactions = saveImportedTransactions(file.name, source, txns);
 
     document.getElementById('importResults').style.display = 'block';
     document.getElementById('importTitle').textContent = file.name;
-    document.getElementById('importCount').textContent = txns.length + ' transactions';
+    document.getElementById('importCount').textContent = txns.length + ' transactions · ' + newTransactions + ' new saved';
     document.getElementById('importSummary').innerHTML =
       '<span>Total in: <strong style="color:#22c55e">$' + totalIn.toFixed(2) + '</strong></span>' +
       '<span>Total out: <strong style="color:#ef4444">$' + totalOut.toFixed(2) + '</strong></span>' +
@@ -1737,6 +2143,7 @@ function handleFile(file) {
         '<span class="txn-amt ' + (isDebit ? 'debit' : 'credit') + '">$' + Math.abs(t.amount).toFixed(2) + '</span></div>';
     }).join('');
     if (txns.length > 100) list.innerHTML += '<div style="text-align:center;padding:8px;color:#64748b;font-size:12px;">Showing first 100 of ' + txns.length + '</div>';
+    renderAdvisor();
   };
   reader.readAsText(file);
 }

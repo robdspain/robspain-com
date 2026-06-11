@@ -18,6 +18,7 @@ class PremiumInteractions {
         this.setupSmoothScrolling();
         this.setupGradientTextScroll();
         this.setupAnimatedPaths();
+        this.setupHomepageMotion();
     }
 
     // Premium Navigation - scroll effects disabled for non-persistent nav
@@ -52,12 +53,18 @@ class PremiumInteractions {
 
     // Advanced scroll animations
     setupScrollAnimations() {
-        const animatedElements = document.querySelectorAll('.animate-fade-up, .animate-scale-up');
+        const animatedElements = document.querySelectorAll('.animate-fade-up, .animate-scale-up, .animate-fade-left, .animate-fade-right');
+
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            animatedElements.forEach(el => el.classList.add('in-view'));
+            return;
+        }
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.style.animationPlayState = 'running';
+                    entry.target.classList.add('in-view');
+                    observer.unobserve(entry.target);
                 }
             });
         }, {
@@ -65,10 +72,7 @@ class PremiumInteractions {
             rootMargin: '0px 0px -50px 0px'
         });
 
-        animatedElements.forEach(el => {
-            el.style.animationPlayState = 'paused';
-            observer.observe(el);
-        });
+        animatedElements.forEach(el => observer.observe(el));
     }
 
     // Premium parallax effects
@@ -347,22 +351,15 @@ class PremiumInteractions {
     // Enhanced intersection observer for complex animations
     setupIntersectionObserver() {
         const observerOptions = {
-            threshold: [0, 0.25, 0.5, 0.75, 1],
+            threshold: 0.35,
             rootMargin: '-10% 0px -10% 0px'
         };
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                const ratio = entry.intersectionRatio;
-                const element = entry.target;
-
-                if (ratio > 0.25) {
-                    element.style.opacity = ratio;
-                    element.style.transform = `translateY(${(1 - ratio) * 50}px)`;
-                }
-
-                if (ratio > 0.75) {
-                    element.classList.add('in-view');
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in-view');
+                    observer.unobserve(entry.target);
                 }
             });
         }, observerOptions);
@@ -508,6 +505,122 @@ class PremiumInteractions {
                 });
             });
         }
+    }
+
+    setupHomepageMotion() {
+        const homepage = document.querySelector('.hero-premium');
+        if (!homepage) return;
+
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const sections = Array.from(document.querySelectorAll('main > section')).filter(section => !section.classList.contains('hero-premium'));
+        const revealSelectors = [
+            '.proposition-card',
+            '.about-copy',
+            '.about-visual',
+            '.stat-premium',
+            '.achievement',
+            '.video-card',
+            '.problem-side',
+            '.solution-side',
+            '.problem-item',
+            '.benefit-item',
+            '.story-header',
+            '.story-paragraph',
+            '.transformation-quote',
+            '.story-cta',
+            '.credentials-card',
+            '.credentials-stats .stat-item',
+            '.highlight-item',
+            '.projects-visual',
+            '.projects-content',
+            '.project-highlight',
+            '.project-features li',
+            '.service-tier',
+            '.youtube-video-card',
+            '.youtube-feed-container',
+            '.youtube-cta',
+            '.newsletter-shell',
+            '.newsletter-signup',
+            '.contact-form-modern',
+            '.video-player-frame',
+            '.video-nav-controls'
+        ];
+
+        sections.forEach(section => section.classList.add('home-motion-section'));
+
+        const revealItems = [];
+        sections.forEach(section => {
+            const items = Array.from(section.querySelectorAll(revealSelectors.join(',')));
+            items.forEach((item, index) => {
+                if (item.classList.contains('hero-image-container-premium')) return;
+                item.classList.add('motion-ready');
+                item.style.setProperty('--motion-index', Math.min(index, 8));
+
+                if (item.matches('.problem-side, .about-copy, .projects-content')) {
+                    item.classList.add('motion-from-left');
+                } else if (item.matches('.solution-side, .about-visual, .projects-visual')) {
+                    item.classList.add('motion-from-right');
+                }
+
+                if (item.matches('.proposition-card, .achievement, .video-card, .service-tier, .youtube-video-card, .project-highlight, .credentials-card')) {
+                    item.classList.add('motion-tilt');
+                }
+
+                revealItems.push(item);
+            });
+        });
+
+        if (reduceMotion) {
+            sections.forEach(section => section.classList.add('section-in-view'));
+            revealItems.forEach(item => item.classList.add('motion-in-view'));
+            return;
+        }
+
+        const sectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                entry.target.classList.toggle('section-in-view', entry.isIntersecting);
+            });
+        }, {
+            threshold: 0.18,
+            rootMargin: '0px 0px -12% 0px'
+        });
+
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('motion-in-view');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.16,
+            rootMargin: '0px 0px -8% 0px'
+        });
+
+        sections.forEach(section => sectionObserver.observe(section));
+        revealItems.forEach(item => revealObserver.observe(item));
+
+        let ticking = false;
+        const updateSectionProgress = () => {
+            const viewportHeight = window.innerHeight || 1;
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                const progress = 1 - ((rect.top + rect.height * 0.5) / (viewportHeight + rect.height));
+                section.style.setProperty('--section-progress', Math.max(0, Math.min(1, progress)).toFixed(3));
+            });
+            ticking = false;
+        };
+
+        const requestUpdate = () => {
+            if (!ticking) {
+                window.requestAnimationFrame(updateSectionProgress);
+                ticking = true;
+            }
+        };
+
+        updateSectionProgress();
+        window.addEventListener('scroll', requestUpdate, { passive: true });
+        window.addEventListener('resize', requestUpdate);
     }
 }
 

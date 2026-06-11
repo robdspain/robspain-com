@@ -9,6 +9,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ resolvedTitle }}</title>
     <meta name="description" content="{{ resolvedDescription }}">
+    {% if keywords %}
+    <meta name="keywords" content="{{ keywords | join(', ') }}">
+    {% endif %}
     <meta name="robots" content="index, follow">
     <meta name="author" content="Rob Spain, BCBA, IBA">
     <link rel="canonical" href="{{ resolvedUrl | absoluteUrl }}">
@@ -40,11 +43,6 @@
     {{ extra_head | safe }}
     {% endif %}
 
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://robspain.com{{ page.url | url }}">
-
-
-
     <!-- SEO & Social Meta Tags -->
     <meta property="og:title" content="{{ seo.metaTitle or title or "Rob Spain - School BCBA" }}">
     <meta property="og:description" content="{{ seo.metaDesc or description or "Rob Spain, School BCBA." }}">
@@ -59,7 +57,114 @@
     <meta name="twitter:creator" content="@robspainBCBA">
 
     <script type="application/ld+json">
-    {% if layout == "post.njk" %}
+    {% if presentation %}
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebPage",
+          "@id": "{{ resolvedUrl | absoluteUrl }}#webpage",
+          "url": "{{ resolvedUrl | absoluteUrl }}",
+          "name": "{{ resolvedTitle }}",
+          "description": "{{ resolvedDescription }}",
+          "image": "{{ resolvedImage | absoluteUrl }}",
+          "isPartOf": {
+            "@type": "WebSite",
+            "name": "Rob Spain, BCBA",
+            "url": "https://robspain.com/"
+          },
+          "about": [
+            "School BCBA",
+            "PBIS",
+            "behavior analysis in schools",
+            "school behavior systems"
+          ],
+          "author": {
+            "@id": "https://robspain.com/#rob-spain"
+          }
+        },
+        {
+          "@type": "Person",
+          "@id": "https://robspain.com/#rob-spain",
+          "name": "Rob Spain",
+          "url": "https://robspain.com/",
+          "jobTitle": "School BCBA",
+          "sameAs": [
+            "https://www.linkedin.com/in/robspain/",
+            "https://twitter.com/robspainBCBA",
+            "https://behaviorschool.com"
+          ]
+        },
+        {
+          "@type": "PresentationDigitalDocument",
+          "@id": "{{ resolvedUrl | absoluteUrl }}#presentation",
+          "name": "{{ presentation.heading or resolvedTitle }}",
+          "description": "{{ presentation.abstract or resolvedDescription }}",
+          "image": "{{ presentation.image | absoluteUrl }}",
+          "datePublished": "{{ presentation.isoDate or page.date.toISOString() }}",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Rob Spain, BCBA"
+          },
+          "author": [
+            {% for presenter in presentation.presenters %}
+            {
+              "@type": "Person",
+              "name": "{{ presenter.name }}"
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+          ],
+          "about": [
+            {% for topic in presentation.topics %}
+            "{{ topic }}"{% if not loop.last %},{% endif %}
+            {% endfor %}
+          ]
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": "{{ resolvedUrl | absoluteUrl }}#breadcrumbs",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://robspain.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Presentations",
+              "item": "https://robspain.com/#interviews"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "{{ presentation.heading or resolvedTitle }}",
+              "item": "{{ resolvedUrl | absoluteUrl }}"
+            }
+          ]
+        }
+        {% if presentation.faqs %},
+        {
+          "@type": "FAQPage",
+          "@id": "{{ resolvedUrl | absoluteUrl }}#faq",
+          "mainEntity": [
+            {% for faq in presentation.faqs %}
+            {
+              "@type": "Question",
+              "name": "{{ faq.question }}",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "{{ faq.answer }}"
+              }
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+          ]
+        }
+        {% endif %}
+      ]
+    }
+    {% elif layout == "post.njk" %}
     {
       "@context": "https://schema.org",
       "@type": "BlogPosting",

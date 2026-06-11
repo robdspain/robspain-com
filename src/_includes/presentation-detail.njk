@@ -8,6 +8,13 @@
       <p class="presentation-eyebrow">{{ presentation.eyebrow }}</p>
       <h1>{{ presentation.heading or title }}</h1>
       <p class="presentation-summary">{{ presentation.summary }}</p>
+      {% if presentation.keywords %}
+      <div class="presentation-tags" aria-label="Presentation topics">
+        {% for keyword in presentation.keywords %}
+          <span>{{ keyword }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
       <div class="presentation-meta-grid" aria-label="Presentation details">
         <div>
           <span>Event</span>
@@ -34,6 +41,14 @@
 
   <section class="presentation-body">
     <div class="presentation-main">
+      {% if presentation.abstract %}
+      <div class="presentation-card presentation-abstract-card">
+        <p class="presentation-kicker">Presentation Abstract</p>
+        <h2>{{ presentation.abstractTitle or "Abstract" }}</h2>
+        <p>{{ presentation.abstract }}</p>
+      </div>
+      {% endif %}
+
       <div class="presentation-card presentation-overview-card">
         <p class="presentation-kicker">Session Description</p>
         <h2>{{ presentation.descriptionTitle }}</h2>
@@ -53,6 +68,20 @@
           {% endfor %}
         </div>
       </div>
+
+      {% if presentation.faqs %}
+      <div class="presentation-card presentation-faq-card">
+        <p class="presentation-kicker">Questions This Page Answers</p>
+        <div class="presentation-faq-list">
+          {% for faq in presentation.faqs %}
+            <details>
+              <summary>{{ faq.question }}</summary>
+              <p>{{ faq.answer }}</p>
+            </details>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
     </div>
 
     <aside class="presentation-sidebar">
@@ -81,6 +110,16 @@
               {{ resource.label }}
             </a>
           {% endfor %}
+        </div>
+      </div>
+
+      <div class="presentation-card presentation-related-card">
+        <p class="presentation-kicker">Related Resources</p>
+        <div class="presentation-related-links">
+          <a href="/blog/">School BCBA Blog</a>
+          <a href="/transformation-program/">Transformation Program</a>
+          <a href="https://behaviorschool.com/study" target="_blank" rel="noopener">Behavior Study Tools</a>
+          <a href="/cv/">Rob Spain CV</a>
         </div>
       </div>
     </aside>
@@ -139,6 +178,23 @@
     line-height: 1.65;
     margin: 0 0 2rem;
     max-width: 720px;
+  }
+
+  .presentation-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin: -0.65rem 0 2rem;
+  }
+
+  .presentation-tags span {
+    background: #dffbf0;
+    border: 1px solid rgba(15, 107, 85, 0.12);
+    border-radius: 999px;
+    color: #0f6b55;
+    font-size: 0.78rem;
+    font-weight: 900;
+    padding: 0.45rem 0.7rem;
   }
 
   .presentation-meta-grid {
@@ -233,6 +289,10 @@
     margin-bottom: 0;
   }
 
+  .presentation-abstract-card {
+    border-color: rgba(15, 107, 85, 0.24);
+  }
+
   .presentation-topic-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -300,6 +360,47 @@
     display: grid;
     gap: 0.75rem;
     margin-top: 1.2rem;
+  }
+
+  .presentation-faq-list {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .presentation-faq-list details {
+    background: #f7fbf8;
+    border: 1px solid rgba(15, 107, 85, 0.14);
+    border-radius: 16px;
+    padding: 1rem;
+  }
+
+  .presentation-faq-list summary {
+    color: #17231f;
+    cursor: pointer;
+    font-weight: 900;
+    line-height: 1.35;
+  }
+
+  .presentation-faq-list p {
+    margin-top: 0.75rem;
+  }
+
+  .presentation-related-links {
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  .presentation-related-links a {
+    align-items: center;
+    background: #f2faf6;
+    border: 1px solid rgba(15, 107, 85, 0.12);
+    border-radius: 14px;
+    color: #0f6b55;
+    display: flex;
+    font-weight: 900;
+    min-height: 2.85rem;
+    padding: 0.7rem 0.85rem;
+    text-decoration: none;
   }
 
   .presentation-button {

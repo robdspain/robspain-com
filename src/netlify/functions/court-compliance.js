@@ -4,6 +4,7 @@ const path = require('path');
 
 const COOKIE_NAME = 'court_compliance_auth';
 const COOKIE_MAX_AGE = 60 * 60 * 12;
+const COOKIE_PATH = '/admin';
 
 function secret() {
   return process.env.COURT_COMPLIANCE_PASSWORD || process.env.ADMIN_API_TOKEN || '';
@@ -98,8 +99,13 @@ exports.handler = async (event) => {
       statusCode: 302,
       headers: {
         Location: '/admin/court-compliance/',
-        'Set-Cookie': `${COOKIE_NAME}=; Path=/admin/court-compliance; Max-Age=0; HttpOnly; Secure; SameSite=Lax`,
         'Cache-Control': 'no-store'
+      },
+      multiValueHeaders: {
+        'Set-Cookie': [
+          `${COOKIE_NAME}=; Path=/admin; Max-Age=0; HttpOnly; Secure; SameSite=Lax`,
+          `${COOKIE_NAME}=; Path=/admin/court-compliance; Max-Age=0; HttpOnly; Secure; SameSite=Lax`
+        ]
       },
       body: ''
     };
@@ -113,7 +119,7 @@ exports.handler = async (event) => {
         statusCode: 302,
         headers: {
           Location: '/admin/court-compliance/',
-          'Set-Cookie': `${COOKIE_NAME}=${encodeURIComponent(tokenFor('authorized'))}; Path=/admin/court-compliance; Max-Age=${COOKIE_MAX_AGE}; HttpOnly; Secure; SameSite=Lax`,
+          'Set-Cookie': `${COOKIE_NAME}=${encodeURIComponent(tokenFor('authorized'))}; Path=${COOKIE_PATH}; Max-Age=${COOKIE_MAX_AGE}; HttpOnly; Secure; SameSite=Lax`,
           'Cache-Control': 'no-store'
         },
         body: ''
@@ -136,7 +142,11 @@ exports.handler = async (event) => {
 
   return {
     statusCode: 200,
-    headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'private, no-store' },
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'private, no-store',
+      'Set-Cookie': `${COOKIE_NAME}=${encodeURIComponent(tokenFor('authorized'))}; Path=${COOKIE_PATH}; Max-Age=${COOKIE_MAX_AGE}; HttpOnly; Secure; SameSite=Lax`
+    },
     body: pageHtml()
   };
 };

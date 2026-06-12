@@ -916,7 +916,7 @@ h3 {
   background: #1f4d3f;
   border: 0;
   border-radius: 999px;
-  color: white;
+  color: #f8fafc;
   cursor: pointer;
   font: inherit;
   font-weight: 750;
@@ -1001,7 +1001,7 @@ h3 {
 }
 .timeline-item.is-complete .timeline-marker span {
   background: #1f4d3f;
-  color: white;
+  color: #f8fafc;
   border-color: #1f4d3f;
 }
 .timeline-content {
@@ -1178,7 +1178,7 @@ h3 {
   background: #1f4d3f;
   border: 0;
   border-radius: 999px;
-  color: white;
+  color: #f8fafc;
   cursor: pointer;
   font: inherit;
   font-size: .85rem;
@@ -1313,10 +1313,12 @@ textarea {
           method: 'PUT',
           credentials: 'same-origin',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ key, value })
+          body: JSON.stringify({ key, value, requireConvex: true })
         });
-        if (!response.ok) throw new Error(`Convex save failed (${response.status})`);
         const data = await response.json();
+        if (!response.ok || data.source !== 'convex') {
+          throw new Error(data.error || `Convex save failed (${response.status})`);
+        }
         const stamp = data.updatedAt ? new Date(data.updatedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'now';
         setSyncStatus(`Saved to Convex at ${stamp}.`, 'synced');
       } catch (error) {
@@ -1327,9 +1329,11 @@ textarea {
 
   async function loadRemoteState() {
     try {
-      const response = await fetch(`/admin/api/admin-convex?key=${encodeURIComponent(key)}`, { credentials: 'same-origin' });
-      if (!response.ok) throw new Error(`Convex load failed (${response.status})`);
+      const response = await fetch(`/admin/api/admin-convex?key=${encodeURIComponent(key)}&requireConvex=1`, { credentials: 'same-origin' });
       const data = await response.json();
+      if (!response.ok || data.source !== 'convex') {
+        throw new Error(data.error || `Convex load failed (${response.status})`);
+      }
       if (!data.item || !data.item.value) {
         setSyncStatus('No Convex record yet. Local changes will create one.', 'pending');
         return;

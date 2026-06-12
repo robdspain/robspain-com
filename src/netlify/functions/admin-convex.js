@@ -135,6 +135,7 @@ exports.handler = async (event) => {
   if (event.httpMethod === 'GET') {
     const key = cleanKey(event.queryStringParameters?.key);
     if (!key) return json(400, { error: 'Missing or invalid key' });
+    const requireConvex = event.queryStringParameters?.requireConvex === '1';
 
     // 1. Try Convex if configured
     if (convexUrl()) {
@@ -142,8 +143,11 @@ exports.handler = async (event) => {
         const item = await convexCall('query', 'adminItems:get', { key });
         return json(200, { key, item, source: 'convex' });
       } catch (error) {
+        if (requireConvex) return json(error.statusCode || 502, { error: error.message, source: 'convex' });
         console.warn('Convex GET failed, falling back to Blobs:', error.message);
       }
+    } else if (requireConvex) {
+      return json(503, { error: 'Convex is not configured. Set CONVEX_URL in Netlify.', source: 'convex' });
     }
 
     // 2. Fallback to Netlify Blobs
@@ -167,6 +171,7 @@ exports.handler = async (event) => {
 
     const key = cleanKey(payload.key || event.queryStringParameters?.key);
     if (!key) return json(400, { error: 'Missing or invalid key' });
+    const requireConvex = Boolean(payload.requireConvex || event.queryStringParameters?.requireConvex === '1');
 
     // 1. Try Convex if configured
     if (convexUrl()) {
@@ -178,8 +183,11 @@ exports.handler = async (event) => {
         });
         return json(200, { success: true, ...result, source: 'convex' });
       } catch (error) {
+        if (requireConvex) return json(error.statusCode || 502, { error: error.message, source: 'convex' });
         console.warn('Convex PUT failed, falling back to Blobs:', error.message);
       }
+    } else if (requireConvex) {
+      return json(503, { error: 'Convex is not configured. Set CONVEX_URL in Netlify.', source: 'convex' });
     }
 
     // 2. Fallback to Netlify Blobs

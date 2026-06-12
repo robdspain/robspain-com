@@ -42,6 +42,11 @@ hide_public_nav: true
       <p>This page is an organization tool, not legal advice. The underlying court order, recommendation, or counsel instruction controls if any detail conflicts. Confirm deadlines, wording, acceptable providers, and filing requirements with counsel before filing, serving, or relying on this tracker.</p>
     </section>
 
+    <section class="notice-card">
+      <h2>Current date corrections</h2>
+      <p>Updated as of Friday, June 12, 2026: anger-management class 4 is today; Link Care is the active family-counseling provider starting Friday, June 19, 2026; Janz Family Therapy remains only for Dylan/Rob conjoint counseling, with the third conjoint session scheduled for Friday, June 19, 2026.</p>
+    </section>
+
     <section class="panel command-panel">
       <div class="panel-heading">
         <p class="eyebrow">Right now</p>
@@ -72,14 +77,20 @@ hide_public_nav: true
         <label>Anger-management first class
           <input type="date" data-plan-input="angerStart">
         </label>
-        <label>Family therapy first session
+        <label>Link Care family counseling first session
           <input type="date" data-plan-input="familyStart">
+        </label>
+        <label>Dylan/Rob Janz conjoint session 3
+          <input type="date" data-plan-input="dylanConjointThird">
         </label>
         <label>Anger classes done
           <input type="number" min="0" max="10" step="1" data-plan-input="angerDone">
         </label>
         <label>Family sessions done
           <input type="number" min="0" max="24" step="1" data-plan-input="familyDone">
+        </label>
+        <label>Dylan/Rob conjoint sessions done
+          <input type="number" min="0" max="6" step="1" data-plan-input="dylanConjointDone">
         </label>
         <label>W/H two-hour visits done
           <input type="number" min="0" max="6" step="1" data-plan-input="whTwoHourDone">
@@ -107,10 +118,11 @@ hide_public_nav: true
         </label>
       </div>
       <div class="control-actions">
+        <button type="button" class="utility-button" data-apply-known-dates>Apply corrected June 2026 dates</button>
         <button type="button" class="utility-button" data-mark-today>Use today for missing start dates</button>
-        <button type="button" class="utility-button secondary" data-reset-plan>Reset projection inputs</button>
+        <button type="button" class="utility-button secondary" data-reset-plan>Reset to corrected defaults</button>
       </div>
-      <p class="small-note">Date estimates assume weekly anger-management classes, weekly family therapy for the first 16 sessions, Dylan-specific alternating sessions after the first four family sessions, weekly visits unless the report says first/third weekends, and no cancellations, refusals, holidays, or therapist delays.</p>
+      <p class="small-note">Current known dates: anger-management class 4 is Friday, June 12, 2026; Link Care family counseling starts Friday, June 19, 2026; Dylan/Rob Janz conjoint session 3 is Friday, June 19, 2026. Date estimates assume weekly anger-management classes, weekly family counseling for the first 16 sessions, weekly Dylan/Rob conjoint sessions from the known third-session date, weekly visits unless the report says first/third weekends, and no cancellations, refusals, holidays, or therapist delays.</p>
     </section>
 
     <section class="panel">
@@ -157,19 +169,19 @@ hide_public_nav: true
       </div>
 
       <div class="requirement-block">
-        <h3>2. Janz family therapy setup</h3>
+        <h3>2. Link Care family counseling setup</h3>
         <p>The recommendation calls for both parties and the minors to participate in twenty-four sessions of family therapy with a licensed mental health professional experienced with families in high-conflict divorces. Mother participates in half of the sessions. The first sixteen sessions are weekly, and the remaining eight sessions are twice monthly.</p>
         <ul class="checklist" data-checklist="family-therapy">
-          <li><label><input type="checkbox" data-stage="setup"> Send the Janz follow-up draft after approval.</label></li>
-          <li><label><input type="checkbox" data-stage="setup"> Confirm what documents are pending in the Janz portal and who must complete each one.</label></li>
+          <li><label><input type="checkbox" data-stage="setup"> Confirm Link Care family counseling begins Friday, June 19, 2026.</label></li>
+          <li><label><input type="checkbox" data-stage="setup"> Confirm what Link Care intake documents are pending and who must complete each one.</label></li>
           <li><label><input type="checkbox" data-stage="setup"> Confirm Brooke’s required consent, intake paperwork, attendance, and support obligations before scheduling.</label></li>
-          <li><label><input type="checkbox" data-stage="setup"> Confirm Janz can provide family therapy involving both parents and the children together as required or clinically directed.</label></li>
-          <li><label><input type="checkbox" data-stage="setup"> Ask whether Janz needs a copy of the custody recommendation or order before scheduling.</label></li>
+          <li><label><input type="checkbox" data-stage="setup"> Confirm Link Care can provide family counseling involving both parents and the children together as required or clinically directed.</label></li>
+          <li><label><input type="checkbox" data-stage="setup"> Ask whether Link Care needs a copy of the custody recommendation or order before scheduling.</label></li>
           <li><label><input type="checkbox" data-stage="family"> Complete the first four sessions with both parents plus Harrison and Waylon, unless counsel or the therapist confirms a different court-approved structure.</label></li>
           <li><label><input type="checkbox" data-stage="family"> Complete the next alternating sessions for Dylan and the whole-minor group as directed by the family therapist and recommendation.</label></li>
           <li><label><input type="checkbox" data-stage="family"> Confirm the family therapist has a copy of the evaluation report and treats it as confidential.</label></li>
           <li><label><input type="checkbox" data-stage="family"> File written proof of attendance for the first, sixth, twelfth, sixteenth, and twenty-fourth family therapy sessions.</label></li>
-          <li><label><input type="checkbox" data-stage="proof"> Save all Janz replies, appointment confirmations, attendance letters, cancellation notices, and refusal documentation as PDFs.</label></li>
+          <li><label><input type="checkbox" data-stage="proof"> Save all Link Care replies, appointment confirmations, attendance letters, cancellation notices, and refusal documentation as PDFs.</label></li>
         </ul>
       </div>
 
@@ -197,7 +209,8 @@ hide_public_nav: true
           <li><label><input type="checkbox" data-stage="stepup"> After six two-hour visits with Harrison and Waylon, track six Saturday 3pm to 7pm visits.</label></li>
           <li><label><input type="checkbox" data-stage="stepup"> After ten anger-management classes and six Saturday visits with Harrison and Waylon, track six Saturday overnights.</label></li>
           <li><label><input type="checkbox" data-stage="stepup"> Track Harrison and Waylon’s first-and-third weekend progression and Wednesday overnight progression.</label></li>
-          <li><label><input type="checkbox" data-stage="stepup"> After six family therapy sessions with Dylan alone, track Dylan’s six two-hour unmonitored visits before family therapy sessions.</label></li>
+          <li><label><input type="checkbox" data-stage="stepup"> Track Dylan/Rob conjoint counseling at Janz separately from Link Care family counseling.</label></li>
+          <li><label><input type="checkbox" data-stage="stepup"> After six Dylan/Rob conjoint counseling sessions, track Dylan’s six two-hour unmonitored visits before therapy sessions, subject to counsel confirming the exact trigger language.</label></li>
           <li><label><input type="checkbox" data-stage="stepup"> Track Dylan’s Saturday visits, Saturday overnights, and weekend progression separately.</label></li>
           <li><label><input type="checkbox" data-stage="proof"> Preserve proof of every completed, missed, refused, cancelled, or made-up visit.</label></li>
         </ul>
@@ -208,8 +221,8 @@ hide_public_nav: true
         <p>Create one clean proof packet so nothing has to be reconstructed later. Each item should be saved as a PDF or screenshot with the date visible.</p>
         <ul class="checklist" data-checklist="proof-file">
           <li><label><input type="checkbox" data-stage="proof"> Individual therapy attendance or compliance letter from Dr. Collier.</label></li>
-          <li><label><input type="checkbox" data-stage="proof"> Janz family therapy request email and all replies.</label></li>
-          <li><label><input type="checkbox" data-stage="proof"> Janz intake paperwork or appointment confirmation.</label></li>
+          <li><label><input type="checkbox" data-stage="proof"> Link Care family counseling appointment confirmation and all replies.</label></li>
+          <li><label><input type="checkbox" data-stage="proof"> Janz Dylan/Rob conjoint counseling confirmation and all replies.</label></li>
           <li><label><input type="checkbox" data-stage="proof"> Family therapy attendance proof for session 1, 6, 12, 16, and 24.</label></li>
           <li><label><input type="checkbox" data-stage="proof"> Anger-management enrollment confirmation.</label></li>
           <li><label><input type="checkbox" data-stage="proof"> Anger-management attendance proof for class 1, 4, and 10.</label></li>
@@ -221,24 +234,23 @@ hide_public_nav: true
     <section class="panel">
       <div class="panel-heading">
         <p class="eyebrow">Draft email</p>
-        <h2>Email to Janz Family Therapy</h2>
+        <h2>Email to Link Care</h2>
       </div>
       <div class="email-draft">
-        <p><span class="label">To:</span> Vanessa Flores, Janz Family Therapy</p>
+        <p><span class="label">To:</span> Link Care Counseling Center</p>
         <p><span class="label">Cc:</span> Brooke Spain</p>
-        <p><span class="label">Subject:</span> Re: JFT</p>
+        <p><span class="label">Subject:</span> Family counseling start date and documentation</p>
         <div class="email-body">
-          <p>Hello Vanessa,</p>
-          <p>I wanted to follow up on the pending documents and confirm that we are trying to set up family therapy in the way the custody recommendation/order requires.</p>
-          <p>My understanding is that the family therapy needs to involve both parents, that Brooke is required to attend and support the therapy, and that the children need to participate together as directed by the family therapist and the recommendation/order. I also understand that Harrison and Waylon are supposed to be involved together at the start, with Dylan and the family configuration addressed as the therapy progresses.</p>
-          <p>Can you please confirm the next steps so we can move this forward promptly?</p>
+          <p>Hello,</p>
+          <p>I wanted to confirm that family counseling is scheduled to begin Friday, June 19, 2026, and make sure we have completed everything needed before the first session.</p>
+          <p>My understanding is that the family counseling needs to involve both parents and the children as directed by the therapist and the custody recommendation/order. I want to keep the scheduling and documentation clean so the process can move forward without confusion.</p>
+          <p>Can you please confirm the next steps?</p>
           <ol>
-            <li>What documents are still pending in the portal, and who needs to complete each one?</li>
-            <li>Does Janz need Brooke to complete consent or intake paperwork before scheduling can proceed?</li>
-            <li>Can Janz provide family therapy involving both parents and the children together as required or clinically directed?</li>
-            <li>What is the earliest available appointment for the first family therapy session?</li>
-            <li>Do you need a copy of the custody recommendation/order before scheduling or before the therapist confirms the required session structure?</li>
-            <li>Can Janz provide written confirmation of scheduled sessions, attendance, cancellations, refusals, and participation if documentation is needed for court compliance?</li>
+            <li>What documents are still pending, and who needs to complete each one?</li>
+            <li>Does Link Care need Brooke to complete consent or intake paperwork before the first session?</li>
+            <li>Can Link Care confirm the required participants and session structure before the first appointment?</li>
+            <li>Do you need a copy of the custody recommendation/order before the first session?</li>
+            <li>Can Link Care provide written confirmation of scheduled sessions, attendance, cancellations, refusals, and participation if documentation is needed for court-compliance tracking?</li>
           </ol>
           <p>I want to make sure I am doing everything needed on my side and that the process is not delayed by missing paperwork or consent issues.</p>
           <p>Thank you,<br>Rob Spain</p>
@@ -248,182 +260,52 @@ hide_public_nav: true
 
     <section class="panel">
       <div class="panel-heading">
-        <p class="eyebrow">Family therapy coordination</p>
-        <h2>Appointments and Fresno providers to call</h2>
+        <p class="eyebrow">Counseling coordination</p>
+        <h2>Active providers only</h2>
       </div>
 
       <div class="tool-grid">
         <article class="tool-card">
           <h3>Current appointment status</h3>
           <dl>
+            <dt>Link Care family counseling</dt>
+            <dd>Family counseling starts Friday, June 19, 2026. Keep this as the active family-counseling track.</dd>
             <dt>Janz / Vanessa Flores</dt>
-            <dd>Appointment request is being reviewed and is not confirmed until an acceptance email arrives. Requested for Thursday, June 11, 2026, 11:00 AM to 12:00 PM PDT, video office. Phone: <a href="tel:+15598251205">(559) 825-1205</a>.</dd>
+            <dd>Dylan/Rob conjoint counseling stays at Janz. The third conjoint counseling session is Friday, June 19, 2026. Phone: <a href="tel:+15598251205">(559) 825-1205</a>.</dd>
             <dt>Full Life Change</dt>
-            <dd>Recurring Fridays at 10:15 AM.</dd>
+            <dd>Recurring Fridays at 10:15 AM. Anger-management class 4 is Friday, June 12, 2026.</dd>
             <dt>Dr. Collier</dt>
-            <dd>Every other Tuesday at 7:00 AM, next appointment Tuesday, June 9, 2026. Dr. Collier has been emailed for a letter verifying that the court-identified therapy topics have already been covered.</dd>
+            <dd>Every other Tuesday at 7:00 AM. Update the next appointment date after each completed session; Dr. Collier has been emailed for a letter verifying that the court-identified therapy topics have already been covered.</dd>
           </dl>
           <button type="button" class="utility-button" data-download-calendar>Download Google Calendar import</button>
         </article>
 
         <article class="tool-card">
-          <h3>Family therapy call script</h3>
-          <p class="call-script">Hi, I am looking for family therapy in a court-involved custody matter. The custody evaluation recommends family therapy with a licensed mental health professional experienced in high-conflict divorce. The first phase involves both parents and Harrison and Waylon, with goals of addressing family history, relational issues, communication, and planning for unmonitored visitation. Are you accepting cases like this, and can you provide attendance or compliance documentation if clinically appropriate?</p>
+          <h3>Why the contact list is short</h3>
+          <p class="call-script">Link Care is the selected family-counseling provider. Janz is retained only for Dylan/Rob conjoint counseling. Removed the backup family-therapy list so the tracker does not create confusion or send work toward providers you are not using.</p>
         </article>
       </div>
 
       <div class="provider-grid">
         <article class="provider-card priority">
+          <h3>Link Care Counseling Center</h3>
+          <p>Active family-counseling provider. First family-counseling session is scheduled to start Friday, June 19, 2026.</p>
+          <dl>
+            <dt>Phone</dt><dd><a href="tel:+15594395920">(559) 439-5920</a> ext. 145</dd>
+            <dt>Email</dt><dd><a href="mailto:info@linkcare.org">info@linkcare.org</a></dd>
+            <dt>Website</dt><dd><a href="https://www.linkcare.org/counseling-services" target="_blank" rel="noopener">linkcare.org/counseling-services</a></dd>
+            <dt>Address</dt><dd>1734 W Shaw Ave, Fresno, CA 93711</dd>
+          </dl>
+        </article>
+
+        <article class="provider-card priority">
           <h3>Janz Family Therapy</h3>
-          <p>Fresno child, teen, and family therapy. Already tied to the Vanessa Flores appointment request.</p>
+          <p>Dylan/Rob conjoint counseling. Keep this separate from the Link Care family-counseling track.</p>
           <dl>
             <dt>Phone</dt><dd><a href="tel:+15598251205">(559) 825-1205</a></dd>
             <dt>Email</dt><dd><a href="mailto:help@janztherapy.com">help@janztherapy.com</a></dd>
             <dt>Website</dt><dd><a href="https://janztherapy.com/contact" target="_blank" rel="noopener">janztherapy.com/contact</a></dd>
             <dt>Address</dt><dd>1357 W Shaw Ave #100, Fresno, CA 93711</dd>
-          </dl>
-        </article>
-
-        <article class="provider-card priority">
-          <h3>Comprehensive Youth Services</h3>
-          <p>Fresno nonprofit. Website lists Court Ordered Conjoint Therapy.</p>
-          <dl>
-            <dt>Phone</dt><dd><a href="tel:+15592293561">(559) 229-3561</a></dd>
-            <dt>Email</dt><dd><a href="mailto:cys@cysfresno.org">cys@cysfresno.org</a></dd>
-            <dt>Website</dt><dd><a href="https://www.cysfresno.org/programs" target="_blank" rel="noopener">cysfresno.org/programs</a></dd>
-            <dt>Address</dt><dd>4545 N. West Ave. Bldg B, Fresno, CA 93705</dd>
-          </dl>
-        </article>
-
-        <article class="provider-card">
-          <h3>Fresno Family Therapy</h3>
-          <p>Fresno/Clovis practice with child, teen, couples, and family therapy.</p>
-          <dl>
-            <dt>Phone</dt><dd><a href="tel:+15597955990">(559) 795-5990</a></dd>
-            <dt>Email</dt><dd><a href="mailto:info@fresnofamilytherapy.com">info@fresnofamilytherapy.com</a></dd>
-            <dt>Website</dt><dd><a href="https://fresnofamilytherapy.com/our-office/" target="_blank" rel="noopener">fresnofamilytherapy.com/our-office</a></dd>
-          </dl>
-        </article>
-
-        <article class="provider-card">
-          <h3>Central Valley Family Therapy</h3>
-          <p>Fresno family and couples therapy practice.</p>
-          <dl>
-            <dt>Phone</dt><dd><a href="tel:+15596916840">(559) 691-6840</a></dd>
-            <dt>Email</dt><dd><a href="mailto:contact@centralvalleyfamilytherapy.com">contact@centralvalleyfamilytherapy.com</a></dd>
-            <dt>Website</dt><dd><a href="https://centralvalleyfamilytherapy.com/contact/" target="_blank" rel="noopener">centralvalleyfamilytherapy.com/contact</a></dd>
-            <dt>Address</dt><dd>7170 N Financial Dr. Suite 110, Fresno, CA 93720</dd>
-          </dl>
-        </article>
-
-        <article class="provider-card">
-          <h3>Esperanza Family Counseling</h3>
-          <p>Fresno in-person and telehealth therapy for individuals, couples, families, children, and teens.</p>
-          <dl>
-            <dt>Phone</dt><dd><a href="tel:+15594720501">(559) 472-0501</a></dd>
-            <dt>Contact</dt><dd><a href="https://www.esperanzafamilycounseling.com/contact-us" target="_blank" rel="noopener">Website contact form</a></dd>
-            <dt>Website</dt><dd><a href="https://www.esperanzafamilycounseling.com/contact-us" target="_blank" rel="noopener">esperanzafamilycounseling.com/contact-us</a></dd>
-            <dt>Address</dt><dd>410 W Fallbrook Ave, Suite 105, Fresno, CA 93711</dd>
-          </dl>
-        </article>
-
-        <article class="provider-card">
-          <h3>Deeply Rooted Family Counseling</h3>
-          <p>Fresno family counseling practice.</p>
-          <dl>
-            <dt>Phone</dt><dd><a href="tel:+15595470907">(559) 547-0907</a></dd>
-            <dt>Email</dt><dd><a href="mailto:admin@deeplyrootedfc.com">admin@deeplyrootedfc.com</a></dd>
-            <dt>Website</dt><dd><a href="https://deeplyrootedfc.com/" target="_blank" rel="noopener">deeplyrootedfc.com</a></dd>
-            <dt>Address</dt><dd>5740 N Palm Ave Suite 101 or 111, Fresno, CA 93704</dd>
-          </dl>
-        </article>
-
-        <article class="provider-card">
-          <h3>North Star Wellness Center</h3>
-          <p>Fresno individual adult, family, and child therapy.</p>
-          <dl>
-            <dt>Phone</dt><dd><a href="tel:+15592262273">(559) 226-2273</a></dd>
-            <dt>Email</dt><dd><a href="mailto:info@northstarwellnesscenter.org">info@northstarwellnesscenter.org</a></dd>
-            <dt>Website</dt><dd><a href="https://www.northstarwellnesscenter.org/" target="_blank" rel="noopener">northstarwellnesscenter.org</a></dd>
-          </dl>
-        </article>
-
-        <article class="provider-card">
-          <h3>4C Children and Family Services</h3>
-          <p>Fresno children and family services practice.</p>
-          <dl>
-            <dt>Phone</dt><dd><a href="tel:+15593387923">(559) 338-7923</a></dd>
-            <dt>Email</dt><dd><a href="mailto:info@4cfam.com">info@4cfam.com</a></dd>
-            <dt>Website</dt><dd><a href="https://4cfam.com/contact" target="_blank" rel="noopener">4cfam.com/contact</a></dd>
-            <dt>Address</dt><dd>1300 E Shaw Ave, Suite 130, Fresno, CA 93710</dd>
-          </dl>
-        </article>
-
-        <article class="provider-card">
-          <h3>Family Foundations Counseling Services</h3>
-          <p>Fresno child, youth, adult, and family counseling.</p>
-          <dl>
-            <dt>Phone</dt><dd><a href="tel:+15594373710">(559) 437-3710</a></dd>
-            <dt>Email</dt><dd><a href="mailto:admin@ffcounseling.org">admin@ffcounseling.org</a></dd>
-            <dt>Website</dt><dd><a href="https://familyfoundationscounseling.org/" target="_blank" rel="noopener">familyfoundationscounseling.org</a></dd>
-            <dt>Address</dt><dd>2610 West Shaw Ln. STE 104, Fresno, CA 93711</dd>
-          </dl>
-        </article>
-
-        <article class="provider-card">
-          <h3>Vue Family Therapy</h3>
-          <p>Fresno therapy practice. Relationship issues and high-conflict couples listed.</p>
-          <dl>
-            <dt>Phone</dt><dd><a href="tel:+15592023390">(559) 202-3390</a></dd>
-            <dt>Email</dt><dd><a href="mailto:info@vuefamilytherapy.com">info@vuefamilytherapy.com</a></dd>
-            <dt>Website</dt><dd><a href="https://vftclientportal.clientsecure.me/" target="_blank" rel="noopener">vftclientportal.clientsecure.me</a></dd>
-            <dt>Address</dt><dd>1300 W. Shaw Ave Ste 3A, Fresno, CA 93711</dd>
-          </dl>
-        </article>
-      </div>
-
-      <div class="panel-heading subheading">
-        <p class="eyebrow">Private-pay backups</p>
-        <h2>California court-involved options if Fresno providers cannot take it</h2>
-      </div>
-      <div class="provider-grid">
-        <article class="provider-card">
-          <h3>Dena Marshall, LMFT</h3>
-          <p>Court-involved family therapy, parent-child contact problems/refusal, and high-conflict custody work.</p>
-          <dl>
-            <dt>Phone</dt><dd><a href="tel:+18054041913">(805) 404-1913</a></dd>
-            <dt>Email</dt><dd><a href="mailto:denamarshallmft@hotmail.com">denamarshallmft@hotmail.com</a></dd>
-            <dt>Website</dt><dd><a href="https://denamarshallmft.com/" target="_blank" rel="noopener">denamarshallmft.com</a></dd>
-          </dl>
-        </article>
-
-        <article class="provider-card">
-          <h3>The Couples Therapy & Reunification Counseling</h3>
-          <p>California in-person and virtual reunification and high-conflict family work.</p>
-          <dl>
-            <dt>Phone</dt><dd><a href="tel:+15627746787">(562) 774-6787</a></dd>
-            <dt>Contact</dt><dd><a href="https://www.thecouplestherapy.com/" target="_blank" rel="noopener">Website contact</a></dd>
-            <dt>Website</dt><dd><a href="https://www.thecouplestherapy.com/" target="_blank" rel="noopener">thecouplestherapy.com</a></dd>
-          </dl>
-        </article>
-
-        <article class="provider-card">
-          <h3>Izzo Marriage and Family Therapy</h3>
-          <p>San Mateo, San Carlos, and telehealth across California; intake and referrals available by email.</p>
-          <dl>
-            <dt>Phone</dt><dd><a href="tel:+16502235605">(650) 223-5605</a></dd>
-            <dt>Email</dt><dd><a href="mailto:referrals@izzotherapy.com">referrals@izzotherapy.com</a></dd>
-            <dt>Website</dt><dd><a href="https://www.izzotherapy.com/contact" target="_blank" rel="noopener">izzotherapy.com/contact</a></dd>
-          </dl>
-        </article>
-
-        <article class="provider-card">
-          <h3>Cornerstone Counseling Center</h3>
-          <p>Co-custody parenting / conjoint class materials. Ask whether their service fits the specific order.</p>
-          <dl>
-            <dt>Phone</dt><dd><a href="tel:+18053906384">(805) 390-6384</a></dd>
-            <dt>Email</dt><dd><a href="mailto:cornerstonesb@aol.com">cornerstonesb@aol.com</a></dd>
-            <dt>Website</dt><dd><a href="https://www.cornerstonesv.com/wp-content/uploads/2023/06/COPAR-CONJOINT-2023.pdf" target="_blank" rel="noopener">Conjoint intake PDF</a></dd>
           </dl>
         </article>
       </div>
@@ -505,7 +387,8 @@ hide_public_nav: true
       </div>
       <div class="tracker-grid">
         <div class="tracker-card"><h3>Dr. Collier</h3><textarea data-note="collier" placeholder="Date asked, response, next appointment, proof letter status"></textarea></div>
-        <div class="tracker-card"><h3>Janz Family Therapy</h3><textarea data-note="janz" placeholder="Email sent date, reply, forms needed, first family therapy appointment"></textarea></div>
+        <div class="tracker-card"><h3>Link Care family counseling</h3><textarea data-note="linkCare" placeholder="Start date, paperwork, participants, session proof, next action"></textarea></div>
+        <div class="tracker-card"><h3>Janz Dylan/Rob conjoint</h3><textarea data-note="janz" placeholder="Session count, next date, Vanessa reply, forms needed, proof status"></textarea></div>
         <div class="tracker-card"><h3>Anger management</h3><textarea data-note="anger" placeholder="Provider called, first available session, cost, enrollment proof, attendance proof"></textarea></div>
         <div class="tracker-card"><h3>Counsel filing packet</h3><textarea data-note="counsel" placeholder="Proof sent to Amy or counsel, date, method, missing items"></textarea></div>
       </div>
@@ -566,17 +449,32 @@ hide_public_nav: true
       </div>
       <div class="template-grid">
         <article class="template-card">
-          <div class="template-head"><h3>Janz scheduling follow-up</h3><button type="button" data-copy-template="janz">Copy</button></div>
+          <div class="template-head"><h3>Link Care family counseling follow-up</h3><button type="button" data-copy-template="linkCare">Copy</button></div>
+          <pre data-template="linkCare">Hello,
+
+I am following up to confirm the Link Care family counseling start date of Friday, June 19, 2026, and to make sure all paperwork and consent steps are complete.
+
+Please confirm:
+1. What documents are still pending and who must complete each one.
+2. Whether Brooke must complete consent or intake paperwork before the first session.
+3. The required participants and session structure for the first appointment.
+4. Whether you need a copy of the custody recommendation/order before the first session.
+5. Whether Link Care can provide written confirmation of scheduled sessions, attendance, cancellations, refusals, and participation for court-compliance documentation.
+
+Thank you,
+Rob Spain</pre>
+        </article>
+
+        <article class="template-card">
+          <div class="template-head"><h3>Janz conjoint session proof</h3><button type="button" data-copy-template="janz">Copy</button></div>
           <pre data-template="janz">Hello Vanessa,
 
-I am following up to move family therapy forward promptly under the custody recommendation/order. Please confirm:
+I am following up on Dylan/Rob conjoint counseling. My tracker shows the third conjoint counseling session is Friday, June 19, 2026.
 
-1. What documents are still pending and who must complete each one?
-2. Whether Brooke must complete consent or intake paperwork before scheduling.
-3. Whether Janz can provide family therapy involving both parents and the children as required or clinically directed.
-4. The earliest available first session.
-5. Whether you need a copy of the custody recommendation/order before scheduling.
-6. Whether Janz can provide written confirmation of scheduled sessions, attendance, cancellations, refusals, and participation for court-compliance documentation.
+Please confirm:
+1. The date and time of the next Dylan/Rob conjoint session.
+2. Whether any paperwork or consent item is still pending.
+3. Whether Janz can provide written confirmation of scheduled sessions, attendance, cancellations, refusals, and participation if documentation is needed for court-compliance tracking.
 
 Thank you,
 Rob Spain</pre>
@@ -1263,6 +1161,15 @@ textarea {
   const stages = ['setup', 'anger', 'family', 'stepup', 'post16', 'proof'];
   const msDay = 24 * 60 * 60 * 1000;
   let syncTimer = null;
+  const knownDateDefaults = {
+    planStart: '2026-06-12',
+    angerStart: '2026-05-22',
+    familyStart: '2026-06-19',
+    dylanConjointThird: '2026-06-19',
+    angerDone: '4',
+    familyDone: '0',
+    dylanConjointDone: '3'
+  };
 
   function readLocalState() {
     try {
@@ -1362,6 +1269,8 @@ textarea {
       const saved = state.plan[input.dataset.planInput];
       if (saved !== undefined) {
         input.value = saved;
+      } else if (knownDateDefaults[input.dataset.planInput] !== undefined) {
+        input.value = knownDateDefaults[input.dataset.planInput];
       } else if (input.type === 'number') {
         input.value = 0;
       } else if (input.dataset.planInput === 'planStart') {
@@ -1493,7 +1402,9 @@ textarea {
     const anger10 = remainingWeekly(angerStart, angerDone, 10);
     const family4 = remainingWeekly(familyStart, familyDone, 4);
     const family16 = remainingWeekly(familyStart, familyDone, 16);
-    const dylanSixAlone = familyStart ? addWeeks(familyStart, 14) : null;
+    const dylanConjointThird = dateValue('dylanConjointThird');
+    const dylanConjointDone = countValue('dylanConjointDone');
+    const dylanConjointSix = dylanConjointThird ? addWeeks(dylanConjointThird, Math.max(0, 6 - Math.max(dylanConjointDone, 3))) : null;
 
     const whTwoHourStart = maxDate(anger4, family4);
     const whTwoHourDone = finishWeeklyAfter(whTwoHourStart, countValue('whTwoHourDone'), 6);
@@ -1502,7 +1413,8 @@ textarea {
     const whOvernightDone = finishWeeklyAfter(whOvernightStart, countValue('whOvernightDone'), 6);
     const whWeekendDone = finishEveryOtherWeekAfter(whOvernightDone, countValue('whWeekendDone'), 6);
 
-    const dylanTwoHourDone = finishWeeklyAfter(dylanSixAlone, countValue('dylanTwoHourDone'), 6);
+    const dylanTwoHourStart = maxDate(dylanConjointSix, family16);
+    const dylanTwoHourDone = finishWeeklyAfter(dylanTwoHourStart, countValue('dylanTwoHourDone'), 6);
     const dylanSaturdayDone = finishWeeklyAfter(dylanTwoHourDone, countValue('dylanSaturdayDone'), 6);
     const dylanOvernightDone = finishWeeklyAfter(dylanSaturdayDone, countValue('dylanOvernightDone'), 4);
     const dylanWeekendDone = finishEveryOtherWeekAfter(dylanOvernightDone, countValue('dylanWeekendDone'), 4);
@@ -1519,8 +1431,9 @@ textarea {
         { id: 'whHome', title: 'Broader home schedule begins', date: whWeekendDone, done: countValue('whWeekendDone') >= 6, detail: 'First/third weekends through Monday morning plus every Wednesday overnight.' }
       ],
       dylan: [
-        { id: 'family16', title: 'Sixteen family therapy sessions completed', date: family16, done: familyDone >= 16, detail: 'Also triggers co-parenting therapy and both parents’ individual therapy requirements.' },
-        { id: 'dylanSixAlone', title: 'Six Dylan/Father family therapy sessions', date: dylanSixAlone, done: familyDone >= 16, detail: 'Projected as alternating Dylan sessions after the first four family sessions.' },
+        { id: 'dylanConjointThird', title: 'Dylan/Rob Janz conjoint session 3', date: dylanConjointThird, done: dylanConjointDone >= 3, detail: 'Known scheduled session at Janz; keep separate from Link Care family counseling.' },
+        { id: 'dylanConjointSix', title: 'Six Dylan/Rob conjoint counseling sessions', date: dylanConjointSix, done: dylanConjointDone >= 6, detail: 'Projected from the known third-session date; confirm exact trigger language with counsel.' },
+        { id: 'family16', title: 'Sixteen Link Care family counseling sessions completed', date: family16, done: familyDone >= 16, detail: 'Also triggers co-parenting therapy and both parents’ individual therapy requirements.' },
         { id: 'dylanTwoHour', title: 'Six Dylan two-hour unmonitored visits', date: dylanTwoHourDone, done: countValue('dylanTwoHourDone') >= 6, detail: 'Visits occur before family therapy sessions.' },
         { id: 'dylanSaturday', title: 'Six Dylan Saturday 3pm-7pm visits', date: dylanSaturdayDone, done: countValue('dylanSaturdayDone') >= 6, detail: 'Next gate before Saturday overnights.' },
         { id: 'dylanOvernight', title: 'Four Dylan Saturday overnights', date: dylanOvernightDone, done: countValue('dylanOvernightDone') >= 4, detail: 'Saturday 3pm to Sunday 2pm for four Saturday overnights.' },
@@ -1641,25 +1554,42 @@ textarea {
       'PRODID:-//Rob Spain//Court Compliance//EN',
       'CALSCALE:GREGORIAN',
       'BEGIN:VEVENT',
-      'UID:family-counseling-vanessa-flores-20260611@robspain.com',
-      'DTSTAMP:20260601T170000Z',
-      'DTSTART;TZID=America/Los_Angeles:20260611T110000',
-      'DTEND;TZID=America/Los_Angeles:20260611T120000',
-      'SUMMARY:Family counseling appointment request - Vanessa Flores',
-      'DESCRIPTION:Pending appointment request for Harrison and Waylon. Video link will be emailed 10 minutes before. Phone: (559) 825-1205.',
-      'LOCATION:Video Office',
+      'UID:link-care-family-counseling-20260619@robspain.com',
+      'DTSTAMP:20260612T170000Z',
+      'DTSTART;VALUE=DATE:20260619',
+      'DTEND;VALUE=DATE:20260620',
+      'SUMMARY:Link Care family counseling starts',
+      'DESCRIPTION:Active family-counseling provider. Confirm paperwork, participant structure, and attendance documentation.',
+      'LOCATION:Link Care Counseling Center, 1734 W Shaw Ave, Fresno, CA 93711',
+      'END:VEVENT',
+      'BEGIN:VEVENT',
+      'UID:janz-dylan-rob-conjoint-session-3-20260619@robspain.com',
+      'DTSTAMP:20260612T170000Z',
+      'DTSTART;VALUE=DATE:20260619',
+      'DTEND;VALUE=DATE:20260620',
+      'SUMMARY:Dylan/Rob Janz conjoint counseling session 3',
+      'DESCRIPTION:Janz Family Therapy / Vanessa Flores. Phone: (559) 825-1205.',
+      'LOCATION:Janz Family Therapy, 1357 W Shaw Ave #100, Fresno, CA 93711',
       'END:VEVENT',
       'BEGIN:VEVENT',
       'UID:full-life-change-fridays-1015@robspain.com',
-      'DTSTAMP:20260601T170000Z',
+      'DTSTAMP:20260612T170000Z',
       'DTSTART;TZID=America/Los_Angeles:20260605T101500',
       'DTEND;TZID=America/Los_Angeles:20260605T111500',
       'RRULE:FREQ=WEEKLY;BYDAY=FR',
       'SUMMARY:Full Life Change appointment',
       'END:VEVENT',
       'BEGIN:VEVENT',
+      'UID:anger-management-class-4-20260612@robspain.com',
+      'DTSTAMP:20260612T170000Z',
+      'DTSTART;VALUE=DATE:20260612',
+      'DTEND;VALUE=DATE:20260613',
+      'SUMMARY:Anger-management class 4 proof due',
+      'DESCRIPTION:Attend class 4 and save written proof for court-compliance tracking.',
+      'END:VEVENT',
+      'BEGIN:VEVENT',
       'UID:dr-collier-every-other-tuesday-0700@robspain.com',
-      'DTSTAMP:20260601T170000Z',
+      'DTSTAMP:20260612T170000Z',
       'DTSTART;TZID=America/Los_Angeles:20260609T070000',
       'DTEND;TZID=America/Los_Angeles:20260609T080000',
       'RRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=TU',
@@ -1703,6 +1633,8 @@ textarea {
     const saved = state.plan[input.dataset.planInput];
     if (saved !== undefined) {
       input.value = saved;
+    } else if (knownDateDefaults[input.dataset.planInput] !== undefined) {
+      input.value = knownDateDefaults[input.dataset.planInput];
     } else if (input.type === 'number') {
       input.value = 0;
     } else if (input.dataset.planInput === 'planStart') {
@@ -1713,16 +1645,23 @@ textarea {
   });
   document.querySelector('[data-mark-today]').addEventListener('click', () => {
     const today = todayISO();
-    ['planStart', 'angerStart', 'familyStart'].forEach(name => {
+    ['planStart', 'angerStart', 'familyStart', 'dylanConjointThird'].forEach(name => {
       const input = document.querySelector(`[data-plan-input="${name}"]`);
       if (input && !input.value) input.value = today;
     });
     save();
   });
+  document.querySelector('[data-apply-known-dates]')?.addEventListener('click', () => {
+    Object.entries(knownDateDefaults).forEach(([name, value]) => {
+      const input = document.querySelector(`[data-plan-input="${name}"]`);
+      if (input) input.value = value;
+    });
+    save();
+  });
   document.querySelector('[data-reset-plan]').addEventListener('click', () => {
     planInputs.forEach(input => {
-      input.value = input.type === 'number' ? 0 : '';
-      if (input.dataset.planInput === 'planStart') input.value = todayISO();
+      const known = knownDateDefaults[input.dataset.planInput];
+      input.value = known !== undefined ? known : input.type === 'number' ? 0 : '';
     });
     save();
   });

@@ -689,15 +689,15 @@ function defaultState() {
       { id:'groceries', name:'Groceries / Household', dueDay:null, amount:500, status:'current', priority:1, account:'EECU Checking', payUrl:'', notes:'Planning floor from prior monthly budget' },
       { id:'fuel', name:'Fuel / Transportation', dueDay:null, amount:250, status:'current', priority:1, account:'EECU Checking', payUrl:'', notes:'Monthly operating reserve; adjust from card/bank imports' },
       { id:'familytherapy', name:'Child / Family Therapy Reserve', dueDay:null, amount:260, status:'current', priority:1, account:'EECU Checking', payUrl:'', notes:'Assumes Rob half-share of four $130 sessions; update to actual order/provider cadence' },
-      { id:'apple', name:'Apple Card Min', dueDay:27, amount:366, status:'paid', priority:2, account:'EECU Checking', payUrl:'https://card.apple.com/', notes:'' },
+      { id:'apple', name:'Apple Card Min', dueDay:30, amount:434, status:'autopay', priority:2, account:'EECU Checking', payUrl:'https://card.apple.com/', notes:'May 2026 statement: $434 minimum due Jun 30; recurring payment scheduled.' },
       { id:'collier', name:'Phillip M. Collier', dueDay:null, amount:375, status:'current', priority:4, account:'Apple Card', payUrl:'', notes:'2-3x/mo' },
       { id:'toggle', name:'Toggle Insurance', dueDay:26, amount:202, status:'paid', priority:2, account:'EECU Debit', payUrl:'https://www.gettoggle.com/', notes:'Car insurance' },
       { id:'pge', name:'PG&E', dueDay:14, amount:200, status:'upcoming', priority:1, account:'EECU Checking', payUrl:'https://www.pge.com/', notes:'Payment plan' },
       { id:'att', name:'AT&T Wireless', dueDay:null, amount:129, status:'current', priority:2, account:'EECU Checking', payUrl:'https://www.att.com/', notes:'' },
       { id:'fresno', name:'City of Fresno', dueDay:1, amount:121, status:'overdue', priority:1, account:'EECU Checking', payUrl:'https://www.fresno.gov/utilitypayments', notes:'Water/sewer — shutoff risk' },
       { id:'xfinity', name:'Xfinity', dueDay:1, amount:95, status:'paid', priority:1, account:'EECU Checking', payUrl:'https://www.xfinity.com/', notes:'' },
-      { id:'discover', name:'Discover Min', dueDay:18, amount:83, status:'upcoming', priority:2, account:'EECU Checking', payUrl:'https://www.discover.com/', notes:'' },
-      { id:'loc', name:'EECU LOC Min', dueDay:26, amount:75, status:'upcoming', priority:2, account:'EECU Checking', payUrl:'https://www.myeecu.org/', notes:'' },
+      { id:'discover', name:'Discover Min', dueDay:17, amount:98, status:'paid', priority:2, account:'EECU Checking', payUrl:'https://www.discover.com/', notes:'Minimum paid from phone app on Jun 12; statement due date Jun 17.' },
+      { id:'loc', name:'EECU LOC Min', dueDay:26, amount:75, status:'upcoming', priority:2, account:'EECU Checking', payUrl:'https://www.myeecu.org/', notes:'Needs live EECU refresh for current payoff; last app value shows $9,596 available.' },
       { id:'principal', name:'Principal Insurance', dueDay:null, amount:35, status:'current', priority:2, account:'Auto-deduct', payUrl:'https://www.principal.com/', notes:'' },
       { id:'allstate', name:'Allstate Insurance', dueDay:null, amount:25, status:'current', priority:2, account:'Auto-deduct', payUrl:'https://www.allstate.com/', notes:'' },
       { id:'ofw', name:'OurFamilyWizard', dueDay:null, amount:9, status:'current', priority:3, account:'EECU Checking', payUrl:'https://www.ourfamilywizard.com/', notes:'Annual renewal normalized to monthly budget' },
@@ -708,10 +708,10 @@ function defaultState() {
     accounts: [
       { id:'checking', name:'EECU Checking', type:'checking', balance:4009, notes:'After paycheck + payments' },
       { id:'savings', name:'EECU Savings', type:'savings', balance:87, notes:'Available' },
-      { id:'loc', name:'Line of Credit', type:'loc', balance:-404, notes:'$9,596 available' },
-      { id:'autoloan', name:'Auto Loan', type:'loan', balance:-16354, notes:'Due 04/05 autopay' },
-      { id:'applecard', name:'Apple Card', type:'credit', balance:-16199, notes:'Paid $960 on 3/30' },
-      { id:'discover', name:'Discover', type:'credit', balance:-1000, notes:'Min $83/mo' },
+      { id:'loc', name:'Line of Credit', type:'loc', balance:-404, notes:'Last app value; $9,596 available. Needs live EECU refresh.' },
+      { id:'autoloan', name:'Auto Loan', type:'loan', balance:-16354, notes:'Last app value. Needs live EECU refresh for current payoff and next due date.' },
+      { id:'applecard', name:'Apple Card', type:'credit', balance:-19107.18, notes:'May 31 2026 statement balance; $434 minimum due Jun 30 via scheduled recurring payment.' },
+      { id:'discover', name:'Discover', type:'credit', balance:-5641.78, notes:'Live Discover Jun 12: $5,641.78 balance, $858 available; $98 minimum paid from phone app.' },
     ],
     income: [
       { id:'kcusd', name:'Kings Canyon USD', amount:4361, frequency:'Monthly net estimate' },
@@ -741,7 +741,7 @@ function defaultState() {
       discover: [],
       appleCard: []
     },
-    lastUpdated: '2026-04-01T00:00:00Z',
+    lastUpdated: '2026-06-12T00:00:00-07:00',
   };
 }
 
@@ -810,6 +810,41 @@ function applyCurrentFinanceCorrections(state) {
     support.priority = 1;
     support.notes = 'Childcare — no longer on Apple Card';
   }
+
+  const accountCorrections = [
+    { id:'applecard', name:'Apple Card', type:'credit', balance:-19107.18, notes:'May 31 2026 statement balance; $434 minimum due Jun 30 via scheduled recurring payment.' },
+    { id:'discover', name:'Discover', type:'credit', balance:-5641.78, notes:'Live Discover Jun 12: $5,641.78 balance, $858 available; $98 minimum paid from phone app.' },
+    { id:'loc', name:'Line of Credit', type:'loc', balance:-404, notes:'Last app value; $9,596 available. Needs live EECU refresh.' },
+    { id:'autoloan', name:'Auto Loan', type:'loan', balance:-16354, notes:'Last app value. Needs live EECU refresh for current payoff and next due date.' },
+  ];
+  state.accounts = Array.isArray(state.accounts) ? state.accounts : [];
+  accountCorrections.forEach(correction => {
+    const account = state.accounts.find(a => a.id === correction.id || a.name === correction.name);
+    if (!account) {
+      state.accounts.push({...correction});
+      return;
+    }
+    account.name = correction.name;
+    account.type = correction.type;
+    account.balance = correction.balance;
+    account.notes = correction.notes;
+  });
+
+  const paymentCorrections = [
+    { id:'apple', name:'Apple Card Min', dueDay:30, amount:434, status:'autopay', priority:2, account:'EECU Checking', payUrl:'https://card.apple.com/', notes:'May 2026 statement: $434 minimum due Jun 30; recurring payment scheduled.' },
+    { id:'discover', name:'Discover Min', dueDay:17, amount:98, status:'paid', priority:2, account:'EECU Checking', payUrl:'https://www.discover.com/', notes:'Minimum paid from phone app on Jun 12; statement due date Jun 17.' },
+    { id:'loc', name:'EECU LOC Min', dueDay:26, amount:75, status:'upcoming', priority:2, account:'EECU Checking', payUrl:'https://www.myeecu.org/', notes:'Needs live EECU refresh for current payoff; last app value shows $9,596 available.' },
+    { id:'auto', name:'EECU Auto Loan', dueDay:5, amount:499, status:'autopay', priority:1, account:'EECU Checking', payUrl:'https://www.myeecu.org/', notes:'Needs live EECU refresh for current payoff and next due date.' },
+  ];
+  state.bills = Array.isArray(state.bills) ? state.bills : [];
+  paymentCorrections.forEach(correction => {
+    const bill = state.bills.find(b => b.id === correction.id || b.name === correction.name);
+    if (!bill) {
+      state.bills.push({...correction});
+      return;
+    }
+    Object.assign(bill, correction);
+  });
 
   const requiredBudgetBills = [
     { id:'childsupport', name:'Child Support / DCSS', dueDay:1, amount:2100, status:'current', priority:1, account:'Payroll/DCSS', notes:'Court-ordered support baseline; set to $0 here if already withheld from net pay', payUrl:'https://www.childsupport.ca.gov/payment-options/' },

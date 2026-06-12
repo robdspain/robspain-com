@@ -1491,44 +1491,47 @@ textarea {
 
   function queueRemoteSave(value) {
     clearTimeout(syncTimer);
-    setSyncStatus('Saving locally; syncing to Convex...', 'pending');
+    setSyncStatus('Saving locally; syncing to secure site storage...', 'pending');
     syncTimer = setTimeout(async () => {
       try {
         const response = await fetch('/admin/api/admin-convex', {
           method: 'PUT',
           credentials: 'same-origin',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ key, value, requireConvex: true })
+          body: JSON.stringify({ key, value })
         });
         const data = await response.json();
-        if (!response.ok || data.source !== 'convex') {
-          throw new Error(data.error || `Convex save failed (${response.status})`);
+        if (!response.ok) {
+          throw new Error(data.error || `Remote save failed (${response.status})`);
         }
         const stamp = data.updatedAt ? new Date(data.updatedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'now';
-        setSyncStatus(`Saved to Convex at ${stamp}.`, 'synced');
+        const source = data.source === 'convex' ? 'Convex' : data.source === 'blobs' ? 'Netlify storage' : 'remote storage';
+        setSyncStatus(`Saved to ${source} at ${stamp}.`, 'synced');
       } catch (error) {
-        setSyncStatus(`Saved locally. Convex sync unavailable: ${error.message}`, 'error');
+        setSyncStatus(`Saved locally. Remote sync unavailable: ${error.message}`, 'error');
       }
     }, 650);
   }
 
   async function loadRemoteState() {
     try {
-      const response = await fetch(`/admin/api/admin-convex?key=${encodeURIComponent(key)}&requireConvex=1`, { credentials: 'same-origin' });
+      const response = await fetch(`/admin/api/admin-convex?key=${encodeURIComponent(key)}`, { credentials: 'same-origin' });
       const data = await response.json();
-      if (!response.ok || data.source !== 'convex') {
-        throw new Error(data.error || `Convex load failed (${response.status})`);
+      if (!response.ok) {
+        throw new Error(data.error || `Remote load failed (${response.status})`);
       }
       if (!data.item || !data.item.value) {
-        setSyncStatus('No Convex record yet. Local changes will create one.', 'pending');
+        const source = data.source === 'convex' ? 'Convex' : data.source === 'blobs' ? 'Netlify storage' : 'remote storage';
+        setSyncStatus(`No ${source} record yet. Local changes will create one.`, 'pending');
         return;
       }
       applyState(data.item.value);
       localStorage.setItem(key, JSON.stringify(snapshotState()));
       const stamp = data.item.updatedAt ? new Date(data.item.updatedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'now';
-      setSyncStatus(`Loaded from Convex. Last saved ${stamp}.`, 'synced');
+      const source = data.source === 'convex' ? 'Convex' : data.source === 'blobs' ? 'Netlify storage' : 'remote storage';
+      setSyncStatus(`Loaded from ${source}. Last saved ${stamp}.`, 'synced');
     } catch (error) {
-      setSyncStatus(`Using local browser copy. Convex load unavailable: ${error.message}`, 'error');
+      setSyncStatus(`Using local browser copy. Remote load unavailable: ${error.message}`, 'error');
     }
   }
 

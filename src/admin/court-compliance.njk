@@ -47,6 +47,51 @@ hide_public_nav: true
       <p>Updated as of Friday, June 12, 2026: anger-management class 4 is today; Link Care is the active family-counseling provider, with Breyona Midgett as the current contact. Rob is trying to set a Thursday morning family-counseling time with Brooke, and Breyona is expected to call starting Wednesday, June 17, 2026. Janz Family Therapy remains only for Dylan/Rob conjoint counseling, with the third conjoint session scheduled for Friday, June 19, 2026.</p>
     </section>
 
+    <section class="panel effort-panel">
+      <div class="panel-heading">
+        <p class="eyebrow">Documented effort</p>
+        <h2>Phase-one custody-evaluation work is underway</h2>
+      </div>
+      <p class="small-note">Snapshot built from Gmail and Drive review on Friday, June 12, 2026. Phone-call counts are a documented minimum because the Mac Mini local call history is not connected to this dashboard.</p>
+      <div class="effort-grid" aria-label="Documented therapist outreach effort">
+        <article class="effort-card">
+          <strong>55</strong>
+          <span>sent Gmail messages</span>
+          <p>Family/conjoint therapy, family counseling, Janz, Link Care, Collier, and anger-management terms since May 1, 2026.</p>
+        </article>
+        <article class="effort-card">
+          <strong>27</strong>
+          <span>provider email targets</span>
+          <p>Distinct therapist, clinic, or counseling-provider contacts found in sent outreach and follow-up threads.</p>
+        </article>
+        <article class="effort-card">
+          <strong>6+</strong>
+          <span>documented calls or in-person contacts</span>
+          <p>Email record references calls, a failed phone-menu attempt, Janz contact, Toribio contact, and provider calls reported to counsel.</p>
+        </article>
+        <article class="effort-card">
+          <strong>4/4</strong>
+          <span>phase-one tracks started</span>
+          <p>Individual therapy, anger management, Dylan/Rob Janz conjoint counseling, and Link Care family-counseling setup.</p>
+        </article>
+      </div>
+      <div class="effort-detail-grid">
+        <article>
+          <h3>Provider email inquiries found</h3>
+          <p>Link Care, Janz, Hope & Healing, Olive Leaf, Gerardo Madrigal, Deeply Rooted, VMS Family Counseling, Family Foundations, Fresno Family Therapy, Central Valley Family Therapy, Vue Family Therapy, Cultural Family Therapy, Roubicek & Thacker, Sherri Eason, Heather Carrier, Zimmerman Therapy Group, Esperanza Family Counseling, Better Together MHS, Dr. Hiday, FWD Family, Becca LMFT, Ascend Behavioral Health, Live Well BHC, A Mind Above, Chris Millis office, Anthony Galvan, and North Star Wellness.</p>
+        </article>
+        <article>
+          <h3>Started phase-one items</h3>
+          <ul>
+            <li>Dr. Collier individual therapy is active and proof-letter work is started.</li>
+            <li>Anger-management coursework is active, with class 4 tracked for June 12, 2026.</li>
+            <li>Dylan/Rob conjoint counseling is active through Janz, with session 3 tracked for June 19, 2026.</li>
+            <li>Link Care family counseling is in setup with Breyona Midgett and Thursday-morning scheduling being pursued.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
     <section class="panel command-panel">
       <div class="panel-heading">
         <p class="eyebrow">Right now</p>
@@ -724,6 +769,60 @@ h3 {
   color: #526158;
   font-weight: 650;
 }
+.effort-panel {
+  background: linear-gradient(135deg, #fffdf8 0%, #f0f7f2 100%);
+}
+.effort-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: .9rem;
+  margin: 1.1rem 0;
+}
+.effort-card {
+  background: #fffaf0;
+  border: 1px solid rgba(31, 77, 63, .18);
+  border-radius: 16px;
+  padding: 1rem;
+}
+.effort-card strong {
+  color: #123628;
+  display: block;
+  font-size: clamp(2rem, 4vw, 3.1rem);
+  line-height: 1;
+}
+.effort-card span {
+  color: #1f4d3f;
+  display: block;
+  font-size: .82rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  margin-top: .45rem;
+  text-transform: uppercase;
+}
+.effort-card p {
+  color: #43524a;
+  font-size: .92rem;
+  margin: .65rem 0 0;
+}
+.effort-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 1rem;
+}
+.effort-detail-grid article {
+  background: rgba(255, 255, 255, .72);
+  border: 1px solid #e4ded2;
+  border-radius: 16px;
+  padding: 1rem;
+}
+.effort-detail-grid p,
+.effort-detail-grid li {
+  color: #43524a;
+}
+.effort-detail-grid ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
 .overall-progress {
   margin-top: 1.25rem;
 }
@@ -1143,6 +1242,10 @@ textarea {
     grid-template-columns: 1fr;
   }
   .timeline-item {
+    grid-template-columns: 1fr;
+  }
+  .effort-grid,
+  .effort-detail-grid {
     grid-template-columns: 1fr;
   }
   .timeline-marker {

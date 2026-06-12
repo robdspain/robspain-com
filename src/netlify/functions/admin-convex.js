@@ -136,13 +136,16 @@ exports.handler = async (event) => {
     const key = cleanKey(event.queryStringParameters?.key);
     if (!key) return json(400, { error: 'Missing or invalid key' });
     const requireConvex = event.queryStringParameters?.requireConvex === '1';
+    const isConvexConfigured = Boolean(convexUrl());
+    let convexError = null;
 
     // 1. Try Convex if configured
-    if (convexUrl()) {
+    if (isConvexConfigured) {
       try {
         const item = await convexCall('query', 'adminItems:get', { key });
-        return json(200, { key, item, source: 'convex' });
+        return json(200, { key, item, source: 'convex', convexConfigured: true });
       } catch (error) {
+        convexError = error;
         if (requireConvex) return json(error.statusCode || 502, { error: error.message, source: 'convex' });
         console.warn('Convex GET failed, falling back to Blobs:', error.message);
       }
@@ -155,7 +158,13 @@ exports.handler = async (event) => {
       const { getStore } = require('@netlify/blobs');
       const store = getStore('admin-kv');
       const item = await store.get(key, { type: 'json' });
-      return json(200, { key, item: item || null, source: 'blobs' });
+      return json(200, {
+        key,
+        item: item || null,
+        source: 'blobs',
+        convexConfigured: isConvexConfigured,
+        convexError: convexError ? convexError.message : 'CONVEX_URL is not set in Netlify',
+      });
     } catch (blobsError) {
       return json(500, { error: blobsError.message });
     }
@@ -172,17 +181,20 @@ exports.handler = async (event) => {
     const key = cleanKey(payload.key || event.queryStringParameters?.key);
     if (!key) return json(400, { error: 'Missing or invalid key' });
     const requireConvex = Boolean(payload.requireConvex || event.queryStringParameters?.requireConvex === '1');
+    const isConvexConfigured = Boolean(convexUrl());
+    let convexError = null;
 
     // 1. Try Convex if configured
-    if (convexUrl()) {
+    if (isConvexConfigured) {
       try {
         const result = await convexCall('mutation', 'adminItems:put', {
           key,
           value: payload.value,
           updatedBy: session.email,
         });
-        return json(200, { success: true, ...result, source: 'convex' });
+        return json(200, { success: true, ...result, source: 'convex', convexConfigured: true });
       } catch (error) {
+        convexError = error;
         if (requireConvex) return json(error.statusCode || 502, { error: error.message, source: 'convex' });
         console.warn('Convex PUT failed, falling back to Blobs:', error.message);
       }
@@ -200,7 +212,13 @@ exports.handler = async (event) => {
         updatedBy: session.email
       };
       await store.setJSON(key, data);
-      return json(200, { success: true, updatedAt: data.updatedAt, source: 'blobs' });
+      return json(200, {
+        success: true,
+        updatedAt: data.updatedAt,
+        source: 'blobs',
+        convexConfigured: isConvexConfigured,
+        convexError: convexError ? convexError.message : 'CONVEX_URL is not set in Netlify',
+      });
     } catch (blobsError) {
       return json(500, { error: blobsError.message });
     }

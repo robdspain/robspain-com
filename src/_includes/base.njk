@@ -227,11 +227,103 @@
         });
       }
     </script>
+    <style>
+      .family-pwa-shell .compliance-page {
+        padding-top: max(1rem, env(safe-area-inset-top)) !important;
+        padding-bottom: calc(6rem + env(safe-area-inset-bottom)) !important;
+      }
+      .family-pwa-shell .family-nav {
+        background: rgba(255, 253, 248, 0.92) !important;
+        border: 1px solid rgba(18, 54, 40, 0.12) !important;
+        border-radius: 22px !important;
+        box-shadow: 0 16px 45px rgba(18, 54, 40, 0.1) !important;
+        backdrop-filter: blur(18px);
+      }
+      .family-pwa-shell .family-nav-link {
+        white-space: nowrap;
+      }
+      @media (max-width: 760px) {
+        .family-pwa-shell .family-nav {
+          position: sticky !important;
+          top: max(8px, env(safe-area-inset-top)) !important;
+          z-index: 50 !important;
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: stretch !important;
+          gap: 10px !important;
+          padding: 10px !important;
+          margin-bottom: 16px !important;
+        }
+        .family-pwa-shell .family-nav-brand {
+          display: flex !important;
+          justify-content: flex-start !important;
+          width: 100% !important;
+          padding: 4px 4px 0 !important;
+          font-size: 15px !important;
+          line-height: 1.15 !important;
+        }
+        .family-pwa-shell .family-nav-brand i {
+          font-size: 16px !important;
+        }
+        .family-pwa-shell .family-nav-links {
+          display: flex !important;
+          flex-wrap: nowrap !important;
+          justify-content: flex-start !important;
+          gap: 8px !important;
+          overflow-x: auto !important;
+          overscroll-behavior-x: contain;
+          scroll-snap-type: x proximity;
+          -webkit-overflow-scrolling: touch;
+          padding: 2px 1px 3px !important;
+        }
+        .family-pwa-shell .family-nav-links::-webkit-scrollbar {
+          display: none;
+        }
+        .family-pwa-shell .family-nav-link {
+          flex: 0 0 auto !important;
+          min-height: 40px !important;
+          border-radius: 999px !important;
+          padding: 10px 13px !important;
+          font-size: 12px !important;
+          font-weight: 850 !important;
+          line-height: 1 !important;
+          background: rgba(31, 77, 63, 0.06);
+          scroll-snap-align: start;
+        }
+        .family-pwa-shell .family-nav-link.active {
+          background: #1f4d3f !important;
+          color: #fffdf8 !important;
+          box-shadow: 0 10px 24px rgba(31, 77, 63, 0.24);
+        }
+        .family-pwa-shell .hero-card h1 {
+          font-size: clamp(2.45rem, 12vw, 4rem);
+          line-height: 0.98;
+        }
+        .family-pwa-shell .admin-auth-bar {
+          left: 50% !important;
+          right: auto !important;
+          bottom: calc(10px + env(safe-area-inset-bottom)) !important;
+          transform: translateX(-50%);
+          max-width: calc(100vw - 24px);
+          padding: 8px 10px !important;
+          font-size: 11px !important;
+          gap: 8px !important;
+        }
+      }
+      @media (max-width: 390px) {
+        .family-pwa-shell .family-nav-link {
+          padding-inline: 11px !important;
+        }
+        .family-pwa-shell .family-nav-brand span {
+          font-size: 14px !important;
+        }
+      }
+    </style>
     {% endif %}
 
     <!-- Meta tags and other head content can go here -->
 </head>
-<body>
+<body{% if family_pwa %} class="family-pwa-shell"{% endif %}>
     {% if page.url and page.url.startsWith('/admin/') %}
     <div class="admin-auth-bar" style="position:fixed;right:16px;bottom:16px;z-index:100000;display:flex;gap:10px;align-items:center;background:rgba(15,23,42,.92);color:#e2e8f0;border:1px solid rgba(16,185,129,.35);box-shadow:0 14px 40px rgba(0,0,0,.24);border-radius:999px;padding:9px 12px;font:600 12px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backdrop-filter:blur(12px);">
         <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;border-radius:50%;background:#10b981;box-shadow:0 0 0 4px rgba(16,185,129,.14);"></span>Admin authenticated</span>

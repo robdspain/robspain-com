@@ -375,8 +375,8 @@ family_pwa: true
       <div class="family-nav-links">
         <a href="/admin/family/" class="family-nav-link active"><i class="fas fa-wallet"></i> Finance</a>
         <a href="/admin/court-compliance/" class="family-nav-link"><i class="fas fa-clipboard-check"></i> Custody</a>
-        <a href="/admin/home-search/" class="family-nav-link"><i class="fas fa-home"></i> Home Search</a>
-        <a href="/admin/home/" class="family-nav-link"><i class="fas fa-house-signal"></i> Home Command</a>
+        <a href="/admin/home-search/" class="family-nav-link"><i class="fas fa-home"></i> Search</a>
+        <a href="/admin/home/" class="family-nav-link"><i class="fas fa-house-signal"></i> Home</a>
         <a href="/admin/dashboard/" class="family-nav-link"><i class="fas fa-gauge"></i> Admin</a>
       </div>
     </nav>
@@ -1088,7 +1088,7 @@ function queueFinanceSync(state) {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
       const stamp = data.updatedAt ? new Date(data.updatedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'now';
-      setConvexStatus(`Saved to remote storage ${stamp}.`);
+      setConvexStatus(`Saved to ${storageSourceLabel(data)} ${stamp}.`);
     } catch (error) {
       setConvexStatus(`Local only: ${error.message}`, true);
     }
@@ -1102,7 +1102,7 @@ async function loadFinanceFromConvex() {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
     if (!data.item || !data.item.value) {
-      setConvexStatus('No saved remote record yet.');
+      setConvexStatus(`No ${storageSourceLabel(data)} record yet.`);
       return;
     }
     STATE = data.item.value;
@@ -1110,10 +1110,18 @@ async function loadFinanceFromConvex() {
     localStorage.setItem(STORE_KEY, JSON.stringify(STATE));
     renderAll();
     const stamp = data.item.updatedAt ? new Date(data.item.updatedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'now';
-    setConvexStatus(`Loaded from remote storage ${stamp}.`);
+    setConvexStatus(`Loaded from ${storageSourceLabel(data)} ${stamp}.`);
   } catch (error) {
     setConvexStatus(`Using local copy: ${error.message}`, true);
   }
+}
+
+function storageSourceLabel(data) {
+  if (data?.source === 'convex') return 'Convex';
+  if (data?.source === 'blobs') {
+    return data.convexConfigured ? 'Netlify storage after Convex fallback' : 'Netlify storage (Convex URL missing)';
+  }
+  return 'remote storage';
 }
 
 // ═══════════════════════════════════════════════════════════════

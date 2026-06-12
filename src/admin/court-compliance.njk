@@ -16,8 +16,8 @@ family_pwa: true
       <div class="family-nav-links">
         <a href="/admin/family/" class="family-nav-link"><i class="fas fa-wallet"></i> Finance</a>
         <a href="/admin/court-compliance/" class="family-nav-link active"><i class="fas fa-clipboard-check"></i> Custody</a>
-        <a href="/admin/home-search/" class="family-nav-link"><i class="fas fa-home"></i> Home Search</a>
-        <a href="/admin/home/" class="family-nav-link"><i class="fas fa-house-signal"></i> Home Command</a>
+        <a href="/admin/home-search/" class="family-nav-link"><i class="fas fa-home"></i> Search</a>
+        <a href="/admin/home/" class="family-nav-link"><i class="fas fa-house-signal"></i> Home</a>
         <a href="/admin/dashboard/" class="family-nav-link"><i class="fas fa-gauge"></i> Admin</a>
       </div>
     </nav>
@@ -1525,7 +1525,7 @@ textarea {
           throw new Error(data.error || `Remote save failed (${response.status})`);
         }
         const stamp = data.updatedAt ? new Date(data.updatedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'now';
-        const source = data.source === 'convex' ? 'Convex' : data.source === 'blobs' ? 'Netlify storage' : 'remote storage';
+        const source = storageSourceLabel(data);
         setSyncStatus(`Saved to ${source} at ${stamp}.`, 'synced');
       } catch (error) {
         setSyncStatus(`Saved locally. Remote sync unavailable: ${error.message}`, 'error');
@@ -1541,18 +1541,26 @@ textarea {
         throw new Error(data.error || `Remote load failed (${response.status})`);
       }
       if (!data.item || !data.item.value) {
-        const source = data.source === 'convex' ? 'Convex' : data.source === 'blobs' ? 'Netlify storage' : 'remote storage';
+        const source = storageSourceLabel(data);
         setSyncStatus(`No ${source} record yet. Local changes will create one.`, 'pending');
         return;
       }
       applyState(data.item.value);
       localStorage.setItem(key, JSON.stringify(snapshotState()));
       const stamp = data.item.updatedAt ? new Date(data.item.updatedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'now';
-      const source = data.source === 'convex' ? 'Convex' : data.source === 'blobs' ? 'Netlify storage' : 'remote storage';
+      const source = storageSourceLabel(data);
       setSyncStatus(`Loaded from ${source}. Last saved ${stamp}.`, 'synced');
     } catch (error) {
       setSyncStatus(`Using local browser copy. Remote load unavailable: ${error.message}`, 'error');
     }
+  }
+
+  function storageSourceLabel(data) {
+    if (data?.source === 'convex') return 'Convex';
+    if (data?.source === 'blobs') {
+      return data.convexConfigured ? 'Netlify storage after Convex fallback' : 'Netlify storage (Convex URL missing)';
+    }
+    return 'remote storage';
   }
 
   async function loadNotionCallEvidence() {

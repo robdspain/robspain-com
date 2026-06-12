@@ -274,15 +274,15 @@ function renderDrafts() {
                     <div class="draft-title">${draft.title}</div>
                     <div class="draft-actions">
                         <span class="status-badge status-${status}">${status}</span>
-                        <button class="btn-small btn-view" onclick="viewDraft('${draft.id}')">
+                        <button class="btn-small btn-view" onclick="viewDraft('${draft.id}')" aria-label="View draft" title="View draft">
                             <i class="fas fa-eye"></i>
                         </button>
                         ${status === 'new' ? `
-                        <button class="btn-small btn-review" onclick="markReviewed('${draft.id}')">
+                        <button class="btn-small btn-review" onclick="markReviewed('${draft.id}')" aria-label="Mark draft reviewed" title="Mark draft reviewed">
                             <i class="fas fa-check"></i>
                         </button>
                         ` : ''}
-                        <button class="btn-small btn-delete" onclick="deleteDraft('${draft.id}')">
+                        <button class="btn-small btn-delete" onclick="deleteDraft('${draft.id}')" aria-label="Delete draft" title="Delete draft">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>

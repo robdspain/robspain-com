@@ -1,15 +1,46 @@
 const { schedule } = require('@netlify/functions');
 const { getStore } = require('@netlify/blobs');
+const crypto = require('crypto');
+
+const ADMIN_COOKIE = 'robspain_admin_session';
+
+function json(statusCode, payload) {
+  return {
+    statusCode,
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+    },
+    body: JSON.stringify(payload),
+  };
+}
 
 // Daily plus evening refresh: 7am and 6pm Pacific (14:00 and 01:00 UTC during PDT).
 // Keeps Fresno County listings fresh, with Fresno High and Tower District promoted first.
-module.exports.handler = schedule('0 14,1 * * *', async (event) => {
+const scheduledHandler = schedule('0 14,1 * * *', async (event) => refreshHomeSearch(event));
+
+module.exports.handler = async (event, context) => {
+  if (isScheduledEvent(event)) return scheduledHandler(event, context);
+  if (event.httpMethod === 'OPTIONS') return json(200, {});
+  if (event.httpMethod !== 'POST') return json(405, { error: 'Method not allowed' });
+  if (!readAdminSession(event) && !readApiTokenSession(event)) return json(401, { error: 'Unauthorized' });
+
+  const result = await refreshHomeSearch(event, { manual: true });
+  return json(result.statusCode || 200, result.payload || {});
+};
+
+function isScheduledEvent(event) {
+  const headers = event.headers || {};
+  return !event.httpMethod || headers['x-netlify-scheduled'] || headers['X-Netlify-Scheduled'];
+}
+
+async function refreshHomeSearch(event, options = {}) {
   console.log('[home-search-refresh] Starting scheduled refresh', new Date().toISOString());
 
   const store = getBlobStore();
   if (!store) {
     console.error('[home-search-refresh] Storage not configured');
-    return { statusCode: 500 };
+    return { statusCode: 500, payload: { error: 'Storage not configured' } };
   }
 
   try {
@@ -17,7 +48,7 @@ module.exports.handler = schedule('0 14,1 * * *', async (event) => {
     const listings = sourceResult.listings;
     if (!listings || listings.length === 0) {
       console.warn('[home-search-refresh] No listings returned, skipping update');
-      return { statusCode: 200 };
+      return { statusCode: 200, payload: { ok: true, updated: false, listings: 0, message: 'No listings returned' } };
     }
 
     // Merge with existing data to preserve addedAt timestamps for known listings
@@ -48,12 +79,68 @@ module.exports.handler = schedule('0 14,1 * * *', async (event) => {
     );
 
     console.log(`[home-search-refresh] Updated ${merged.length} listings`);
-    return { statusCode: 200 };
+    return {
+      statusCode: 200,
+      payload: {
+        ok: true,
+        manual: Boolean(options.manual),
+        updated: true,
+        listings: merged.length,
+        source: sourceResult.sourceLabel,
+        sourceCounts: sourceResult.sourceCounts,
+        refreshedAt: now,
+      },
+    };
   } catch (err) {
     console.error('[home-search-refresh] Error:', err.message || err);
-    return { statusCode: 500 };
+    return { statusCode: 500, payload: { error: err.message || String(err) } };
   }
-});
+}
+
+function parseCookies(header) {
+  return Object.fromEntries(
+    String(header || '')
+      .split(';')
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .map((part) => {
+        const index = part.indexOf('=');
+        if (index === -1) return [part, ''];
+        return [part.slice(0, index), decodeURIComponent(part.slice(index + 1))];
+      })
+  );
+}
+
+function adminSign(value) {
+  const secret = process.env.ADMIN_AUTH_PASSWORD || process.env.GOOGLE_CLIENT_SECRET || process.env.JWT_SECRET;
+  if (!secret) return '';
+  return crypto.createHmac('sha256', secret).update(value).digest('base64url');
+}
+
+function readAdminSession(event) {
+  const cookie = parseCookies(event.headers.cookie || event.headers.Cookie)[ADMIN_COOKIE];
+  if (!cookie) return null;
+  const [payload, signature] = cookie.split('.');
+  if (!payload || !signature || adminSign(payload) !== signature) return null;
+
+  try {
+    const session = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
+    const allowedStr = (process.env.ADMIN_ALLOWED_EMAIL || process.env.ADMIN_AUTH_USER || 'robspain@gmail.com').toLowerCase();
+    const allowedList = allowedStr.split(',').map((email) => email.trim()).filter(Boolean);
+    if (!session.email || !allowedList.includes(session.email.toLowerCase())) return null;
+    if (!session.exp || session.exp < Math.floor(Date.now() / 1000)) return null;
+    return session;
+  } catch {
+    return null;
+  }
+}
+
+function readApiTokenSession(event) {
+  const adminToken = process.env.ADMIN_API_TOKEN;
+  const auth = event.headers.authorization || event.headers.Authorization || '';
+  if (!adminToken || auth !== `Bearer ${adminToken}`) return null;
+  return { email: 'admin-token' };
+}
 
 function getBlobStore() {
   try {

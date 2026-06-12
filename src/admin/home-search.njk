@@ -199,6 +199,19 @@ family_pwa: true
     font-size: 12px;
     margin-top: 6px;
   }
+  .hs-refresh-status {
+    color: #526158;
+    display: inline-flex;
+    font-size: 12px;
+    font-weight: 650;
+    min-height: 1.2em;
+  }
+  .hs-refresh-status.error {
+    color: #b91c1c;
+  }
+  .hs-refresh-status.ok {
+    color: #1f4d3f;
+  }
   
   /* Layout columns */
   .hs-layout {
@@ -681,7 +694,9 @@ family_pwa: true
             <option value="new">New Today</option>
           </select>
           <input type="text" id="searchBox" placeholder="Search address..." oninput="renderListings()" style="flex:1;min-width:120px;">
+          <button class="hs-btn hs-btn-primary" id="freshSearchBtn" onclick="runFreshSearch()"><i class="fas fa-rotate"></i> Fresh Search</button>
           <button class="hs-btn hs-btn-green" onclick="openShareModal()">Share Favorites with Cristal</button>
+          <span class="hs-refresh-status" id="freshSearchStatus" aria-live="polite"></span>
         </div>
 
         <!-- Listing Grid -->
@@ -1004,6 +1019,47 @@ async function loadData() {
   updateStats();
   renderListings();
   calculateMortgage();
+}
+
+async function runFreshSearch() {
+  const button = document.getElementById('freshSearchBtn');
+  const status = document.getElementById('freshSearchStatus');
+  if (button) {
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+  }
+  if (status) {
+    status.className = 'hs-refresh-status';
+    status.textContent = 'Pulling fresh Fresno County listings...';
+  }
+
+  try {
+    const response = await fetch('/admin/api/home-search-refresh', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ manual: true })
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || `Refresh failed (${response.status})`);
+    await loadData();
+    if (status) {
+      status.className = 'hs-refresh-status ok';
+      status.textContent = data.updated
+        ? `Fresh search complete: ${data.listings || allListings.length} listings.`
+        : (data.message || 'Fresh search complete.');
+    }
+  } catch (error) {
+    if (status) {
+      status.className = 'hs-refresh-status error';
+      status.textContent = error.message;
+    }
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.innerHTML = '<i class="fas fa-rotate"></i> Fresh Search';
+    }
+  }
 }
 
 function updateMeta() {

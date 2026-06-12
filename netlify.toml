@@ -67,6 +67,12 @@
   force = true
 
 [[redirects]]
+  from = "/admin/api/home-search-refresh"
+  to = "/.netlify/functions/home-search-refresh"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/admin/*"
   to = "/.netlify/functions/admin-gate?path=:splat"
   status = 200

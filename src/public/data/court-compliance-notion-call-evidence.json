@@ -1,0 +1,69 @@
+{
+  "source": "Notion Therapist Assessment Contact List",
+  "sourceUrl": "https://app.notion.com/p/43a98233d7324a76898c3214a3a65817",
+  "dataSourceUrl": "collection://a3c90c3c-2179-4a40-887c-d2d689f7d8bf",
+  "generatedAt": "2026-06-12T00:00:00-07:00",
+  "summary": {
+    "notionRows": 6,
+    "calledRows": 6,
+    "qualifiedRows": 1,
+    "needsFollowUpRows": 4,
+    "activeProviderRows": 2
+  },
+  "calls": [
+    {
+      "date": "2026-06-09T23:30:00.000Z",
+      "provider": "Link Care Counseling Center",
+      "phone": "559-439-5920",
+      "status": "Qualified",
+      "source": "Notion: Therapist Assessment Contact List",
+      "notes": "Rob completed phone intake at 4:30 PM on 2026-06-09. Link Care is matching Rob and the boys with a therapist based on availability and therapist experience. Waiting for therapist match/options.",
+      "url": "https://app.notion.com/p/37ad6d8e97748183bdd1d6e38cc0d9e3"
+    },
+    {
+      "date": "2026-06-08",
+      "provider": "Janz Family Therapy",
+      "phone": "(559) 825-1205",
+      "status": "Called",
+      "source": "Notion: Therapist Assessment Contact List",
+      "notes": "Preferred lead. Rob emailed Jonathan about weekly family therapy availability for Harrison, Waylon, and Rob; follow-up sent 2026-06-08. No Gmail response found as of 2026-06-09. Next action: wait briefly for Jonathan's reply or do a phone follow-up if Rob wants to push Janz first.",
+      "url": "https://app.notion.com/p/376d6d8e97748150b263c29484ddc331"
+    },
+    {
+      "date": "2026-06-08",
+      "provider": "Livewell Behavioral Health Inc.",
+      "phone": "559-554-9710",
+      "status": "Needs call",
+      "source": "Notion: Therapist Assessment Contact List",
+      "notes": "Called after-hours. Message said calls are answered/returned 9 AM-5 PM Mon-Fri. Selected scheduling/new appointment and left voicemail asking about weekly family therapy for Rob and two sons, with callback 408-504-7061. Needs callback/follow-up.",
+      "url": "https://app.notion.com/p/dd6bf7f66f354a25b7d643b036abebb9"
+    },
+    {
+      "date": "2026-06-08",
+      "provider": "Forward Family Services",
+      "phone": "559-575-8172",
+      "status": "Needs call",
+      "source": "Notion: Therapist Assessment Contact List",
+      "notes": "Called and selected intake/insurance option 3. Reached extension 1300 voicemail. Left voicemail asking about weekly family therapy for Rob and two sons, with callback 408-504-7061. No email reply found as of 2026-06-09. Needs callback/follow-up.",
+      "url": "https://app.notion.com/p/376d6d8e977481879d1fed61b493caa4"
+    },
+    {
+      "date": "2026-06-08",
+      "provider": "North Star Wellness Center",
+      "phone": "(559) 226-2273 / (559) 878-2158",
+      "status": "Needs call",
+      "source": "Notion: Therapist Assessment Contact List",
+      "notes": "Retried main number. Phone tree included mental health services and family center options. Call became blocked because AI note-disclosure logic repeated during phone tree instead of continuing DTMF selection; call was hung up. Next action: retry after call-policy patch or manual phone follow-up during business hours.",
+      "url": "https://app.notion.com/p/376d6d8e9774811c84cff53b831f99be"
+    },
+    {
+      "date": "2026-06-08",
+      "provider": "Vue Family Therapy, Inc.",
+      "phone": "559-202-3390",
+      "status": "Needs call",
+      "source": "Notion: Therapist Assessment Contact List",
+      "notes": "Called; voicemail said to use website for phone consultation scheduling or leave name, phone, and brief message for callback within 24 hours. Agent asked whether office offers family therapy with one parent and two children together. Full callback voicemail was not completed/detected. Rob also emailed 2026-06-08. Needs retry or website/client portal route.",
+      "url": "https://app.notion.com/p/376d6d8e9774817597bec9e82d2ff70d"
+    }
+  ]
+}

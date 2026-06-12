@@ -391,11 +391,11 @@ hide_public_nav: true
       </div>
       <div class="call-evidence-grid" data-call-evidence-summary>
         <article><strong>0</strong><span>Total call evidence rows</span><p>Imported calls, autodialer attempts, note references, and manual corrections.</p></article>
-        <article><strong>0</strong><span>Mac Mini phone-log rows</span><p>Rows imported from the Mac Mini call export.</p></article>
-        <article><strong>0</strong><span>Autodialer attempts</span><p>Calls marked as autodialer or imported summary attempts.</p></article>
+        <article><strong>0</strong><span>Notion database rows</span><p>Rows loaded from the Therapist Assessment Contact List.</p></article>
+        <article><strong>0</strong><span>Mac Mini/autodialer rows</span><p>Rows imported from the Mac Mini phone log or autodialer export.</p></article>
         <article><strong>0</strong><span>Note-derived call references</span><p>Call evidence pulled from the notes below.</p></article>
       </div>
-      <p class="small-note" data-call-evidence-status>No Mac Mini call-log export has been imported in this browser yet. Export the Mac Mini autodialer or phone log as CSV/JSON, then import it below.</p>
+      <p class="small-note" data-call-evidence-status>Loading Notion call evidence. Mac Mini/autodialer exports can still be imported below.</p>
       <div class="tracker-grid">
         <div class="tracker-card"><h3>Dr. Collier</h3><textarea data-note="collier" placeholder="Date asked, response, next appointment, proof letter status"></textarea></div>
         <div class="tracker-card"><h3>Link Care family counseling</h3><textarea data-note="linkCare" placeholder="Breyona call date, Thursday morning status, Brooke paperwork, participants, session proof"></textarea></div>
@@ -1403,6 +1403,7 @@ textarea {
   const callFields = Array.from(document.querySelectorAll('[data-call-field]'));
   let callLog = Array.isArray(state.calls) ? state.calls : [];
   let callEvidence = normalizeCallEvidence(state.callEvidence);
+  let notionCallEvidence = normalizeCallEvidence(null);
   const stages = ['setup', 'anger', 'family', 'stepup', 'post16', 'proof'];
   const msDay = 24 * 60 * 60 * 1000;
   let syncTimer = null;
@@ -1528,6 +1529,24 @@ textarea {
       setSyncStatus(`Loaded from Convex. Last saved ${stamp}.`, 'synced');
     } catch (error) {
       setSyncStatus(`Using local browser copy. Convex load unavailable: ${error.message}`, 'error');
+    }
+  }
+
+  async function loadNotionCallEvidence() {
+    try {
+      const response = await fetch('/public/data/court-compliance-notion-call-evidence.json', { cache: 'no-store' });
+      if (!response.ok) throw new Error(`Notion evidence fetch failed (${response.status})`);
+      const data = await response.json();
+      notionCallEvidence = normalizeCallEvidence({
+        importedAt: data.generatedAt || new Date().toISOString(),
+        fileName: data.source || 'Notion Therapist Assessment Contact List',
+        summary: data.summary || {},
+        calls: data.calls || []
+      });
+      renderCalls();
+    } catch (error) {
+      const status = document.querySelector('[data-call-evidence-status]');
+      if (status) status.textContent = `Notion call evidence snapshot unavailable: ${error.message}. Mac Mini/autodialer exports can still be imported below.`;
     }
   }
 
@@ -1925,6 +1944,10 @@ textarea {
   }
 
   function combinedCallRows() {
+    const notionRows = notionCallEvidence.calls.map(row => ({
+      ...row,
+      source: row.source || 'Notion: Therapist Assessment Contact List'
+    }));
     const imported = callEvidence.calls.map(row => ({
       ...row,
       source: row.source || 'Mac Mini import'
@@ -1935,27 +1958,32 @@ textarea {
       source: 'Manual correction',
       manualIndex: index
     }));
-    return imported.concat(noteRows, manual);
+    return notionRows.concat(imported, noteRows, manual);
   }
 
   function updateCallEvidenceSummary(rows) {
     const target = document.querySelector('[data-call-evidence-summary]');
     const status = document.querySelector('[data-call-evidence-status]');
     if (!target) return;
+    const notionCount = notionCallEvidence.calls.length;
     const importedCount = callEvidence.calls.length;
     const autodialerRows = callEvidence.calls.filter(row => /auto.?dial|dialer/i.test(`${row.source} ${row.status} ${row.notes}`)).length;
     const autodialerCount = Number(callEvidence.summary.autodialerCalls || callEvidence.summary.autodialerAttempts || callEvidence.summary.callsMade || autodialerRows || 0);
     const noteCount = noteCallRows().length;
-    const values = [rows.length, importedCount, autodialerCount, noteCount];
+    const values = [rows.length, notionCount, importedCount || autodialerCount, noteCount];
     target.querySelectorAll('strong').forEach((node, index) => {
       node.textContent = values[index] ?? 0;
     });
     if (status) {
-      if (callEvidence.importedAt) {
+      if (notionCallEvidence.importedAt && callEvidence.importedAt) {
+        status.textContent = `Loaded ${notionCount} Notion call rows and ${importedCount} Mac Mini/autodialer rows.`;
+      } else if (notionCallEvidence.importedAt) {
+        status.textContent = `Loaded ${notionCount} call rows from Notion Therapist Assessment Contact List. Mac Mini/autodialer exports can still be imported below.`;
+      } else if (callEvidence.importedAt) {
         const file = callEvidence.fileName ? ` from ${callEvidence.fileName}` : '';
         status.textContent = `Mac Mini phone-log evidence imported${file} at ${new Date(callEvidence.importedAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}.`;
       } else {
-        status.textContent = 'No Mac Mini call-log export has been imported in this browser yet. Export the Mac Mini autodialer or phone log as CSV/JSON, then import it below.';
+        status.textContent = 'No Notion or Mac Mini call-log evidence loaded yet. Export the Mac Mini autodialer or phone log as CSV/JSON, then import it below.';
       }
     }
   }
@@ -2014,6 +2042,7 @@ textarea {
       notes,
       calls: callLog,
       callEvidence,
+      notionCallEvidence,
       combinedCallEvidence: combinedCallRows()
     };
   }
@@ -2493,5 +2522,6 @@ textarea {
   renderCalls();
   updateProgress();
   loadRemoteState();
+  loadNotionCallEvidence();
 })();
 </script>

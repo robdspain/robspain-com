@@ -1,7 +1,8 @@
 const { schedule } = require('@netlify/functions');
 const { getStore } = require('@netlify/blobs');
 
-// Twice daily: 7am and 6pm Pacific (14:00 and 01:00 UTC during PDT)
+// Daily plus evening refresh: 7am and 6pm Pacific (14:00 and 01:00 UTC during PDT).
+// Keeps Fresno County listings fresh, with Fresno High and Tower District promoted first.
 module.exports.handler = schedule('0 14,1 * * *', async (event) => {
   console.log('[home-search-refresh] Starting scheduled refresh', new Date().toISOString());
 
@@ -38,7 +39,7 @@ module.exports.handler = schedule('0 14,1 * * *', async (event) => {
       JSON.stringify({
         lastSearched: now,
         searchCount: (prevMeta.searchCount || 0) + 1,
-        source: 'Redfin - Fresno County (auto)',
+        source: 'Redfin - Fresno County daily refresh; Fresno High + Tower priority',
       })
     );
 
@@ -65,8 +66,9 @@ function getBlobStore() {
 
 // Zip-to-area mapping for categorization
 const ZIP_AREA_MAP = {
+  '93728': 'tower',
+  '93704': 'fresno-high',
   '93711': 'old-fig',
-  '93704': 'old-fig',
   '93705': 'old-fig',
   '93706': 'sunnyside',
   '93727': 'sunnyside',
@@ -82,6 +84,16 @@ const ZIP_AREA_MAP = {
 // Search polygons covering target areas in Fresno County
 // Each polygon is a viewport bounding box: west lat_south, east lat_south, east lat_north, west lat_north, close
 const SEARCH_POLYGONS = [
+  {
+    name: 'Fresno High / Old Fig',
+    // Palm, Van Ness, Fresno High, and nearby Old Fig corridors
+    poly: '-119.835 36.748,-119.770 36.748,-119.770 36.790,-119.835 36.790,-119.835 36.748',
+  },
+  {
+    name: 'Tower District',
+    // Tower District and adjacent 93728 blocks
+    poly: '-119.835 36.725,-119.780 36.725,-119.780 36.765,-119.835 36.765,-119.835 36.725',
+  },
   {
     name: 'Fresno City',
     // Covers the entire Fresno city limits (OSM bounds)
@@ -141,7 +153,11 @@ async function fetchRedfinListings() {
     }
   }
 
-  return unique;
+  return unique.sort((a, b) => {
+    const priorityDelta = (b.areaPriority || 0) - (a.areaPriority || 0);
+    if (priorityDelta) return priorityDelta;
+    return new Date(b.addedAt || 0) - new Date(a.addedAt || 0);
+  });
 }
 
 async function searchRedfinPoly(poly) {
@@ -179,7 +195,7 @@ async function searchRedfinPoly(poly) {
 
 function mapRedfinHome(home) {
   const zip = home.zip || home.postalCode?.value || '';
-  const area = ZIP_AREA_MAP[zip] || 'other';
+  const area = classifyArea(home, zip);
   const remarks = (home.listingRemarks || '').toLowerCase();
   const tags = (home.listingTags || []).map((t) => t.toLowerCase());
 
@@ -203,6 +219,8 @@ function mapRedfinHome(home) {
   if (home.lotSize?.value >= 20000)
     descParts.push(`${(home.lotSize.value / 43560).toFixed(2)} acres`);
   if (city && city !== 'Fresno') descParts.push(city);
+  if (area === 'fresno-high') descParts.push('Fresno High area');
+  if (area === 'tower') descParts.push('Tower District');
   if (isFixer) descParts.push('potential fixer-upper');
   if (hasPool) descParts.push('pool');
 
@@ -216,6 +234,8 @@ function mapRedfinHome(home) {
     baths: home.baths || 0,
     sqft: home.sqFt?.value || 0,
     area,
+    areaPriority: area === 'fresno-high' || area === 'tower' ? 2 : area === 'old-fig' ? 1 : 0,
+    targetArea: area === 'fresno-high' || area === 'tower',
     hasPool,
     isFixer,
     description: descParts.join(', ') + '.',
@@ -223,6 +243,32 @@ function mapRedfinHome(home) {
     imageUrl,
     addedAt: new Date().toISOString(),
   };
+}
+
+function classifyArea(home, zip) {
+  const lon = Number(
+    home.latLong?.value?.longitude ??
+    home.latLong?.longitude ??
+    home.longitude ??
+    home.centroid?.longitude
+  );
+  const lat = Number(
+    home.latLong?.value?.latitude ??
+    home.latLong?.latitude ??
+    home.latitude ??
+    home.centroid?.latitude
+  );
+
+  if (Number.isFinite(lat) && Number.isFinite(lon)) {
+    if (inBox(lat, lon, 36.725, 36.765, -119.835, -119.780)) return 'tower';
+    if (inBox(lat, lon, 36.748, 36.790, -119.835, -119.770)) return 'fresno-high';
+  }
+
+  return ZIP_AREA_MAP[zip] || 'other';
+}
+
+function inBox(lat, lon, south, north, west, east) {
+  return lat >= south && lat <= north && lon >= west && lon <= east;
 }
 
 function buildRedfinImageUrl(home) {

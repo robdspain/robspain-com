@@ -181,6 +181,19 @@ family_pwa: true
   .hs-stat-card .value.green {
     color: #1f4d3f;
   }
+  .hs-priority-note {
+    background: linear-gradient(135deg, #fffdf8 0%, #eef7f1 100%);
+    border: 1px solid rgba(31, 77, 63, 0.18);
+    border-radius: 18px;
+    color: #43524a;
+    font-size: 13px;
+    line-height: 1.55;
+    margin: -8px 0 20px;
+    padding: 14px 16px;
+  }
+  .hs-priority-note strong {
+    color: #123628;
+  }
   
   /* Layout columns */
   .hs-layout {
@@ -225,6 +238,10 @@ family_pwa: true
   }
   .hs-card.favorited {
     border-color: #e4b63d;
+  }
+  .hs-card.target-area {
+    border-color: rgba(31, 77, 63, 0.55);
+    box-shadow: 0 14px 38px rgba(31, 77, 63, 0.14);
   }
   .hs-card-img {
     width: 100%;
@@ -592,16 +609,16 @@ family_pwa: true
       <div class="family-nav-links">
         <a href="/admin/family/" class="family-nav-link"><i class="fas fa-wallet"></i> Finance</a>
         <a href="/admin/court-compliance/" class="family-nav-link"><i class="fas fa-clipboard-check"></i> Custody</a>
-        <a href="/admin/home-search/" class="family-nav-link active"><i class="fas fa-home"></i> Search</a>
-        <a href="/admin/home/" class="family-nav-link"><i class="fas fa-house-signal"></i> Home</a>
+        <a href="/admin/home-search/" class="family-nav-link active"><i class="fas fa-home"></i> Homes</a>
+        <a href="/admin/home/" class="family-nav-link"><i class="fas fa-house-signal"></i> House</a>
         <a href="/admin/dashboard/" class="family-nav-link"><i class="fas fa-gauge"></i> Admin</a>
       </div>
     </nav>
 
     <div class="hs-header">
       <div>
-        <h2>Home Search <span style="font-size:14px;color:#526158;font-weight:400;">Fresno County</span></h2>
-        <div class="meta">Fixer-uppers with pool &bull; Old Fig, Sunnyside, Rural areas &bull; Mid-century &amp; farmhouse style</div>
+        <h2>Home <span style="font-size:14px;color:#526158;font-weight:400;">Fresno County</span></h2>
+        <div class="meta">Daily Fresno County listing refresh &bull; Fresno High, Tower, Old Fig, Sunnyside, rural areas &bull; Mid-century &amp; farmhouse style</div>
       </div>
       <div style="text-align:right;">
         <div class="meta" id="lastSearched">Loading...</div>
@@ -616,14 +633,19 @@ family_pwa: true
       <div class="hs-stat-card"><div class="label">Avg Sq Ft</div><div class="value" id="statSqft">--</div></div>
       <div class="hs-stat-card"><div class="label">Favorites</div><div class="value" style="color:#e4b63d;" id="statFavs">0</div></div>
       <div class="hs-stat-card"><div class="label">New Today</div><div class="value" style="color:#1f4d3f;" id="statNew">0</div></div>
+      <div class="hs-stat-card"><div class="label">Fresno High + Tower</div><div class="value green" id="statPriority">0</div></div>
     </div>
 
     <div class="hs-layout">
       <!-- Main Listing Column -->
       <div class="hs-listings-column">
+        <div class="hs-priority-note">
+          <strong>Priority areas:</strong> Fresno High and Tower District are highlighted first. Old Fig, Sunnyside, rural/country, and other Fresno County areas remain in the search.
+        </div>
         <!-- Controls -->
         <div class="hs-controls">
           <select id="sortBy" onchange="renderListings()">
+            <option value="priority-desc">Priority Areas First</option>
             <option value="price-asc">Price: Low to High</option>
             <option value="price-desc">Price: High to Low</option>
             <option value="sqft-desc">Sq Ft: Largest</option>
@@ -632,6 +654,8 @@ family_pwa: true
           </select>
           <select id="filterArea" onchange="renderListings()">
             <option value="all">All Areas</option>
+            <option value="fresno-high">Fresno High</option>
+            <option value="tower">Tower District</option>
             <option value="old-fig">Old Fig</option>
             <option value="sunnyside">Sunnyside</option>
             <option value="rural">Rural / Country</option>
@@ -941,6 +965,15 @@ const SEED_LISTINGS = [
 ];
 
 const SEED_META = { lastSearched: "2026-05-28T00:00:00Z", searchCount: 1, source: "Redfin - Fresno County fallback" };
+const TARGET_AREAS = new Set(['fresno-high', 'tower']);
+const AREA_LABELS = {
+  'fresno-high': 'Fresno High',
+  'tower': 'Tower District',
+  'old-fig': 'Old Fig',
+  'sunnyside': 'Sunnyside',
+  'rural': 'Rural',
+  'other': ''
+};
 
 async function loadData() {
   try {
@@ -991,6 +1024,7 @@ function updateStats() {
   const today = new Date().toDateString();
   const newCount = allListings.filter(l => l.addedAt && new Date(l.addedAt).toDateString() === today).length;
   document.getElementById('statNew').textContent = newCount;
+  document.getElementById('statPriority').textContent = allListings.filter(l => isPriorityArea(l)).length;
 }
 
 function renderListings() {
@@ -1027,8 +1061,14 @@ function renderListings() {
   const [field, dir] = sortBy.split('-');
   filtered.sort((a, b) => {
     let va = a[field] || 0, vb = b[field] || 0;
+    if (field === 'priority') {
+      va = areaPriority(a);
+      vb = areaPriority(b);
+    }
     if (field === 'date') { va = new Date(a.addedAt || 0).getTime(); vb = new Date(b.addedAt || 0).getTime(); }
-    return dir === 'asc' ? va - vb : vb - va;
+    const primary = dir === 'asc' ? va - vb : vb - va;
+    if (primary) return primary;
+    return new Date(b.addedAt || 0).getTime() - new Date(a.addedAt || 0).getTime();
   });
 
   const container = document.getElementById('listingsContainer');
@@ -1042,12 +1082,12 @@ function renderListings() {
   container.innerHTML = '<div class="hs-grid">' + filtered.map(l => {
     const isFav = favorites.has(l.id);
     const isNew = l.addedAt && new Date(l.addedAt).toDateString() === today;
-    const areaLabels = { 'old-fig': 'Old Fig', 'sunnyside': 'Sunnyside', 'rural': 'Rural', 'other': '' };
+    const isTarget = isPriorityArea(l);
     
     // Escape single quotes in address for javascript call
     const escapedAddr = (l.address || '').replace(/'/g, "\\'");
 
-    return `<div class="hs-card ${isFav ? 'favorited' : ''}">
+    return `<div class="hs-card ${isFav ? 'favorited' : ''} ${isTarget ? 'target-area' : ''}">
       ${isNew ? '<span class="hs-new-badge">NEW</span>' : ''}
       ${l.imageUrl
         ? `<img class="hs-card-img" src="${l.imageUrl}" alt="${l.address}" loading="lazy" onerror="this.outerHTML='<div class=hs-card-img-placeholder>No photo</div>'">`
@@ -1061,7 +1101,8 @@ function renderListings() {
           <span><strong>${l.sqft ? l.sqft.toLocaleString() : '?'}</strong> sq ft</span>
         </div>
         <div class="hs-card-tags">
-          ${l.area && l.area !== 'other' ? `<span class="hs-area-badge">${areaLabels[l.area] || l.area}</span>` : ''}
+          ${l.area && l.area !== 'other' ? `<span class="hs-area-badge">${AREA_LABELS[l.area] || l.area}</span>` : ''}
+          ${isTarget ? '<span class="hs-tag pool">Priority area</span>' : ''}
           ${l.hasPool ? '<span class="hs-tag pool">Pool</span>' : ''}
           ${l.isFixer ? '<span class="hs-tag fixer">Fixer</span>' : ''}
           ${l.area === 'rural' ? '<span class="hs-tag rural">Rural</span>' : ''}
@@ -1076,6 +1117,17 @@ function renderListings() {
       </div>
     </div>`;
   }).join('') + '</div>';
+}
+
+function isPriorityArea(listing) {
+  return Boolean(listing?.targetArea) || TARGET_AREAS.has(listing?.area);
+}
+
+function areaPriority(listing) {
+  if (Number.isFinite(Number(listing?.areaPriority))) return Number(listing.areaPriority);
+  if (isPriorityArea(listing)) return 2;
+  if (listing?.area === 'old-fig') return 1;
+  return 0;
 }
 
 function toggleFav(id) {

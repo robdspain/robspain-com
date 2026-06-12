@@ -17,12 +17,6 @@ canonical: /blog/
 
 <section class="section-premium" style="padding-top: 0;">
     <div class="container">
-        {% set newsletterId = "blog" %}
-        {% set newsletterSource = "/blog/" %}
-        {% set newsletterTitle = "Get the next School BCBA systems article by email." %}
-        {% set newsletterDescription = "Each issue turns one practical blog insight into a short implementation prompt you can use in real school behavior systems." %}
-        {% include "newsletter-signup.njk" %}
-
         <!-- Featured Post: The Crisis Story -->
         {% if collections.posts | length > 0 %}
         {% set latestPost = collections.posts | first %}
@@ -92,6 +86,12 @@ canonical: /blog/
                 </a>
             </div>
         </div>
+
+        {% set newsletterId = "blog" %}
+        {% set newsletterSource = "/blog/" %}
+        {% set newsletterTitle = "Get the next School BCBA systems article by email." %}
+        {% set newsletterDescription = "Each issue turns one practical blog insight into a short implementation prompt you can use in real school behavior systems." %}
+        {% include "newsletter-signup.njk" %}
     </div>
 </section>
 
@@ -142,6 +142,11 @@ canonical: /blog/
     background: linear-gradient(135deg, rgba(236, 253, 245, 0.92), rgba(255, 255, 255, 0.96));
     border: 1px solid rgba(16, 185, 129, 0.18);
     box-shadow: 0 18px 45px -28px rgba(6, 78, 59, 0.45);
+}
+
+.blog-conversion-strip + .newsletter-signup {
+    margin-top: 2rem;
+    margin-bottom: 0;
 }
 
 .blog-conversion-strip h2 {

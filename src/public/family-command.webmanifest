@@ -1,7 +1,7 @@
 {
   "name": "Family Command",
   "short_name": "Family",
-  "description": "Private family, custody, finance, home search, and home command tools for Rob Spain.",
+  "description": "Private family finance, custody, and home-search tools for Rob Spain.",
   "id": "/admin/family/",
   "start_url": "/admin/family/",
   "scope": "/admin/",
@@ -41,12 +41,6 @@
       "name": "Home Search",
       "short_name": "Homes",
       "url": "/admin/home-search/",
-      "icons": [{ "src": "/public/images/family-command-icon-192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "Home Command",
-      "short_name": "Home",
-      "url": "/admin/home/",
       "icons": [{ "src": "/public/images/family-command-icon-192.png", "sizes": "192x192" }]
     }
   ]

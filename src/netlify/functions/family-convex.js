@@ -165,6 +165,19 @@ exports.handler = async (event) => {
       const { getStore } = require('@netlify/blobs');
       const store = getStore('admin-kv');
       const item = await store.get(key, { type: 'json' });
+      if (item?.value && isConvexConfigured && !convexError) {
+        try {
+          await convexCall('mutation', 'familyItems:put', {
+            key,
+            value: item.value,
+            updatedBy: item.updatedBy || session.email,
+          });
+          return json(200, { key, item, source: 'convex-migrated', convexConfigured: true });
+        } catch (migrationError) {
+          console.warn('Family Convex backfill failed, serving Blobs value:', migrationError.message);
+          convexError = migrationError;
+        }
+      }
       return json(200, {
         key,
         item: item || null,

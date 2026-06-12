@@ -61,6 +61,12 @@
   force = true
 
 [[redirects]]
+  from = "/admin/api/family-convex"
+  to = "/.netlify/functions/family-convex"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/admin/*"
   to = "/.netlify/functions/admin-gate?path=:splat"
   status = 200
@@ -104,6 +110,11 @@
 [[redirects]]
   from = "/api/admin-convex"
   to = "/.netlify/functions/admin-convex"
+  status = 200
+
+[[redirects]]
+  from = "/api/family-convex"
+  to = "/.netlify/functions/family-convex"
   status = 200
 
 [[redirects]]

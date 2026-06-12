@@ -1705,7 +1705,7 @@ textarea {
     setSyncStatus('Saving locally; syncing to secure site storage...', 'pending');
     syncTimer = setTimeout(async () => {
       try {
-        const response = await fetch('/admin/api/admin-convex', {
+        const response = await fetch('/admin/api/family-convex', {
           method: 'PUT',
           credentials: 'same-origin',
           headers: { 'Content-Type': 'application/json' },
@@ -1726,7 +1726,7 @@ textarea {
 
   async function loadRemoteState() {
     try {
-      const response = await fetch(`/admin/api/admin-convex?key=${encodeURIComponent(key)}`, { credentials: 'same-origin' });
+      const response = await fetch(`/admin/api/family-convex?key=${encodeURIComponent(key)}`, { credentials: 'same-origin' });
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.error || `Remote load failed (${response.status})`);
@@ -1749,7 +1749,7 @@ textarea {
   function storageSourceLabel(data) {
     if (data?.source === 'convex') return 'Convex';
     if (data?.source === 'blobs') {
-      return data.convexConfigured ? 'Netlify storage after Convex fallback' : 'Netlify storage (Convex URL missing)';
+      return data.convexConfigured ? 'Netlify storage after Family Convex fallback' : 'Netlify storage (Family Convex URL missing)';
     }
     return 'remote storage';
   }

@@ -1090,7 +1090,7 @@ async function saveFavorites() {
   const value = [...favorites];
   localStorage.setItem('hs-favorites', JSON.stringify(value));
   try {
-    await fetch('/admin/api/admin-convex', {
+    await fetch('/admin/api/family-convex', {
       method: 'PUT',
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
@@ -1257,7 +1257,7 @@ if (savedFavs) {
 
 async function loadFavoritesFromConvex() {
   try {
-    const res = await fetch('/admin/api/admin-convex?key=hs-favorites', { credentials: 'same-origin' });
+    const res = await fetch('/admin/api/family-convex?key=hs-favorites', { credentials: 'same-origin' });
     if (!res.ok) return;
     const data = await res.json();
     if (!data.item || !Array.isArray(data.item.value)) return;

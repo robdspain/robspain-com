@@ -1079,7 +1079,7 @@ function queueFinanceSync(state) {
   const value = JSON.parse(JSON.stringify(state));
   financeSyncTimer = setTimeout(async () => {
     try {
-      const response = await fetch('/admin/api/admin-convex', {
+      const response = await fetch('/admin/api/family-convex', {
         method: 'PUT',
         credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json' },
@@ -1098,7 +1098,7 @@ function queueFinanceSync(state) {
 async function loadFinanceFromConvex() {
   setConvexStatus('Loading saved app data...');
   try {
-    const response = await fetch(`/admin/api/admin-convex?key=${encodeURIComponent(STORE_KEY)}`, { credentials: 'same-origin' });
+    const response = await fetch(`/admin/api/family-convex?key=${encodeURIComponent(STORE_KEY)}`, { credentials: 'same-origin' });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
     if (!data.item || !data.item.value) {
@@ -1119,7 +1119,7 @@ async function loadFinanceFromConvex() {
 function storageSourceLabel(data) {
   if (data?.source === 'convex') return 'Convex';
   if (data?.source === 'blobs') {
-    return data.convexConfigured ? 'Netlify storage after Convex fallback' : 'Netlify storage (Convex URL missing)';
+    return data.convexConfigured ? 'Netlify storage after Family Convex fallback' : 'Netlify storage (Family Convex URL missing)';
   }
   return 'remote storage';
 }

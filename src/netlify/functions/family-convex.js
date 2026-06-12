@@ -145,12 +145,14 @@ exports.handler = async (event) => {
     const requireConvex = event.queryStringParameters?.requireConvex === '1';
     const isConvexConfigured = Boolean(convexUrl());
     let convexError = null;
+    let convexHadNoRecord = false;
 
     // 1. Try Convex if configured
     if (isConvexConfigured) {
       try {
         const item = await convexCall('query', 'familyItems:get', { key });
         if (item) return json(200, { key, item, source: 'convex', convexConfigured: true });
+        convexHadNoRecord = true;
       } catch (error) {
         convexError = error;
         if (requireConvex) return json(error.statusCode || 502, { error: error.message, source: 'convex' });
@@ -165,6 +167,9 @@ exports.handler = async (event) => {
       const { getStore } = require('@netlify/blobs');
       const store = getStore('admin-kv');
       const item = await store.get(key, { type: 'json' });
+      if (!item && convexHadNoRecord && !convexError) {
+        return json(200, { key, item: null, source: 'convex', convexConfigured: true });
+      }
       if (item?.value && isConvexConfigured && !convexError) {
         try {
           await convexCall('mutation', 'familyItems:put', {
@@ -186,6 +191,16 @@ exports.handler = async (event) => {
         convexError: convexError ? convexError.message : 'FAMILY_CONVEX_URL is not set in Netlify',
       });
     } catch (blobsError) {
+      if (convexHadNoRecord && !convexError) {
+        return json(200, {
+          key,
+          item: null,
+          source: 'convex',
+          convexConfigured: true,
+          migrationSkipped: true,
+          migrationError: blobsError.message,
+        });
+      }
       return json(500, { error: blobsError.message });
     }
   }

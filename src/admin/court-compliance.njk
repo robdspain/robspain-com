@@ -614,6 +614,32 @@ I am documenting this neutrally for compliance tracking and counsel review.</pre
       </div>
     </section>
 
+    <section class="panel phase-report-panel">
+      <div class="panel-heading">
+        <p class="eyebrow">Phase report</p>
+        <h2>Generate Amy-ready phase completion report</h2>
+      </div>
+      <p class="small-note">Use this when a phase is complete or a gate changes. It pulls from the checklist, projected dates, notes, call log, and documented effort metrics. Review before sending.</p>
+      <div class="phase-report-controls">
+        <label>
+          Report phase
+          <select data-report-phase>
+            <option>Phase 1 - setup and therapeutic starts</option>
+            <option>Waylon + Harrison gate 1</option>
+            <option>Waylon + Harrison visit progression</option>
+            <option>Dylan/Janz conjoint gate</option>
+            <option>Dylan visit progression</option>
+            <option>Final proof packet</option>
+          </select>
+        </label>
+        <button type="button" class="utility-button" data-generate-phase-report>Generate report</button>
+        <button type="button" class="utility-button secondary" data-copy-phase-report>Copy report</button>
+        <button type="button" class="utility-button secondary" data-download-phase-report>Download report</button>
+      </div>
+      <small class="phase-report-status" data-phase-report-status></small>
+      <textarea class="phase-report-output" data-phase-report-output placeholder="Generate a phase report when you are ready to update Amy."></textarea>
+    </section>
+
     <section class="panel">
       <div class="panel-heading">
         <p class="eyebrow">Proof packet</p>
@@ -1136,6 +1162,38 @@ h3 {
   font: inherit;
   padding: .75rem .8rem;
 }
+.phase-report-controls {
+  align-items: end;
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) auto auto auto;
+  gap: .75rem;
+  margin-top: 1rem;
+}
+.phase-report-controls label {
+  color: #334139;
+  display: grid;
+  font-size: .9rem;
+  font-weight: 750;
+  gap: .4rem;
+}
+.phase-report-controls select {
+  background: white;
+  border: 1px solid #d9d1c4;
+  border-radius: 12px;
+  color: #17221d;
+  font: inherit;
+  padding: .75rem .8rem;
+}
+.phase-report-status {
+  color: #526158;
+  display: block;
+  margin: .75rem 0 .5rem;
+}
+.phase-report-output {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  line-height: 1.5;
+  min-height: 420px;
+}
 .call-table-wrap {
   overflow-x: auto;
   margin-top: 1rem;
@@ -1246,6 +1304,9 @@ textarea {
   }
   .effort-grid,
   .effort-detail-grid {
+    grid-template-columns: 1fr;
+  }
+  .phase-report-controls {
     grid-template-columns: 1fr;
   }
   .timeline-marker {
@@ -1645,6 +1706,170 @@ textarea {
     };
   }
 
+  function checkedLabels() {
+    return inputs
+      .filter(input => input.checked)
+      .map((input, index) => itemKey(input, index));
+  }
+
+  function uncheckedLabels() {
+    return inputs
+      .filter(input => !input.checked)
+      .map((input, index) => itemKey(input, index));
+  }
+
+  function planValue(name) {
+    return document.querySelector(`[data-plan-input="${name}"]`)?.value || 'Not set';
+  }
+
+  function reportLine(label, value) {
+    return `- ${label}: ${value || 'Not set'}`;
+  }
+
+  function limitedList(items, emptyText, limit) {
+    if (!items.length) return [`- ${emptyText}`];
+    return items.slice(0, limit).map(item => `- ${item}`);
+  }
+
+  function noteLines(notes) {
+    const noteLabels = {
+      collier: 'Dr. Collier individual therapy',
+      linkCare: 'Link Care family counseling',
+      janz: 'Janz Dylan/Rob conjoint counseling',
+      anger: 'Anger management',
+      counsel: 'Counsel filing packet'
+    };
+    const lines = Object.entries(noteLabels)
+      .filter(([key]) => notes[key] && notes[key].trim())
+      .map(([key, label]) => `- ${label}: ${notes[key].trim()}`);
+    return lines.length ? lines : ['- No dashboard notes entered yet.'];
+  }
+
+  function callLogLines(limit) {
+    if (!callLog.length) {
+      return ['- No dashboard call-log rows entered yet; see Gmail/Drive effort summary for documented outreach.'];
+    }
+    return callLog.slice(0, limit).map(call => {
+      const parts = [
+        call.date || 'No date',
+        call.provider || 'No provider listed',
+        call.status || 'No status',
+        call.notes || ''
+      ].filter(Boolean);
+      return `- ${parts.join(' - ')}`;
+    });
+  }
+
+  function proofLines(completed) {
+    const proofItems = completed.filter(item => /proof|letter|confirmation|attendance|certificate|file/i.test(item));
+    return limitedList(proofItems, 'No proof-specific checklist item is marked complete yet.', 10);
+  }
+
+  function buildPhaseReport() {
+    const data = snapshot();
+    const completed = checkedLabels();
+    const open = uncheckedLabels();
+    const total = inputs.length;
+    const done = completed.length;
+    const phase = document.querySelector('[data-report-phase]')?.value || 'Phase update';
+    const generated = new Date().toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
+
+    return [
+      `Subject: Custody compliance phase update - ${phase}`,
+      '',
+      'Hi Amy,',
+      '',
+      'I am sending a phase-completion update so the compliance record is clean and date-locked. Please review before anything is filed, served, or held for the record.',
+      '',
+      `Phase: ${phase}`,
+      `Generated: ${generated}`,
+      '',
+      'Current status',
+      reportLine('Checklist progress', `${done} of ${total} items complete; ${total - done} open`),
+      reportLine('Next tracked task', data.nextTask),
+      reportLine('Next task detail', data.nextDetail),
+      reportLine('Waylon/Harrison projected broader home schedule', data.waylonHarrisonProjection),
+      reportLine('Dylan projected broader home schedule', data.dylanProjection),
+      '',
+      'Documented effort summary',
+      '- 55 sent Gmail messages reviewed for therapist/provider outreach.',
+      '- 27 provider email targets documented across the outreach thread.',
+      '- 6+ documented calls, in-person inquiries, or call attempts captured from notes and memory.',
+      '- 4 of 4 phase-one tracks started or actively being scheduled: anger management, individual therapy, Link Care family counseling, and Dylan/Janz conjoint counseling.',
+      '',
+      'Timeline inputs currently on the dashboard',
+      reportLine('Plan tracking start', planValue('planStart')),
+      reportLine('Anger-management start', planValue('angerStart')),
+      reportLine('Anger-management classes completed', `${planValue('angerDone')} of 10`),
+      reportLine('Link Care family counseling start', planValue('familyStart')),
+      reportLine('Family-counseling sessions completed', `${planValue('familyDone')} of 16`),
+      reportLine('Dylan/Rob third conjoint counseling session', planValue('dylanConjointThird')),
+      reportLine('Dylan/Rob conjoint sessions completed', `${planValue('dylanConjointDone')} of 6`),
+      '',
+      'Completed items',
+      ...limitedList(completed, 'None marked complete in the dashboard yet.', 14),
+      '',
+      'Open items / still being tracked',
+      ...limitedList(open, 'No open checklist items remain in the dashboard.', 14),
+      '',
+      'Provider and status notes',
+      ...noteLines(data.notes || {}),
+      '',
+      'Recent call-log entries',
+      ...callLogLines(8),
+      '',
+      'Proof attached or available',
+      ...proofLines(completed),
+      '',
+      'Next action',
+      `- ${data.nextTask || 'Confirm the next step with counsel.'}`,
+      '',
+      'Please let me know if you want this organized differently or if any additional proof should be filed, served, or held.',
+      '',
+      'Thank you,',
+      'Rob'
+    ].join('\n');
+  }
+
+  function setPhaseReportStatus(message) {
+    const status = document.querySelector('[data-phase-report-status]');
+    if (status) status.textContent = message;
+  }
+
+  function ensurePhaseReport() {
+    const output = document.querySelector('[data-phase-report-output]');
+    if (!output) return '';
+    if (!output.value.trim()) {
+      output.value = buildPhaseReport();
+    }
+    return output.value;
+  }
+
+  function generatePhaseReport() {
+    const output = document.querySelector('[data-phase-report-output]');
+    if (!output) return;
+    output.value = buildPhaseReport();
+    setPhaseReportStatus('Report generated. Review before sending to Amy.');
+  }
+
+  function downloadPhaseReport() {
+    const text = ensurePhaseReport();
+    const phase = (document.querySelector('[data-report-phase]')?.value || 'phase-report')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `court-compliance-${phase}-${todayISO()}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    setPhaseReportStatus('Report downloaded.');
+  }
+
   function downloadSnapshot() {
     const blob = new Blob([JSON.stringify(snapshot(), null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -1819,6 +2044,12 @@ textarea {
   document.querySelector('[data-export-json]')?.addEventListener('click', downloadSnapshot);
   document.querySelector('[data-download-calendar]')?.addEventListener('click', downloadCalendar);
   document.querySelector('[data-print-page]')?.addEventListener('click', () => window.print());
+  document.querySelector('[data-generate-phase-report]')?.addEventListener('click', generatePhaseReport);
+  document.querySelector('[data-copy-phase-report]')?.addEventListener('click', async () => {
+    await copyText(ensurePhaseReport());
+    setPhaseReportStatus('Report copied. Review it in your message before sending.');
+  });
+  document.querySelector('[data-download-phase-report]')?.addEventListener('click', downloadPhaseReport);
   document.querySelector('[data-send-codex]')?.addEventListener('click', async () => {
     const token = document.querySelector('[data-codex-token]').value.trim();
     const message = document.querySelector('[data-codex-message]').value.trim();

@@ -22,28 +22,45 @@ family_pwa: true
       </div>
     </nav>
 
+    <section class="goal-progress-card" aria-label="Custody compliance goal progress">
+      <div class="goal-progress-head">
+        <div>
+          <p class="eyebrow">Goal progress</p>
+          <h1><span data-progress-label>0% complete</span></h1>
+          <p>Progress toward the current custody compliance checklist and next-phase readiness.</p>
+        </div>
+        <div class="goal-progress-meter">
+          <strong data-count-done>0</strong>
+          <span>of <b data-count-total>0</b> done</span>
+        </div>
+      </div>
+      <div class="progress-track goal-track"><div class="progress-fill" data-progress-fill></div></div>
+      <div class="status-grid compact" aria-label="Compliance progress summary">
+        <div><span data-count-open>0</span><small>Open items</small></div>
+        <div><span data-next-task>Enter start dates and completed counts.</span><small>Next task</small></div>
+      </div>
+      <p class="sync-status" data-sync-status>Saving locally; connecting to secure storage...</p>
+    </section>
+
     <section class="hero-card">
       <p class="eyebrow">Court compliance tracker</p>
       <h1>Therapy and timeline</h1>
       <p class="hero-copy">Private working tracker for each compliance gate, proof item, and scheduling step. Check items off as they are completed and the timeline updates automatically.</p>
-      <div class="status-grid" aria-label="Compliance progress summary">
-        <div><span data-count-total>0</span><small>Total checklist items</small></div>
-        <div><span data-count-done>0</span><small>Completed</small></div>
-        <div><span data-count-open>0</span><small>Open</small></div>
-      </div>
-      <div class="overall-progress" aria-label="Overall completion progress">
-        <span data-progress-label>0% complete</span>
-        <div class="progress-track"><div class="progress-fill" data-progress-fill></div></div>
-      </div>
-      <p class="sync-status" data-sync-status>Saving locally; connecting to Convex...</p>
     </section>
 
-    <section class="notice-card">
-      <h2>Current date corrections</h2>
+    <details class="notice-card custody-accordion">
+      <summary class="accordion-summary">
+        <span><i class="fas fa-calendar-check"></i> Current date corrections</span>
+        <i class="fas fa-chevron-down"></i>
+      </summary>
       <p>Updated as of Friday, June 12, 2026: anger-management class 4 is today; Link Care is the active family-counseling provider, with Breyona Midgett as the current contact. Rob is trying to set a Thursday morning family-counseling time with Brooke, and Breyona is expected to call starting Wednesday, June 17, 2026. Janz Family Therapy remains only for Dylan/Rob conjoint counseling, with the third conjoint session scheduled for Friday, June 19, 2026.</p>
-    </section>
+    </details>
 
-    <section class="panel effort-panel">
+    <details class="panel effort-panel custody-accordion">
+      <summary class="accordion-summary">
+        <span><i class="fas fa-list-check"></i> Documented effort</span>
+        <i class="fas fa-chevron-down"></i>
+      </summary>
       <div class="panel-heading">
         <p class="eyebrow">Documented effort</p>
         <h2>Phase-one custody-evaluation work is underway</h2>
@@ -86,9 +103,13 @@ family_pwa: true
           </ul>
         </article>
       </div>
-    </section>
+    </details>
 
-    <section class="panel command-panel">
+    <details class="panel command-panel custody-accordion primary-accordion" open>
+      <summary class="accordion-summary">
+        <span><i class="fas fa-bullseye"></i> Right now</span>
+        <i class="fas fa-chevron-down"></i>
+      </summary>
       <div class="panel-heading">
         <p class="eyebrow">Right now</p>
         <h2>Next task and projected path home</h2>
@@ -96,7 +117,7 @@ family_pwa: true
       <div class="projection-grid">
         <div class="next-card">
           <span class="next-label">Next required action</span>
-          <strong data-next-task>Enter start dates and completed counts.</strong>
+          <strong data-next-task-detail>Enter start dates and completed counts.</strong>
           <p data-next-detail>The projection updates from the dates and counts below.</p>
         </div>
         <div class="date-card">
@@ -178,9 +199,13 @@ family_pwa: true
         <div class="phase-readiness-grid" data-court-projection></div>
       </div>
       <p class="small-note">Current known dates: anger-management class 4 is Friday, June 12, 2026; Link Care family counseling is being scheduled with Breyona Midgett, with the tracker still using Friday, June 19, 2026 as the default until Thursday morning is confirmed; Dylan/Rob Janz conjoint session 3 is Friday, June 19, 2026. Date estimates assume weekly anger-management classes, weekly family counseling for the first 16 sessions, weekly Dylan/Rob conjoint sessions from the known third-session date, weekly visits unless the report says first/third weekends, and no cancellations, refusals, holidays, or therapist delays.</p>
-    </section>
+    </details>
 
-    <section class="panel">
+    <details class="panel custody-accordion">
+      <summary class="accordion-summary">
+        <span><i class="fas fa-route"></i> Visual timeline</span>
+        <i class="fas fa-chevron-down"></i>
+      </summary>
       <div class="panel-heading">
         <p class="eyebrow">Visual timeline</p>
         <h2>Dated gate sequence</h2>
@@ -200,9 +225,13 @@ family_pwa: true
           <div class="timeline" data-path="dylan" aria-label="Dylan dated timeline"></div>
         </div>
       </div>
-    </section>
+    </details>
 
-    <section class="panel">
+    <details class="panel custody-accordion">
+      <summary class="accordion-summary">
+        <span><i class="fas fa-clipboard-list"></i> Full requirement checklist</span>
+        <i class="fas fa-chevron-down"></i>
+      </summary>
       <div class="panel-heading">
         <p class="eyebrow">Recommendation text translated into tasks</p>
         <h2>What needs to be done</h2>
@@ -286,9 +315,13 @@ family_pwa: true
           <li><label><input type="checkbox" data-stage="proof"> Short cover index listing what each proof item shows.</label></li>
         </ul>
       </div>
-    </section>
+    </details>
 
-    <section class="panel">
+    <details class="panel custody-accordion">
+      <summary class="accordion-summary">
+        <span><i class="fas fa-envelope"></i> Link Care email draft</span>
+        <i class="fas fa-chevron-down"></i>
+      </summary>
       <div class="panel-heading">
         <p class="eyebrow">Draft email</p>
         <h2>Email to Link Care</h2>
@@ -314,9 +347,13 @@ family_pwa: true
           <p>Thank you,<br>Rob Spain</p>
         </div>
       </div>
-    </section>
+    </details>
 
-    <section class="panel">
+    <details class="panel custody-accordion">
+      <summary class="accordion-summary">
+        <span><i class="fas fa-user-doctor"></i> Active counseling providers</span>
+        <i class="fas fa-chevron-down"></i>
+      </summary>
       <div class="panel-heading">
         <p class="eyebrow">Counseling coordination</p>
         <h2>Active providers only</h2>
@@ -370,9 +407,13 @@ family_pwa: true
           </dl>
         </article>
       </div>
-    </section>
+    </details>
 
-    <section class="panel">
+    <details class="panel custody-accordion">
+      <summary class="accordion-summary">
+        <span><i class="fas fa-person-chalkboard"></i> Anger management provider</span>
+        <i class="fas fa-chevron-down"></i>
+      </summary>
       <div class="panel-heading">
         <p class="eyebrow">Anger management</p>
         <h2>Active anger-management provider</h2>
@@ -390,9 +431,13 @@ family_pwa: true
           <p class="call-script">Documentation ask: confirm enrollment, attendance for class 1 and class 4, recurring Friday 10:15 AM participation, and whether proof can be issued after class 10 or completion.</p>
         </article>
       </div>
-    </section>
+    </details>
 
-    <section class="panel">
+    <details class="panel custody-accordion">
+      <summary class="accordion-summary">
+        <span><i class="fas fa-phone-volume"></i> Call evidence and notes</span>
+        <i class="fas fa-chevron-down"></i>
+      </summary>
       <div class="panel-heading">
         <p class="eyebrow">Call evidence tracker</p>
         <h2>Auto-built from notes, phone logs, and Mac Mini autodialer exports</h2>
@@ -412,9 +457,13 @@ family_pwa: true
         <div class="tracker-card"><h3>Counsel filing packet</h3><textarea data-note="counsel" placeholder="Proof sent to Amy or counsel, date, method, missing items"></textarea></div>
       </div>
       <p class="small-note">Notes and checkbox state save locally first, then sync to Convex when the protected admin API is available. Export or screenshot before relying on it as evidence.</p>
-    </section>
+    </details>
 
-    <section class="panel">
+    <details class="panel custody-accordion">
+      <summary class="accordion-summary">
+        <span><i class="fas fa-screwdriver-wrench"></i> Action tools</span>
+        <i class="fas fa-chevron-down"></i>
+      </summary>
       <div class="panel-heading">
         <p class="eyebrow">Action tools</p>
         <h2>Calls, emails, proof, and Codex handoff</h2>
@@ -464,9 +513,13 @@ family_pwa: true
           <tbody data-call-log></tbody>
         </table>
       </div>
-    </section>
+    </details>
 
-    <section class="panel">
+    <details class="panel custody-accordion">
+      <summary class="accordion-summary">
+        <span><i class="fas fa-copy"></i> Copy-ready templates</span>
+        <i class="fas fa-chevron-down"></i>
+      </summary>
       <div class="panel-heading">
         <p class="eyebrow">Templates</p>
         <h2>Copy-ready messages</h2>
@@ -585,9 +638,13 @@ Proof saved:
 I am documenting this neutrally for compliance tracking and counsel review.</pre>
         </article>
       </div>
-    </section>
+    </details>
 
-    <section class="panel phase-report-panel">
+    <details class="panel phase-report-panel custody-accordion">
+      <summary class="accordion-summary" id="amy-reports">
+        <span><i class="fas fa-file-export"></i> Amy-ready phase report</span>
+        <i class="fas fa-chevron-down"></i>
+      </summary>
       <div class="panel-heading">
         <p class="eyebrow">Phase report</p>
         <h2>Generate Amy-ready phase completion report</h2>
@@ -611,9 +668,13 @@ I am documenting this neutrally for compliance tracking and counsel review.</pre
       </div>
       <small class="phase-report-status" data-phase-report-status></small>
       <textarea class="phase-report-output" data-phase-report-output placeholder="Generate a phase report when you are ready to update Amy."></textarea>
-    </section>
+    </details>
 
-    <section class="panel">
+    <details class="panel custody-accordion">
+      <summary class="accordion-summary">
+        <span><i class="fas fa-box-archive"></i> Proof packet export</span>
+        <i class="fas fa-chevron-down"></i>
+      </summary>
       <div class="panel-heading">
         <p class="eyebrow">Proof packet</p>
         <h2>Export, print, and send back to Codex</h2>
@@ -637,7 +698,7 @@ I am documenting this neutrally for compliance tracking and counsel review.</pre
           </div>
         </article>
       </div>
-    </section>
+    </details>
   </div>
 </div>
 
@@ -719,6 +780,108 @@ I am documenting this neutrally for compliance tracking and counsel review.</pre
 .hero-card {
   background: linear-gradient(135deg, #fffdf8 0%, #ecf4ef 100%);
 }
+.goal-progress-card {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(228, 182, 61, .18), transparent 28%),
+    linear-gradient(135deg, #123628 0%, #1f4d3f 100%);
+  color: #fffdf8;
+  border: 1px solid rgba(255, 253, 248, .16);
+  border-radius: 24px;
+  box-shadow: 0 22px 60px rgba(18, 54, 40, .22);
+  padding: clamp(1.2rem, 3vw, 2rem);
+  margin-bottom: 1rem;
+}
+.goal-progress-card .eyebrow,
+.goal-progress-card h1,
+.goal-progress-card p,
+.goal-progress-card small {
+  color: #fffdf8;
+}
+.goal-progress-card .eyebrow {
+  color: #b8f2d8;
+}
+.goal-progress-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: start;
+}
+.goal-progress-head h1 {
+  margin: 0;
+  font-size: clamp(2.6rem, 10vw, 5.5rem);
+  letter-spacing: 0;
+}
+.goal-progress-head p {
+  margin: .5rem 0 0;
+  max-width: 620px;
+  color: rgba(255, 253, 248, .78);
+}
+.goal-progress-meter {
+  min-width: 130px;
+  text-align: center;
+  background: rgba(255, 253, 248, .1);
+  border: 1px solid rgba(184, 242, 216, .28);
+  border-radius: 20px;
+  padding: 1rem;
+}
+.goal-progress-meter strong {
+  display: block;
+  font-size: 2.4rem;
+  line-height: 1;
+}
+.goal-progress-meter span {
+  display: block;
+  margin-top: .35rem;
+  color: rgba(255, 253, 248, .76);
+  font-size: .8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.goal-track {
+  height: 16px;
+  background: rgba(255, 253, 248, .2);
+  margin: 1.1rem 0 0;
+}
+.goal-track .progress-fill {
+  background: linear-gradient(90deg, #b8f2d8, #e4b63d);
+}
+.custody-accordion {
+  display: block;
+}
+.custody-accordion > .accordion-summary {
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  color: #123628;
+  font-weight: 850;
+  font-size: 1.02rem;
+  padding-bottom: .15rem;
+}
+.custody-accordion > .accordion-summary::-webkit-details-marker {
+  display: none;
+}
+.accordion-summary span {
+  display: inline-flex;
+  align-items: center;
+  gap: .65rem;
+}
+.accordion-summary i:last-child {
+  color: #526158;
+  transition: transform .18s ease;
+}
+.custody-accordion[open] > .accordion-summary {
+  margin-bottom: 1rem;
+}
+.custody-accordion[open] > .accordion-summary i:last-child {
+  transform: rotate(180deg);
+}
+.primary-accordion {
+  border-color: rgba(31, 77, 63, .26);
+}
 .eyebrow {
   color: #1f4d3f;
   text-transform: uppercase;
@@ -752,11 +915,19 @@ h3 {
   gap: .75rem;
   margin-top: 1.25rem;
 }
+.status-grid.compact {
+  grid-template-columns: .42fr 1fr;
+  margin-top: 1rem;
+}
 .status-grid div {
   background: rgba(31, 77, 63, .08);
   border: 1px solid rgba(31, 77, 63, .16);
   border-radius: 16px;
   padding: 1rem;
+}
+.goal-progress-card .status-grid div {
+  background: rgba(255, 253, 248, .1);
+  border-color: rgba(255, 253, 248, .18);
 }
 .status-grid span {
   display: block;
@@ -764,9 +935,21 @@ h3 {
   font-size: 2rem;
   font-weight: 800;
 }
+.status-grid.compact span {
+  font-size: 1.05rem;
+  line-height: 1.25;
+}
+.status-grid.compact div:first-child span {
+  font-size: 2rem;
+  line-height: 1;
+}
 .status-grid small {
   color: #526158;
   font-weight: 650;
+}
+.goal-progress-card .status-grid span,
+.goal-progress-card .status-grid small {
+  color: #fffdf8;
 }
 .effort-panel {
   background: linear-gradient(135deg, #fffdf8 0%, #f0f7f2 100%);
@@ -1386,8 +1569,16 @@ textarea {
   background: white;
 }
 @media (max-width: 720px) {
+  .goal-progress-head,
   .status-grid {
     grid-template-columns: 1fr;
+  }
+  .status-grid.compact {
+    grid-template-columns: 1fr;
+  }
+  .goal-progress-meter {
+    width: 100%;
+    text-align: left;
   }
   .projection-grid, .path-columns {
     grid-template-columns: 1fr;
@@ -1807,7 +1998,9 @@ textarea {
     const whHome = projection.wh[projection.wh.length - 1];
     const dylanHome = projection.dylan[projection.dylan.length - 1];
 
-    document.querySelector('[data-next-task]').textContent = next ? next.title : 'All tracked gates are marked complete.';
+    const nextTitle = next ? next.title : 'All tracked gates are marked complete.';
+    document.querySelector('[data-next-task]').textContent = nextTitle;
+    document.querySelector('[data-next-task-detail]').textContent = nextTitle;
     document.querySelector('[data-next-detail]').textContent = next ? `${formatDate(next.date)} (${daysUntil(next.date)}). ${next.detail}` : 'Confirm final proof packet and counsel instructions.';
     document.querySelector('[data-wh-home-date]').textContent = formatDate(whHome.date);
     document.querySelector('[data-wh-home-detail]').textContent = `${daysUntil(whHome.date)} if the sequence runs without delay.`;
@@ -2167,7 +2360,7 @@ textarea {
     return {
       exportedAt: new Date().toISOString(),
       page: 'Court compliance tracker',
-      nextTask: document.querySelector('[data-next-task]')?.textContent?.trim(),
+      nextTask: document.querySelector('[data-next-task-detail]')?.textContent?.trim() || document.querySelector('[data-next-task]')?.textContent?.trim(),
       nextDetail: document.querySelector('[data-next-detail]')?.textContent?.trim(),
       waylonHarrisonProjection: document.querySelector('[data-wh-home-date]')?.textContent?.trim(),
       dylanProjection: document.querySelector('[data-dylan-home-date]')?.textContent?.trim(),

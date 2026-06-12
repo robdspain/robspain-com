@@ -161,6 +161,8 @@ const SEARCH_LIMITS = {
   minBeds: 3,
 };
 
+const EXCLUDED_PLACES = ['easton'];
+
 async function fetchListingsFromSources() {
   const checkedAt = new Date().toISOString();
   const sources = [];
@@ -285,6 +287,7 @@ function mapIdxListing(row, checkedAt) {
     id: `idx-${mlsId || slugify(address)}`,
     mlsId,
     address,
+    city,
     price,
     beds,
     baths,
@@ -324,10 +327,19 @@ function firstNumber() {
 
 function matchesSearchLimits(listing) {
   return (
+    !isExcludedPlace(listing) &&
     listing.price >= SEARCH_LIMITS.minPrice &&
     listing.price <= SEARCH_LIMITS.maxPrice &&
     listing.beds >= SEARCH_LIMITS.minBeds
   );
+}
+
+function isExcludedPlace(listing) {
+  const text = [listing.city, listing.address, listing.description]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+  return EXCLUDED_PLACES.some((place) => new RegExp(`\\b${place}\\b`, 'i').test(text));
 }
 
 function dedupeListings(listings) {
@@ -458,7 +470,8 @@ async function fetchRedfinListings(checkedAt) {
             (h.price?.value || 0) <= 1500000 &&
             (h.beds || 0) >= 3
         )
-        .map((home) => mapRedfinHome(home, checkedAt));
+        .map((home) => mapRedfinHome(home, checkedAt))
+        .filter(matchesSearchLimits);
       allListings.push(...mapped);
       // Polite delay between requests
       await new Promise((r) => setTimeout(r, 800));
@@ -539,6 +552,7 @@ function mapRedfinHome(home, checkedAt) {
   return {
     id: `rf-${home.propertyId}`,
     address,
+    city,
     price: home.price?.value || 0,
     beds: home.beds || 0,
     baths: home.baths || 0,

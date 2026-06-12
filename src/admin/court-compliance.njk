@@ -42,6 +42,25 @@ family_pwa: true
       <p class="sync-status" data-sync-status>Saving locally; connecting to secure storage...</p>
     </section>
 
+    <section class="custody-actions-panel" aria-label="Today's custody action plan">
+      <div class="custody-actions-header">
+        <div>
+          <p class="eyebrow">Custody actions today</p>
+          <h2>Move the custody timeline forward today</h2>
+          <p>These are custody-only tasks. Finance work stays on the Finance dashboard.</p>
+        </div>
+        <div class="custody-actions-progress" aria-live="polite">
+          <strong data-custody-action-count>0/3</strong>
+          <span>complete</span>
+        </div>
+      </div>
+      <div class="custody-action-grid" data-custody-actions></div>
+      <div class="custody-actions-footer">
+        <span>Completed custody actions save with this custody tracker.</span>
+        <button type="button" class="utility-button secondary" data-reset-custody-actions>Reset today</button>
+      </div>
+    </section>
+
     <section class="hero-card">
       <p class="eyebrow">Court compliance tracker</p>
       <h1>Therapy and timeline</h1>
@@ -1035,6 +1054,123 @@ h3 {
 .sync-status.is-error {
   color: #9f3412;
 }
+.custody-actions-panel {
+  background: linear-gradient(135deg, #fffdf8 0%, #eef7f1 100%);
+  border: 1px solid rgba(31, 77, 63, .2);
+  border-radius: 24px;
+  box-shadow: 0 18px 45px rgba(18, 54, 40, .08);
+  margin-bottom: 1.25rem;
+  padding: 1.2rem;
+}
+.custody-actions-header {
+  align-items: flex-start;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.custody-actions-header h2 {
+  color: #123628;
+  font-size: clamp(1.35rem, 3vw, 2rem);
+  margin: 0;
+}
+.custody-actions-header p:not(.eyebrow) {
+  color: #43524a;
+  margin: .45rem 0 0;
+}
+.custody-actions-progress {
+  background: #123628;
+  border-radius: 18px;
+  color: #fffdf8;
+  min-width: 112px;
+  padding: .85rem;
+  text-align: center;
+}
+.custody-actions-progress strong {
+  display: block;
+  font-size: 1.55rem;
+  line-height: 1;
+}
+.custody-actions-progress span {
+  color: #bdebd0;
+  display: block;
+  font-size: .72rem;
+  font-weight: 850;
+  letter-spacing: .08em;
+  margin-top: .25rem;
+  text-transform: uppercase;
+}
+.custody-action-grid {
+  display: grid;
+  gap: .85rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.custody-action-card {
+  align-items: start;
+  background: white;
+  border: 1px solid #e4ded2;
+  border-radius: 16px;
+  color: #17221d;
+  display: grid;
+  gap: .75rem;
+  grid-template-columns: auto 1fr;
+  min-height: 132px;
+  padding: 1rem;
+}
+.custody-action-card.done {
+  background: #effaf3;
+}
+.custody-action-card.done .custody-action-title {
+  color: #526158;
+  text-decoration: line-through;
+}
+.custody-action-check {
+  accent-color: #1f4d3f;
+  cursor: pointer;
+  height: 1.45rem;
+  margin-top: .1rem;
+  width: 1.45rem;
+}
+.custody-action-title {
+  color: #123628;
+  display: block;
+  font-weight: 850;
+  line-height: 1.25;
+}
+.custody-action-detail {
+  color: #526158;
+  display: block;
+  font-size: .9rem;
+  line-height: 1.45;
+  margin-top: .45rem;
+}
+.custody-action-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-top: .7rem;
+}
+.custody-action-pill {
+  background: #ecf4ef;
+  border-radius: 999px;
+  color: #1f4d3f;
+  display: inline-flex;
+  font-size: .72rem;
+  font-weight: 850;
+  letter-spacing: .04em;
+  padding: .25rem .5rem;
+  text-transform: uppercase;
+}
+.custody-actions-footer {
+  align-items: center;
+  color: #526158;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: .88rem;
+  gap: .75rem;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
 .projection-grid {
   display: grid;
   grid-template-columns: 1.4fr 1fr 1fr;
@@ -1570,7 +1706,17 @@ textarea {
 }
 @media (max-width: 720px) {
   .goal-progress-head,
-  .status-grid {
+  .status-grid,
+  .custody-actions-header {
+    grid-template-columns: 1fr;
+  }
+  .custody-actions-header {
+    display: grid;
+  }
+  .custody-actions-progress {
+    width: 100%;
+  }
+  .custody-action-grid {
     grid-template-columns: 1fr;
   }
   .status-grid.compact {
@@ -1605,9 +1751,34 @@ textarea {
 <script>
 (function () {
   const key = 'court-compliance-v2';
+  const custodyActionDateKey = '2026-06-12';
+  const custodyActions = [
+    {
+      id: 'anger-class-4-proof-print',
+      title: 'Print fourth anger-management proof letter',
+      detail: 'Get the class 4 attendance letter printed or saved as a PDF so it is ready to send today.',
+      area: 'Anger management',
+      due: 'Today'
+    },
+    {
+      id: 'anger-class-4-proof-amy',
+      title: 'Send class 4 proof to Amy',
+      detail: 'Email Amy the fourth anger-management proof letter and note that class 4 is complete.',
+      area: 'Amy proof packet',
+      due: 'Today'
+    },
+    {
+      id: 'link-care-summary-response',
+      title: 'Respond to Link Care with the written summary',
+      detail: 'Send Brooke / Link Care the family counseling summary you already wrote so scheduling and treatment setup keep moving.',
+      area: 'Link Care',
+      due: 'Today'
+    }
+  ];
   const syncStatus = document.querySelector('[data-sync-status]');
   let state = readLocalState();
   state.plan = state.plan || {};
+  state.dailyActions = normalizeDailyActions(state.dailyActions);
   const inputs = Array.from(document.querySelectorAll('.checklist input'));
   const textareas = Array.from(document.querySelectorAll('textarea[data-note]'));
   const planInputs = Array.from(document.querySelectorAll('[data-plan-input]'));
@@ -1682,6 +1853,12 @@ textarea {
     };
   }
 
+  function normalizeDailyActions(value) {
+    const source = value && typeof value === 'object' ? value : {};
+    source[custodyActionDateKey] = source[custodyActionDateKey] && typeof source[custodyActionDateKey] === 'object' ? source[custodyActionDateKey] : {};
+    return source;
+  }
+
   function save() {
     const nextState = snapshotState();
     localStorage.setItem(key, JSON.stringify(nextState));
@@ -1697,7 +1874,7 @@ textarea {
     textareas.forEach((textarea, index) => { notes[noteKey(textarea, index)] = textarea.value; });
     const plan = {};
     planInputs.forEach(input => { plan[input.dataset.planInput] = input.value; });
-    return { checks, notes, plan, calls: callLog, callEvidence };
+    return { checks, notes, plan, calls: callLog, callEvidence, dailyActions: normalizeDailyActions(state.dailyActions) };
   }
 
   function queueRemoteSave(value) {
@@ -1775,6 +1952,7 @@ textarea {
   function applyState(nextState) {
     state = nextState || {};
     state.plan = state.plan || {};
+    state.dailyActions = normalizeDailyActions(state.dailyActions);
     callLog = Array.isArray(state.calls) ? state.calls : [];
     callEvidence = normalizeCallEvidence(state.callEvidence);
 
@@ -1799,7 +1977,49 @@ textarea {
       }
     });
     renderCalls();
+    renderCustodyActions();
     updateProgress();
+  }
+
+  function renderCustodyActions() {
+    const container = document.querySelector('[data-custody-actions]');
+    const countTarget = document.querySelector('[data-custody-action-count]');
+    if (!container) return;
+    state.dailyActions = normalizeDailyActions(state.dailyActions);
+    const todayState = state.dailyActions[custodyActionDateKey] || {};
+    const completed = custodyActions.filter(action => todayState[action.id]).length;
+    if (countTarget) countTarget.textContent = `${completed}/${custodyActions.length}`;
+    container.innerHTML = custodyActions.map(action => {
+      const done = Boolean(todayState[action.id]);
+      return `
+        <label class="custody-action-card ${done ? 'done' : ''}">
+          <input class="custody-action-check" type="checkbox" data-custody-action-id="${escapeHtml(action.id)}" ${done ? 'checked' : ''}>
+          <span>
+            <span class="custody-action-title">${escapeHtml(action.title)}</span>
+            <span class="custody-action-detail">${escapeHtml(action.detail)}</span>
+            <span class="custody-action-meta">
+              <span class="custody-action-pill">${escapeHtml(action.area)}</span>
+              <span class="custody-action-pill">${escapeHtml(action.due)}</span>
+            </span>
+          </span>
+        </label>
+      `;
+    }).join('');
+  }
+
+  function setCustodyActionDone(actionId, done) {
+    if (!custodyActions.some(action => action.id === actionId)) return;
+    state.dailyActions = normalizeDailyActions(state.dailyActions);
+    state.dailyActions[custodyActionDateKey][actionId] = done;
+    save();
+    renderCustodyActions();
+  }
+
+  function resetCustodyActions() {
+    state.dailyActions = normalizeDailyActions(state.dailyActions);
+    state.dailyActions[custodyActionDateKey] = {};
+    save();
+    renderCustodyActions();
   }
 
   function percent(done, total) {
@@ -2821,6 +3041,12 @@ textarea {
     setPhaseReportStatus('Report copied. Review it in your message before sending.');
   });
   document.querySelector('[data-download-phase-report]')?.addEventListener('click', downloadPhaseReport);
+  document.addEventListener('change', event => {
+    const target = event.target;
+    if (!target || !target.matches('[data-custody-action-id]')) return;
+    setCustodyActionDone(target.dataset.custodyActionId, target.checked);
+  });
+  document.querySelector('[data-reset-custody-actions]')?.addEventListener('click', resetCustodyActions);
   document.querySelector('[data-send-codex]')?.addEventListener('click', async () => {
     const token = document.querySelector('[data-codex-token]').value.trim();
     const message = document.querySelector('[data-codex-message]').value.trim();
@@ -2847,6 +3073,7 @@ textarea {
     }
   });
   renderCalls();
+  renderCustodyActions();
   updateProgress();
   loadRemoteState();
   loadNotionCallEvidence();

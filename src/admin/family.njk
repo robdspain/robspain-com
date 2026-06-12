@@ -265,94 +265,6 @@ family_pwa: true
   .advisor-controls button { padding: 8px 12px; border-radius: 10px; border: 1px solid #d9d1c4; background: #fffdf8; color: #1f4d3f; font-size: 12px; font-weight: 800; cursor: pointer; }
   .advisor-controls button:hover { border-color: #1f4d3f; background: rgba(31, 77, 63, 0.06); }
 
-  .daily-actions-panel {
-    position: relative;
-    overflow: hidden;
-    background:
-      radial-gradient(circle at 18% 0%, rgba(26, 184, 126, 0.18), transparent 30%),
-      linear-gradient(135deg, #102f24 0%, #1f4d3f 56%, #0f2b22 100%);
-    color: #fffdf8;
-    border: 1px solid rgba(255, 253, 248, 0.16);
-    border-radius: 24px;
-    padding: 24px;
-    margin-bottom: 24px;
-    box-shadow: 0 24px 70px rgba(18, 54, 40, 0.22);
-  }
-  .daily-actions-panel::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
-    background-size: 34px 34px;
-    opacity: 0.24;
-    pointer-events: none;
-  }
-  .daily-actions-panel > * { position: relative; z-index: 1; }
-  .daily-actions-header { display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; margin-bottom: 18px; }
-  .daily-eyebrow { margin: 0 0 8px; color: #a7f3d0; font-size: 12px; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
-  .daily-actions-header h1 { margin: 0; color: #fff; font-size: clamp(28px, 4vw, 42px); line-height: 1.05; letter-spacing: 0; }
-  .daily-actions-header p:not(.daily-eyebrow) { margin: 10px 0 0; color: rgba(255, 253, 248, 0.8); max-width: 680px; font-size: 15px; line-height: 1.55; }
-  .daily-actions-progress {
-    min-width: 112px;
-    border: 1px solid rgba(167, 243, 208, 0.32);
-    border-radius: 18px;
-    padding: 14px;
-    text-align: center;
-    background: rgba(255, 253, 248, 0.08);
-    backdrop-filter: blur(12px);
-  }
-  .daily-actions-progress strong { display: block; font-size: 26px; line-height: 1; color: #fff; }
-  .daily-actions-progress span { display: block; margin-top: 4px; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; color: #a7f3d0; }
-  .daily-action-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-  .daily-action-card {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 12px;
-    align-items: start;
-    min-height: 150px;
-    padding: 16px;
-    border-radius: 18px;
-    background: rgba(255, 253, 248, 0.95);
-    color: #17221d;
-    border: 1px solid rgba(255, 253, 248, 0.24);
-    box-shadow: 0 16px 32px rgba(8, 32, 24, 0.16);
-  }
-  .daily-action-card.done { opacity: 0.72; }
-  .daily-action-card.done .daily-action-title { text-decoration: line-through; color: #526158; }
-  .daily-action-check {
-    width: 28px;
-    height: 28px;
-    margin-top: 2px;
-    accent-color: #0f9f6e;
-    cursor: pointer;
-  }
-  .daily-action-title { display: block; margin: 0; color: #123628; font-size: 16px; font-weight: 900; line-height: 1.25; }
-  .daily-action-detail { display: block; margin: 8px 0 0; color: #526158; font-size: 13px; line-height: 1.45; }
-  .daily-action-meta { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
-  .daily-pill { display: inline-flex; align-items: center; border-radius: 999px; padding: 4px 8px; background: #ecfdf5; color: #066042; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; }
-  .daily-actions-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
-  .daily-actions-links { display: flex; gap: 8px; flex-wrap: wrap; }
-  .daily-action-link {
-    appearance: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    border: 1px solid rgba(167, 243, 208, 0.36);
-    border-radius: 999px;
-    background: rgba(255, 253, 248, 0.1);
-    color: #fff;
-    padding: 10px 14px;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 900;
-    cursor: pointer;
-  }
-  .daily-action-link:hover { background: rgba(255, 253, 248, 0.16); }
-  .daily-action-link.secondary { color: #a7f3d0; }
-  .daily-action-note { color: rgba(255, 253, 248, 0.72); font-size: 13px; }
-  
   /* Payment history */
   .payment-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #e8e2d5; font-size: 13px; }
   .payment-row:last-child { border-bottom: none; }
@@ -360,9 +272,8 @@ family_pwa: true
   .payment-row .pay-name { flex: 1; font-weight: 600; color: #17221d; }
   .payment-row .pay-amt { font-weight: 750; color: #1f4d3f; font-variant-numeric: tabular-nums; }
   .payment-row .pay-from { font-size: 11px; color: #8ba4b8; margin-left: 8px; }
-  @media (max-width: 900px) { .daily-action-grid { grid-template-columns: 1fr; } .daily-actions-header { flex-direction: column; } .daily-actions-progress { width: 100%; } }
   @media (max-width: 800px) { .advisor-hero { grid-template-columns: 1fr; } }
-  @media (max-width: 600px) { .fin-grid-4 { grid-template-columns: 1fr 1fr; } .fin-grid-2, .fin-grid-3 { grid-template-columns: 1fr; } .fin-tabs { gap: 4px; } .fin-tab { padding: 8px 12px; font-size: 12px; } .advisor-item { grid-template-columns: auto 1fr; } .advisor-amount { grid-column: 2; text-align: left; } .daily-actions-panel { padding: 18px; border-radius: 20px; } }
+  @media (max-width: 600px) { .fin-grid-4 { grid-template-columns: 1fr 1fr; } .fin-grid-2, .fin-grid-3 { grid-template-columns: 1fr; } .fin-tabs { gap: 4px; } .fin-tab { padding: 8px 12px; font-size: 12px; } .advisor-item { grid-template-columns: auto 1fr; } .advisor-amount { grid-column: 2; text-align: left; } }
 </style>
 
 <div class="compliance-page">
@@ -380,29 +291,6 @@ family_pwa: true
         <a href="/admin/dashboard/" class="family-nav-link"><i class="fas fa-gauge"></i> Admin</a>
       </div>
     </nav>
-
-    <section class="daily-actions-panel" aria-label="Today's family action plan">
-      <div class="daily-actions-header">
-        <div>
-          <p class="daily-eyebrow">Today's action plan</p>
-          <h1>Move the process forward today</h1>
-          <p>Friday, June 12, 2026. Finish the proof and therapy follow-up items first so the custody timeline keeps moving.</p>
-        </div>
-        <div class="daily-actions-progress" aria-live="polite">
-          <strong data-daily-action-count>0/3</strong>
-          <span>complete</span>
-        </div>
-      </div>
-      <div class="daily-action-grid" data-daily-actions></div>
-      <div class="daily-actions-footer">
-        <span class="daily-action-note">Completed items save on this device and sync to the admin data store.</span>
-        <div class="daily-actions-links">
-          <a href="/admin/court-compliance/#amy-reports" class="daily-action-link"><i class="fas fa-file-export"></i> Amy report area</a>
-          <a href="/admin/court-compliance/" class="daily-action-link"><i class="fas fa-clipboard-check"></i> Custody timeline</a>
-          <button type="button" class="daily-action-link secondary" data-reset-daily-actions><i class="fas fa-rotate-left"></i> Reset today</button>
-        </div>
-      </div>
-    </section>
 
     <div class="fin-dash">
       <div class="fin-header" style="flex-direction: column; align-items: flex-start; gap: 12px; border-bottom: none; margin-bottom: 12px;">
@@ -747,30 +635,6 @@ family_pwa: true
 // DATA STORE — localStorage now, Convex-ready structure
 // ═══════════════════════════════════════════════════════════════
 const STORE_KEY = 'spain-finance-v2';
-const TODAY_ACTION_KEY = '2026-06-12';
-const TODAY_ACTIONS = [
-  {
-    id: 'anger-class-4-proof-print',
-    title: 'Print fourth anger-management proof letter',
-    detail: 'Get the class 4 attendance letter printed or saved as a PDF so it is ready to send today.',
-    area: 'Anger management',
-    due: 'Today'
-  },
-  {
-    id: 'anger-class-4-proof-amy',
-    title: 'Send class 4 proof to Amy',
-    detail: 'Email Amy the fourth anger-management proof letter and note that class 4 is complete.',
-    area: 'Amy proof packet',
-    due: 'Today'
-  },
-  {
-    id: 'link-care-summary-response',
-    title: 'Respond to Link Care with the written summary',
-    detail: 'Send Brooke / Link Care the family counseling summary you already wrote so scheduling and treatment setup keep moving.',
-    area: 'Link Care',
-    due: 'Today'
-  }
-];
 const STATUS_CYCLE = ['overdue','upcoming','current','autopay','paid'];
 const STATUS_LABELS = {overdue:'Overdue',upcoming:'Upcoming',current:'Active',autopay:'Autopay',paid:'Paid'};
 const PRIORITY_LABELS = {1:'P1 Survival',2:'P2 Insurance/Debt',3:'P3 Necessities',4:'P4 On Credit'};
@@ -878,9 +742,6 @@ function defaultState() {
       discover: [],
       appleCard: []
     },
-    dailyActions: {
-      [TODAY_ACTION_KEY]: {}
-    },
     lastUpdated: '2026-04-01T00:00:00Z',
   };
 }
@@ -901,7 +762,6 @@ function loadState() {
         householdPlan: saved.householdPlan || def.householdPlan,
         statementFolders: saved.statementFolders || def.statementFolders,
         statements: saved.statements || def.statements,
-        dailyActions: saved.dailyActions || def.dailyActions,
         lastUpdated: saved.lastUpdated || def.lastUpdated,
       };
       applyCurrentFinanceCorrections(merged);
@@ -926,8 +786,6 @@ function loadState() {
 }
 
 function applyCurrentFinanceCorrections(state) {
-  state.dailyActions = state.dailyActions && typeof state.dailyActions === 'object' ? state.dailyActions : {};
-  state.dailyActions[TODAY_ACTION_KEY] = state.dailyActions[TODAY_ACTION_KEY] && typeof state.dailyActions[TODAY_ACTION_KEY] === 'object' ? state.dailyActions[TODAY_ACTION_KEY] : {};
   state.statementFolders = state.statementFolders || {};
   state.statements = state.statements || {};
   state.transactions = Array.isArray(state.transactions) ? state.transactions : [];
@@ -1138,53 +996,7 @@ function fmtDate(d) {
   return parts[1] + '/' + parts[2];
 }
 
-function renderDailyActions() {
-  const container = document.querySelector('[data-daily-actions]');
-  const countTarget = document.querySelector('[data-daily-action-count]');
-  if (!container) return;
-
-  const todayState = STATE.dailyActions?.[TODAY_ACTION_KEY] || {};
-  const completed = TODAY_ACTIONS.filter(action => todayState[action.id]).length;
-  if (countTarget) countTarget.textContent = `${completed}/${TODAY_ACTIONS.length}`;
-
-  container.innerHTML = TODAY_ACTIONS.map(action => {
-    const done = Boolean(todayState[action.id]);
-    return `
-      <label class="daily-action-card ${done ? 'done' : ''}">
-        <input class="daily-action-check" type="checkbox" data-daily-action-id="${esc(action.id)}" ${done ? 'checked' : ''}>
-        <span>
-          <span class="daily-action-title">${esc(action.title)}</span>
-          <span class="daily-action-detail">${esc(action.detail)}</span>
-          <span class="daily-action-meta">
-            <span class="daily-pill">${esc(action.area)}</span>
-            <span class="daily-pill">${esc(action.due)}</span>
-          </span>
-        </span>
-      </label>
-    `;
-  }).join('');
-}
-
-function setDailyActionDone(actionId, done) {
-  if (!TODAY_ACTIONS.some(action => action.id === actionId)) return;
-  STATE.dailyActions = STATE.dailyActions && typeof STATE.dailyActions === 'object' ? STATE.dailyActions : {};
-  STATE.dailyActions[TODAY_ACTION_KEY] = STATE.dailyActions[TODAY_ACTION_KEY] && typeof STATE.dailyActions[TODAY_ACTION_KEY] === 'object' ? STATE.dailyActions[TODAY_ACTION_KEY] : {};
-  STATE.dailyActions[TODAY_ACTION_KEY][actionId] = done;
-  saveState(STATE);
-  renderDailyActions();
-  showToast(done ? 'Daily action marked complete' : 'Daily action reopened');
-}
-
-function resetDailyActions() {
-  STATE.dailyActions = STATE.dailyActions && typeof STATE.dailyActions === 'object' ? STATE.dailyActions : {};
-  STATE.dailyActions[TODAY_ACTION_KEY] = {};
-  saveState(STATE);
-  renderDailyActions();
-  showToast("Today's actions reset");
-}
-
 function renderAll() {
-  renderDailyActions();
   renderSummary();
   renderAlerts();
   renderAdvisor();
@@ -2394,14 +2206,6 @@ function parseCSVLine(line) {
   result.push(current.trim());
   return result;
 }
-
-document.addEventListener('change', event => {
-  const target = event.target;
-  if (!target || !target.matches('[data-daily-action-id]')) return;
-  setDailyActionDone(target.dataset.dailyActionId, target.checked);
-});
-
-document.querySelector('[data-reset-daily-actions]')?.addEventListener('click', resetDailyActions);
 
 // Initial render
 renderAll();

@@ -1723,8 +1723,8 @@ textarea {
     return {
       wh: [
         { id: 'anger1', title: 'Anger-management class 1 proof', date: anger1, done: angerDone >= 1, detail: 'File proof with the Court and copy Mother.' },
-        { id: 'whGate1', title: 'Gate: 4 anger classes + 4 family sessions', date: whTwoHourStart, done: angerDone >= 4 && familyDone >= 4, detail: 'Unlocks six two-hour unmonitored visits before family therapy.' },
-        { id: 'whTwoHour', title: 'Six two-hour unmonitored visits', date: whTwoHourDone, done: countValue('whTwoHourDone') >= 6, detail: 'Visits occur before family therapy sessions.' },
+        { id: 'whGate1', title: 'Eligible to begin W/H two-hour visits', date: whTwoHourStart, done: angerDone >= 4 && familyDone >= 4, detail: 'This is the start gate: 4 anger classes and 4 Link Care family sessions must be complete before the six two-hour visits can begin.' },
+        { id: 'whTwoHour', title: 'All six W/H two-hour visits completed', date: whTwoHourDone, done: countValue('whTwoHourDone') >= 6, detail: 'This is the end of that phase: enter each completed two-hour visit above until the count reaches 6.' },
         { id: 'whSaturday', title: 'Six Saturday 3pm-7pm visits', date: whSaturdayDone, done: countValue('whSaturdayDone') >= 6, detail: 'Next gate before Saturday overnights.' },
         { id: 'anger10', title: 'Anger-management class 10 proof', date: anger10, done: angerDone >= 10, detail: 'File final proof/certificate with the Court and copy Mother.' },
         { id: 'whOvernight', title: 'Six Saturday overnights', date: whOvernightDone, done: countValue('whOvernightDone') >= 6, detail: 'Saturday 3pm to Sunday 2pm for six consecutive weeks.' },
@@ -1833,20 +1833,20 @@ textarea {
         date: 'First proof packet / phase update'
       },
       {
-        title: 'Waylon + Harrison: two-hour visits',
+        title: 'Waylon + Harrison: eligible to begin two-hour visits',
         status: gateStatus([
           { label: 'anger-management class', done: angerDone, required: 4 },
           { label: 'family session', done: familyDone, required: 4 }
         ], () => whTwoHourDone >= 6),
-        readyText: 'Gate met for six two-hour unmonitored visits before family therapy sessions.',
+        readyText: 'Start gate met: the six two-hour unmonitored visits can begin once Amy confirms the proof and process.',
         date: formatDate(projection.wh.find(gate => gate.id === 'whGate1')?.date)
       },
       {
-        title: 'Waylon + Harrison: Saturday visits',
+        title: 'Waylon + Harrison: two-hour visit phase completed',
         status: gateStatus([
           { label: 'two-hour Waylon/Harrison visit', done: whTwoHourDone, required: 6 }
         ], () => whSaturdayDone >= 6),
-        readyText: 'Six two-hour visits are entered, so the next Saturday 3 PM to 7 PM phase is ready for review.',
+        readyText: 'All six two-hour visits are entered, so the next Saturday 3 PM to 7 PM phase is ready for review.',
         date: formatDate(projection.wh.find(gate => gate.id === 'whTwoHour')?.date)
       },
       {

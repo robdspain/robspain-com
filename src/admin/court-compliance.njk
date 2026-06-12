@@ -169,6 +169,13 @@ hide_public_nav: true
         </div>
         <div class="phase-readiness-grid" data-phase-readiness></div>
       </div>
+      <div class="phase-readiness court-projection">
+        <div class="phase-readiness-head">
+          <p class="eyebrow">July 23 court date</p>
+          <h3>Projected completions before the next hearing</h3>
+        </div>
+        <div class="phase-readiness-grid" data-court-projection></div>
+      </div>
       <p class="small-note">Current known dates: anger-management class 4 is Friday, June 12, 2026; Link Care family counseling is being scheduled with Breyona Midgett, with the tracker still using Friday, June 19, 2026 as the default until Thursday morning is confirmed; Dylan/Rob Janz conjoint session 3 is Friday, June 19, 2026. Date estimates assume weekly anger-management classes, weekly family counseling for the first 16 sessions, weekly Dylan/Rob conjoint sessions from the known third-session date, weekly visits unless the report says first/third weekends, and no cancellations, refusals, holidays, or therapist delays.</p>
     </section>
 
@@ -914,6 +921,10 @@ h3 {
   margin-top: 1.25rem;
   padding: 1rem;
 }
+.court-projection {
+  background: linear-gradient(135deg, #f8fff9, #fffaf0);
+  border-color: rgba(31, 77, 63, .28);
+}
 .phase-readiness-head {
   align-items: end;
   border-bottom: 1px solid #e4ded2;
@@ -971,6 +982,14 @@ h3 {
 .readiness-card.is-blocked .readiness-status {
   background: #fff3c4;
   color: #7c4a03;
+}
+.readiness-card.is-pending {
+  border-color: rgba(148, 163, 184, .55);
+  opacity: .88;
+}
+.readiness-card.is-pending .readiness-status {
+  background: #e2e8f0;
+  color: #334155;
 }
 .readiness-card h4 {
   color: #123628;
@@ -1611,6 +1630,7 @@ textarea {
     });
     renderProjection();
     renderPhaseReadiness();
+    renderCourtProjection();
   }
 
   function todayISO() {
@@ -1915,6 +1935,108 @@ textarea {
         </article>
       `;
     }).join('');
+  }
+
+  function completedWeeklyBy(startDate, targetDate, existingDone, required) {
+    if (!startDate || !targetDate || startDate > targetDate) {
+      return Math.min(Math.max(existingDone, 0), required);
+    }
+    const projected = Math.floor((targetDate - startDate) / msDay / 7) + 1;
+    return Math.min(Math.max(existingDone, projected, 0), required);
+  }
+
+  function completedWeeklyAfterGateBy(gateDate, targetDate, existingDone, required) {
+    if (!gateDate || !targetDate || gateDate >= targetDate) {
+      return Math.min(Math.max(existingDone, 0), required);
+    }
+    const projected = Math.floor((targetDate - gateDate) / msDay / 7);
+    return Math.min(Math.max(existingDone, projected, 0), required);
+  }
+
+  function projectedConjointDoneBy(thirdSessionDate, targetDate, existingDone) {
+    if (!thirdSessionDate || !targetDate || thirdSessionDate > targetDate) {
+      return Math.min(Math.max(existingDone, 0), 6);
+    }
+    const projected = 3 + Math.floor((targetDate - thirdSessionDate) / msDay / 7);
+    return Math.min(Math.max(existingDone, projected, 0), 6);
+  }
+
+  function projectionCard(title, state, label, detail, dateText) {
+    return `
+      <article class="readiness-card is-${state}">
+        <span class="readiness-status">${escapeHtml(label)}</span>
+        <h4>${escapeHtml(title)}</h4>
+        <p><strong>${escapeHtml(detail)}</strong></p>
+        <p>${escapeHtml(dateText)}</p>
+      </article>
+    `;
+  }
+
+  function renderCourtProjection() {
+    const target = document.querySelector('[data-court-projection]');
+    if (!target) return;
+    const courtDate = parseDate('2026-07-23');
+    const projection = buildProjection();
+    const angerDoneByCourt = completedWeeklyBy(dateValue('angerStart'), courtDate, countValue('angerDone'), 10);
+    const familyDoneByCourt = completedWeeklyBy(dateValue('familyStart'), courtDate, countValue('familyDone'), 24);
+    const dylanConjointByCourt = projectedConjointDoneBy(dateValue('dylanConjointThird'), courtDate, countValue('dylanConjointDone'));
+    const whGateDate = projection.wh.find(gate => gate.id === 'whGate1')?.date;
+    const whTwoHourByCourt = completedWeeklyAfterGateBy(whGateDate, courtDate, countValue('whTwoHourDone'), 6);
+
+    const cards = [
+      projectionCard(
+        'Anger management',
+        angerDoneByCourt >= 10 ? 'complete' : 'ready',
+        angerDoneByCourt >= 10 ? 'Completed' : 'On track before court',
+        `Projected ${angerDoneByCourt} of 10 classes complete before July 23. Class 10 projects for July 24, the day after court.`,
+        'Proof likely available through class 4 now; class 10 completion proof is not projected before this court date.'
+      ),
+      projectionCard(
+        'Link Care family counseling',
+        familyDoneByCourt >= 4 ? 'ready' : 'blocked',
+        familyDoneByCourt >= 4 ? 'Gate met' : 'In progress',
+        `Projected ${familyDoneByCourt} family sessions complete before July 23.`,
+        familyDoneByCourt >= 4
+          ? 'This should satisfy the 4-session W/H start gate if sessions occur weekly starting June 19.'
+          : 'The W/H two-hour visit start gate still needs 4 completed family sessions.'
+      ),
+      projectionCard(
+        'W/H two-hour visit start gate',
+        angerDoneByCourt >= 4 && familyDoneByCourt >= 4 ? 'ready' : 'blocked',
+        angerDoneByCourt >= 4 && familyDoneByCourt >= 4 ? 'Ready for review' : 'Not ready',
+        angerDoneByCourt >= 4 && familyDoneByCourt >= 4
+          ? `Projected start-gate date is ${formatDate(whGateDate)}: 4 anger classes and 4 family sessions should be complete.`
+          : 'The start gate is not projected to be met before court.',
+        'This means the two-hour visit phase may be eligible to begin before July 23, subject to confirmation and scheduling.'
+      ),
+      projectionCard(
+        'W/H two-hour visits completed',
+        whTwoHourByCourt >= 6 ? 'complete' : whTwoHourByCourt > 0 ? 'ready' : 'pending',
+        whTwoHourByCourt >= 6 ? 'Completed' : whTwoHourByCourt > 0 ? 'Started' : 'Pending',
+        `Projected ${whTwoHourByCourt} of 6 two-hour W/H visits complete before July 23.`,
+        whTwoHourByCourt >= 6
+          ? 'This would unlock Saturday 3 PM to 7 PM visit review.'
+          : 'The full six-visit phase is not projected to be complete before court.'
+      ),
+      projectionCard(
+        'Dylan/Rob Janz conjoint counseling',
+        dylanConjointByCourt >= 6 ? 'ready' : 'blocked',
+        dylanConjointByCourt >= 6 ? 'Conjoint gate met' : 'In progress',
+        `Projected ${dylanConjointByCourt} of 6 Dylan/Rob conjoint sessions complete before July 23.`,
+        dylanConjointByCourt >= 6
+          ? 'The conjoint-session count should be met before court if weekly sessions continue from June 19.'
+          : 'The Dylan conjoint gate is not projected to be met before court.'
+      ),
+      projectionCard(
+        'Dylan parenting-time gates',
+        'pending',
+        'Still pending',
+        `Even if Dylan/Rob conjoint sessions reach 6, only ${familyDoneByCourt} of 16 Link Care family sessions are projected before July 23.`,
+        'Dylan two-hour visits are not projected to unlock before this court date because the 16-family-session gate is still pending.'
+      )
+    ];
+
+    target.innerHTML = cards.join('');
   }
 
   function noteProviderName(key) {

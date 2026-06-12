@@ -73,6 +73,8 @@ module.exports = function(eleventyConfig) {
 
   // Pass-through copies for static assets
   eleventyConfig.addPassthroughCopy("src/public");
+  eleventyConfig.addPassthroughCopy({ "src/public/family-command.webmanifest": "family-command.webmanifest" });
+  eleventyConfig.addPassthroughCopy({ "src/public/family-command-sw.js": "family-command-sw.js" });
   eleventyConfig.addPassthroughCopy("src/*.css");
   eleventyConfig.addPassthroughCopy("src/*.js");
   eleventyConfig.addPassthroughCopy("src/admin");

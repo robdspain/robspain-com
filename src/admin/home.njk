@@ -4,12 +4,7 @@ title: Neo Home Command Center - Rob Spain
 description: Private mobile command surface for Rob and Cristal's home automations.
 permalink: /admin/home/
 hide_public_nav: true
-extra_head: |
-  <meta name="theme-color" content="#f6f2ea">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Neo Home">
-  <link rel="manifest" href="/neo-home.webmanifest">
+family_pwa: true
 ---
 
 <style>
@@ -331,10 +326,6 @@ extra_head: |
   const sendButton = document.getElementById('sendCommand');
   const savedKey = localStorage.getItem('neoHomeAccessKey') || '';
   accessKey.value = savedKey;
-
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/neo-home-sw.js').catch(() => {});
-  }
 
   function setLog(message, state) {
     resultLog.textContent = message;

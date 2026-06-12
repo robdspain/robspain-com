@@ -19,6 +19,15 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="apple-touch-icon" href="/favicon.png">
+    {% if family_pwa %}
+    <meta name="theme-color" content="#123628">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Family Command">
+    <link rel="manifest" href="/family-command.webmanifest">
+    <link rel="apple-touch-icon" href="/public/images/family-command-icon-180.png">
+    {% endif %}
 
     <!-- RSS Feed -->
     <link rel="alternate" type="application/rss+xml" title="Rob Spain, BCBA - Blog" href="/feed.xml">
@@ -210,6 +219,15 @@
     }
     {% endif %}
     </script>
+    {% if family_pwa %}
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/family-command-sw.js', { scope: '/admin/' }).catch(() => {});
+        });
+      }
+    </script>
+    {% endif %}
 
     <!-- Meta tags and other head content can go here -->
 </head>

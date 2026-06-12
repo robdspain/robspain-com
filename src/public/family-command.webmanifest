@@ -1,0 +1,53 @@
+{
+  "name": "Family Command",
+  "short_name": "Family",
+  "description": "Private family, custody, finance, home search, and home command tools for Rob Spain.",
+  "id": "/admin/family/",
+  "start_url": "/admin/family/",
+  "scope": "/admin/",
+  "display": "standalone",
+  "background_color": "#f6f2ea",
+  "theme_color": "#123628",
+  "orientation": "portrait",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/public/images/family-command-icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/public/images/family-command-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/public/images/family-command-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Custody Timeline",
+      "short_name": "Custody",
+      "url": "/admin/court-compliance/",
+      "icons": [{ "src": "/public/images/family-command-icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Home Search",
+      "short_name": "Homes",
+      "url": "/admin/home-search/",
+      "icons": [{ "src": "/public/images/family-command-icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Home Command",
+      "short_name": "Home",
+      "url": "/admin/home/",
+      "icons": [{ "src": "/public/images/family-command-icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

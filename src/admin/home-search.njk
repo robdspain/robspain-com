@@ -194,6 +194,11 @@ family_pwa: true
   .hs-priority-note strong {
     color: #123628;
   }
+  .hs-source-summary {
+    color: #526158;
+    font-size: 12px;
+    margin-top: 6px;
+  }
   
   /* Layout columns */
   .hs-layout {
@@ -301,6 +306,15 @@ family_pwa: true
     flex-wrap: wrap;
     gap: 4px;
     margin-bottom: 12px;
+  }
+  .hs-source-badge {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-radius: 9999px;
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
   }
   .hs-tag {
     display: inline-block;
@@ -622,6 +636,7 @@ family_pwa: true
       <div style="text-align:right;">
         <div class="meta" id="lastSearched">Loading...</div>
         <div class="meta" id="searchCount"></div>
+        <div class="hs-source-summary" id="sourceSummary"></div>
       </div>
     </div>
 
@@ -1001,6 +1016,12 @@ function updateMeta() {
   }
   const countEl = document.getElementById('searchCount');
   if (searchMeta.searchCount) countEl.textContent = searchMeta.searchCount + ' searches total';
+  const sourceEl = document.getElementById('sourceSummary');
+  if (sourceEl) {
+    const counts = searchMeta.sourceCounts || {};
+    const countText = Object.entries(counts).map(([source, count]) => `${source}: ${count}`).join(' · ');
+    sourceEl.textContent = [searchMeta.source || '', countText].filter(Boolean).join(' · ');
+  }
 }
 
 function updateStats() {
@@ -1101,6 +1122,7 @@ function renderListings() {
         </div>
         <div class="hs-card-tags">
           ${l.area && l.area !== 'other' ? `<span class="hs-area-badge">${AREA_LABELS[l.area] || l.area}</span>` : ''}
+          ${l.sourceLabel || l.source ? `<span class="hs-source-badge">${l.sourceLabel || l.source}</span>` : ''}
           ${isTarget ? '<span class="hs-tag pool">Priority area</span>' : ''}
           ${l.hasPool ? '<span class="hs-tag pool">Pool</span>' : ''}
           ${l.isFixer ? '<span class="hs-tag fixer">Fixer</span>' : ''}

@@ -13,7 +13,8 @@ module.exports.handler = schedule('0 14,1 * * *', async (event) => {
   }
 
   try {
-    const listings = await fetchRedfinListings();
+    const sourceResult = await fetchListingsFromSources();
+    const listings = sourceResult.listings;
     if (!listings || listings.length === 0) {
       console.warn('[home-search-refresh] No listings returned, skipping update');
       return { statusCode: 200 };
@@ -39,7 +40,10 @@ module.exports.handler = schedule('0 14,1 * * *', async (event) => {
       JSON.stringify({
         lastSearched: now,
         searchCount: (prevMeta.searchCount || 0) + 1,
-        source: 'Redfin - Fresno County daily refresh; Fresno High + Tower priority',
+        source: sourceResult.sourceLabel,
+        sources: sourceResult.sources,
+        sourceCounts: sourceResult.sourceCounts,
+        preferredSource: sourceResult.preferredSource,
       })
     );
 
@@ -60,6 +64,238 @@ function getBlobStore() {
     if (!siteID || !token) return null;
     return getStore({ name: 'home-search', siteID, token });
   }
+}
+
+// --- Multi-source home search configuration ---
+
+const SEARCH_LIMITS = {
+  minPrice: 350000,
+  maxPrice: 1500000,
+  minBeds: 3,
+};
+
+async function fetchListingsFromSources() {
+  const checkedAt = new Date().toISOString();
+  const sources = [];
+  const batches = [];
+
+  const idx = await fetchIdxListings(checkedAt);
+  if (idx.configured) {
+    sources.push({
+      name: 'idx',
+      label: 'IDX / MLS feed',
+      configured: true,
+      count: idx.listings.length,
+      error: idx.error || null,
+    });
+    batches.push(...idx.listings);
+  } else {
+    sources.push({
+      name: 'idx',
+      label: 'IDX / MLS feed',
+      configured: false,
+      count: 0,
+      error: 'Set HOME_SEARCH_IDX_FEED_URL to enable primary MLS/IDX ingestion.',
+    });
+  }
+
+  const redfin = await fetchRedfinListings(checkedAt);
+  sources.push({
+    name: 'redfin',
+    label: 'Redfin public search',
+    configured: true,
+    count: redfin.listings.length,
+    error: redfin.error || null,
+  });
+  batches.push(...redfin.listings);
+
+  const listings = dedupeListings(batches);
+  const sourceCounts = listings.reduce((acc, listing) => {
+    acc[listing.source] = (acc[listing.source] || 0) + 1;
+    return acc;
+  }, {});
+  const hasIdxListings = listings.some((listing) => listing.source === 'idx');
+
+  return {
+    listings: sortListings(listings),
+    sources,
+    sourceCounts,
+    preferredSource: hasIdxListings ? 'idx' : 'redfin',
+    sourceLabel: hasIdxListings
+      ? 'IDX / MLS primary with Redfin fallback'
+      : 'Redfin public search fallback; IDX / MLS not yet configured',
+  };
+}
+
+async function fetchIdxListings(checkedAt) {
+  const feedUrl = process.env.HOME_SEARCH_IDX_FEED_URL || '';
+  if (!feedUrl) return { configured: false, listings: [] };
+
+  try {
+    const headers = { Accept: 'application/json' };
+    if (process.env.HOME_SEARCH_IDX_FEED_TOKEN) {
+      headers.Authorization = `Bearer ${process.env.HOME_SEARCH_IDX_FEED_TOKEN}`;
+    }
+    const response = await fetch(feedUrl, { headers });
+    if (!response.ok) throw new Error(`IDX feed returned ${response.status}`);
+    const payload = await response.json();
+    const rows = Array.isArray(payload)
+      ? payload
+      : Array.isArray(payload.listings)
+        ? payload.listings
+        : Array.isArray(payload.data)
+          ? payload.data
+          : [];
+    const listings = rows
+      .map((row) => mapIdxListing(row, checkedAt))
+      .filter(Boolean)
+      .filter(matchesSearchLimits);
+    return { configured: true, listings };
+  } catch (error) {
+    console.warn('[home-search-refresh] IDX feed failed:', error.message);
+    return { configured: true, listings: [], error: error.message };
+  }
+}
+
+function mapIdxListing(row, checkedAt) {
+  const source = row && typeof row === 'object' ? row : {};
+  const mlsId = firstString(source.mlsId, source.mlsNumber, source.listingId, source.id);
+  const street = firstString(source.street, source.streetAddress, source.address, source.addressLine1);
+  const city = firstString(source.city, 'Fresno');
+  const state = firstString(source.state, 'CA');
+  const zip = firstString(source.zip, source.postalCode, source.postcode);
+  const address = firstString(
+    source.fullAddress,
+    [street, city, [state, zip].filter(Boolean).join(' ')].filter(Boolean).join(', ')
+  );
+  if (!address) return null;
+
+  const lat = firstNumber(source.lat, source.latitude, source.geo?.lat, source.location?.lat);
+  const lon = firstNumber(source.lng, source.lon, source.longitude, source.geo?.lng, source.location?.lng);
+  const area = classifyArea({ latitude: lat, longitude: lon }, zip);
+  const remarks = firstString(source.remarks, source.description, source.publicRemarks, source.marketingRemarks).toLowerCase();
+  const price = firstNumber(source.price, source.listPrice, source.currentPrice);
+  const beds = firstNumber(source.beds, source.bedrooms);
+  const baths = firstNumber(source.baths, source.bathrooms);
+  const sqft = firstNumber(source.sqft, source.livingArea, source.livingAreaSqft);
+  const lotSize = firstNumber(source.lotSize, source.lotSizeSqft, source.lotSqft);
+  const yearBuilt = firstNumber(source.yearBuilt);
+  const hasPool = /pool/.test(remarks) || Boolean(source.hasPool);
+  const isFixer = /fixer|as-is|handyman|tlc|needs work|investor|cosmetic|potential|diamond in the rough/.test(remarks);
+
+  const descParts = [];
+  if (beds) descParts.push(`${beds} bed`);
+  if (baths) descParts.push(`${baths} bath`);
+  if (sqft) descParts.push(`${sqft.toLocaleString()} sqft`);
+  if (yearBuilt) descParts.push(`built ${yearBuilt}`);
+  if (lotSize >= 20000) descParts.push(`${(lotSize / 43560).toFixed(2)} acres`);
+  if (area === 'fresno-high') descParts.push('Fresno High area');
+  if (area === 'tower') descParts.push('Tower District');
+  if (isFixer) descParts.push('potential fixer-upper');
+  if (hasPool) descParts.push('pool');
+
+  return {
+    id: `idx-${mlsId || slugify(address)}`,
+    mlsId,
+    address,
+    price,
+    beds,
+    baths,
+    sqft,
+    area,
+    areaPriority: priorityForArea(area),
+    targetArea: isTargetArea(area),
+    hasPool,
+    isFixer,
+    description: descParts.join(', ') + '.',
+    listingUrl: firstString(source.url, source.listingUrl, source.detailsUrl),
+    imageUrl: firstString(source.imageUrl, source.primaryPhoto, source.photoUrl, source.photos?.[0]?.url, source.photos?.[0]),
+    lat,
+    lon,
+    source: 'idx',
+    sourceLabel: 'IDX / MLS',
+    sourceCheckedAt: checkedAt,
+    addedAt: checkedAt,
+  };
+}
+
+function firstString() {
+  for (const value of arguments) {
+    if (typeof value === 'string' && value.trim()) return value.trim();
+    if (typeof value === 'number' && Number.isFinite(value)) return String(value);
+  }
+  return '';
+}
+
+function firstNumber() {
+  for (const value of arguments) {
+    const number = Number(value);
+    if (Number.isFinite(number) && number > 0) return number;
+  }
+  return 0;
+}
+
+function matchesSearchLimits(listing) {
+  return (
+    listing.price >= SEARCH_LIMITS.minPrice &&
+    listing.price <= SEARCH_LIMITS.maxPrice &&
+    listing.beds >= SEARCH_LIMITS.minBeds
+  );
+}
+
+function dedupeListings(listings) {
+  const byKey = new Map();
+  listings.forEach((listing) => {
+    const key = listing.mlsId
+      ? `mls:${String(listing.mlsId).toLowerCase()}`
+      : `address:${normalizeAddress(listing.address)}`;
+    const existing = byKey.get(key);
+    if (!existing || sourceRank(listing.source) > sourceRank(existing.source)) {
+      byKey.set(key, existing ? mergeListing(existing, listing) : listing);
+    }
+  });
+  return Array.from(byKey.values());
+}
+
+function mergeListing(existing, preferred) {
+  return {
+    ...existing,
+    ...preferred,
+    addedAt: existing.addedAt || preferred.addedAt,
+    alternateSources: Array.from(new Set([existing.source, preferred.source].filter(Boolean))),
+  };
+}
+
+function sourceRank(source) {
+  return source === 'idx' ? 3 : source === 'redfin' ? 2 : 1;
+}
+
+function normalizeAddress(address) {
+  return String(address || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+function slugify(value) {
+  return normalizeAddress(value).replace(/\s+/g, '-').slice(0, 80);
+}
+
+function sortListings(listings) {
+  return [...listings].sort((a, b) => {
+    const priorityDelta = (b.areaPriority || 0) - (a.areaPriority || 0);
+    if (priorityDelta) return priorityDelta;
+    const sourceDelta = sourceRank(b.source) - sourceRank(a.source);
+    if (sourceDelta) return sourceDelta;
+    return new Date(b.addedAt || 0) - new Date(a.addedAt || 0);
+  });
+}
+
+function isTargetArea(area) {
+  return area === 'fresno-high' || area === 'tower';
+}
+
+function priorityForArea(area) {
+  if (isTargetArea(area)) return 2;
+  if (area === 'old-fig') return 1;
+  return 0;
 }
 
 // --- Redfin search configuration ---
@@ -119,8 +355,9 @@ const HEADERS = {
   Referer: 'https://www.redfin.com/',
 };
 
-async function fetchRedfinListings() {
+async function fetchRedfinListings(checkedAt) {
   const allListings = [];
+  let error = null;
 
   for (const search of SEARCH_POLYGONS) {
     try {
@@ -134,30 +371,16 @@ async function fetchRedfinListings() {
             (h.price?.value || 0) <= 1500000 &&
             (h.beds || 0) >= 3
         )
-        .map(mapRedfinHome);
+        .map((home) => mapRedfinHome(home, checkedAt));
       allListings.push(...mapped);
       // Polite delay between requests
       await new Promise((r) => setTimeout(r, 800));
     } catch (err) {
+      error = err.message;
       console.warn(`[home-search-refresh] Failed ${search.name}:`, err.message);
     }
   }
-
-  // Deduplicate by listing id
-  const seen = new Set();
-  const unique = [];
-  for (const listing of allListings) {
-    if (!seen.has(listing.id)) {
-      seen.add(listing.id);
-      unique.push(listing);
-    }
-  }
-
-  return unique.sort((a, b) => {
-    const priorityDelta = (b.areaPriority || 0) - (a.areaPriority || 0);
-    if (priorityDelta) return priorityDelta;
-    return new Date(b.addedAt || 0) - new Date(a.addedAt || 0);
-  });
+  return { listings: dedupeListings(allListings), error };
 }
 
 async function searchRedfinPoly(poly) {
@@ -193,7 +416,7 @@ async function searchRedfinPoly(poly) {
   return data.payload?.homes || [];
 }
 
-function mapRedfinHome(home) {
+function mapRedfinHome(home, checkedAt) {
   const zip = home.zip || home.postalCode?.value || '';
   const area = classifyArea(home, zip);
   const remarks = (home.listingRemarks || '').toLowerCase();
@@ -234,14 +457,18 @@ function mapRedfinHome(home) {
     baths: home.baths || 0,
     sqft: home.sqFt?.value || 0,
     area,
-    areaPriority: area === 'fresno-high' || area === 'tower' ? 2 : area === 'old-fig' ? 1 : 0,
-    targetArea: area === 'fresno-high' || area === 'tower',
+    mlsId: String(home.mlsId?.value || '').trim(),
+    areaPriority: priorityForArea(area),
+    targetArea: isTargetArea(area),
     hasPool,
     isFixer,
     description: descParts.join(', ') + '.',
     listingUrl: home.url ? `https://www.redfin.com${home.url}` : '',
     imageUrl,
-    addedAt: new Date().toISOString(),
+    source: 'redfin',
+    sourceLabel: 'Redfin',
+    sourceCheckedAt: checkedAt,
+    addedAt: checkedAt,
   };
 }
 

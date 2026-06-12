@@ -386,9 +386,16 @@ hide_public_nav: true
 
     <section class="panel">
       <div class="panel-heading">
-        <p class="eyebrow">Call tracker</p>
-        <h2>Use this while scheduling</h2>
+        <p class="eyebrow">Call evidence tracker</p>
+        <h2>Auto-built from notes, phone logs, and Mac Mini autodialer exports</h2>
       </div>
+      <div class="call-evidence-grid" data-call-evidence-summary>
+        <article><strong>0</strong><span>Total call evidence rows</span><p>Imported calls, autodialer attempts, note references, and manual corrections.</p></article>
+        <article><strong>0</strong><span>Mac Mini phone-log rows</span><p>Rows imported from the Mac Mini call export.</p></article>
+        <article><strong>0</strong><span>Autodialer attempts</span><p>Calls marked as autodialer or imported summary attempts.</p></article>
+        <article><strong>0</strong><span>Note-derived call references</span><p>Call evidence pulled from the notes below.</p></article>
+      </div>
+      <p class="small-note" data-call-evidence-status>No Mac Mini call-log export has been imported in this browser yet. Export the Mac Mini autodialer or phone log as CSV/JSON, then import it below.</p>
       <div class="tracker-grid">
         <div class="tracker-card"><h3>Dr. Collier</h3><textarea data-note="collier" placeholder="Date asked, response, next appointment, proof letter status"></textarea></div>
         <div class="tracker-card"><h3>Link Care family counseling</h3><textarea data-note="linkCare" placeholder="Breyona call date, Thursday morning status, Brooke paperwork, participants, session proof"></textarea></div>
@@ -415,7 +422,17 @@ hide_public_nav: true
         </article>
 
         <article class="tool-card">
-          <h3>Add call log</h3>
+          <h3>Import Mac Mini phone log</h3>
+          <p>Import CSV or JSON exported from the Mac Mini autodialer or phone log. Expected fields can include date, provider/name, phone, status, duration, source, and notes.</p>
+          <div class="mini-form">
+            <input data-call-import-file type="file" accept=".csv,.json,application/json,text/csv">
+            <button type="button" class="utility-button" data-clear-call-import>Clear imported phone-log data</button>
+            <small data-call-import-status></small>
+          </div>
+        </article>
+
+        <article class="tool-card">
+          <h3>Add manual correction</h3>
           <div class="mini-form">
             <input data-call-field="date" type="date">
             <input data-call-field="provider" placeholder="Provider or person">
@@ -435,7 +452,7 @@ hide_public_nav: true
 
       <div class="call-table-wrap">
         <table class="call-table">
-          <thead><tr><th>Date</th><th>Provider</th><th>Phone</th><th>Status</th><th>Notes</th><th></th></tr></thead>
+          <thead><tr><th>Date</th><th>Provider</th><th>Phone</th><th>Status</th><th>Source</th><th>Evidence</th><th></th></tr></thead>
           <tbody data-call-log></tbody>
         </table>
       </div>
@@ -1148,6 +1165,38 @@ h3 {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1rem;
 }
+.call-evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: .85rem;
+  margin-bottom: 1rem;
+}
+.call-evidence-grid article {
+  background: #fffaf0;
+  border: 1px solid #e4ded2;
+  border-radius: 16px;
+  padding: 1rem;
+}
+.call-evidence-grid strong {
+  color: #123628;
+  display: block;
+  font-size: clamp(1.55rem, 3vw, 2.2rem);
+  line-height: 1;
+}
+.call-evidence-grid span {
+  color: #1f4d3f;
+  display: block;
+  font-size: .78rem;
+  font-weight: 850;
+  letter-spacing: .08em;
+  margin-top: .5rem;
+  text-transform: uppercase;
+}
+.call-evidence-grid p {
+  color: #43524a;
+  font-size: .9rem;
+  margin: .55rem 0 0;
+}
 .template-grid {
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 }
@@ -1353,6 +1402,7 @@ textarea {
   const planInputs = Array.from(document.querySelectorAll('[data-plan-input]'));
   const callFields = Array.from(document.querySelectorAll('[data-call-field]'));
   let callLog = Array.isArray(state.calls) ? state.calls : [];
+  let callEvidence = normalizeCallEvidence(state.callEvidence);
   const stages = ['setup', 'anger', 'family', 'stepup', 'post16', 'proof'];
   const msDay = 24 * 60 * 60 * 1000;
   let syncTimer = null;
@@ -1389,11 +1439,43 @@ textarea {
     return textarea.dataset.note || String(index);
   }
 
+  function normalizeCallEvidence(value) {
+    const source = value && typeof value === 'object' ? value : {};
+    const calls = Array.isArray(source.calls) ? source.calls : Array.isArray(source) ? source : [];
+    return {
+      importedAt: source.importedAt || null,
+      fileName: source.fileName || '',
+      summary: source.summary && typeof source.summary === 'object' ? source.summary : {},
+      calls: calls.map(normalizeCallRow).filter(row => row.provider || row.phone || row.notes)
+    };
+  }
+
+  function normalizeCallRow(row) {
+    const source = row && typeof row === 'object' ? row : {};
+    const provider = source.provider || source.name || source.contact || source.to || source.recipient || source.callee || '';
+    const phone = source.phone || source.number || source.phoneNumber || source.tel || source.destination || '';
+    const status = source.status || source.result || source.outcome || source.disposition || source.type || '';
+    const notes = source.notes || source.note || source.memo || source.description || source.evidence || '';
+    const date = source.date || source.time || source.timestamp || source.startedAt || source.createdAt || '';
+    const duration = source.duration || source.durationSeconds || source.seconds || '';
+    const sourceName = source.source || source.system || source.origin || 'Mac Mini import';
+    return {
+      date: String(date || '').slice(0, 32),
+      provider: String(provider || '').trim(),
+      phone: String(phone || '').trim(),
+      status: String(status || '').trim(),
+      source: String(sourceName || '').trim(),
+      duration: String(duration || '').trim(),
+      notes: String(notes || '').trim()
+    };
+  }
+
   function save() {
     const nextState = snapshotState();
     localStorage.setItem(key, JSON.stringify(nextState));
     queueRemoteSave(nextState);
     updateProgress();
+    renderCalls();
   }
 
   function snapshotState() {
@@ -1403,7 +1485,7 @@ textarea {
     textareas.forEach((textarea, index) => { notes[noteKey(textarea, index)] = textarea.value; });
     const plan = {};
     planInputs.forEach(input => { plan[input.dataset.planInput] = input.value; });
-    return { checks, notes, plan, calls: callLog };
+    return { checks, notes, plan, calls: callLog, callEvidence };
   }
 
   function queueRemoteSave(value) {
@@ -1453,6 +1535,7 @@ textarea {
     state = nextState || {};
     state.plan = state.plan || {};
     callLog = Array.isArray(state.calls) ? state.calls : [];
+    callEvidence = normalizeCallEvidence(state.callEvidence);
 
     inputs.forEach((input, index) => {
       input.checked = Boolean(state.checks && state.checks[itemKey(input, index)]);
@@ -1812,23 +1895,94 @@ textarea {
     }).join('');
   }
 
+  function noteProviderName(key) {
+    return {
+      collier: 'Dr. Collier',
+      linkCare: 'Link Care family counseling',
+      janz: 'Janz Dylan/Rob conjoint',
+      anger: 'Total Life Change / anger management',
+      counsel: 'Counsel filing packet'
+    }[key] || key;
+  }
+
+  function noteCallRows() {
+    const callPattern = /\b(call|called|calling|phone|voicemail|left message|message|contacted|followed up|callback|call back)\b/i;
+    return textareas.flatMap(textarea => {
+      const key = textarea.dataset.note || '';
+      return textarea.value
+        .split(/\n+/)
+        .map(line => line.trim())
+        .filter(line => callPattern.test(line))
+        .map(line => ({
+          date: '',
+          provider: noteProviderName(key),
+          phone: '',
+          status: 'Note reference',
+          source: 'Dashboard notes',
+          notes: line
+        }));
+    });
+  }
+
+  function combinedCallRows() {
+    const imported = callEvidence.calls.map(row => ({
+      ...row,
+      source: row.source || 'Mac Mini import'
+    }));
+    const noteRows = noteCallRows();
+    const manual = callLog.map((row, index) => ({
+      ...row,
+      source: 'Manual correction',
+      manualIndex: index
+    }));
+    return imported.concat(noteRows, manual);
+  }
+
+  function updateCallEvidenceSummary(rows) {
+    const target = document.querySelector('[data-call-evidence-summary]');
+    const status = document.querySelector('[data-call-evidence-status]');
+    if (!target) return;
+    const importedCount = callEvidence.calls.length;
+    const autodialerRows = callEvidence.calls.filter(row => /auto.?dial|dialer/i.test(`${row.source} ${row.status} ${row.notes}`)).length;
+    const autodialerCount = Number(callEvidence.summary.autodialerCalls || callEvidence.summary.autodialerAttempts || callEvidence.summary.callsMade || autodialerRows || 0);
+    const noteCount = noteCallRows().length;
+    const values = [rows.length, importedCount, autodialerCount, noteCount];
+    target.querySelectorAll('strong').forEach((node, index) => {
+      node.textContent = values[index] ?? 0;
+    });
+    if (status) {
+      if (callEvidence.importedAt) {
+        const file = callEvidence.fileName ? ` from ${callEvidence.fileName}` : '';
+        status.textContent = `Mac Mini phone-log evidence imported${file} at ${new Date(callEvidence.importedAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}.`;
+      } else {
+        status.textContent = 'No Mac Mini call-log export has been imported in this browser yet. Export the Mac Mini autodialer or phone log as CSV/JSON, then import it below.';
+      }
+    }
+  }
+
   function renderCalls() {
     const body = document.querySelector('[data-call-log]');
     if (!body) return;
-    if (!callLog.length) {
-      body.innerHTML = '<tr><td colspan="6">No calls logged yet.</td></tr>';
+    const rows = combinedCallRows();
+    updateCallEvidenceSummary(rows);
+    if (!rows.length) {
+      body.innerHTML = '<tr><td colspan="7">No call evidence imported yet. Import the Mac Mini phone log or add call details to the notes above.</td></tr>';
       return;
     }
-    body.innerHTML = callLog.map((call, index) => `
+    body.innerHTML = rows.map(call => {
+      const manualIndex = Number.isInteger(call.manualIndex) ? call.manualIndex : -1;
+      return `
       <tr>
         <td>${escapeHtml(call.date || '')}</td>
         <td>${escapeHtml(call.provider || '')}</td>
         <td>${escapeHtml(call.phone || '')}</td>
         <td>${escapeHtml(call.status || '')}</td>
-        <td>${escapeHtml(call.notes || '')}</td>
-        <td><button type="button" class="delete-call" data-delete-call="${index}">Delete</button></td>
+        <td>${escapeHtml(call.source || '')}</td>
+        <td>${escapeHtml([call.duration ? `Duration: ${call.duration}` : '', call.notes || ''].filter(Boolean).join(' - '))}</td>
+        <td>${manualIndex >= 0 ? `<button type="button" class="delete-call" data-delete-call="${manualIndex}">Delete</button>` : ''}</td>
       </tr>
-    `).join('');
+    `;
+    }).join('');
   }
 
   function escapeHtml(value) {
@@ -1858,7 +2012,9 @@ textarea {
       plan,
       checks,
       notes,
-      calls: callLog
+      calls: callLog,
+      callEvidence,
+      combinedCallEvidence: combinedCallRows()
     };
   }
 
@@ -1902,13 +2058,15 @@ textarea {
   }
 
   function callLogLines(limit) {
-    if (!callLog.length) {
-      return ['- No dashboard call-log rows entered yet; see Gmail/Drive effort summary for documented outreach.'];
+    const rows = combinedCallRows();
+    if (!rows.length) {
+      return ['- No call evidence imported yet; import the Mac Mini phone log/autodialer export or add call details to dashboard notes.'];
     }
-    return callLog.slice(0, limit).map(call => {
+    return rows.slice(0, limit).map(call => {
       const parts = [
         call.date || 'No date',
         call.provider || 'No provider listed',
+        call.source || 'No source',
         call.status || 'No status',
         call.notes || ''
       ].filter(Boolean);
@@ -2121,6 +2279,79 @@ textarea {
     area.remove();
   }
 
+  function parseCsv(text) {
+    const rows = [];
+    let row = [];
+    let cell = '';
+    let quoted = false;
+    for (let index = 0; index < text.length; index += 1) {
+      const char = text[index];
+      const next = text[index + 1];
+      if (char === '"' && quoted && next === '"') {
+        cell += '"';
+        index += 1;
+      } else if (char === '"') {
+        quoted = !quoted;
+      } else if (char === ',' && !quoted) {
+        row.push(cell.trim());
+        cell = '';
+      } else if ((char === '\n' || char === '\r') && !quoted) {
+        if (char === '\r' && next === '\n') index += 1;
+        row.push(cell.trim());
+        if (row.some(value => value)) rows.push(row);
+        row = [];
+        cell = '';
+      } else {
+        cell += char;
+      }
+    }
+    row.push(cell.trim());
+    if (row.some(value => value)) rows.push(row);
+    return rows;
+  }
+
+  function rowsFromCsv(text) {
+    const rows = parseCsv(text);
+    if (rows.length < 2) return [];
+    const headers = rows[0].map(header => header.trim());
+    return rows.slice(1).map(row => headers.reduce((record, header, index) => {
+      record[header] = row[index] || '';
+      return record;
+    }, {}));
+  }
+
+  function rowsFromJson(parsed) {
+    if (Array.isArray(parsed)) return { calls: parsed, summary: {} };
+    if (!parsed || typeof parsed !== 'object') return { calls: [], summary: {} };
+    const calls = parsed.calls || parsed.records || parsed.rows || parsed.log || parsed.callLog || [];
+    const summary = parsed.summary || {
+      totalCalls: parsed.totalCalls,
+      autodialerCalls: parsed.autodialerCalls || parsed.autodialerAttempts || parsed.callsMade,
+      source: parsed.source
+    };
+    return { calls: Array.isArray(calls) ? calls : [], summary };
+  }
+
+  function importCallEvidenceFile(file, text) {
+    const trimmed = text.trim();
+    if (!trimmed) throw new Error('The selected file is empty.');
+    let parsed;
+    if (/\.json$/i.test(file.name) || trimmed.startsWith('{') || trimmed.startsWith('[')) {
+      parsed = rowsFromJson(JSON.parse(trimmed));
+    } else {
+      parsed = { calls: rowsFromCsv(trimmed), summary: {} };
+    }
+    callEvidence = normalizeCallEvidence({
+      importedAt: new Date().toISOString(),
+      fileName: file.name,
+      summary: parsed.summary || {},
+      calls: parsed.calls || []
+    });
+    renderCalls();
+    save();
+    return callEvidence.calls.length;
+  }
+
   inputs.forEach((input, index) => {
     input.checked = Boolean(state.checks && state.checks[itemKey(input, index)]);
     input.addEventListener('change', save);
@@ -2187,6 +2418,34 @@ textarea {
   });
   callFields.forEach(field => {
     if (field.dataset.callField === 'date' && !field.value) field.value = todayISO();
+  });
+  document.querySelector('[data-call-import-file]')?.addEventListener('change', event => {
+    const file = event.target.files && event.target.files[0];
+    const status = document.querySelector('[data-call-import-status]');
+    if (!file) return;
+    if (status) status.textContent = 'Reading import...';
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const count = importCallEvidenceFile(file, String(reader.result || ''));
+        if (status) status.textContent = `Imported ${count} phone-log rows from ${file.name}.`;
+      } catch (error) {
+        if (status) status.textContent = `Import failed: ${error.message}`;
+      }
+    };
+    reader.onerror = () => {
+      if (status) status.textContent = 'Import failed: the file could not be read.';
+    };
+    reader.readAsText(file);
+  });
+  document.querySelector('[data-clear-call-import]')?.addEventListener('click', () => {
+    callEvidence = normalizeCallEvidence(null);
+    const input = document.querySelector('[data-call-import-file]');
+    const status = document.querySelector('[data-call-import-status]');
+    if (input) input.value = '';
+    if (status) status.textContent = 'Imported phone-log data cleared.';
+    renderCalls();
+    save();
   });
   document.querySelectorAll('[data-copy-template]').forEach(button => {
     button.addEventListener('click', async () => {

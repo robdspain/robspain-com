@@ -674,14 +674,14 @@ family_pwa: true
       <div class="hs-stat-card"><div class="label">Avg Sq Ft</div><div class="value" id="statSqft">--</div></div>
       <div class="hs-stat-card"><div class="label">Favorites</div><div class="value" style="color:#e4b63d;" id="statFavs">0</div></div>
       <div class="hs-stat-card"><div class="label">New Today</div><div class="value" style="color:#1f4d3f;" id="statNew">0</div></div>
-      <div class="hs-stat-card"><div class="label">Renovation Matches</div><div class="value green" id="statPriority">0</div></div>
+      <div class="hs-stat-card"><div class="label">Primary Matches</div><div class="value green" id="statPriority">0</div></div>
     </div>
 
     <div class="hs-layout">
       <!-- Main Listing Column -->
       <div class="hs-listings-column">
         <div class="hs-priority-note">
-          <strong>Target profile:</strong> houses like Teilman and Quincy: as-is, cleanup, repairs, dated/original condition, probate, court confirmation, cash/hard-money or renovation-financing language. Neighborhood still matters, but distressed opportunity is now the first sort.
+          <strong>Target profile:</strong> primary home candidates must have 3+ beds. Smaller 2-bed distressed homes stay in the rental/investment track. Both tracks prioritize as-is, cleanup, repairs, dated/original condition, probate, court confirmation, and cash/hard-money or renovation-financing language.
         </div>
         <!-- Controls -->
         <div class="hs-controls">
@@ -704,6 +704,8 @@ family_pwa: true
             <option value="other">Other</option>
           </select>
           <select id="filterView" onchange="renderListings()">
+            <option value="primary">Primary Home: 3+ Beds</option>
+            <option value="rental">Rental / Investment: 2+ Beds</option>
             <option value="all">All Listings</option>
             <option value="favorites">Favorites Only</option>
             <option value="new">New Today</option>
@@ -838,6 +840,7 @@ const SEED_LISTINGS = [
     "hasPool": false,
     "isFixer": true,
     "strategyMatch": true,
+    "buyerProfile": "primary",
     "opportunityScore": 160,
     "opportunityTags": ["Repairs", "Dated/original", "Investor opportunity"],
     "description": "Reference target: older Fresno 93711 home with renovation upside. Use this as a calibration example for dated, repairable, value-add properties.",
@@ -857,6 +860,7 @@ const SEED_LISTINGS = [
     "hasPool": false,
     "isFixer": true,
     "strategyMatch": true,
+    "buyerProfile": "primary",
     "opportunityScore": 300,
     "opportunityTags": ["Probate", "Court confirmation", "As-is", "Cleanup", "Repairs", "Cash/reno financing"],
     "description": "Reference target: significant cleanup, repairs, updating, probate sale with limited authority, court confirmation, as-is sale, and likely cash/hard-money/renovation financing.",
@@ -1154,7 +1158,7 @@ function updateStats() {
   const today = new Date().toDateString();
   const newCount = allListings.filter(l => l.addedAt && new Date(l.addedAt).toDateString() === today).length;
   document.getElementById('statNew').textContent = newCount;
-  document.getElementById('statPriority').textContent = allListings.filter(l => isStrategyMatch(l)).length;
+  document.getElementById('statPriority').textContent = allListings.filter(l => isPrimaryCandidate(l)).length;
 }
 
 function renderListings() {
@@ -1171,7 +1175,11 @@ function renderListings() {
   }
 
   // Filter by view
-  if (filterView === 'favorites') {
+  if (filterView === 'primary') {
+    filtered = filtered.filter(isPrimaryCandidate);
+  } else if (filterView === 'rental') {
+    filtered = filtered.filter(isRentalCandidate);
+  } else if (filterView === 'favorites') {
     filtered = filtered.filter(l => favorites.has(l.id));
   } else if (filterView === 'new') {
     const today = new Date().toDateString();
@@ -1219,6 +1227,7 @@ function renderListings() {
     const isNew = l.addedAt && new Date(l.addedAt).toDateString() === today;
     const isTarget = isPriorityArea(l);
     const score = opportunityScore(l);
+    const profile = buyerProfile(l);
     
     // Escape single quotes in address for javascript call
     const escapedAddr = (l.address || '').replace(/'/g, "\\'");
@@ -1239,6 +1248,7 @@ function renderListings() {
         <div class="hs-card-tags">
           ${l.area && l.area !== 'other' ? `<span class="hs-area-badge">${AREA_LABELS[l.area] || l.area}</span>` : ''}
           ${l.sourceLabel || l.source ? `<span class="hs-source-badge">${l.sourceLabel || l.source}</span>` : ''}
+          <span class="hs-source-badge">${profile === 'primary' ? 'Primary 3+ beds' : 'Rental/investment'}</span>
           ${score ? `<span class="hs-opportunity-score">${score} opp</span>` : ''}
           ${isTarget ? '<span class="hs-tag pool">Priority area</span>' : ''}
           ${l.hasPool ? '<span class="hs-tag pool">Pool</span>' : ''}
@@ -1285,6 +1295,19 @@ function opportunityScore(listing) {
 
 function isStrategyMatch(listing) {
   return Boolean(listing?.strategyMatch) || opportunityScore(listing) >= 50;
+}
+
+function buyerProfile(listing) {
+  if (listing?.buyerProfile) return listing.buyerProfile;
+  return Number(listing?.beds || 0) >= 3 ? 'primary' : 'rental';
+}
+
+function isPrimaryCandidate(listing) {
+  return Number(listing?.beds || 0) >= 3 && isStrategyMatch(listing);
+}
+
+function isRentalCandidate(listing) {
+  return Number(listing?.beds || 0) >= 2 && isStrategyMatch(listing);
 }
 
 function toggleFav(id) {
@@ -1338,6 +1361,7 @@ function composeShareMessage(listings) {
   listings.forEach((l, i) => {
     msg += `${i + 1}. ${l.address || 'Unknown address'}\n`;
     msg += `   $${(l.price || 0).toLocaleString()} | ${l.beds || '?'} bed / ${l.baths || '?'} bath | ${l.sqft ? l.sqft.toLocaleString() + ' sq ft' : 'Sq ft N/A'}\n`;
+    msg += `   Track: ${buyerProfile(l) === 'primary' ? 'Primary home candidate' : 'Rental / investment candidate'}\n`;
     if (isStrategyMatch(l)) msg += `   Renovation signals: ${(l.opportunityTags || ['Fixer / value-add']).join(', ')}\n`;
     if (l.description) msg += `   ${l.description.substring(0, 120)}\n`;
     if (l.listingUrl) msg += `   ${l.listingUrl}\n`;

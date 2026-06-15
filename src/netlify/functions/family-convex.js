@@ -97,7 +97,6 @@ async function convexCall(kind, path, args) {
   }
 
   const headers = { 'Content-Type': 'application/json' };
-  if (process.env.FAMILY_CONVEX_DEPLOY_KEY) headers.Authorization = `Convex ${process.env.FAMILY_CONVEX_DEPLOY_KEY}`;
 
   const accessToken = process.env.FAMILY_CONVEX_ACCESS_TOKEN;
   if (!accessToken) {

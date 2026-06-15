@@ -1885,7 +1885,7 @@ textarea {
           method: 'PUT',
           credentials: 'same-origin',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ key, value })
+          body: JSON.stringify({ key, value, requireConvex: true })
         });
         const data = await response.json();
         if (!response.ok) {
@@ -1902,7 +1902,7 @@ textarea {
 
   async function loadRemoteState() {
     try {
-      const response = await fetch(`/admin/api/family-convex?key=${encodeURIComponent(key)}`, { credentials: 'same-origin' });
+      const response = await fetch(`/admin/api/family-convex?key=${encodeURIComponent(key)}&requireConvex=1`, { credentials: 'same-origin' });
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.error || `Remote load failed (${response.status})`);

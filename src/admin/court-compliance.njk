@@ -142,6 +142,81 @@ family_pwa: true
       <p class="small-note">Notes and checkbox state save locally first, then sync to Convex when the protected admin API is available. Export or screenshot before relying on it as evidence.</p>
     </details>
 
+    <details class="panel evidence-panel custody-accordion">
+      <summary class="accordion-summary">
+        <span><i class="fas fa-file-signature"></i> Therapist availability and Brooke responses</span>
+        <i class="fas fa-chevron-down"></i>
+      </summary>
+      <div class="panel-heading">
+        <p class="eyebrow">Availability evidence</p>
+        <h2>Therapist times offered, blocked, or still needing verification</h2>
+      </div>
+      <p class="small-note">Source-backed working notes for Amy review. This separates direct Brooke refusal/non-agreement from provider waitlist constraints and appointments where no Brooke refusal was found in the reviewed Gmail/OFW records.</p>
+      <div class="effort-grid evidence-summary-grid" aria-label="Therapist availability response summary">
+        <article class="effort-card">
+          <strong>1</strong>
+          <span>direct refusal/non-agreement</span>
+          <p>Brooke’s OFW message rejected the Wednesday noon Janz time and said she provided her own availability.</p>
+        </article>
+        <article class="effort-card">
+          <strong>1</strong>
+          <span>waitlist block</span>
+          <p>Janz reported no current openings matched Brooke’s evening/late-day window.</p>
+        </article>
+        <article class="effort-card">
+          <strong>1</strong>
+          <span>scheduled family therapy time</span>
+          <p>Link Care scheduled family therapy for June 19 at 9:00 AM; no Brooke refusal was found in reviewed records.</p>
+        </article>
+        <article class="effort-card">
+          <strong>4</strong>
+          <span>reviewed evidence events</span>
+          <p>Includes one SimplePractice/Janz decline that should not be attributed to Brooke without more source review.</p>
+        </article>
+      </div>
+      <div class="call-table-wrap">
+        <table class="call-table evidence-table">
+          <thead>
+            <tr><th>Date</th><th>Provider</th><th>Available time/window</th><th>Brooke response or status</th><th>Source marker</th><th>How to use it</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>May 4, 2026</td>
+              <td>Janz Family Therapy</td>
+              <td>Wednesday at noon</td>
+              <td>Brooke wrote that the time was not one she could accommodate and that she was not okay with it because it would pull Dylan from school; she also said she provided Janz with her availability.</td>
+              <td>OFW_Messages_Report_2026-05-09_12-58-47.txt, message 536; Amy email thread 19dff14448296e9b</td>
+              <td>Direct documented refusal/non-agreement of the noon Janz time.</td>
+            </tr>
+            <tr>
+              <td>May 4-8, 2026</td>
+              <td>Janz Family Therapy</td>
+              <td>Brooke-provided window: 6:00 PM or later Mon/Tue/Wed; 4:00 PM or later Thu/Fri</td>
+              <td>Janz stated that after speaking with Brooke, they had no current openings that fit the requested window and placed the case on a waitlist.</td>
+              <td>Gmail threads 19e092f483cf72cf and 19e08964f411ca93; Family Therapy Outreach Effort Report</td>
+              <td>Use as a source-backed scheduling block caused by the constrained availability window, not as a separate refusal of a specific offered appointment.</td>
+            </tr>
+            <tr>
+              <td>June 10, 2026</td>
+              <td>Link Care</td>
+              <td>Friday, June 19, 2026 at 9:00 AM</td>
+              <td>Breyona Midgett scheduled family therapy and said Rob and Brooke should arrive 10-15 minutes early for consent forms. No Brooke refusal was found in the reviewed Gmail/OFW records.</td>
+              <td>Gmail thread 19eb3ef3b3b635fe</td>
+              <td>Use as documented therapist availability/scheduled start; verify Brooke response before calling it a refusal.</td>
+            </tr>
+            <tr>
+              <td>June 11, 2026</td>
+              <td>Janz / Vanessa Flores / SimplePractice</td>
+              <td>Thursday, June 11, 2026 at 11:00 AM</td>
+              <td>A declined appointment notice exists, but the reviewed source attributes the decline to Vanessa/SimplePractice scheduling, not directly to Brooke.</td>
+              <td>Family Therapy Outreach Effort Report; Gmail markers 19e81647752107d1, 19e95123ef7e2d22, 19eb7ce2c3fe0542</td>
+              <td>Do not characterize this as a Brooke refusal unless a direct Brooke source is added.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
     <details class="panel command-panel custody-accordion primary-accordion" open>
       <summary class="accordion-summary">
         <span><i class="fas fa-bullseye"></i> Right now</span>
@@ -2671,6 +2746,61 @@ textarea {
     return lines;
   }
 
+  function therapistAvailabilityEvidence() {
+    return [
+      {
+        date: 'May 4, 2026',
+        provider: 'Janz Family Therapy',
+        time: 'Wednesday at noon',
+        status: 'Brooke wrote in OFW that the time was not one she could accommodate and that she was not okay with it because it would pull Dylan from school; she also said she provided Janz with her availability.',
+        source: 'OFW_Messages_Report_2026-05-09_12-58-47.txt, message 536; Amy email thread 19dff14448296e9b',
+        use: 'Direct documented refusal/non-agreement of the noon Janz time.'
+      },
+      {
+        date: 'May 4-8, 2026',
+        provider: 'Janz Family Therapy',
+        time: 'Brooke-provided window: 6:00 PM or later Mon/Tue/Wed; 4:00 PM or later Thu/Fri',
+        status: 'Janz stated that after speaking with Brooke, they had no current openings that fit the requested window and placed the case on a waitlist.',
+        source: 'Gmail threads 19e092f483cf72cf and 19e08964f411ca93; Family Therapy Outreach Effort Report',
+        use: 'Source-backed scheduling block caused by the constrained availability window; not a separate refusal of a specific offered appointment.'
+      },
+      {
+        date: 'June 10, 2026',
+        provider: 'Link Care',
+        time: 'Friday, June 19, 2026 at 9:00 AM',
+        status: 'Breyona Midgett scheduled family therapy and said Rob and Brooke should arrive 10-15 minutes early for consent forms. No Brooke refusal was found in reviewed Gmail/OFW records.',
+        source: 'Gmail thread 19eb3ef3b3b635fe',
+        use: 'Documented therapist availability/scheduled start; verify Brooke response before calling it a refusal.'
+      },
+      {
+        date: 'June 11, 2026',
+        provider: 'Janz / Vanessa Flores / SimplePractice',
+        time: 'Thursday, June 11, 2026 at 11:00 AM',
+        status: 'A declined appointment notice exists, but the reviewed source attributes the decline to Vanessa/SimplePractice scheduling, not directly to Brooke.',
+        source: 'Family Therapy Outreach Effort Report; Gmail markers 19e81647752107d1, 19e95123ef7e2d22, 19eb7ce2c3fe0542',
+        use: 'Do not characterize this as a Brooke refusal unless a direct Brooke source is added.'
+      }
+    ];
+  }
+
+  function evidenceTableHtml(items) {
+    return `
+      <table class="evidence-report-table">
+        <thead><tr><th>Date</th><th>Provider/time</th><th>Status</th><th>Source/use</th></tr></thead>
+        <tbody>
+          ${items.map(item => `
+            <tr>
+              <td>${escapeHtml(item.date)}</td>
+              <td><strong>${escapeHtml(item.provider)}</strong><br>${escapeHtml(item.time)}</td>
+              <td>${escapeHtml(item.status)}</td>
+              <td><strong>Source:</strong> ${escapeHtml(item.source)}<br><strong>Use:</strong> ${escapeHtml(item.use)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  }
+
   function phaseReportData() {
     const data = snapshot();
     const completed = checkedLabels();
@@ -2685,7 +2815,8 @@ textarea {
       generated: new Date().toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }),
       courtReadyDocumentation: courtReadyDocumentationLines(completed),
       fulfilledRequirements: fulfilledEvaluationRequirementLines(completed),
-      pendingRequirements: pendingEvaluationRequirementLines()
+      pendingRequirements: pendingEvaluationRequirementLines(),
+      therapistEvidence: therapistAvailabilityEvidence()
     };
   }
 
@@ -2700,7 +2831,8 @@ textarea {
       generated,
       courtReadyDocumentation,
       fulfilledRequirements,
-      pendingRequirements
+      pendingRequirements,
+      therapistEvidence
     } = phaseReportData();
 
     return [
@@ -2729,6 +2861,9 @@ textarea {
       '',
       'Requirements still pending or still being tracked',
       ...pendingRequirements.map(line => `- ${line}`),
+      '',
+      'Therapist availability and Brooke response evidence',
+      ...therapistEvidence.map(item => `- ${item.date} - ${item.provider} - ${item.time}: ${item.status} Source: ${item.source}. Use: ${item.use}`),
       '',
       'Documented effort summary',
       '- 55 sent Gmail messages reviewed for therapist/provider outreach.',
@@ -2795,7 +2930,8 @@ textarea {
       generated,
       courtReadyDocumentation,
       fulfilledRequirements,
-      pendingRequirements
+      pendingRequirements,
+      therapistEvidence
     } = phaseReportData();
     const phaseSlug = phase.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     return `<!doctype html>
@@ -2830,6 +2966,9 @@ textarea {
     .requirement-box { border: 1px solid #d8eadf; border-radius: 16px; padding: 16px; }
     .requirement-box.fulfilled { background: #eef7f1; }
     .requirement-box.pending { background: #fff8e8; border-color: #ead8a4; }
+    .evidence-report-table { border-collapse: collapse; font-size: 11px; width: 100%; }
+    .evidence-report-table th, .evidence-report-table td { border: 1px solid #d8eadf; padding: 8px; text-align: left; vertical-align: top; }
+    .evidence-report-table th { background: #eef7f1; color: #123628; font-size: 10px; letter-spacing: .07em; text-transform: uppercase; }
     .footer { border-top: 1px solid #e8dfd1; color: #526158; font-size: 12px; padding-top: 16px; }
     .actions { margin: 18px 0 0; text-align: right; }
     button { background: #123628; border: 0; border-radius: 999px; color: white; cursor: pointer; font: inherit; font-weight: 800; padding: 11px 18px; }
@@ -2878,6 +3017,10 @@ textarea {
           <h2>Still Pending or Being Tracked</h2>
           ${listHtml(pendingRequirements)}
         </div>
+      </section>
+      <section>
+        <h2>Therapist Availability and Brooke Response Evidence</h2>
+        ${evidenceTableHtml(therapistEvidence)}
       </section>
       <section>
         <h2>Documented Effort</h2>

@@ -17,17 +17,15 @@ function json(statusCode, payload) {
 
 // Daily plus evening refresh: 7am and 6pm Pacific (14:00 and 01:00 UTC during PDT).
 // Keeps Fresno County listings fresh, with Fresno High and Tower District promoted first.
-const scheduledHandler = schedule('0 14,1 * * *', async (event) => refreshHomeSearch(event));
-
-module.exports.handler = async (event, context) => {
-  if (isScheduledEvent(event)) return scheduledHandler(event, context);
+module.exports.handler = schedule('0 14,1 * * *', async (event) => {
+  if (isScheduledEvent(event)) return refreshHomeSearch(event);
   if (event.httpMethod === 'OPTIONS') return json(200, {});
   if (event.httpMethod !== 'POST') return json(405, { error: 'Method not allowed' });
   if (!readAdminSession(event) && !readApiTokenSession(event)) return json(401, { error: 'Unauthorized' });
 
   const result = await refreshHomeSearch(event, { manual: true });
   return json(result.statusCode || 200, result.payload || {});
-};
+});
 
 function isScheduledEvent(event) {
   const headers = event.headers || {};

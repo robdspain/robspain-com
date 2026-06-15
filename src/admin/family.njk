@@ -101,6 +101,8 @@ family_pwa: true
   .fin-badge.upcoming { background: #dbeafe; color: #1e40af; }
   .fin-badge.autopay { background: #f3e8ff; color: #6b21a8; }
   .fin-badge.paid { background: #d1fae5; color: #065f46; }
+  .fin-badge.review { background: #ffedd5; color: #9a3412; }
+  .fin-badge.archived { background: #e5e7eb; color: #374151; }
   
   .sync-bar { display: none; background: #ecf4ef; border: 1px solid #d9d1c4; border-radius: 12px; padding: 10px 16px; margin-bottom: 16px; font-size: 13px; color: #123628; align-items: center; justify-content: space-between; }
   .sync-bar.visible { display: flex; }
@@ -284,6 +286,11 @@ family_pwa: true
   .ops-decision { border-left: 4px solid #1f4d3f; padding-left: 12px; font-size: 13px; color: #526158; line-height: 1.55; }
   .ops-decision.warn { border-left-color: #d97706; }
   .ops-decision.danger { border-left-color: #b91c1c; }
+  .ops-toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .ops-toolbar button { padding: 8px 12px; border-radius: 10px; border: 1px solid #d9d1c4; background: #fffdf8; color: #1f4d3f; font-size: 12px; font-weight: 800; cursor: pointer; }
+  .ops-toolbar button.primary { background: #1f4d3f; color: #fffdf8; border-color: #1f4d3f; }
+  .ops-toolbar button:hover { border-color: #1f4d3f; background: rgba(31, 77, 63, 0.06); }
+  .ops-toolbar button.primary:hover { background: #123628; }
   @media (max-width: 800px) { .advisor-hero { grid-template-columns: 1fr; } }
   @media (max-width: 600px) { .fin-grid-4 { grid-template-columns: 1fr 1fr; } .fin-grid-2, .fin-grid-3 { grid-template-columns: 1fr; } .fin-tabs { gap: 4px; } .fin-tab { padding: 8px 12px; font-size: 12px; } .advisor-item { grid-template-columns: auto 1fr; } .advisor-amount { grid-column: 2; text-align: left; } }
 </style>
@@ -420,6 +427,11 @@ family_pwa: true
     <div class="fin-alert info">
       <strong>Monthly close:</strong> Use this as the recurring process to prevent missed bills. Do it on the 1st, 10th, 20th, and after every account login/update.
     </div>
+    <div class="ops-toolbar">
+      <button class="primary" onclick="startNewMonth()">Start New Month</button>
+      <button onclick="markAllAccountsStale()">Queue Account Refresh</button>
+      <button onclick="activatePanel('calendar')">Open Bill Calendar</button>
+    </div>
     <div class="advisor-hero">
       <div class="advisor-decision" id="monthlyRunwayCard"></div>
       <div class="advisor-decision" id="ownerDrawCard"></div>
@@ -432,6 +444,14 @@ family_pwa: true
       <div class="fin-card">
         <h3>Sync Health</h3>
         <div id="syncHealth"></div>
+      </div>
+      <div class="fin-card">
+        <h3>Account Sync Queue</h3>
+        <div id="accountSyncQueue" class="ops-list"></div>
+      </div>
+      <div class="fin-card">
+        <h3>Rollover Rules</h3>
+        <div id="rolloverRules"></div>
       </div>
     </div>
   </div>
@@ -625,11 +645,13 @@ family_pwa: true
     <input type="number" id="billAmount" step="0.01" placeholder="200.00">
     <label>Status</label>
     <select id="billStatus">
+      <option value="review">Review</option>
       <option value="upcoming">Upcoming</option>
       <option value="current">Active</option>
       <option value="overdue">Overdue</option>
       <option value="autopay">Autopay</option>
       <option value="paid">Paid</option>
+      <option value="archived">Archived</option>
     </select>
     <label>Priority</label>
     <select id="billPriority">
@@ -686,8 +708,8 @@ family_pwa: true
 // DATA STORE — localStorage now, Convex-ready structure
 // ═══════════════════════════════════════════════════════════════
 const STORE_KEY = 'spain-finance-v2';
-const STATUS_CYCLE = ['overdue','upcoming','current','autopay','paid'];
-const STATUS_LABELS = {overdue:'Overdue',upcoming:'Upcoming',current:'Active',autopay:'Autopay',paid:'Paid'};
+const STATUS_CYCLE = ['overdue','review','upcoming','current','autopay','paid','archived'];
+const STATUS_LABELS = {overdue:'Overdue',review:'Review',upcoming:'Upcoming',current:'Active',autopay:'Autopay',paid:'Paid',archived:'Archived'};
 const PRIORITY_LABELS = {1:'P1 Survival',2:'P2 Insurance/Debt',3:'P3 Necessities',4:'P4 On Credit'};
 const APPLE_CARD_DRIVE_FOLDER_URL = 'https://drive.google.com/drive/u/0/folders/1H56BpX45Qw-IknCPW9Jqk1fE7qeWS2Wf';
 const DISCOVER_DRIVE_FOLDER_URL = 'https://drive.google.com/drive/folders/1hAAC17YDBk-Evo9kOkJECauXPIhtrjkM';
@@ -739,6 +761,32 @@ const BUSINESS_CHARGE_RULES = [
   { pattern:/behavior school|behaviorschool|robspain.com|robspain/i, label:'Rob Spain / Behavior School operating cost', action:'Review whether this should be paid from the business account.' }
 ];
 const CASH_RESERVE_FLOOR = 300;
+const DEFAULT_BILL_RULE = { recurrence:'monthly', rolloverStatus:'upcoming', variable:false };
+const BILL_ROLLOVER_RULES = {
+  rent: { recurrence:'monthly', rolloverStatus:'upcoming', variable:false },
+  childsupport: { recurrence:'monthly', rolloverStatus:'current', variable:false },
+  support: { recurrence:'monthly', rolloverStatus:'review', variable:true },
+  auto: { recurrence:'monthly', rolloverStatus:'autopay', variable:false },
+  groceries: { recurrence:'monthly', rolloverStatus:'current', variable:true },
+  fuel: { recurrence:'monthly', rolloverStatus:'current', variable:true },
+  familytherapy: { recurrence:'monthly', rolloverStatus:'review', variable:true },
+  apple: { recurrence:'monthly', rolloverStatus:'autopay', variable:false },
+  collier: { recurrence:'variable', rolloverStatus:'review', variable:true },
+  toggle: { recurrence:'monthly', rolloverStatus:'autopay', variable:false },
+  pge: { recurrence:'monthly', rolloverStatus:'review', variable:true },
+  att: { recurrence:'monthly', rolloverStatus:'review', variable:true },
+  fastaction: { recurrence:'bimonthly', rolloverStatus:'current', variable:false },
+  fresno: { recurrence:'monthly', rolloverStatus:'review', variable:true },
+  xfinity: { recurrence:'monthly', rolloverStatus:'review', variable:true },
+  discover: { recurrence:'monthly', rolloverStatus:'autopay', variable:false },
+  loc: { recurrence:'monthly', rolloverStatus:'upcoming', variable:false },
+  principal: { recurrence:'monthly', rolloverStatus:'current', variable:false },
+  allstate: { recurrence:'monthly', rolloverStatus:'current', variable:false },
+  ofw: { recurrence:'annual', rolloverStatus:'current', variable:false },
+  netflix: { recurrence:'monthly', rolloverStatus:'current', variable:false },
+  apple_services: { recurrence:'monthly', rolloverStatus:'current', variable:true },
+  legalreserve: { recurrence:'variable', rolloverStatus:'review', variable:true }
+};
 let financeSyncTimer = null;
 
 function setConvexStatus(message, isError) {
@@ -806,6 +854,8 @@ function defaultState() {
       notes: 'Use this to make the monthly gap explicit before bills fall behind.'
     },
     monthlyOps: {
+      activeMonth: '2026-06',
+      lastRollover: '',
       checklist: [
         { id:'eecu_login', label:'Refresh EECU balances', cadence:'weekly', lastDone:'2026-06-15', source:'Chrome/EECU', note:'Checking, savings, LOC, and auto loan balances.' },
         { id:'pge_login', label:'Refresh PG&E payment plan and true-up', cadence:'monthly', lastDone:'2026-06-15', source:'Chrome/PG&E', note:'Confirm amount needed to stay on plan and update solar true-up estimate.' },
@@ -815,11 +865,21 @@ function defaultState() {
         { id:'bill_scan', label:'Scan Gmail for bills and failed payments', cadence:'weekly', lastDone:'2026-06-15', source:'Gmail', note:'Search utilities, cards, legal, therapy, school, insurance, and pest control.' },
         { id:'business_leakage', label:'Review business charges on personal cards', cadence:'monthly', lastDone:'', source:'Imports', note:'OpenAI, Anthropic, domains, hosting, and business subscriptions.' },
         { id:'monthly_close', label:'Close prior month budget', cadence:'monthly', lastDone:'', source:'Family app', note:'Mark bills paid, confirm statement coverage, update balances, and reset unpaid statuses.' }
+      ],
+      accountSync: [
+        { id:'eecu', label:'EECU', accountIds:['checking','savings','loc','autoloan'], cadence:'weekly', lastRefreshed:'2026-06-15', source:'Chrome/EECU', note:'Checking, savings, line of credit, and auto loan.' },
+        { id:'discover', label:'Discover Card', accountIds:['discover'], cadence:'weekly', lastRefreshed:'2026-06-12', source:'Discover', note:'Balance, available credit, minimum, due date, and autopay.' },
+        { id:'applecard', label:'Apple Card', accountIds:['applecard'], cadence:'weekly', lastRefreshed:'2026-06-09', source:'Apple Card / Drive', note:'Balance, available credit, statement, minimum, and scheduled payment.' },
+        { id:'pge', label:'PG&E', accountIds:[], cadence:'monthly', lastRefreshed:'2026-06-15', source:'Chrome/PG&E', note:'Payment plan amount, total balance, and solar true-up estimate.' },
+        { id:'novo', label:'Novo Business', accountIds:[], cadence:'weekly', lastRefreshed:'', source:'Novo', note:'Business cash available for owner draw and business debt decisions.' }
       ]
     },
     businessPlan: {
       businessCash: 0,
+      novoBalance: 0,
       businessDebt: 0,
+      businessDebtApr: 0,
+      personalDebtApr: 28,
       ownerDrawTarget: 0,
       minimumBusinessReserve: 500,
       notes: 'Update Novo cash and business debt before using owner-draw guidance.'
@@ -894,7 +954,11 @@ function applyCurrentFinanceCorrections(state) {
   state.householdPlan = state.householdPlan || { reserveFloor: CASH_RESERVE_FLOOR, sixMonthHorizon: 6, contributionTarget: 0, notes: '' };
   state.monthlyOps = state.monthlyOps || def.monthlyOps;
   state.monthlyOps.checklist = mergeChecklist(def.monthlyOps.checklist, state.monthlyOps.checklist || []);
+  state.monthlyOps.accountSync = mergeChecklist(def.monthlyOps.accountSync, state.monthlyOps.accountSync || []);
+  state.monthlyOps.activeMonth = state.monthlyOps.activeMonth || currentMonthKey();
+  state.monthlyOps.lastRollover = state.monthlyOps.lastRollover || '';
   state.businessPlan = Object.assign({}, def.businessPlan, state.businessPlan || {});
+  if (!state.businessPlan.novoBalance && state.businessPlan.businessCash) state.businessPlan.novoBalance = state.businessPlan.businessCash;
   state.creditPlan = Object.assign({}, def.creditPlan, state.creditPlan || {});
   if (!state.householdPlan.reserveFloor && state.householdPlan.reserveFloor !== 0) state.householdPlan.reserveFloor = CASH_RESERVE_FLOOR;
   if (!state.householdPlan.sixMonthHorizon) state.householdPlan.sixMonthHorizon = 6;
@@ -959,6 +1023,7 @@ function applyCurrentFinanceCorrections(state) {
     }
     Object.assign(bill, correction);
   });
+  normalizeBillRolloverRules(state.bills);
 
   const requiredBudgetBills = [
     { id:'childsupport', name:'Child Support / DCSS', dueDay:1, amount:2100, status:'current', priority:1, account:'Payroll/DCSS', notes:'Court-ordered support baseline; set to $0 here if already withheld from net pay', payUrl:'https://www.childsupport.ca.gov/payment-options/' },
@@ -2022,6 +2087,8 @@ function renderMonthlyClose() {
   renderOwnerDraw();
   renderSyncChecklist();
   renderSyncHealth();
+  renderAccountSyncQueue();
+  renderRolloverRules();
 }
 
 function renderMonthlyRunway() {
@@ -2063,14 +2130,17 @@ function renderOwnerDraw() {
     <div class="advisor-headline">${esc(decision.headline)}</div>
     <div class="advisor-copy">${esc(decision.copy)}</div>
     <div class="ops-decision ${decision.tone}" style="margin-top:14px;">${esc(decision.rule)}</div>
-    <div style="display:grid;gap:8px;margin-top:14px;font-size:13px;">
-      <div style="display:flex;justify-content:space-between;"><span class="fin-sub">Novo/business cash</span><strong>${fmt(Number(plan.businessCash || 0))}</strong></div>
+      <div style="display:grid;gap:8px;margin-top:14px;font-size:13px;">
+      <div style="display:flex;justify-content:space-between;"><span class="fin-sub">Novo/business cash</span><strong>${fmt(getNovoBalance())}</strong></div>
       <div style="display:flex;justify-content:space-between;"><span class="fin-sub">Business debt</span><strong>${fmt(Number(plan.businessDebt || 0))}</strong></div>
       <div style="display:flex;justify-content:space-between;"><span class="fin-sub">Business reserve floor</span><strong>${fmt(Number(plan.minimumBusinessReserve || 0))}</strong></div>
+      <div style="display:flex;justify-content:space-between;"><span class="fin-sub">Business APR / personal APR</span><strong>${Number(plan.businessDebtApr || 0)}% / ${Number(plan.personalDebtApr || 0)}%</strong></div>
     </div>
     <div class="advisor-controls">
-      <button onclick="editBusinessPlan('businessCash','Novo/business cash')">Update Cash</button>
+      <button onclick="editBusinessPlan('novoBalance','Novo balance')">Update Novo</button>
       <button onclick="editBusinessPlan('businessDebt','Business debt')">Update Debt</button>
+      <button onclick="editBusinessPlan('businessDebtApr','Business debt APR')">Business APR</button>
+      <button onclick="editBusinessPlan('personalDebtApr','Personal card APR')">Personal APR</button>
       <button onclick="editBusinessPlan('minimumBusinessReserve','Business reserve floor')">Reserve Floor</button>
     </div>
   `;
@@ -2085,8 +2155,10 @@ function buildOwnerDrawDecision() {
   const urgentUnfunded = buildBillPayPlan(spendableCash)
     .filter(item => !item.funded && (item.bill.priority <= 2 || item.bill.status === 'overdue' || item.bill.status === 'autopay'))
     .reduce((s, item) => s + item.bill.amount, 0);
-  const businessCash = Number(plan.businessCash || 0);
+  const businessCash = getNovoBalance();
   const businessDebt = Number(plan.businessDebt || 0);
+  const businessDebtApr = Number(plan.businessDebtApr || 0);
+  const personalDebtApr = Number(plan.personalDebtApr || 0);
   const businessReserve = Number(plan.minimumBusinessReserve || 0);
   const drawable = Math.max(0, businessCash - businessReserve);
   const suggestedDraw = Math.min(drawable, Math.max(householdShort, urgentUnfunded));
@@ -2109,11 +2181,14 @@ function buildOwnerDrawDecision() {
   }
 
   if (businessDebt > 0 && drawable > 0) {
+    const payBusinessFirst = businessDebtApr > personalDebtApr && businessDebtApr > 0;
     return {
       tone: 'warn',
-      headline: 'Hold household steady, then compare APRs',
+      headline: payBusinessFirst ? 'Hold household steady, then pay business debt' : 'Hold household steady, then attack personal cards',
       copy: `Priority household bills are covered. Business has ${fmt(drawable)} above reserve and ${fmt(businessDebt)} debt listed.`,
-      rule: 'Pay the higher-APR revolving debt first. If business debt is tax-deductible/operational and personal cards are higher APR, prioritize personal card utilization before extra business debt.'
+      rule: payBusinessFirst
+        ? `Business debt APR (${businessDebtApr}%) is higher than personal APR (${personalDebtApr}%). Keep reserves, then pay business debt before extra personal-card payments.`
+        : `Personal revolving APR/utilization appears more urgent than business debt. Keep business reserve intact and use extra cash to reduce Apple/Discover after minimums are covered.`
     };
   }
 
@@ -2123,6 +2198,52 @@ function buildOwnerDrawDecision() {
     copy: 'Priority household bills appear covered after reserve. Keep the business reserve intact and keep importing transactions.',
     rule: 'Only take draws for a known household shortfall, planned owner compensation, or to prevent missed payments.'
   };
+}
+
+function getNovoBalance() {
+  return Number(STATE.businessPlan?.novoBalance || STATE.businessPlan?.businessCash || 0);
+}
+
+function renderAccountSyncQueue() {
+  const target = document.getElementById('accountSyncQueue');
+  if (!target) return;
+  const items = [...(STATE.monthlyOps?.accountSync || [])]
+    .map(item => ({...item, stale: isAccountSyncStale(item), age: daysSince(item.lastRefreshed)}))
+    .sort((a, b) => Number(b.stale) - Number(a.stale) || b.age - a.age || a.label.localeCompare(b.label));
+
+  target.innerHTML = items.map(item => `
+    <div class="ops-item">
+      <input class="ops-check" type="checkbox" ${item.stale ? '' : 'checked'} onchange="markAccountRefreshed('${item.id}', this.checked)">
+      <div>
+        <div class="ops-title">${esc(item.label)}</div>
+        <div class="ops-note">${esc(item.note || '')}</div>
+      </div>
+      <div class="ops-meta">${item.stale ? 'refresh' : 'current'}<br>${item.lastRefreshed ? esc(item.lastRefreshed) : 'never'}</div>
+    </div>
+  `).join('');
+}
+
+function renderRolloverRules() {
+  const target = document.getElementById('rolloverRules');
+  if (!target) return;
+  const bills = STATE.bills || [];
+  const recurring = bills.filter(bill => bill.recurrence !== 'one-time' && bill.status !== 'archived').length;
+  const variable = bills.filter(bill => bill.variable).length;
+  const autopay = bills.filter(bill => bill.rolloverStatus === 'autopay').length;
+  const oneTime = bills.filter(bill => bill.recurrence === 'one-time').length;
+  target.innerHTML = `
+    <div style="display:grid;gap:12px;">
+      <div style="display:flex;justify-content:space-between;"><span class="fin-sub">Active month</span><strong>${esc(STATE.monthlyOps?.activeMonth || currentMonthKey())}</strong></div>
+      <div style="display:flex;justify-content:space-between;"><span class="fin-sub">Last rollover</span><strong>${esc(STATE.monthlyOps?.lastRollover || 'never')}</strong></div>
+      <div style="display:flex;justify-content:space-between;"><span class="fin-sub">Recurring bills reset</span><strong>${recurring}</strong></div>
+      <div style="display:flex;justify-content:space-between;"><span class="fin-sub">Variable bills flagged</span><strong>${variable}</strong></div>
+      <div style="display:flex;justify-content:space-between;"><span class="fin-sub">Autopay retained</span><strong>${autopay}</strong></div>
+      <div style="display:flex;justify-content:space-between;"><span class="fin-sub">One-time/archive protected</span><strong>${oneTime}</strong></div>
+      <div class="ops-decision">
+        Start New Month keeps payment history, resets recurring paid bills, leaves autopay bills on autopay, flags variable bills for review, and archives one-time paid bills.
+      </div>
+    </div>
+  `;
 }
 
 function renderSyncChecklist() {
@@ -2173,11 +2294,36 @@ function renderSyncHealth() {
 
 function isChecklistStale(item) {
   if (!item.lastDone) return true;
-  const last = new Date(item.lastDone + 'T00:00:00');
-  const today = new Date();
-  const age = Math.floor((new Date(today.getFullYear(), today.getMonth(), today.getDate()) - last) / 86400000);
+  const age = daysSince(item.lastDone);
   const limit = item.cadence === 'weekly' ? 7 : item.cadence === 'monthly' ? 35 : 14;
   return age > limit;
+}
+
+function isAccountSyncStale(item) {
+  if (!item.lastRefreshed) return true;
+  const age = daysSince(item.lastRefreshed);
+  const limit = item.cadence === 'weekly' ? 7 : item.cadence === 'monthly' ? 35 : 14;
+  return age > limit;
+}
+
+function daysSince(dateString) {
+  if (!dateString) return 9999;
+  const last = new Date(dateString + 'T00:00:00');
+  const today = new Date();
+  return Math.floor((new Date(today.getFullYear(), today.getMonth(), today.getDate()) - last) / 86400000);
+}
+
+function currentMonthKey() {
+  return new Date().toISOString().slice(0, 7);
+}
+
+function normalizeBillRolloverRules(bills) {
+  (bills || []).forEach(bill => {
+    const rule = Object.assign({}, DEFAULT_BILL_RULE, BILL_ROLLOVER_RULES[bill.id] || {});
+    if (!bill.recurrence) bill.recurrence = rule.recurrence;
+    if (!bill.rolloverStatus) bill.rolloverStatus = rule.rolloverStatus;
+    if (bill.variable === undefined) bill.variable = rule.variable;
+  });
 }
 
 function renderCreditReadiness() {
@@ -2482,6 +2628,67 @@ function markChecklistDone(id, checked) {
   saveState(STATE);
   renderAll();
   showToast(item.label + (checked ? ' marked current' : ' marked open'));
+}
+
+function markAccountRefreshed(id, checked) {
+  const item = STATE.monthlyOps?.accountSync?.find(entry => entry.id === id);
+  if (!item) return;
+  item.lastRefreshed = checked ? new Date().toISOString().slice(0, 10) : '';
+  saveState(STATE);
+  renderAll();
+  showToast(item.label + (checked ? ' refreshed today' : ' queued for refresh'));
+}
+
+function markAllAccountsStale() {
+  if (!STATE.monthlyOps?.accountSync) return;
+  STATE.monthlyOps.accountSync.forEach(item => { item.lastRefreshed = ''; });
+  saveState(STATE);
+  renderAll();
+  showToast('All accounts queued for refresh');
+}
+
+function startNewMonth() {
+  normalizeBillRolloverRules(STATE.bills);
+  const nextMonth = currentMonthKey();
+  const summary = { autopay: 0, review: 0, recurring: 0, archived: 0 };
+
+  STATE.bills.forEach(bill => {
+    if (bill.recurrence === 'one-time') {
+      if (bill.status === 'paid') {
+        bill.status = 'archived';
+        summary.archived += 1;
+      }
+      return;
+    }
+
+    if (bill.rolloverStatus === 'autopay') {
+      bill.status = 'autopay';
+      summary.autopay += 1;
+      return;
+    }
+
+    if (bill.variable) {
+      bill.status = 'review';
+      summary.review += 1;
+      return;
+    }
+
+    bill.status = bill.rolloverStatus || 'upcoming';
+    summary.recurring += 1;
+  });
+
+  STATE.monthlyOps = STATE.monthlyOps || {};
+  STATE.monthlyOps.activeMonth = nextMonth;
+  STATE.monthlyOps.lastRollover = new Date().toISOString().slice(0, 10);
+  markChecklistDate('monthly_close', STATE.monthlyOps.lastRollover);
+  saveState(STATE);
+  renderAll();
+  showToast(`New month started: ${summary.autopay} autopay, ${summary.review} review, ${summary.recurring} recurring reset`);
+}
+
+function markChecklistDate(id, date) {
+  const item = STATE.monthlyOps?.checklist?.find(entry => entry.id === id);
+  if (item) item.lastDone = date;
 }
 
 function editBusinessPlan(field, label) {

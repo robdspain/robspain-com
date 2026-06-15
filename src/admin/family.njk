@@ -234,6 +234,7 @@ family_pwa: true
   .statement-badge { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 750; text-transform: uppercase; }
   .statement-badge.missing { background: #fee2e2; color: #991b1b; }
   .statement-badge.downloaded { background: #fef3c7; color: #92400e; }
+  .statement-badge.partial { background: #ffedd5; color: #9a3412; }
   .statement-badge.uploaded { background: #d1fae5; color: #065f46; }
   .statement-badge.imported { background: #dbeafe; color: #1e40af; }
   .statement-account { margin-top: 18px; padding-top: 18px; border-top: 1px solid #e8e2d5; }
@@ -638,9 +639,10 @@ const STATUS_CYCLE = ['overdue','upcoming','current','autopay','paid'];
 const STATUS_LABELS = {overdue:'Overdue',upcoming:'Upcoming',current:'Active',autopay:'Autopay',paid:'Paid'};
 const PRIORITY_LABELS = {1:'P1 Survival',2:'P2 Insurance/Debt',3:'P3 Necessities',4:'P4 On Credit'};
 const APPLE_CARD_DRIVE_FOLDER_URL = 'https://drive.google.com/drive/u/0/folders/1H56BpX45Qw-IknCPW9Jqk1fE7qeWS2Wf';
+const DISCOVER_DRIVE_FOLDER_URL = 'https://drive.google.com/drive/folders/1hAAC17YDBk-Evo9kOkJECauXPIhtrjkM';
 const STATEMENT_SOURCES = [
   { key:'eecu', label:'EECU', folderLabel:'EECU Drive folder URL', note:'Checking, savings, auto loan, LOC, and EECU card statements.' },
-  { key:'discover', label:'Discover', folderLabel:'Discover Drive folder URL', note:'Discover card statements and transaction exports.' },
+  { key:'discover', label:'Discover', folderLabel:'Discover Drive folder URL', note:'Discover folder currently has CSV/activity records; monthly PDF statements still need to be downloaded.' },
   { key:'appleCard', label:'Apple Card', folderLabel:'Apple Card Drive folder URL', note:'Apple Card PDFs in Drive; CSV exports still go through the Import tab.' }
 ];
 const APPLE_CARD_DRIVE_FILES = [
@@ -661,6 +663,22 @@ const APPLE_CARD_DRIVE_FILES = [
   { month:'2026-03', title:'Apple Card Statement - March 2026.pdf', url:'https://drive.google.com/file/d/19Kwz7j1BVsOX1vVnEFp7cWmqOq16M22H/view?usp=drivesdk' },
   { month:'2026-04', title:'Apple Card Statement - April 2026.pdf', url:'https://drive.google.com/file/d/1c-V56_4fphLGyGBJCRtx4x1GXXwnLngV/view?usp=drivesdk' },
   { month:'2026-05', title:'Apple Card Statement - May 2026.pdf', url:'https://drive.google.com/file/d/1rf4_ZdFmr1rQ-QaiTrGwtZz1hz8hE1GJ/view?usp=drivesdk' }
+];
+const DISCOVER_DRIVE_FILES = [
+  {
+    month:'2026-01',
+    status:'partial',
+    title:'Discover-AllAvailable-20260131.csv',
+    url:'https://drive.google.com/file/d/10w548I_ZPzOZ8zqujBFanropRQ6Tp4Jn/view?usp=drivesdk',
+    notes:'CSV transaction export found in the Discover Drive folder. Still download/upload monthly statement PDFs.'
+  },
+  {
+    month:'2026-05',
+    status:'partial',
+    title:'Discover Recent Activity and Statement Summary - 2026-06-09',
+    url:'https://docs.google.com/spreadsheets/d/187ypZq7BHeUINO5jOhBMaodAua0ZBzzz2RJ7sqYSnmc',
+    notes:'Summary sheet found: May 18 statement balance $4,896.25; Jun 9 balance $5,641.78; $98 minimum due Jun 17. Still need the May PDF statement.'
+  }
 ];
 const BUSINESS_CHARGE_RULES = [
   { pattern:/openai|chatgpt/i, label:'OpenAI / ChatGPT', action:'Move to Behavior School business card; keep receipts for software expense tracking.' },
@@ -733,7 +751,7 @@ function defaultState() {
     },
     statementFolders: {
       eecu: '',
-      discover: '',
+      discover: DISCOVER_DRIVE_FOLDER_URL,
       appleCard: APPLE_CARD_DRIVE_FOLDER_URL
     },
     statements: {
@@ -796,7 +814,9 @@ function applyCurrentFinanceCorrections(state) {
     state.statements[source.key] = normalizeStatements(state.statements[source.key] || [], source.key);
   });
   if (!state.statementFolders.appleCard) state.statementFolders.appleCard = APPLE_CARD_DRIVE_FOLDER_URL;
+  if (!state.statementFolders.discover) state.statementFolders.discover = DISCOVER_DRIVE_FOLDER_URL;
   applyAppleCardDriveSnapshot(false, state);
+  applyDiscoverDriveSnapshot(false, state);
 
   const fpu = state.income?.find(i => i.id === 'fpu' || /FPU|Fresno Pacific/i.test(i.name || ''));
   if (fpu) {
@@ -954,6 +974,35 @@ function applyAppleCardDriveSnapshot(showMessage, targetState) {
     renderAll();
   }
   if (showMessage) showToast(`Imported ${APPLE_CARD_DRIVE_FILES.length} Apple Card Drive files`);
+}
+
+function applyDiscoverDriveSnapshot(showMessage, targetState) {
+  const state = targetState || STATE;
+  state.statementFolders = state.statementFolders || {};
+  state.statements = state.statements || {};
+  state.statementFolders.discover = state.statementFolders.discover || DISCOVER_DRIVE_FOLDER_URL;
+  state.statements.discover = normalizeStatements(state.statements.discover || [], 'discover');
+
+  DISCOVER_DRIVE_FILES.forEach(file => {
+    let item = state.statements.discover.find(statement => statement.month === file.month);
+    if (!item) {
+      item = { month: file.month, status: 'missing', fileName: '', driveUrl: '', updatedAt: '', notes: '' };
+      state.statements.discover.push(item);
+    }
+    const hasPdf = item.status === 'uploaded' || item.status === 'imported';
+    if (!hasPdf) item.status = file.status;
+    item.fileName = item.fileName || file.title;
+    item.driveUrl = item.driveUrl || file.url;
+    item.notes = hasPdf ? item.notes : file.notes;
+    item.updatedAt = item.updatedAt || new Date().toISOString();
+  });
+
+  state.statements.discover = normalizeStatements(state.statements.discover, 'discover');
+  if (!targetState) {
+    saveState(state);
+    renderAll();
+  }
+  if (showMessage) showToast(`Imported ${DISCOVER_DRIVE_FILES.length} Discover Drive records`);
 }
 
 
@@ -1643,9 +1692,14 @@ function renderStatementSource(source) {
   const latestCovered = items
     .filter(item => item.status === 'uploaded' || item.status === 'imported')
     .sort((a, b) => b.month.localeCompare(a.month))[0];
-  const missing = items.filter(item => item.status === 'missing');
+  const latestData = items
+    .filter(item => item.status === 'uploaded' || item.status === 'imported' || item.status === 'partial')
+    .sort((a, b) => b.month.localeCompare(a.month))[0];
+  const missing = items.filter(item => item.status === 'missing' || item.status === 'partial');
   const snapshotButton = source.key === 'appleCard'
     ? '<button class="btn-add" onclick="applyAppleCardDriveSnapshot(true)">Import Drive Snapshot</button>'
+    : source.key === 'discover'
+      ? '<button class="btn-add" onclick="applyDiscoverDriveSnapshot(true)">Import Drive Records</button>'
     : '';
 
   return `
@@ -1664,11 +1718,13 @@ function renderStatementSource(source) {
       </div>
       <div class="statement-summary">
       <div class="statement-stat"><div class="label">Missing</div><div class="value" style="color:#b91c1c;">${counts.missing || 0}</div></div>
+      <div class="statement-stat"><div class="label">Partial / CSV</div><div class="value" style="color:#d97706;">${counts.partial || 0}</div></div>
       <div class="statement-stat"><div class="label">Downloaded</div><div class="value" style="color:#d97706;">${counts.downloaded || 0}</div></div>
       <div class="statement-stat"><div class="label">Uploaded</div><div class="value" style="color:#1f4d3f;">${counts.uploaded || 0}</div></div>
       <div class="statement-stat"><div class="label">Latest Covered</div><div class="value" style="font-size:18px;">${latestCovered ? formatMonth(latestCovered.month) : 'None'}</div></div>
+      <div class="statement-stat"><div class="label">Latest Data</div><div class="value" style="font-size:18px;">${latestData ? formatMonth(latestData.month) : 'None'}</div></div>
       </div>
-    ${missing.length ? `<div class="fin-alert danger"><strong>Need now:</strong> ${missing.slice(0, 6).map(item => formatMonth(item.month)).join(', ')}${missing.length > 6 ? ` and ${missing.length - 6} more` : ''}</div>` : `<div class="fin-alert info"><strong>${esc(source.label)} coverage complete:</strong> No missing completed months are currently listed.</div>`}
+    ${missing.length ? `<div class="fin-alert danger"><strong>Need PDFs now:</strong> ${missing.slice(0, 6).map(item => formatMonth(item.month)).join(', ')}${missing.length > 6 ? ` and ${missing.length - 6} more` : ''}</div>` : `<div class="fin-alert info"><strong>${esc(source.label)} coverage complete:</strong> No missing completed months are currently listed.</div>`}
     ${items.map(item => `
       <div class="statement-row">
         <div class="statement-month">${formatMonth(item.month)}</div>
@@ -1682,6 +1738,7 @@ function renderStatementSource(source) {
         </div>
         <div class="statement-actions">
           <button class="btn-sm btn-edit" onclick="setStatementStatus('${source.key}','${item.month}','downloaded')">Downloaded</button>
+          <button class="btn-sm btn-edit" onclick="setStatementStatus('${source.key}','${item.month}','partial')">CSV Only</button>
           <button class="btn-sm btn-pay" onclick="setStatementStatus('${source.key}','${item.month}','uploaded')">Uploaded</button>
           <button class="btn-sm btn-del" onclick="setStatementStatus('${source.key}','${item.month}','missing')">Missing</button>
         </div>
@@ -2020,6 +2077,7 @@ function setStatementStatus(sourceKey, month, status, fileName) {
   if (fileName) item.fileName = fileName;
   item.updatedAt = new Date().toISOString();
   if (status === 'downloaded' && !item.notes) item.notes = 'Downloaded locally; upload PDF/CSV to Google Drive.';
+  if (status === 'partial') item.notes = 'CSV or summary data is available, but the monthly PDF statement still needs to be downloaded and uploaded.';
   if (status === 'uploaded') item.notes = 'Uploaded to Google Drive.';
   if (status === 'imported') item.notes = 'CSV imported into this dashboard.';
   saveState(STATE);

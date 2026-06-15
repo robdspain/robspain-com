@@ -724,10 +724,10 @@ function defaultState() {
       { id:'legalreserve', name:'Legal Fee Reserve', dueDay:null, amount:750, status:'current', priority:4, account:'EECU Checking', payUrl:'', notes:'Working reserve against active 2026 Tipton invoices; pause before adding new card debt' },
     ],
     accounts: [
-      { id:'checking', name:'EECU Checking', type:'checking', balance:4009, notes:'After paycheck + payments' },
-      { id:'savings', name:'EECU Savings', type:'savings', balance:87, notes:'Available' },
-      { id:'loc', name:'Line of Credit', type:'loc', balance:-404, notes:'Last app value; $9,596 available. Needs live EECU refresh.' },
-      { id:'autoloan', name:'Auto Loan', type:'loan', balance:-16354, notes:'Last app value. Needs live EECU refresh for current payoff and next due date.' },
+      { id:'checking', name:'EECU Checking', type:'checking', balance:461.70, notes:'EECU Jun 15: $461.70 available; $982.02 current after KCUSD mileage deposit.' },
+      { id:'savings', name:'EECU Savings', type:'savings', balance:374.91, notes:'EECU Jun 15: $374.91 available; $379.91 current.' },
+      { id:'loc', name:'Line of Credit', type:'loc', balance:-185.40, notes:'EECU Jun 15: $185.40 balance; $9,814.60 available; $75 due Jun 26.' },
+      { id:'autoloan', name:'Auto Loan', type:'loan', balance:-15023.01, notes:'EECU Jun 15: $15,023.01 balance; $15,041.53 payoff today; $499.12 due Jul 5.' },
       { id:'applecard', name:'Apple Card', type:'credit', balance:-19107.18, notes:'May 31 2026 statement balance; $434 minimum due Jun 30 via scheduled recurring payment.' },
       { id:'discover', name:'Discover', type:'credit', balance:-5641.78, notes:'Live Discover Jun 12: $5,641.78 balance, $858 available; $98 minimum paid from phone app.' },
     ],
@@ -742,7 +742,9 @@ function defaultState() {
       { id:'p3', billName:'Apple Card', amount:960, date:'2026-03-30', fromAccount:'EECU Checking', notes:'Exceeds $366 min' },
       { id:'p4', billName:'OFW Basic Plan', amount:110, date:'2026-03-03', fromAccount:'EECU Checking', notes:'Renewed' },
     ],
-    transactions: [],
+    transactions: [
+      { id:'txn_kcusd_mileage_20260615', fileName:'manual-entry', source:'eecu', importedAt:'2026-06-15T10:55:00-07:00', date:'2026-06-15', desc:'KCUSD mileage reimbursement deposit', amount:183.06 }
+    ],
     householdPlan: {
       reserveFloor: CASH_RESERVE_FLOOR,
       sixMonthHorizon: 6,
@@ -834,8 +836,10 @@ function applyCurrentFinanceCorrections(state) {
   const accountCorrections = [
     { id:'applecard', name:'Apple Card', type:'credit', balance:-19107.18, notes:'May 31 2026 statement balance; $434 minimum due Jun 30 via scheduled recurring payment.' },
     { id:'discover', name:'Discover', type:'credit', balance:-5641.78, notes:'Live Discover Jun 12: $5,641.78 balance, $858 available; $98 minimum paid from phone app.' },
-    { id:'loc', name:'Line of Credit', type:'loc', balance:-404, notes:'Last app value; $9,596 available. Needs live EECU refresh.' },
-    { id:'autoloan', name:'Auto Loan', type:'loan', balance:-16354, notes:'Last app value. Needs live EECU refresh for current payoff and next due date.' },
+    { id:'checking', name:'EECU Checking', type:'checking', balance:461.70, notes:'EECU Jun 15: $461.70 available; $982.02 current after KCUSD mileage deposit.' },
+    { id:'savings', name:'EECU Savings', type:'savings', balance:374.91, notes:'EECU Jun 15: $374.91 available; $379.91 current.' },
+    { id:'loc', name:'Line of Credit', type:'loc', balance:-185.40, notes:'EECU Jun 15: $185.40 balance; $9,814.60 available; $75 due Jun 26.' },
+    { id:'autoloan', name:'Auto Loan', type:'loan', balance:-15023.01, notes:'EECU Jun 15: $15,023.01 balance; $15,041.53 payoff today; $499.12 due Jul 5.' },
   ];
   state.accounts = Array.isArray(state.accounts) ? state.accounts : [];
   accountCorrections.forEach(correction => {
@@ -923,6 +927,19 @@ function applyCurrentFinanceCorrections(state) {
   const kcusd = state.income?.find(i => i.id === 'kcusd' || /Kings Canyon/i.test(i.name || ''));
   if (kcusd && /biweekly/i.test(kcusd.frequency || '')) {
     kcusd.frequency = 'Monthly net estimate';
+  }
+
+  const mileageTxnId = 'txn_kcusd_mileage_20260615';
+  if (!state.transactions.some(txn => txn.id === mileageTxnId)) {
+    state.transactions.unshift({
+      id: mileageTxnId,
+      fileName: 'manual-entry',
+      source: 'eecu',
+      importedAt: '2026-06-15T10:55:00-07:00',
+      date: '2026-06-15',
+      desc: 'KCUSD mileage reimbursement deposit',
+      amount: 183.06
+    });
   }
 }
 

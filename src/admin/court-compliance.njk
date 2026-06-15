@@ -76,11 +76,11 @@ family_pwa: true
 
     <details class="panel effort-panel custody-accordion">
       <summary class="accordion-summary">
-        <span><i class="fas fa-list-check"></i> Documented effort</span>
+        <span><i class="fas fa-list-check"></i> Phase-one work, call evidence, and notes</span>
         <i class="fas fa-chevron-down"></i>
       </summary>
       <div class="panel-heading">
-        <p class="eyebrow">Documented effort</p>
+        <p class="eyebrow">Documented effort and evidence</p>
         <h2>Phase-one custody-evaluation work is underway</h2>
       </div>
       <p class="small-note">Snapshot built from Gmail and Drive review on Friday, June 12, 2026. Phone-call counts are a documented minimum because the Mac Mini local call history is not connected to this dashboard.</p>
@@ -121,6 +121,25 @@ family_pwa: true
           </ul>
         </article>
       </div>
+      <div class="panel-heading compact-heading">
+        <p class="eyebrow">Call evidence and notes</p>
+        <h2>Auto-built from notes, phone logs, and Mac Mini autodialer exports</h2>
+      </div>
+      <div class="call-evidence-grid" data-call-evidence-summary>
+        <article><strong>0</strong><span>Total call evidence rows</span><p>Imported calls, autodialer attempts, note references, and manual corrections.</p></article>
+        <article><strong>0</strong><span>Notion database rows</span><p>Rows loaded from the Therapist Assessment Contact List.</p></article>
+        <article><strong>0</strong><span>Mac Mini/autodialer rows</span><p>Rows imported from the Mac Mini phone log or autodialer export.</p></article>
+        <article><strong>0</strong><span>Note-derived call references</span><p>Call evidence pulled from the notes below.</p></article>
+      </div>
+      <p class="small-note" data-call-evidence-status>Loading Notion call evidence. Mac Mini/autodialer exports can still be imported below.</p>
+      <div class="tracker-grid">
+        <div class="tracker-card"><h3>Dr. Collier</h3><textarea data-note="collier" placeholder="Date asked, response, next appointment, proof letter status"></textarea></div>
+        <div class="tracker-card"><h3>Link Care family counseling</h3><textarea data-note="linkCare" placeholder="Breyona call date, Thursday morning status, Brooke paperwork, participants, session proof"></textarea></div>
+        <div class="tracker-card"><h3>Janz Dylan/Rob conjoint</h3><textarea data-note="janz" placeholder="Session count, next date, Vanessa reply, forms needed, proof status"></textarea></div>
+        <div class="tracker-card"><h3>Anger management</h3><textarea data-note="anger" placeholder="Provider called, first available session, cost, enrollment proof, attendance proof"></textarea></div>
+        <div class="tracker-card"><h3>Counsel filing packet</h3><textarea data-note="counsel" placeholder="Proof sent to Amy or counsel, date, method, missing items"></textarea></div>
+      </div>
+      <p class="small-note">Notes and checkbox state save locally first, then sync to Convex when the protected admin API is available. Export or screenshot before relying on it as evidence.</p>
     </details>
 
     <details class="panel command-panel custody-accordion primary-accordion" open>
@@ -417,32 +436,6 @@ family_pwa: true
           <p class="call-script">Documentation ask: confirm enrollment, attendance for class 1 and class 4, recurring Friday 10:15 AM participation, and whether proof can be issued after class 10 or completion.</p>
         </article>
       </div>
-    </details>
-
-    <details class="panel custody-accordion">
-      <summary class="accordion-summary">
-        <span><i class="fas fa-phone-volume"></i> Call evidence and notes</span>
-        <i class="fas fa-chevron-down"></i>
-      </summary>
-      <div class="panel-heading">
-        <p class="eyebrow">Call evidence tracker</p>
-        <h2>Auto-built from notes, phone logs, and Mac Mini autodialer exports</h2>
-      </div>
-      <div class="call-evidence-grid" data-call-evidence-summary>
-        <article><strong>0</strong><span>Total call evidence rows</span><p>Imported calls, autodialer attempts, note references, and manual corrections.</p></article>
-        <article><strong>0</strong><span>Notion database rows</span><p>Rows loaded from the Therapist Assessment Contact List.</p></article>
-        <article><strong>0</strong><span>Mac Mini/autodialer rows</span><p>Rows imported from the Mac Mini phone log or autodialer export.</p></article>
-        <article><strong>0</strong><span>Note-derived call references</span><p>Call evidence pulled from the notes below.</p></article>
-      </div>
-      <p class="small-note" data-call-evidence-status>Loading Notion call evidence. Mac Mini/autodialer exports can still be imported below.</p>
-      <div class="tracker-grid">
-        <div class="tracker-card"><h3>Dr. Collier</h3><textarea data-note="collier" placeholder="Date asked, response, next appointment, proof letter status"></textarea></div>
-        <div class="tracker-card"><h3>Link Care family counseling</h3><textarea data-note="linkCare" placeholder="Breyona call date, Thursday morning status, Brooke paperwork, participants, session proof"></textarea></div>
-        <div class="tracker-card"><h3>Janz Dylan/Rob conjoint</h3><textarea data-note="janz" placeholder="Session count, next date, Vanessa reply, forms needed, proof status"></textarea></div>
-        <div class="tracker-card"><h3>Anger management</h3><textarea data-note="anger" placeholder="Provider called, first available session, cost, enrollment proof, attendance proof"></textarea></div>
-        <div class="tracker-card"><h3>Counsel filing packet</h3><textarea data-note="counsel" placeholder="Proof sent to Amy or counsel, date, method, missing items"></textarea></div>
-      </div>
-      <p class="small-note">Notes and checkbox state save locally first, then sync to Convex when the protected admin API is available. Export or screenshot before relying on it as evidence.</p>
     </details>
 
     <details class="panel custody-accordion">
@@ -1292,6 +1285,9 @@ h3 {
 }
 .panel-heading.subheading {
   margin-top: 1.6rem;
+}
+.panel-heading.compact-heading {
+  margin-top: 2rem;
 }
 .timeline-legend {
   display: flex;

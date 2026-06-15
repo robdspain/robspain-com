@@ -1743,6 +1743,7 @@ textarea {
     familyDone: '0',
     dylanConjointDone: '3'
   };
+  const nextCourtDateLabel = 'July 23, 2026';
 
   function readLocalState() {
     try {
@@ -2600,6 +2601,76 @@ textarea {
     return limitedList(proofItems, 'No proof-specific checklist item is marked complete yet.', 10);
   }
 
+  function planNumber(name) {
+    const number = Number(planValue(name));
+    return Number.isFinite(number) ? number : 0;
+  }
+
+  function hasCompletedText(completed, pattern) {
+    return completed.some(item => pattern.test(item));
+  }
+
+  function courtReadyDocumentationLines(completed) {
+    const angerDone = planNumber('angerDone');
+    const familyDone = planNumber('familyDone');
+    const dylanDone = planNumber('dylanConjointDone');
+    const lines = [
+      'Current tracker summary and phase report generated for Amy before the July 23, 2026 court date.',
+      'Documented outreach summary: 55 sent Gmail messages reviewed, 27 provider email targets, and 6+ calls/in-person contacts or attempts captured so far.',
+      `Anger-management record: Total Life Change is the active provider; dashboard shows ${angerDone} of 10 classes completed.`,
+      `Family-counseling record: Link Care is the active family-counseling provider; dashboard shows ${familyDone} family sessions completed.`,
+      `Dylan/Rob conjoint counseling record: Janz is the active conjoint-counseling provider; dashboard shows ${dylanDone} of 6 conjoint sessions completed.`,
+      'Provider/status notes and recent call evidence are included from the dashboard notes and call-evidence tracker.'
+    ];
+    if (hasCompletedText(completed, /Collier.*letter|individual therapy.*letter/i)) {
+      lines.push('Dr. Collier proof-letter work is marked complete in the dashboard.');
+    }
+    if (hasCompletedText(completed, /Link Care.*appointment|Link Care.*confirmation/i)) {
+      lines.push('Link Care appointment confirmation/replies are marked complete in the dashboard.');
+    }
+    if (hasCompletedText(completed, /Janz.*confirmation|conjoint.*confirmation/i)) {
+      lines.push('Janz conjoint-counseling confirmation/replies are marked complete in the dashboard.');
+    }
+    return lines;
+  }
+
+  function fulfilledEvaluationRequirementLines(completed) {
+    const angerDone = planNumber('angerDone');
+    const familyDone = planNumber('familyDone');
+    const dylanDone = planNumber('dylanConjointDone');
+    const lines = [
+      `Anger-management requirement: ${angerDone >= 1 ? 'started' : 'not yet marked started'}; ${angerDone} of 10 once-weekly classes are entered.`,
+      `Anger-management proof gates: first-class proof ${angerDone >= 1 ? 'should be available/ready to document' : 'not yet met'}; fourth-class proof ${angerDone >= 4 ? 'should be available/ready to document' : 'not yet met'}; tenth-class proof ${angerDone >= 10 ? 'met' : 'not yet met'}.`,
+      `Family-therapy requirement: Link Care is identified as the active provider; ${familyDone} of 24 total family sessions are entered, with ${Math.min(familyDone, 16)} of the first 16 weekly sessions entered.`,
+      `Waylon/Harrison first step-up gate: requires 4 anger-management classes and 4 family sessions. Anger side is ${angerDone >= 4 ? 'met' : 'not met'}; family-session side is ${familyDone >= 4 ? 'met' : 'not met'}.`,
+      `Dylan/Rob conjoint-counseling requirement: Janz is the active provider; ${dylanDone} of 6 conjoint sessions are entered. The third-session milestone is ${dylanDone >= 3 ? 'met' : 'not yet met'}.`,
+      'Dr. Collier individual-therapy requirement: current therapy and proof-letter tracking are underway; the later twelve-session twice-monthly requirement is tied to completion of sixteen family-therapy sessions and is not yet triggered by the dashboard counts.'
+    ];
+    if (hasCompletedText(completed, /File first-class proof/i)) {
+      lines.push('Dashboard marks first-class anger-management proof as filed/copied.');
+    }
+    if (hasCompletedText(completed, /File fourth-class proof/i)) {
+      lines.push('Dashboard marks fourth-class anger-management proof as filed/copied.');
+    }
+    if (hasCompletedText(completed, /family therapy attendance proof/i)) {
+      lines.push('Dashboard marks at least one family-therapy attendance proof item complete.');
+    }
+    return lines;
+  }
+
+  function pendingEvaluationRequirementLines() {
+    const angerDone = planNumber('angerDone');
+    const familyDone = planNumber('familyDone');
+    const dylanDone = planNumber('dylanConjointDone');
+    const lines = [];
+    if (angerDone < 10) lines.push(`Complete the remaining anger-management classes (${angerDone} of 10 entered).`);
+    if (familyDone < 4) lines.push(`Complete the first four Link Care family sessions needed for the Waylon/Harrison two-hour visit gate (${familyDone} of 4 entered).`);
+    if (familyDone < 16) lines.push(`Continue toward sixteen Link Care family sessions before later co-parenting/individual-therapy gates are triggered (${familyDone} of 16 entered).`);
+    if (dylanDone < 6) lines.push(`Continue Dylan/Rob conjoint counseling at Janz until six sessions are entered (${dylanDone} of 6 entered).`);
+    if (!lines.length) lines.push('No pending phase-one requirement is shown by the current dashboard counts.');
+    return lines;
+  }
+
   function phaseReportData() {
     const data = snapshot();
     const completed = checkedLabels();
@@ -2611,22 +2682,37 @@ textarea {
       total: inputs.length,
       done: completed.length,
       phase: document.querySelector('[data-report-phase]')?.value || 'Phase update',
-      generated: new Date().toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })
+      generated: new Date().toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }),
+      courtReadyDocumentation: courtReadyDocumentationLines(completed),
+      fulfilledRequirements: fulfilledEvaluationRequirementLines(completed),
+      pendingRequirements: pendingEvaluationRequirementLines()
     };
   }
 
   function buildPhaseReport() {
-    const { data, completed, open, total, done, phase, generated } = phaseReportData();
+    const {
+      data,
+      completed,
+      open,
+      total,
+      done,
+      phase,
+      generated,
+      courtReadyDocumentation,
+      fulfilledRequirements,
+      pendingRequirements
+    } = phaseReportData();
 
     return [
-      `Subject: Custody compliance phase update - ${phase}`,
+      `Subject: Court-ready custody compliance update for July 23 - ${phase}`,
       '',
       'Hi Amy,',
       '',
-      'I wanted to send a clean update on where things stand. I am using this to keep the dates, proof items, and next steps organized in one place.',
+      `I wanted to pull together a court-ready update for the July 23, 2026 court date. The goal is for you to have one clean summary of what has been completed, what proof is available, and which parts of the custody evaluation requirements have been fulfilled so far.`,
       '',
       `Phase: ${phase}`,
       `Generated: ${generated}`,
+      `Next court date: ${nextCourtDateLabel}`,
       '',
       'Current status',
       reportLine('Checklist progress', `${done} of ${total} items complete; ${total - done} open`),
@@ -2634,6 +2720,15 @@ textarea {
       reportLine('Next task detail', data.nextDetail),
       reportLine('Waylon/Harrison projected broader home schedule', data.waylonHarrisonProjection),
       reportLine('Dylan projected broader home schedule', data.dylanProjection),
+      '',
+      'Court-ready documentation Amy should have before July 23',
+      ...courtReadyDocumentation.map(line => `- ${line}`),
+      '',
+      'Custody-evaluation requirements fulfilled so far',
+      ...fulfilledRequirements.map(line => `- ${line}`),
+      '',
+      'Requirements still pending or still being tracked',
+      ...pendingRequirements.map(line => `- ${line}`),
       '',
       'Documented effort summary',
       '- 55 sent Gmail messages reviewed for therapist/provider outreach.',
@@ -2668,7 +2763,7 @@ textarea {
       'Next action',
       `- ${data.nextTask || 'Confirm the next step with counsel.'}`,
       '',
-      'Please let me know if you want this organized differently, or if there is anything else you want me to send, save, or hold for the record.',
+      'Please let me know if you want this organized differently, or if there is any additional proof you want me to send before July 23.',
       '',
       'Thank you,',
       'Rob'
@@ -2690,7 +2785,18 @@ textarea {
   }
 
   function buildPhaseReportHtml() {
-    const { data, completed, open, total, done, phase, generated } = phaseReportData();
+    const {
+      data,
+      completed,
+      open,
+      total,
+      done,
+      phase,
+      generated,
+      courtReadyDocumentation,
+      fulfilledRequirements,
+      pendingRequirements
+    } = phaseReportData();
     const phaseSlug = phase.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     return `<!doctype html>
 <html>
@@ -2721,6 +2827,9 @@ textarea {
     ul { margin: 0; padding-left: 20px; }
     li { margin: 0 0 7px; }
     .note-box { background: #eef7f1; border-left: 5px solid #1f8a5f; border-radius: 14px; padding: 16px; }
+    .requirement-box { border: 1px solid #d8eadf; border-radius: 16px; padding: 16px; }
+    .requirement-box.fulfilled { background: #eef7f1; }
+    .requirement-box.pending { background: #fff8e8; border-color: #ead8a4; }
     .footer { border-top: 1px solid #e8dfd1; color: #526158; font-size: 12px; padding-top: 16px; }
     .actions { margin: 18px 0 0; text-align: right; }
     button { background: #123628; border: 0; border-radius: 999px; color: white; cursor: pointer; font: inherit; font-weight: 800; padding: 11px 18px; }
@@ -2735,23 +2844,39 @@ textarea {
 <body>
   <div class="page">
     <header class="hero">
-      <p class="eyebrow">Amy-ready phase update</p>
+      <p class="eyebrow">Court-ready packet for ${escapeHtml(nextCourtDateLabel)}</p>
       <h1>${escapeHtml(phase)}</h1>
-      <p>Hi Amy, I wanted to send a clean update on where things stand. This keeps the dates, proof items, and next steps organized in one place.</p>
+      <p>Hi Amy, I wanted to pull together one clean summary of what has been completed, what proof is available, and which custody-evaluation requirements have been fulfilled before the July 23 court date.</p>
     </header>
     <div class="meta">
       <div><span>Generated</span><strong>${escapeHtml(generated)}</strong></div>
+      <div><span>Next court date</span><strong>${escapeHtml(nextCourtDateLabel)}</strong></div>
       <div><span>Checklist</span><strong>${done} of ${total} complete</strong></div>
-      <div><span>Open items</span><strong>${Math.max(total - done, 0)}</strong></div>
     </div>
     <main>
       <section>
-        <h2>Current Status</h2>
+        <h2>Court-Ready Summary</h2>
         <div class="cards">
           ${reportCardHtml('Next task', data.nextTask || 'Confirm the next step with counsel.', data.nextDetail)}
           ${reportCardHtml('Waylon/Harrison projection', data.waylonHarrisonProjection || 'Not set', 'Projected broader home schedule from current dashboard inputs.')}
           ${reportCardHtml('Dylan projection', data.dylanProjection || 'Not set', 'Projected broader home schedule from current dashboard inputs.')}
           ${reportCardHtml('Phase-one tracks', '4 of 4 started', 'Anger management, individual therapy, Link Care family counseling, and Dylan/Janz conjoint counseling.')}
+        </div>
+      </section>
+      <section>
+        <h2>Documentation Amy Should Have Before July 23</h2>
+        <div class="requirement-box fulfilled">
+          ${listHtml(courtReadyDocumentation)}
+        </div>
+      </section>
+      <section class="two-col">
+        <div class="requirement-box fulfilled">
+          <h2>Evaluation Requirements Fulfilled So Far</h2>
+          ${listHtml(fulfilledRequirements)}
+        </div>
+        <div class="requirement-box pending">
+          <h2>Still Pending or Being Tracked</h2>
+          ${listHtml(pendingRequirements)}
         </div>
       </section>
       <section>
@@ -2802,7 +2927,7 @@ textarea {
         ${listHtml(callLogLines(8))}
       </section>
       <section class="footer">
-        <p>Please let me know if you want this organized differently, or if there is anything else you want me to send, save, or hold for the record.</p>
+        <p>Please let me know if you want this organized differently, or if there is any additional proof you want me to send before July 23.</p>
         <p>Thank you,<br>Rob</p>
       </section>
       <div class="actions">

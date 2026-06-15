@@ -16,7 +16,7 @@ function json(statusCode, payload) {
 }
 
 // Daily plus evening refresh: 7am and 6pm Pacific (14:00 and 01:00 UTC during PDT).
-// Keeps Fresno County listings fresh, with Fresno High and Tower District promoted first.
+// Keeps Fresno County listings fresh, with distressed renovation opportunities promoted first.
 module.exports.handler = schedule('0 14,1 * * *', async (event) => {
   if (isScheduledEvent(event)) return refreshHomeSearch(event);
   if (event.httpMethod === 'OPTIONS') return json(200, {});
@@ -154,12 +154,22 @@ function getBlobStore() {
 // --- Multi-source home search configuration ---
 
 const SEARCH_LIMITS = {
-  minPrice: 350000,
-  maxPrice: 1500000,
-  minBeds: 3,
+  minPrice: 150000,
+  maxPrice: 900000,
+  minBeds: 2,
 };
 
 const EXCLUDED_PLACES = ['easton'];
+const OPPORTUNITY_PATTERNS = [
+  { pattern: /\bprobate\b/i, label: 'Probate', weight: 80 },
+  { pattern: /court confirmation|limited authority/i, label: 'Court confirmation', weight: 70 },
+  { pattern: /as[\s-]?is|sold as is/i, label: 'As-is', weight: 55 },
+  { pattern: /cash|hard money|renovation[-\s]?type financing|financing options may be limited|limited financing/i, label: 'Cash/reno financing', weight: 65 },
+  { pattern: /significant cleanup|cleanup|debris|deferred maintenance/i, label: 'Cleanup', weight: 55 },
+  { pattern: /repair|repairs|needs work|needs updating|updating|tlc|fixer|handyman/i, label: 'Repairs', weight: 50 },
+  { pattern: /investor|contractor|renovation project|value[-\s]?add|opportunity/i, label: 'Investor opportunity', weight: 45 },
+  { pattern: /original owner|original condition|dated|cosmetic/i, label: 'Dated/original', weight: 25 }
+];
 
 async function fetchListingsFromSources() {
   const checkedAt = new Date().toISOString();
@@ -261,6 +271,7 @@ function mapIdxListing(row, checkedAt) {
   const lon = firstNumber(source.lng, source.lon, source.longitude, source.geo?.lng, source.location?.lng);
   const area = classifyArea({ latitude: lat, longitude: lon }, zip);
   const remarks = firstString(source.remarks, source.description, source.publicRemarks, source.marketingRemarks).toLowerCase();
+  const opportunity = analyzeOpportunity(remarks);
   const price = firstNumber(source.price, source.listPrice, source.currentPrice);
   const beds = firstNumber(source.beds, source.bedrooms);
   const baths = firstNumber(source.baths, source.bathrooms);
@@ -268,7 +279,7 @@ function mapIdxListing(row, checkedAt) {
   const lotSize = firstNumber(source.lotSize, source.lotSizeSqft, source.lotSqft);
   const yearBuilt = firstNumber(source.yearBuilt);
   const hasPool = /pool/.test(remarks) || Boolean(source.hasPool);
-  const isFixer = /fixer|as-is|handyman|tlc|needs work|investor|cosmetic|potential|diamond in the rough/.test(remarks);
+  const isFixer = opportunity.score > 0;
 
   const descParts = [];
   if (beds) descParts.push(`${beds} bed`);
@@ -279,7 +290,9 @@ function mapIdxListing(row, checkedAt) {
   if (area === 'fresno-high') descParts.push('Fresno High area');
   if (area === 'tower') descParts.push('Tower District');
   if (isFixer) descParts.push('potential fixer-upper');
+  if (opportunity.tags.length) descParts.push(opportunity.tags.slice(0, 3).join(', '));
   if (hasPool) descParts.push('pool');
+  const remarkSummary = remarks ? summarizeRemarks(remarks) : '';
 
   return {
     id: `idx-${mlsId || slugify(address)}`,
@@ -295,7 +308,11 @@ function mapIdxListing(row, checkedAt) {
     targetArea: isTargetArea(area),
     hasPool,
     isFixer,
-    description: descParts.join(', ') + '.',
+    opportunityScore: opportunity.score,
+    opportunityTags: opportunity.tags,
+    opportunityReasons: opportunity.reasons,
+    strategyMatch: opportunity.score >= 50,
+    description: [descParts.join(', ') + '.', remarkSummary].filter(Boolean).join(' '),
     listingUrl: firstString(source.url, source.listingUrl, source.detailsUrl),
     imageUrl: firstString(source.imageUrl, source.primaryPhoto, source.photoUrl, source.photos?.[0]?.url, source.photos?.[0]),
     lat,
@@ -377,6 +394,8 @@ function slugify(value) {
 
 function sortListings(listings) {
   return [...listings].sort((a, b) => {
+    const opportunityDelta = (b.opportunityScore || 0) - (a.opportunityScore || 0);
+    if (opportunityDelta) return opportunityDelta;
     const priorityDelta = (b.areaPriority || 0) - (a.areaPriority || 0);
     if (priorityDelta) return priorityDelta;
     const sourceDelta = sourceRank(b.source) - sourceRank(a.source);
@@ -393,6 +412,35 @@ function priorityForArea(area) {
   if (isTargetArea(area)) return 2;
   if (area === 'old-fig') return 1;
   return 0;
+}
+
+function analyzeOpportunity(text) {
+  const raw = String(text || '');
+  const tags = [];
+  const reasons = [];
+  let score = 0;
+  OPPORTUNITY_PATTERNS.forEach(({ pattern, label, weight }) => {
+    if (pattern.test(raw)) {
+      score += weight;
+      tags.push(label);
+      reasons.push(label);
+    }
+  });
+  return {
+    score: Math.min(score, 300),
+    tags: Array.from(new Set(tags)),
+    reasons: Array.from(new Set(reasons)),
+  };
+}
+
+function summarizeRemarks(text) {
+  const cleaned = String(text || '').replace(/\s+/g, ' ').trim();
+  if (!cleaned) return '';
+  const signalSentence = cleaned
+    .split(/(?<=[.!?])\s+/)
+    .find((sentence) => OPPORTUNITY_PATTERNS.some(({ pattern }) => pattern.test(sentence)));
+  const summary = signalSentence || cleaned;
+  return summary.length > 260 ? summary.slice(0, 257).trim() + '...' : summary;
 }
 
 // --- Redfin search configuration ---
@@ -464,9 +512,9 @@ async function fetchRedfinListings(checkedAt) {
           (h) =>
             h.propertyId &&
             h.uiPropertyType <= 3 && // houses, condos, townhouses
-            (h.price?.value || 0) >= 350000 &&
-            (h.price?.value || 0) <= 1500000 &&
-            (h.beds || 0) >= 3
+            (h.price?.value || 0) >= SEARCH_LIMITS.minPrice &&
+            (h.price?.value || 0) <= SEARCH_LIMITS.maxPrice &&
+            (h.beds || 0) >= SEARCH_LIMITS.minBeds
         )
         .map((home) => mapRedfinHome(home, checkedAt))
         .filter(matchesSearchLimits);
@@ -494,9 +542,9 @@ async function searchRedfinPoly(poly) {
     status: '9', // for sale
     uipt: '1,2,3', // house, condo, townhouse
     v: '8',
-    min_price: '350000',
-    max_price: '1500000',
-    min_beds: '3',
+    min_price: String(SEARCH_LIMITS.minPrice),
+    max_price: String(SEARCH_LIMITS.maxPrice),
+    min_beds: String(SEARCH_LIMITS.minBeds),
   });
 
   const url = `https://www.redfin.com/stingray/api/gis?${params.toString()}`;
@@ -518,12 +566,10 @@ function mapRedfinHome(home, checkedAt) {
   const zip = home.zip || home.postalCode?.value || '';
   const area = classifyArea(home, zip);
   const remarks = (home.listingRemarks || '').toLowerCase();
+  const opportunity = analyzeOpportunity(remarks);
   const tags = (home.listingTags || []).map((t) => t.toLowerCase());
 
-  const isFixer =
-    /fixer|as-is|handyman|tlc|needs work|investor|cosmetic|potential|diamond in the rough/.test(
-      remarks
-    );
+  const isFixer = opportunity.score > 0;
   const hasPool =
     /pool/.test(remarks) || tags.some((t) => t.includes('pool')) || home.skPoolType === 0;
 
@@ -543,7 +589,9 @@ function mapRedfinHome(home, checkedAt) {
   if (area === 'fresno-high') descParts.push('Fresno High area');
   if (area === 'tower') descParts.push('Tower District');
   if (isFixer) descParts.push('potential fixer-upper');
+  if (opportunity.tags.length) descParts.push(opportunity.tags.slice(0, 3).join(', '));
   if (hasPool) descParts.push('pool');
+  const remarkSummary = remarks ? summarizeRemarks(remarks) : '';
 
   const imageUrl = buildRedfinImageUrl(home);
 
@@ -561,7 +609,11 @@ function mapRedfinHome(home, checkedAt) {
     targetArea: isTargetArea(area),
     hasPool,
     isFixer,
-    description: descParts.join(', ') + '.',
+    opportunityScore: opportunity.score,
+    opportunityTags: opportunity.tags,
+    opportunityReasons: opportunity.reasons,
+    strategyMatch: opportunity.score >= 50,
+    description: [descParts.join(', ') + '.', remarkSummary].filter(Boolean).join(' '),
     listingUrl: home.url ? `https://www.redfin.com${home.url}` : '',
     imageUrl,
     source: 'redfin',

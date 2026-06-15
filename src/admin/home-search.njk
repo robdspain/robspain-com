@@ -346,6 +346,20 @@ family_pwa: true
     background: rgba(228, 182, 61, 0.12);
     color: #b28510;
   }
+  .hs-tag.strategy {
+    background: rgba(185, 28, 28, 0.09);
+    color: #991b1b;
+  }
+  .hs-opportunity-score {
+    align-items: center;
+    background: #fee2e2;
+    border-radius: 999px;
+    color: #991b1b;
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 8px;
+  }
   .hs-tag.rural {
     background: rgba(34, 197, 94, 0.1);
     color: #16a34a;
@@ -644,7 +658,7 @@ family_pwa: true
     <div class="hs-header">
       <div>
         <h2>Home <span style="font-size:14px;color:#526158;font-weight:400;">Fresno County</span></h2>
-        <div class="meta">Daily Fresno County listing refresh &bull; Fresno High, Tower, Old Fig, Sunnyside, rural areas &bull; Mid-century &amp; farmhouse style</div>
+        <div class="meta">Daily Fresno County listing refresh &bull; Distressed renovation opportunities first &bull; Probate, as-is, cleanup, investor, contractor, and renovation-financing signals</div>
       </div>
       <div style="text-align:right;">
         <div class="meta" id="lastSearched">Loading...</div>
@@ -660,18 +674,19 @@ family_pwa: true
       <div class="hs-stat-card"><div class="label">Avg Sq Ft</div><div class="value" id="statSqft">--</div></div>
       <div class="hs-stat-card"><div class="label">Favorites</div><div class="value" style="color:#e4b63d;" id="statFavs">0</div></div>
       <div class="hs-stat-card"><div class="label">New Today</div><div class="value" style="color:#1f4d3f;" id="statNew">0</div></div>
-      <div class="hs-stat-card"><div class="label">Fresno High + Tower</div><div class="value green" id="statPriority">0</div></div>
+      <div class="hs-stat-card"><div class="label">Renovation Matches</div><div class="value green" id="statPriority">0</div></div>
     </div>
 
     <div class="hs-layout">
       <!-- Main Listing Column -->
       <div class="hs-listings-column">
         <div class="hs-priority-note">
-          <strong>Priority areas:</strong> Fresno High and Tower District are highlighted first. Old Fig, Sunnyside, rural/country, and other Fresno County areas remain in the search. Easton is excluded.
+          <strong>Target profile:</strong> houses like Teilman and Quincy: as-is, cleanup, repairs, dated/original condition, probate, court confirmation, cash/hard-money or renovation-financing language. Neighborhood still matters, but distressed opportunity is now the first sort.
         </div>
         <!-- Controls -->
         <div class="hs-controls">
           <select id="sortBy" onchange="renderListings()">
+            <option value="opportunity-desc">Renovation Opportunity First</option>
             <option value="priority-desc">Priority Areas First</option>
             <option value="price-asc">Price: Low to High</option>
             <option value="price-desc">Price: High to Low</option>
@@ -692,6 +707,7 @@ family_pwa: true
             <option value="all">All Listings</option>
             <option value="favorites">Favorites Only</option>
             <option value="new">New Today</option>
+            <option value="renovation">Renovation Matches</option>
           </select>
           <input type="text" id="searchBox" placeholder="Search address..." oninput="renderListings()" style="flex:1;min-width:120px;">
           <button class="hs-btn hs-btn-primary" id="freshSearchBtn" onclick="runFreshSearch()"><i class="fas fa-rotate"></i> Fresh Search</button>
@@ -811,6 +827,44 @@ let favorites = new Set();
 let searchMeta = {};
 
 const SEED_LISTINGS = [
+  {
+    "id": "strategy-teilman-6343",
+    "address": "6343 N Teilman Ave, Fresno, CA 93711",
+    "price": 425000,
+    "beds": 3,
+    "baths": 2,
+    "sqft": 1662,
+    "area": "old-fig",
+    "hasPool": false,
+    "isFixer": true,
+    "strategyMatch": true,
+    "opportunityScore": 160,
+    "opportunityTags": ["Repairs", "Dated/original", "Investor opportunity"],
+    "description": "Reference target: older Fresno 93711 home with renovation upside. Use this as a calibration example for dated, repairable, value-add properties.",
+    "listingUrl": "https://www.redfin.com/CA/Fresno/6343-N-Teilman-Ave-93711/home/77569491",
+    "imageUrl": "",
+    "sourceLabel": "Target example",
+    "addedAt": "2026-06-15T00:00:00Z"
+  },
+  {
+    "id": "strategy-quincy-187",
+    "address": "187 W Quincy Ave, Fresno, CA 93711",
+    "price": 375000,
+    "beds": 3,
+    "baths": 2,
+    "sqft": 1695,
+    "area": "old-fig",
+    "hasPool": false,
+    "isFixer": true,
+    "strategyMatch": true,
+    "opportunityScore": 300,
+    "opportunityTags": ["Probate", "Court confirmation", "As-is", "Cleanup", "Repairs", "Cash/reno financing"],
+    "description": "Reference target: significant cleanup, repairs, updating, probate sale with limited authority, court confirmation, as-is sale, and likely cash/hard-money/renovation financing.",
+    "listingUrl": "https://www.redfin.com/CA/Fresno/187-W-Quincy-Ave-93711/home/58285934",
+    "imageUrl": "",
+    "sourceLabel": "Target example",
+    "addedAt": "2026-06-15T00:00:00Z"
+  },
   {
     "id": "rf-72689022",
     "address": "616 E Joy Ave, Fresno, CA 93706",
@@ -1100,7 +1154,7 @@ function updateStats() {
   const today = new Date().toDateString();
   const newCount = allListings.filter(l => l.addedAt && new Date(l.addedAt).toDateString() === today).length;
   document.getElementById('statNew').textContent = newCount;
-  document.getElementById('statPriority').textContent = allListings.filter(l => isPriorityArea(l)).length;
+  document.getElementById('statPriority').textContent = allListings.filter(l => isStrategyMatch(l)).length;
 }
 
 function renderListings() {
@@ -1122,6 +1176,8 @@ function renderListings() {
   } else if (filterView === 'new') {
     const today = new Date().toDateString();
     filtered = filtered.filter(l => l.addedAt && new Date(l.addedAt).toDateString() === today);
+  } else if (filterView === 'renovation') {
+    filtered = filtered.filter(isStrategyMatch);
   }
 
   // Search
@@ -1140,6 +1196,9 @@ function renderListings() {
     if (field === 'priority') {
       va = areaPriority(a);
       vb = areaPriority(b);
+    } else if (field === 'opportunity') {
+      va = opportunityScore(a);
+      vb = opportunityScore(b);
     }
     if (field === 'date') { va = new Date(a.addedAt || 0).getTime(); vb = new Date(b.addedAt || 0).getTime(); }
     const primary = dir === 'asc' ? va - vb : vb - va;
@@ -1159,6 +1218,7 @@ function renderListings() {
     const isFav = favorites.has(l.id);
     const isNew = l.addedAt && new Date(l.addedAt).toDateString() === today;
     const isTarget = isPriorityArea(l);
+    const score = opportunityScore(l);
     
     // Escape single quotes in address for javascript call
     const escapedAddr = (l.address || '').replace(/'/g, "\\'");
@@ -1179,9 +1239,11 @@ function renderListings() {
         <div class="hs-card-tags">
           ${l.area && l.area !== 'other' ? `<span class="hs-area-badge">${AREA_LABELS[l.area] || l.area}</span>` : ''}
           ${l.sourceLabel || l.source ? `<span class="hs-source-badge">${l.sourceLabel || l.source}</span>` : ''}
+          ${score ? `<span class="hs-opportunity-score">${score} opp</span>` : ''}
           ${isTarget ? '<span class="hs-tag pool">Priority area</span>' : ''}
           ${l.hasPool ? '<span class="hs-tag pool">Pool</span>' : ''}
           ${l.isFixer ? '<span class="hs-tag fixer">Fixer</span>' : ''}
+          ${(l.opportunityTags || []).slice(0, 4).map(tag => `<span class="hs-tag strategy">${tag}</span>`).join('')}
           ${l.area === 'rural' ? '<span class="hs-tag rural">Rural</span>' : ''}
         </div>
         <div class="hs-card-desc">${l.description || ''}</div>
@@ -1205,6 +1267,24 @@ function areaPriority(listing) {
   if (isPriorityArea(listing)) return 2;
   if (listing?.area === 'old-fig') return 1;
   return 0;
+}
+
+function opportunityScore(listing) {
+  if (Number.isFinite(Number(listing?.opportunityScore))) return Number(listing.opportunityScore);
+  let score = 0;
+  const text = `${listing?.description || ''} ${listing?.address || ''}`.toLowerCase();
+  if (listing?.isFixer) score += 60;
+  if (/probate/.test(text)) score += 80;
+  if (/court confirmation|limited authority/.test(text)) score += 70;
+  if (/as[\s-]?is/.test(text)) score += 55;
+  if (/cash|hard money|renovation/.test(text)) score += 55;
+  if (/cleanup|repair|needs work|updating|tlc|investor|contractor/.test(text)) score += 50;
+  if (/original|dated|cosmetic/.test(text)) score += 25;
+  return Math.min(score, 300);
+}
+
+function isStrategyMatch(listing) {
+  return Boolean(listing?.strategyMatch) || opportunityScore(listing) >= 50;
 }
 
 function toggleFav(id) {
@@ -1258,6 +1338,7 @@ function composeShareMessage(listings) {
   listings.forEach((l, i) => {
     msg += `${i + 1}. ${l.address || 'Unknown address'}\n`;
     msg += `   $${(l.price || 0).toLocaleString()} | ${l.beds || '?'} bed / ${l.baths || '?'} bath | ${l.sqft ? l.sqft.toLocaleString() + ' sq ft' : 'Sq ft N/A'}\n`;
+    if (isStrategyMatch(l)) msg += `   Renovation signals: ${(l.opportunityTags || ['Fixer / value-add']).join(', ')}\n`;
     if (l.description) msg += `   ${l.description.substring(0, 120)}\n`;
     if (l.listingUrl) msg += `   ${l.listingUrl}\n`;
     msg += '\n';

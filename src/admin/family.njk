@@ -273,6 +273,17 @@ family_pwa: true
   .payment-row .pay-name { flex: 1; font-weight: 600; color: #17221d; }
   .payment-row .pay-amt { font-weight: 750; color: #1f4d3f; font-variant-numeric: tabular-nums; }
   .payment-row .pay-from { font-size: 11px; color: #8ba4b8; margin-left: 8px; }
+  .ops-list { display: grid; gap: 10px; }
+  .ops-item { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 12px 14px; border: 1px solid #e8e2d5; border-radius: 14px; background: #fffdf8; }
+  .ops-check { width: 22px; height: 22px; accent-color: #1f4d3f; }
+  .ops-title { font-size: 14px; font-weight: 800; color: #17221d; }
+  .ops-note { font-size: 12px; color: #526158; line-height: 1.45; margin-top: 2px; }
+  .ops-meta { font-size: 11px; font-weight: 800; color: #526158; text-transform: uppercase; text-align: right; }
+  .ops-meter { height: 10px; background: #e8dfd2; border-radius: 999px; overflow: hidden; }
+  .ops-meter > span { display: block; height: 100%; border-radius: 999px; background: #1f4d3f; }
+  .ops-decision { border-left: 4px solid #1f4d3f; padding-left: 12px; font-size: 13px; color: #526158; line-height: 1.55; }
+  .ops-decision.warn { border-left-color: #d97706; }
+  .ops-decision.danger { border-left-color: #b91c1c; }
   @media (max-width: 800px) { .advisor-hero { grid-template-columns: 1fr; } }
   @media (max-width: 600px) { .fin-grid-4 { grid-template-columns: 1fr 1fr; } .fin-grid-2, .fin-grid-3 { grid-template-columns: 1fr; } .fin-tabs { gap: 4px; } .fin-tab { padding: 8px 12px; font-size: 12px; } .advisor-item { grid-template-columns: auto 1fr; } .advisor-amount { grid-column: 2; text-align: left; } }
 </style>
@@ -304,6 +315,8 @@ family_pwa: true
   <div class="fin-tabs">
     <div class="fin-tab active" onclick="showPanel('overview', this)">Overview</div>
     <div class="fin-tab" onclick="showPanel('advisor', this)">Advisor</div>
+    <div class="fin-tab" onclick="showPanel('monthly', this)">Monthly Close</div>
+    <div class="fin-tab" onclick="showPanel('credit', this)">Credit + Home</div>
     <div class="fin-tab" onclick="showPanel('payments', this)">Payments</div>
     <div class="fin-tab" onclick="showPanel('envelopes', this)">Envelopes</div>
     <div class="fin-tab" onclick="showPanel('calendar', this)">Bill Calendar</div>
@@ -398,6 +411,44 @@ family_pwa: true
           <h3>Six-Month Family Budget Gap</h3>
           <div id="advisorSixMonth"></div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ MONTHLY CLOSE TAB ═══════════════════════ -->
+  <div id="panel-monthly" class="fin-panel">
+    <div class="fin-alert info">
+      <strong>Monthly close:</strong> Use this as the recurring process to prevent missed bills. Do it on the 1st, 10th, 20th, and after every account login/update.
+    </div>
+    <div class="advisor-hero">
+      <div class="advisor-decision" id="monthlyRunwayCard"></div>
+      <div class="advisor-decision" id="ownerDrawCard"></div>
+    </div>
+    <div class="fin-grid fin-grid-2">
+      <div class="fin-card">
+        <h3>Sync Checklist</h3>
+        <div id="syncChecklist" class="ops-list"></div>
+      </div>
+      <div class="fin-card">
+        <h3>Sync Health</h3>
+        <div id="syncHealth"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ CREDIT + HOME TAB ═══════════════════════ -->
+  <div id="panel-credit" class="fin-panel">
+    <div class="fin-alert warn">
+      <strong>Home-buying readiness:</strong> This is an operational tracker, not mortgage approval. Keep every account current, protect cash reserves, and reduce revolving utilization before applying.
+    </div>
+    <div class="fin-grid fin-grid-2">
+      <div class="fin-card">
+        <h3>Credit Readiness</h3>
+        <div id="creditReadiness"></div>
+      </div>
+      <div class="fin-card">
+        <h3>Debt Cleanup Plan</h3>
+        <div id="creditDebtPlan"></div>
       </div>
     </div>
   </div>
@@ -754,6 +805,31 @@ function defaultState() {
       contributionTarget: 0,
       notes: 'Use this to make the monthly gap explicit before bills fall behind.'
     },
+    monthlyOps: {
+      checklist: [
+        { id:'eecu_login', label:'Refresh EECU balances', cadence:'weekly', lastDone:'2026-06-15', source:'Chrome/EECU', note:'Checking, savings, LOC, and auto loan balances.' },
+        { id:'pge_login', label:'Refresh PG&E payment plan and true-up', cadence:'monthly', lastDone:'2026-06-15', source:'Chrome/PG&E', note:'Confirm amount needed to stay on plan and update solar true-up estimate.' },
+        { id:'discover_login', label:'Refresh Discover card', cadence:'weekly', lastDone:'2026-06-12', source:'Discover', note:'Balance, available credit, due date, and minimum payment.' },
+        { id:'apple_statement', label:'Import Apple Card statement/CSV', cadence:'monthly', lastDone:'2026-06-09', source:'Drive + Apple Card', note:'PDF to Drive, CSV to Import tab when available.' },
+        { id:'eecu_statement', label:'Upload EECU statement/export', cadence:'monthly', lastDone:'', source:'EECU + Drive', note:'Download monthly statements and transaction CSV/export.' },
+        { id:'bill_scan', label:'Scan Gmail for bills and failed payments', cadence:'weekly', lastDone:'2026-06-15', source:'Gmail', note:'Search utilities, cards, legal, therapy, school, insurance, and pest control.' },
+        { id:'business_leakage', label:'Review business charges on personal cards', cadence:'monthly', lastDone:'', source:'Imports', note:'OpenAI, Anthropic, domains, hosting, and business subscriptions.' },
+        { id:'monthly_close', label:'Close prior month budget', cadence:'monthly', lastDone:'', source:'Family app', note:'Mark bills paid, confirm statement coverage, update balances, and reset unpaid statuses.' }
+      ]
+    },
+    businessPlan: {
+      businessCash: 0,
+      businessDebt: 0,
+      ownerDrawTarget: 0,
+      minimumBusinessReserve: 500,
+      notes: 'Update Novo cash and business debt before using owner-draw guidance.'
+    },
+    creditPlan: {
+      targetReserve: 1000,
+      targetCardUtilization: 0.3,
+      homeCashTarget: 10000,
+      notes: 'Protect payment history first; reduce revolving utilization next; build reserves before mortgage shopping.'
+    },
     statementFolders: {
       eecu: '',
       discover: DISCOVER_DRIVE_FOLDER_URL,
@@ -782,6 +858,9 @@ function loadState() {
         payments: saved.payments || def.payments,
         transactions: saved.transactions || def.transactions,
         householdPlan: saved.householdPlan || def.householdPlan,
+        monthlyOps: saved.monthlyOps || def.monthlyOps,
+        businessPlan: saved.businessPlan || def.businessPlan,
+        creditPlan: saved.creditPlan || def.creditPlan,
         statementFolders: saved.statementFolders || def.statementFolders,
         statements: saved.statements || def.statements,
         lastUpdated: saved.lastUpdated || def.lastUpdated,
@@ -808,10 +887,15 @@ function loadState() {
 }
 
 function applyCurrentFinanceCorrections(state) {
+  const def = defaultState();
   state.statementFolders = state.statementFolders || {};
   state.statements = state.statements || {};
   state.transactions = Array.isArray(state.transactions) ? state.transactions : [];
   state.householdPlan = state.householdPlan || { reserveFloor: CASH_RESERVE_FLOOR, sixMonthHorizon: 6, contributionTarget: 0, notes: '' };
+  state.monthlyOps = state.monthlyOps || def.monthlyOps;
+  state.monthlyOps.checklist = mergeChecklist(def.monthlyOps.checklist, state.monthlyOps.checklist || []);
+  state.businessPlan = Object.assign({}, def.businessPlan, state.businessPlan || {});
+  state.creditPlan = Object.assign({}, def.creditPlan, state.creditPlan || {});
   if (!state.householdPlan.reserveFloor && state.householdPlan.reserveFloor !== 0) state.householdPlan.reserveFloor = CASH_RESERVE_FLOOR;
   if (!state.householdPlan.sixMonthHorizon) state.householdPlan.sixMonthHorizon = 6;
   STATEMENT_SOURCES.forEach(source => {
@@ -1131,6 +1215,8 @@ function renderAll() {
   renderSummary();
   renderAlerts();
   renderAdvisor();
+  renderMonthlyClose();
+  renderCreditReadiness();
   renderBills();
   renderAccounts();
   renderIncome();
@@ -1926,6 +2012,235 @@ function findBusinessCharges() {
   return deduped.sort((a, b) => b.amount - a.amount);
 }
 
+function mergeChecklist(defaultItems, savedItems) {
+  const savedById = new Map((savedItems || []).map(item => [item.id, item]));
+  return defaultItems.map(item => Object.assign({}, item, savedById.get(item.id) || {}));
+}
+
+function renderMonthlyClose() {
+  renderMonthlyRunway();
+  renderOwnerDraw();
+  renderSyncChecklist();
+  renderSyncHealth();
+}
+
+function renderMonthlyRunway() {
+  const target = document.getElementById('monthlyRunwayCard');
+  if (!target) return;
+  const cash = getCashAvailable();
+  const reserveFloor = Number(STATE.householdPlan?.reserveFloor ?? CASH_RESERVE_FLOOR);
+  const spendableCash = Math.max(0, cash - reserveFloor);
+  const unpaid = buildBillPayPlan(spendableCash);
+  const mustPay = unpaid.filter(item => item.bill.priority <= 2 || item.bill.status === 'overdue' || item.bill.status === 'autopay');
+  const funded = mustPay.filter(item => item.funded).reduce((s, item) => s + item.bill.amount, 0);
+  const unfunded = mustPay.filter(item => !item.funded).reduce((s, item) => s + item.bill.amount, 0);
+  const nextUnfunded = mustPay.find(item => !item.funded);
+  const tone = unfunded ? 'danger' : spendableCash < 200 ? 'warn' : '';
+  target.innerHTML = `
+    <h3>Bill Runway</h3>
+    <div class="advisor-headline">${unfunded ? `${fmt(unfunded)} short for priority bills` : `${fmt(spendableCash)} spendable after reserve`}</div>
+    <div class="advisor-copy">
+      Cash is ${fmt(cash)} with a ${fmt(reserveFloor)} floor. Priority bills funded from the current plan: ${fmt(funded)}. ${nextUnfunded ? `Next unfunded bill: ${esc(nextUnfunded.bill.name)} for ${fmt(nextUnfunded.bill.amount)}.` : 'No urgent unfunded bill is currently showing.'}
+    </div>
+    <div class="fin-alert ${tone || 'info'}" style="margin:14px 0 0;">
+      <strong>Operating rule:</strong> pay minimums and survival bills first. Do not accelerate debt until this card says the next 30 days are covered.
+    </div>
+    <div class="advisor-controls">
+      <button onclick="activatePanel('calendar')">Open Calendar</button>
+      <button onclick="activatePanel('advisor')">Pay Order</button>
+      <button onclick="editReserveFloor()">Edit Cash Floor</button>
+    </div>
+  `;
+}
+
+function renderOwnerDraw() {
+  const target = document.getElementById('ownerDrawCard');
+  if (!target) return;
+  const decision = buildOwnerDrawDecision();
+  const plan = STATE.businessPlan || {};
+  target.innerHTML = `
+    <h3>Owner Draw vs Business Debt</h3>
+    <div class="advisor-headline">${esc(decision.headline)}</div>
+    <div class="advisor-copy">${esc(decision.copy)}</div>
+    <div class="ops-decision ${decision.tone}" style="margin-top:14px;">${esc(decision.rule)}</div>
+    <div style="display:grid;gap:8px;margin-top:14px;font-size:13px;">
+      <div style="display:flex;justify-content:space-between;"><span class="fin-sub">Novo/business cash</span><strong>${fmt(Number(plan.businessCash || 0))}</strong></div>
+      <div style="display:flex;justify-content:space-between;"><span class="fin-sub">Business debt</span><strong>${fmt(Number(plan.businessDebt || 0))}</strong></div>
+      <div style="display:flex;justify-content:space-between;"><span class="fin-sub">Business reserve floor</span><strong>${fmt(Number(plan.minimumBusinessReserve || 0))}</strong></div>
+    </div>
+    <div class="advisor-controls">
+      <button onclick="editBusinessPlan('businessCash','Novo/business cash')">Update Cash</button>
+      <button onclick="editBusinessPlan('businessDebt','Business debt')">Update Debt</button>
+      <button onclick="editBusinessPlan('minimumBusinessReserve','Business reserve floor')">Reserve Floor</button>
+    </div>
+  `;
+}
+
+function buildOwnerDrawDecision() {
+  const plan = STATE.businessPlan || {};
+  const cash = getCashAvailable();
+  const reserveFloor = Number(STATE.householdPlan?.reserveFloor ?? CASH_RESERVE_FLOOR);
+  const householdShort = Math.max(0, reserveFloor - cash);
+  const spendableCash = Math.max(0, cash - reserveFloor);
+  const urgentUnfunded = buildBillPayPlan(spendableCash)
+    .filter(item => !item.funded && (item.bill.priority <= 2 || item.bill.status === 'overdue' || item.bill.status === 'autopay'))
+    .reduce((s, item) => s + item.bill.amount, 0);
+  const businessCash = Number(plan.businessCash || 0);
+  const businessDebt = Number(plan.businessDebt || 0);
+  const businessReserve = Number(plan.minimumBusinessReserve || 0);
+  const drawable = Math.max(0, businessCash - businessReserve);
+  const suggestedDraw = Math.min(drawable, Math.max(householdShort, urgentUnfunded));
+
+  if (urgentUnfunded > 0 || householdShort > 0) {
+    if (drawable > 0) {
+      return {
+        tone: 'danger',
+        headline: `Draw up to ${fmt(suggestedDraw)} only if needed`,
+        copy: `Household cash cannot cover all priority bills while keeping the reserve. Available business cash above reserve is ${fmt(drawable)}.`,
+        rule: 'Use an owner draw for missed-bill prevention before paying down business debt. Document it as an owner draw, not business income.'
+      };
+    }
+    return {
+      tone: 'danger',
+      headline: 'Do not count on Novo yet',
+      copy: 'The app needs current Novo cash before it can recommend a draw. Household priority bills are not fully covered.',
+      rule: 'Refresh Novo/business cash first. If no drawable business cash exists, defer lower-priority bills rather than paying extra debt.'
+    };
+  }
+
+  if (businessDebt > 0 && drawable > 0) {
+    return {
+      tone: 'warn',
+      headline: 'Hold household steady, then compare APRs',
+      copy: `Priority household bills are covered. Business has ${fmt(drawable)} above reserve and ${fmt(businessDebt)} debt listed.`,
+      rule: 'Pay the higher-APR revolving debt first. If business debt is tax-deductible/operational and personal cards are higher APR, prioritize personal card utilization before extra business debt.'
+    };
+  }
+
+  return {
+    tone: '',
+    headline: 'No owner draw needed from current data',
+    copy: 'Priority household bills appear covered after reserve. Keep the business reserve intact and keep importing transactions.',
+    rule: 'Only take draws for a known household shortfall, planned owner compensation, or to prevent missed payments.'
+  };
+}
+
+function renderSyncChecklist() {
+  const target = document.getElementById('syncChecklist');
+  if (!target) return;
+  const items = STATE.monthlyOps?.checklist || [];
+  target.innerHTML = items.map(item => {
+    const stale = isChecklistStale(item);
+    return `
+      <label class="ops-item">
+        <input class="ops-check" type="checkbox" ${stale ? '' : 'checked'} onchange="markChecklistDone('${item.id}', this.checked)">
+        <div>
+          <div class="ops-title">${esc(item.label)}</div>
+          <div class="ops-note">${esc(item.note || '')}</div>
+        </div>
+        <div class="ops-meta">${esc(item.cadence)}<br>${item.lastDone ? esc(item.lastDone) : 'never'}</div>
+      </label>
+    `;
+  }).join('');
+}
+
+function renderSyncHealth() {
+  const target = document.getElementById('syncHealth');
+  if (!target) return;
+  const items = STATE.monthlyOps?.checklist || [];
+  const current = items.filter(item => !isChecklistStale(item)).length;
+  const pct = items.length ? Math.round(current / items.length * 100) : 0;
+  const missingStatements = Object.values(STATE.statements || {}).flat().filter(item => item.status === 'missing' || item.status === 'partial').length;
+  const staleItems = items.filter(isChecklistStale);
+  target.innerHTML = `
+    <div style="display:grid;gap:14px;">
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;"><span class="fin-sub">Sync readiness</span><strong style="font-size:24px;color:${pct >= 80 ? '#1f4d3f' : pct >= 50 ? '#d97706' : '#b91c1c'};">${pct}%</strong></div>
+        <div class="ops-meter"><span style="width:${pct}%;background:${pct >= 80 ? '#1f4d3f' : pct >= 50 ? '#d97706' : '#b91c1c'};"></span></div>
+      </div>
+      <div class="fin-alert ${staleItems.length ? 'warn' : 'info'}" style="margin:0;">
+        <strong>Next sync work:</strong> ${staleItems.length ? staleItems.slice(0, 3).map(item => esc(item.label)).join(', ') : 'All checklist items are current.'}
+      </div>
+      <div class="fin-alert ${missingStatements ? 'danger' : 'info'}" style="margin:0;">
+        <strong>Statement gaps:</strong> ${missingStatements ? `${missingStatements} missing/partial month records need Drive cleanup or CSV/PDF import.` : 'Statement tracker has no missing/partial records.'}
+      </div>
+      <div class="ops-decision">
+        Best monthly rhythm: update EECU and card balances weekly, scan Gmail weekly, download statements after each statement closes, then run a full close on the 1st weekend of every month.
+      </div>
+    </div>
+  `;
+}
+
+function isChecklistStale(item) {
+  if (!item.lastDone) return true;
+  const last = new Date(item.lastDone + 'T00:00:00');
+  const today = new Date();
+  const age = Math.floor((new Date(today.getFullYear(), today.getMonth(), today.getDate()) - last) / 86400000);
+  const limit = item.cadence === 'weekly' ? 7 : item.cadence === 'monthly' ? 35 : 14;
+  return age > limit;
+}
+
+function renderCreditReadiness() {
+  const target = document.getElementById('creditReadiness');
+  const debtTarget = document.getElementById('creditDebtPlan');
+  if (!target || !debtTarget) return;
+  const cash = getCashAvailable();
+  const plan = STATE.creditPlan || {};
+  const cardDebt = STATE.accounts
+    .filter(account => account.type === 'credit')
+    .reduce((sum, account) => sum + Math.abs(Number(account.balance || 0)), 0);
+  const totalDebt = STATE.accounts
+    .filter(account => account.balance < 0)
+    .reduce((sum, account) => sum + Math.abs(Number(account.balance || 0)), 0);
+  const overdue = STATE.bills.filter(bill => bill.status === 'overdue').length;
+  const unpaidCredit = STATE.bills.filter(bill => bill.priority <= 2 && bill.status !== 'paid' && bill.status !== 'current').length;
+  const reserveScore = Math.min(100, Math.round(cash / Number(plan.targetReserve || 1000) * 100));
+  const paymentScore = overdue ? 25 : unpaidCredit ? 70 : 100;
+  const utilizationScore = cardDebt <= 5000 ? 80 : cardDebt <= 10000 ? 55 : 30;
+  const readiness = Math.round((reserveScore * 0.25) + (paymentScore * 0.45) + (utilizationScore * 0.30));
+  target.innerHTML = `
+    <div style="display:grid;gap:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;"><span class="fin-sub">Readiness score</span><strong style="font-size:32px;color:${readiness >= 75 ? '#1f4d3f' : readiness >= 50 ? '#d97706' : '#b91c1c'};">${readiness}/100</strong></div>
+      <div class="ops-meter"><span style="width:${readiness}%;background:${readiness >= 75 ? '#1f4d3f' : readiness >= 50 ? '#d97706' : '#b91c1c'};"></span></div>
+      <div class="advisor-item ${overdue ? 'critical' : ''}">
+        <div class="advisor-rank">1</div><div><div class="advisor-title">No missed payments</div><div class="advisor-note">${overdue ? `${overdue} overdue bill(s) still listed.` : 'No overdue bills are currently listed.'}</div></div><div class="advisor-amount">${paymentScore}/100</div>
+      </div>
+      <div class="advisor-item ${cash < Number(plan.targetReserve || 1000) ? 'warn' : ''}">
+        <div class="advisor-rank">2</div><div><div class="advisor-title">Cash reserve</div><div class="advisor-note">Target reserve is ${fmt(Number(plan.targetReserve || 1000))}; current cash is ${fmt(cash)}.</div></div><div class="advisor-amount">${reserveScore}/100</div>
+      </div>
+      <div class="advisor-item warn">
+        <div class="advisor-rank">3</div><div><div class="advisor-title">Revolving debt</div><div class="advisor-note">Credit-card balances listed total ${fmt(cardDebt)}. Utilization needs exact credit limits from Apple/Discover imports.</div></div><div class="advisor-amount">${utilizationScore}/100</div>
+      </div>
+      <div class="advisor-controls">
+        <button onclick="editCreditPlan('targetReserve','Target cash reserve')">Reserve Target</button>
+        <button onclick="activatePanel('statements')">Fix Statements</button>
+      </div>
+    </div>
+  `;
+
+  const debts = buildDebtPlan();
+  debtTarget.innerHTML = `
+    <div class="ops-decision danger">
+      Credit-improvement order: never miss minimums, stop new personal-card business charges, lower Apple/Discover utilization, then build cash reserves for underwriting.
+    </div>
+    <div style="margin-top:14px;" class="advisor-list">
+      ${debts.map((debt, index) => `
+        <div class="advisor-item ${index === 0 ? 'critical' : index === 1 ? 'warn' : ''}">
+          <div class="advisor-rank">${index + 1}</div>
+          <div>
+            <div class="advisor-title">${esc(debt.name)}</div>
+            <div class="advisor-note">${esc(debt.reason)}</div>
+          </div>
+          <div class="advisor-amount">${fmt(debt.balance)}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div style="margin-top:14px;font-size:13px;color:#526158;line-height:1.6;">
+      Listed total debt: <strong>${fmt(totalDebt)}</strong>. Before shopping for a house, this dashboard should show no overdue bills, current statements for all accounts, and a repeatable monthly surplus or documented household contribution.
+    </div>
+  `;
+}
+
 // ═══════════════════════════════════════════════════════════════
 // ACTIONS
 // ═══════════════════════════════════════════════════════════════
@@ -2158,6 +2473,41 @@ function editContributionTarget() {
   saveState(STATE);
   renderAll();
   showToast('Contribution target set to ' + fmt(num) + '/mo');
+}
+
+function markChecklistDone(id, checked) {
+  const item = STATE.monthlyOps?.checklist?.find(entry => entry.id === id);
+  if (!item) return;
+  item.lastDone = checked ? new Date().toISOString().slice(0, 10) : '';
+  saveState(STATE);
+  renderAll();
+  showToast(item.label + (checked ? ' marked current' : ' marked open'));
+}
+
+function editBusinessPlan(field, label) {
+  STATE.businessPlan = STATE.businessPlan || {};
+  const current = Number(STATE.businessPlan[field] || 0);
+  const val = prompt(label + ':', current);
+  if (val === null) return;
+  const num = parseFloat(val);
+  if (isNaN(num) || num < 0) return;
+  STATE.businessPlan[field] = num;
+  saveState(STATE);
+  renderAll();
+  showToast(label + ' set to ' + fmt(num));
+}
+
+function editCreditPlan(field, label) {
+  STATE.creditPlan = STATE.creditPlan || {};
+  const current = Number(STATE.creditPlan[field] || 0);
+  const val = prompt(label + ':', current);
+  if (val === null) return;
+  const num = parseFloat(val);
+  if (isNaN(num) || num < 0) return;
+  STATE.creditPlan[field] = num;
+  saveState(STATE);
+  renderAll();
+  showToast(label + ' set to ' + fmt(num));
 }
 
 function saveImportedTransactions(fileName, source, txns) {

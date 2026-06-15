@@ -712,7 +712,7 @@ function defaultState() {
       { id:'toggle', name:'Toggle Insurance', dueDay:26, amount:202, status:'paid', priority:2, account:'EECU Debit', payUrl:'https://www.gettoggle.com/', notes:'Car insurance' },
       { id:'pge', name:'PG&E', dueDay:14, amount:200, status:'upcoming', priority:1, account:'EECU Checking', payUrl:'https://www.pge.com/', notes:'Payment plan' },
       { id:'att', name:'AT&T Wireless', dueDay:null, amount:129, status:'current', priority:2, account:'EECU Checking', payUrl:'https://www.att.com/', notes:'' },
-      { id:'fresno', name:'City of Fresno', dueDay:1, amount:121, status:'overdue', priority:1, account:'EECU Checking', payUrl:'https://www.fresno.gov/utilitypayments', notes:'Water/sewer — shutoff risk' },
+      { id:'fresno', name:'City of Fresno', dueDay:1, amount:121, status:'paid', priority:1, account:'EECU Checking', payUrl:'https://www.fresno.gov/utilitypayments', notes:'Paid through next month; confirm amount from payment receipt.' },
       { id:'xfinity', name:'Xfinity', dueDay:1, amount:95, status:'paid', priority:1, account:'EECU Checking', payUrl:'https://www.xfinity.com/', notes:'' },
       { id:'discover', name:'Discover Min', dueDay:17, amount:98, status:'paid', priority:2, account:'EECU Checking', payUrl:'https://www.discover.com/', notes:'Minimum paid from phone app on Jun 12; statement due date Jun 17.' },
       { id:'loc', name:'EECU LOC Min', dueDay:26, amount:75, status:'upcoming', priority:2, account:'EECU Checking', payUrl:'https://www.myeecu.org/', notes:'Needs live EECU refresh for current payoff; last app value shows $9,596 available.' },
@@ -855,6 +855,7 @@ function applyCurrentFinanceCorrections(state) {
     { id:'discover', name:'Discover Min', dueDay:17, amount:98, status:'paid', priority:2, account:'EECU Checking', payUrl:'https://www.discover.com/', notes:'Minimum paid from phone app on Jun 12; statement due date Jun 17.' },
     { id:'loc', name:'EECU LOC Min', dueDay:26, amount:75, status:'upcoming', priority:2, account:'EECU Checking', payUrl:'https://www.myeecu.org/', notes:'Needs live EECU refresh for current payoff; last app value shows $9,596 available.' },
     { id:'auto', name:'EECU Auto Loan', dueDay:5, amount:499, status:'autopay', priority:1, account:'EECU Checking', payUrl:'https://www.myeecu.org/', notes:'Needs live EECU refresh for current payoff and next due date.' },
+    { id:'fresno', name:'City of Fresno', dueDay:1, amount:121, status:'paid', priority:1, account:'EECU Checking', payUrl:'https://www.fresno.gov/utilitypayments', notes:'Paid through next month; confirm amount from payment receipt.' },
   ];
   state.bills = Array.isArray(state.bills) ? state.bills : [];
   paymentCorrections.forEach(correction => {

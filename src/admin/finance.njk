@@ -1,0 +1,3761 @@
+---
+layout: base.njk
+title: Household Finance Dashboard - Rob Spain
+permalink: /admin/finance/
+---
+
+<style>
+  .fin-dash { max-width: 1200px; margin: 0 auto; padding: 20px; }
+  .fin-dash * { box-sizing: border-box; }
+  .fin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; gap: 8px; }
+  .fin-header h2 { font-size: 24px; font-weight: 700; color: #1e293b; margin: 0; }
+  .fin-header .updated { color: #64748b; font-size: 13px; }
+  .fin-tabs { display: flex; gap: 4px; margin-bottom: 20px; flex-wrap: wrap; }
+  .fin-tab { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; background: #f8fafc; color: #64748b; transition: all 0.2s; }
+  .fin-tab:hover { border-color: #64748b; color: #1e293b; }
+  .fin-tab.active { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+  .fin-panel { display: none; }
+  .fin-panel.active { display: block; }
+  .fin-grid { display: grid; gap: 16px; }
+  .fin-grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .fin-grid-2 { grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); }
+  .fin-grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .fin-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; }
+  .fin-card h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin: 0 0 12px 0; font-weight: 500; }
+  .fin-stat { font-size: 28px; font-weight: 700; }
+  .fin-stat.green { color: #22c55e; }
+  .fin-stat.red { color: #ef4444; }
+  .fin-stat.yellow { color: #eab308; }
+  .fin-stat.blue { color: #3b82f6; }
+  .fin-sub { font-size: 13px; color: #64748b; margin-top: 4px; }
+  .fin-table { width: 100%; border-collapse: collapse; font-size: 14px; color: #1e293b; }
+  .fin-table th { text-align: left; padding: 8px 12px; color: #64748b; font-weight: 500; font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; }
+  .fin-table td { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; }
+  .fin-table tr:last-child td { border-bottom: none; }
+  .fin-table .amt { text-align: right; font-variant-numeric: tabular-nums; }
+  .fin-badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: all 0.15s; user-select: none; }
+  .fin-badge:hover { transform: scale(1.08); filter: brightness(0.9); }
+  .fin-badge:active { transform: scale(0.95); }
+  .fin-badge.overdue { background: rgba(239,68,68,0.15); color: #ef4444; }
+  .fin-badge.current { background: rgba(34,197,94,0.15); color: #22c55e; }
+  .fin-badge.upcoming { background: rgba(59,130,246,0.15); color: #3b82f6; }
+  .fin-badge.autopay { background: rgba(168,85,247,0.15); color: #a855f7; }
+  .fin-badge.paid { background: rgba(34,197,94,0.25); color: #16a34a; }
+  .sync-bar { display: none; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 10px 16px; margin-bottom: 16px; font-size: 13px; color: #1e40af; align-items: center; justify-content: space-between; }
+  .sync-bar.visible { display: flex; }
+  .sync-bar button { padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; background: #3b82f6; color: #fff; }
+  .sync-bar button:hover { background: #2563eb; }
+  .toast-msg { position: fixed; bottom: 20px; right: 20px; background: #16a34a; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; opacity: 0; transition: opacity 0.3s; z-index: 100; }
+  .toast-msg.show { opacity: 1; }
+  .fin-alert { border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 14px; color: #1e293b; }
+  .fin-alert.danger { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); }
+  .fin-alert.warn { background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.3); }
+  .fin-alert.info { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); }
+  .fin-section { margin-top: 24px; }
+  .fin-bar-bg { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-top: 8px; }
+  .fin-bar { height: 100%; border-radius: 4px; }
+  .fin-bar.green { background: #22c55e; }
+  .fin-bar.red { background: #ef4444; }
+  .fin-bar.yellow { background: #eab308; }
+  .fin-bar.blue { background: #3b82f6; }
+  .fin-bar.purple { background: #a855f7; }
+  .fin-deficit { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 12px; padding: 20px; margin-top: 24px; text-align: center; }
+  .fin-deficit .label { font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 8px; }
+  .fin-deficit .amount { font-size: 36px; font-weight: 700; color: #ef4444; }
+  .fin-deficit .note { font-size: 13px; color: #64748b; margin-top: 8px; }
+  /* Editable cells */
+  .editable { cursor: pointer; position: relative; border-radius: 4px; padding: 2px 4px; margin: -2px -4px; }
+  .editable:hover { background: rgba(59,130,246,0.08); }
+  .editable input, .editable select { font: inherit; border: 1px solid #3b82f6; border-radius: 4px; padding: 2px 6px; width: 100%; background: #fff; outline: none; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
+  .editable input[type="number"] { width: 90px; text-align: right; }
+  /* Action buttons */
+  .btn-sm { padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+  .btn-add { background: #3b82f6; color: #fff; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; }
+  .btn-add:hover { background: #2563eb; }
+  .btn-pay { background: rgba(34,197,94,0.15); color: #16a34a; }
+  .btn-pay:hover { background: rgba(34,197,94,0.3); }
+  .btn-del { background: rgba(239,68,68,0.1); color: #ef4444; }
+  .btn-del:hover { background: rgba(239,68,68,0.2); }
+  .btn-edit { background: rgba(59,130,246,0.1); color: #3b82f6; }
+  .btn-edit:hover { background: rgba(59,130,246,0.2); }
+  /* Modal */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: #fff; border-radius: 16px; padding: 24px; width: 90%; max-width: 480px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+  .modal h3 { font-size: 18px; font-weight: 700; color: #1e293b; margin: 0 0 16px; }
+  .modal label { display: block; font-size: 13px; font-weight: 500; color: #64748b; margin-bottom: 4px; margin-top: 12px; }
+  .modal input, .modal select { width: 100%; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; color: #1e293b; }
+  .modal input:focus, .modal select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+  .modal-actions button { padding: 8px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+  .modal-actions .btn-cancel { background: #f1f5f9; color: #64748b; }
+  .modal-actions .btn-cancel:hover { background: #e2e8f0; }
+  .modal-actions .btn-save { background: #3b82f6; color: #fff; }
+  .modal-actions .btn-save:hover { background: #2563eb; }
+  .modal-actions .btn-danger { background: #ef4444; color: #fff; }
+  .modal-actions .btn-danger:hover { background: #dc2626; }
+  /* Envelope styles */
+  .envelope { border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; margin-bottom: 8px; position: relative; overflow: hidden; }
+  .envelope::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; border-radius: 8px 0 0 8px; }
+  .envelope.p1::before { width: 4px; background: #ef4444; }
+  .envelope.p2::before { width: 4px; background: #eab308; }
+  .envelope.p3::before { width: 4px; background: #3b82f6; }
+  .envelope.p4::before { width: 4px; background: #22c55e; }
+  .envelope.unfunded { opacity: 0.5; border-style: dashed; }
+  .envelope .env-row { display: flex; justify-content: space-between; align-items: center; }
+  .envelope .env-name { font-size: 14px; font-weight: 500; padding-left: 8px; }
+  .envelope .env-amt { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .envelope .env-bar { height: 4px; background: #e2e8f0; border-radius: 2px; margin-top: 6px; margin-left: 8px; overflow: hidden; }
+  .envelope .env-fill { height: 100%; border-radius: 2px; }
+  .env-priority { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin: 16px 0 8px; padding-bottom: 4px; border-bottom: 1px solid #e2e8f0; }
+  .env-priority.p1 { color: #ef4444; }
+  .env-priority.p2 { color: #eab308; }
+  .env-priority.p3 { color: #3b82f6; }
+  .env-priority.p4 { color: #22c55e; }
+  /* Calendar styles */
+  .cal-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #e2e8f0; }
+  .cal-row:last-child { border-bottom: none; }
+  .cal-day { width: 48px; height: 48px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+  .cal-day .month { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .cal-day .date { font-size: 18px; line-height: 1; }
+  .cal-day.danger { background: rgba(239,68,68,0.15); color: #ef4444; }
+  .cal-day.warn { background: rgba(234,179,8,0.15); color: #eab308; }
+  .cal-day.ok { background: rgba(59,130,246,0.15); color: #3b82f6; }
+  .cal-day.done { background: rgba(34,197,94,0.15); color: #22c55e; }
+  .cal-info { flex: 1; }
+  .cal-info .name { font-size: 14px; font-weight: 500; }
+  .cal-info .detail { font-size: 12px; color: #64748b; margin-top: 2px; }
+  .cal-amt { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
+  /* Net worth chart */
+  .nw-chart { display: flex; align-items: flex-end; gap: 2px; height: 120px; padding: 0 4px; }
+  .nw-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
+  .nw-bar { width: 100%; border-radius: 3px 3px 0 0; min-height: 2px; transition: height 0.3s; }
+  .nw-label { font-size: 10px; color: #64748b; margin-top: 4px; text-align: center; }
+  /* Import area */
+  .import-zone { border: 2px dashed #e2e8f0; border-radius: 12px; padding: 32px; text-align: center; cursor: pointer; transition: all 0.2s; }
+  .import-zone:hover { border-color: #3b82f6; background: rgba(59,130,246,0.05); }
+  .import-zone.dragover { border-color: #22c55e; background: rgba(34,197,94,0.05); }
+  .import-zone h4 { color: #1e293b; margin: 0 0 8px; font-size: 16px; }
+  .import-zone p { color: #64748b; margin: 0; font-size: 13px; }
+  .txn-list { max-height: 300px; overflow-y: auto; margin-top: 12px; }
+  .txn-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #e2e8f0; font-size: 13px; }
+  .txn-row .txn-date { color: #64748b; width: 80px; flex-shrink: 0; }
+  .txn-row .txn-desc { flex: 1; padding: 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .txn-row .txn-amt { font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; width: 80px; flex-shrink: 0; }
+  .txn-row .txn-amt.debit { color: #ef4444; }
+  .txn-row .txn-amt.credit { color: #22c55e; }
+  .txn-summary { display: flex; gap: 16px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 13px; }
+  .txn-summary span { color: #64748b; }
+  .accounting-hero { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(280px, .8fr); gap: 16px; align-items: stretch; margin-bottom: 16px; }
+  .accounting-step-list { display: grid; gap: 10px; }
+  .accounting-step { display: flex; gap: 10px; align-items: flex-start; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc; }
+  .accounting-step .num { width: 26px; height: 26px; border-radius: 999px; background: #1e293b; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .accounting-step strong { display: block; color: #1e293b; font-size: 13px; margin-bottom: 2px; }
+  .accounting-step span { display: block; color: #64748b; font-size: 12px; line-height: 1.45; }
+  .acct-controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .acct-controls select, .acct-controls input, .acct-controls textarea { border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 10px; font-size: 13px; color: #1e293b; background: #fff; }
+  .acct-controls textarea { min-height: 72px; width: 100%; resize: vertical; }
+  .accounting-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .btn-export { background: #0f766e; color: #fff; padding: 8px 12px; border-radius: 8px; border: none; cursor: pointer; font-size: 12px; font-weight: 700; }
+  .btn-export:hover { background: #115e59; }
+  .btn-secondary { background: #f1f5f9; color: #334155; padding: 8px 12px; border-radius: 8px; border: 1px solid #e2e8f0; cursor: pointer; font-size: 12px; font-weight: 700; }
+  .btn-secondary:hover { background: #e2e8f0; }
+  .review-row { display: grid; grid-template-columns: 86px minmax(180px, 1fr) 112px 160px 120px 128px; gap: 8px; align-items: center; padding: 8px 0; border-bottom: 1px solid #e2e8f0; font-size: 12px; }
+  .review-row.header { color: #64748b; text-transform: uppercase; letter-spacing: .04em; font-weight: 700; font-size: 11px; }
+  .review-row select, .review-row input { width: 100%; border: 1px solid #e2e8f0; border-radius: 7px; padding: 6px 7px; font-size: 12px; }
+  .review-row .desc { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #1e293b; }
+  .review-row .amount { font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+  .review-row .amount.income { color: #16a34a; }
+  .review-row .amount.expense { color: #dc2626; }
+  .account-map { display: grid; gap: 8px; margin-top: 12px; }
+  .account-map-row { display: grid; grid-template-columns: minmax(140px, 1fr) minmax(180px, 1fr); gap: 8px; align-items: center; font-size: 12px; color: #475569; }
+  .account-map-row input { width: 100%; border: 1px solid #e2e8f0; border-radius: 7px; padding: 6px 8px; font-size: 12px; color: #1e293b; }
+  .rule-chip { display: inline-flex; gap: 6px; align-items: center; padding: 4px 8px; border: 1px solid #e2e8f0; border-radius: 999px; font-size: 11px; color: #475569; background: #fff; margin: 3px; }
+  .rule-chip strong { color: #0f172a; }
+  .parse-log { background: #0f172a; color: #cbd5e1; border-radius: 10px; padding: 12px; font-size: 12px; line-height: 1.5; max-height: 180px; overflow: auto; white-space: pre-wrap; }
+  /* Payment history */
+  .payment-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #e2e8f0; font-size: 13px; }
+  .payment-row:last-child { border-bottom: none; }
+  .payment-row .pay-date { color: #64748b; width: 70px; flex-shrink: 0; }
+  .payment-row .pay-name { flex: 1; font-weight: 500; }
+  .payment-row .pay-amt { font-weight: 700; color: #22c55e; font-variant-numeric: tabular-nums; }
+  .payment-row .pay-from { font-size: 11px; color: #94a3b8; margin-left: 8px; }
+  @media (min-width: 901px) { .review-row { grid-template-columns: 86px minmax(180px, 1fr) 112px 150px 120px 150px 128px; } }
+  @media (max-width: 900px) { .accounting-hero { grid-template-columns: 1fr; } .review-row { grid-template-columns: 74px minmax(140px, 1fr) 88px; } .review-row.header .mobile-hide, .review-row .mobile-hide { display: none; } .account-map-row { grid-template-columns: 1fr; } }
+  @media (max-width: 600px) { .fin-grid-4 { grid-template-columns: 1fr 1fr; } .fin-grid-2, .fin-grid-3 { grid-template-columns: 1fr; } .fin-tabs { gap: 2px; } .fin-tab { padding: 6px 10px; font-size: 12px; } }
+</style>
+
+<div class="fin-dash">
+  <div class="fin-header">
+    <h2>Household Finance</h2>
+    <span class="updated" id="lastUpdated">Updated: loading...</span>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="fin-tabs">
+    <div class="fin-tab active" onclick="showPanel('overview', this)">Overview</div>
+    <div class="fin-tab" onclick="showPanel('accounting', this)">Accounting Hub</div>
+    <div class="fin-tab" onclick="showPanel('payments', this)">Payments</div>
+    <div class="fin-tab" onclick="showPanel('envelopes', this)">Envelopes</div>
+    <div class="fin-tab" onclick="showPanel('calendar', this)">Bill Calendar</div>
+    <div class="fin-tab" onclick="showPanel('networth', this)">Net Worth</div>
+    <div class="fin-tab" onclick="showPanel('import', this)">Import</div>
+  </div>
+
+  <!-- ═══════════════════════ ACCOUNTING HUB TAB ═══════════════════════ -->
+  <div id="panel-accounting" class="fin-panel">
+    <div class="accounting-hero">
+      <div class="fin-card">
+        <h3>One system for CPA-ready books</h3>
+        <div class="accounting-step-list">
+          <div class="accounting-step"><span class="num">1</span><div><strong>Collect</strong><span>Import bank, card, Stripe, FreshBooks, or statement text into one review queue.</span></div></div>
+          <div class="accounting-step"><span class="num">2</span><div><strong>Classify</strong><span>Auto-apply Schedule C/Frappe Books categories, entity, account, and confidence notes.</span></div></div>
+          <div class="accounting-step"><span class="num">3</span><div><strong>Export</strong><span>Produce Frappe Books import CSVs and a CPA review package without rebuilding spreadsheets.</span></div></div>
+        </div>
+      </div>
+      <div class="fin-card">
+        <h3>Accounting File</h3>
+        <div class="acct-controls">
+          <label style="font-size:12px;color:#64748b;width:100%;">Active entity</label>
+          <select id="acctEntity" onchange="setAccountingEntity(this.value)">
+            <option value="behavior-school">Behavior School</option>
+            <option value="rob-spain">Rob Spain</option>
+            <option value="household">Household</option>
+          </select>
+          <label style="font-size:12px;color:#64748b;width:100%;margin-top:8px;">Default Frappe Books account</label>
+          <select id="acctDefaultAccount" onchange="setDefaultFrappeAccount(this.value)">
+            <option value="Expenses">Expenses</option>
+            <option value="Sales">Sales</option>
+            <option value="Bank">Bank</option>
+            <option value="Accounts Receivable">Accounts Receivable</option>
+            <option value="Accounts Payable">Accounts Payable</option>
+            <option value="Owner's Equity">Owner's Equity</option>
+          </select>
+          <label style="font-size:12px;color:#64748b;width:100%;margin-top:8px;">Frappe company</label>
+          <input id="frappeCompany" type="text" placeholder="Exact Frappe company name" oninput="updateFrappeSetting('company', this.value)">
+          <label style="font-size:12px;color:#64748b;width:100%;margin-top:8px;">Default bank account</label>
+          <input id="frappeBankAccount" type="text" placeholder="e.g. Checking - BS" oninput="updateFrappeSetting('defaultBankAccount', this.value)">
+          <label style="font-size:12px;color:#64748b;width:100%;margin-top:8px;">Default revenue account</label>
+          <input id="frappeRevenueAccount" type="text" placeholder="e.g. Sales - BS" oninput="updateFrappeSetting('defaultRevenueAccount', this.value)">
+          <label style="font-size:12px;color:#64748b;width:100%;margin-top:8px;">Default expense account</label>
+          <input id="frappeExpenseAccount" type="text" placeholder="e.g. Expenses - BS" oninput="updateFrappeSetting('defaultExpenseAccount', this.value)">
+        </div>
+        <div id="accountingEntitySummary" style="margin-top:14px;font-size:13px;color:#64748b;line-height:1.55;"></div>
+      </div>
+    </div>
+
+    <div class="fin-grid fin-grid-2">
+      <div class="fin-card">
+        <h3>Statement Import Automation</h3>
+        <div class="acct-controls">
+          <select id="statementAccount">
+            <option value="Behavior School Bank">Behavior School Bank</option>
+            <option value="Stripe">Stripe</option>
+            <option value="FreshBooks">FreshBooks</option>
+            <option value="EECU Checking">EECU Checking</option>
+            <option value="Apple Card">Apple Card</option>
+            <option value="Other">Other</option>
+          </select>
+          <select id="statementEntity">
+            <option value="behavior-school">Behavior School</option>
+            <option value="rob-spain">Rob Spain</option>
+            <option value="household">Household</option>
+          </select>
+        </div>
+        <div class="import-zone" id="accountingImportZone" style="margin-top:12px;" ondrop="handleAccountingDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" onclick="document.getElementById('accountingFileInput').click()">
+          <input type="file" id="accountingFileInput" accept=".csv,.txt,.pdf,.ofx,.qfx" style="display:none" onchange="handleAccountingFile(this.files[0])">
+          <h4>Drop CSV, TXT, PDF, OFX, or QFX Statement</h4>
+          <p>Auto-parses bank/card rows, OFX/QFX exports, statement text, and PDF text when browser extraction is available.</p>
+        </div>
+        <div class="acct-controls" style="margin-top:12px;">
+          <textarea id="statementTextPaste" placeholder="Paste statement text here if a PDF is image-only or the bank export is copied from a web page."></textarea>
+          <button class="btn-secondary" onclick="parsePastedStatementText()">Parse pasted text</button>
+        </div>
+        <div id="statementParseLog" class="parse-log" style="display:none;margin-top:12px;"></div>
+      </div>
+
+      <div class="fin-card">
+        <h3>Automation Rules</h3>
+        <div id="accountingRules"></div>
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid #e2e8f0;">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+            <h3 style="margin:0;">Frappe Account Map</h3>
+            <button class="btn-secondary" onclick="resetFrappeAccountMapping()">Reset map</button>
+          </div>
+          <div id="frappeAccountMap" class="account-map"></div>
+        </div>
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid #e2e8f0;">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+            <h3 style="margin:0;">Vendor Rules</h3>
+            <button class="btn-secondary" onclick="applyVendorRulesToQueue()">Apply rules</button>
+          </div>
+          <div id="accountingVendorRules" style="display:grid;gap:8px;margin-top:12px;"></div>
+        </div>
+        <div class="accounting-actions">
+          <button class="btn-secondary" onclick="seedAccountingFromExistingFinance()">Seed from current finance data</button>
+          <button class="btn-secondary" onclick="approveAutomationReadyRows()">Approve automation-ready rows</button>
+          <button class="btn-secondary" onclick="clearAccountingReviewQueue()">Clear review queue</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="fin-section">
+      <div class="fin-card">
+        <h3>Source Connectors</h3>
+        <div class="fin-alert info" style="margin-top:0;">
+          <strong>Automation path:</strong> Stripe can import directly when server env keys are configured. FreshBooks, Stripe exports, and bank CSVs can be pasted below and normalized into the same review queue.
+        </div>
+        <div class="acct-controls">
+          <button class="btn-export" onclick="importConnectedSources()">Import All Connected Sources</button>
+          <button class="btn-export" onclick="importStripeSource()">Import Stripe Recent Activity</button>
+          <button class="btn-export" onclick="importFreshBooksSource()">Import FreshBooks Paid Invoices</button>
+          <button class="btn-secondary" onclick="importFreshBooksPaste()">Import FreshBooks Paste</button>
+          <button class="btn-secondary" onclick="importGenericCsvPaste()">Import Generic CSV Paste</button>
+        </div>
+        <textarea id="sourceImportPaste" style="margin-top:12px;width:100%;min-height:120px;border:1px solid #e2e8f0;border-radius:10px;padding:10px;font-size:13px;" placeholder="Paste FreshBooks invoice JSON, FreshBooks CSV, Stripe export CSV, or bank CSV here."></textarea>
+        <div id="sourceImportStatus" style="margin-top:10px;font-size:12px;color:#64748b;"></div>
+      </div>
+    </div>
+
+    <div class="fin-section">
+      <div class="fin-card">
+        <h3>Import Run History</h3>
+        <div id="accountingImportRuns" style="display:grid;gap:8px;"></div>
+      </div>
+    </div>
+
+    <div class="fin-section">
+      <div class="fin-card">
+        <h3>CPA Handoff Notes</h3>
+        <textarea id="cpaNotesInput" style="width:100%;min-height:92px;border:1px solid #e2e8f0;border-radius:10px;padding:10px;font-size:13px;color:#1e293b;resize:vertical;" oninput="updateCpaNotes(this.value)" placeholder="Entity treatment questions, source-file caveats, CPA decisions, or month-end notes."></textarea>
+        <div style="font-size:11px;color:#64748b;margin-top:8px;">These notes are included in the CPA summary and manifest exports.</div>
+      </div>
+    </div>
+
+    <div class="fin-section">
+      <div class="fin-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
+          <h3 style="margin:0;">Automation Health</h3>
+          <button class="btn-secondary" onclick="loadAccountingAutomationStatus()">Refresh status</button>
+        </div>
+        <div id="automationStatusSummary" style="font-size:12px;color:#64748b;margin-bottom:10px;">Checking automation services...</div>
+        <div id="automationStatusList" style="display:grid;gap:8px;"></div>
+      </div>
+    </div>
+
+    <div class="fin-section">
+      <div class="fin-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
+          <h3 style="margin:0;">Review Queue</h3>
+          <div class="accounting-actions" style="margin:0;">
+            <button class="btn-export" onclick="exportFrappeBooksCsv()">Export Frappe Books CSV</button>
+            <button class="btn-secondary" onclick="syncFrappeBooks(true)">Preview Frappe Sync</button>
+            <button class="btn-export" onclick="syncFrappeBooks(false)">Sync to Frappe</button>
+            <button class="btn-export" onclick="exportCpaPackage()">Export CPA Package</button>
+            <button class="btn-secondary" onclick="exportCpaSummary()">Export CPA Summary</button>
+          </div>
+        </div>
+        <div id="accountingSummary" class="txn-summary"></div>
+        <div id="accountingCloseStatus" style="margin-top:12px;"></div>
+        <div id="frappeSyncStatus" style="margin-top:10px;font-size:12px;color:#64748b;"></div>
+        <div id="frappeSyncRuns" style="display:grid;gap:8px;margin-top:12px;"></div>
+        <datalist id="frappeAccountOptions"></datalist>
+        <div id="accountingReviewQueue"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ OVERVIEW TAB ═══════════════════════ -->
+  <div id="panel-overview" class="fin-panel active">
+
+    <!-- Alerts -->
+    <div id="alertsContainer"></div>
+
+    <!-- Summary Cards -->
+    <div class="fin-grid fin-grid-4" id="summaryCards"></div>
+
+    <!-- Bills + Accounts -->
+    <div class="fin-section">
+      <div class="fin-grid fin-grid-2">
+        <div class="fin-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <h3 style="margin:0;">Bills &amp; Due Dates</h3>
+            <button class="btn-add" onclick="openAddBillModal()">+ Add Bill</button>
+          </div>
+          <table class="fin-table">
+            <thead><tr><th>Bill</th><th>Due</th><th class="amt">Amount</th><th>Status</th><th></th></tr></thead>
+            <tbody id="billsBody"></tbody>
+          </table>
+        </div>
+        <div class="fin-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <h3 style="margin:0;">Account Balances</h3>
+            <span style="font-size:11px;color:#94a3b8;">Click balance to edit</span>
+          </div>
+          <table class="fin-table">
+            <thead><tr><th>Account</th><th class="amt">Balance</th><th>Notes</th></tr></thead>
+            <tbody id="accountsBody"></tbody>
+          </table>
+          <div id="debtBreakdown" style="margin-top:20px;padding-top:16px;border-top:1px solid #e2e8f0;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Budget + Income -->
+    <div class="fin-section">
+      <div class="fin-grid fin-grid-2">
+        <div class="fin-card" id="budgetCard"></div>
+        <div class="fin-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <h3 style="margin:0;">Income Sources</h3>
+            <span style="font-size:11px;color:#94a3b8;">Click amount to edit</span>
+          </div>
+          <table class="fin-table">
+            <thead><tr><th>Source</th><th class="amt">Amount</th><th>Frequency</th></tr></thead>
+            <tbody id="incomeBody"></tbody>
+          </table>
+          <div id="incomeTotalRow" style="margin-top:16px;padding-top:12px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-weight:600;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deficit Summary -->
+    <div class="fin-deficit" id="deficitSummary"></div>
+  </div>
+
+  <!-- ═══════════════════════ PAYMENTS TAB ═══════════════════════ -->
+  <div id="panel-payments" class="fin-panel">
+    <div class="fin-alert info">
+      <strong>Payment history:</strong> Log payments as you make them. Click "Log Payment" on any bill, or use the button below.
+    </div>
+    <div style="margin-bottom:16px;">
+      <button class="btn-add" onclick="openPaymentModal()">+ Log Payment</button>
+    </div>
+    <div class="fin-grid fin-grid-2">
+      <div class="fin-card">
+        <h3>Recent Payments</h3>
+        <div id="paymentsListFull"></div>
+      </div>
+      <div class="fin-card">
+        <h3>Payment Summary</h3>
+        <div id="paymentSummary"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ ENVELOPES TAB ═══════════════════════ -->
+  <div id="panel-envelopes" class="fin-panel">
+
+    <div class="fin-alert info">
+      <strong>Envelope budgeting:</strong> Every dollar of monthly income is assigned by priority. When money runs out, lower-priority envelopes go unfunded — making the deficit visible.
+    </div>
+
+    <div class="fin-grid fin-grid-2">
+      <div class="fin-card" id="envelopesCard"></div>
+      <div class="fin-card" id="envelopeSummaryCard"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ BILL CALENDAR TAB ═══════════════════════ -->
+  <div id="panel-calendar" class="fin-panel">
+
+    <div class="fin-alert info">
+      <strong>Bill calendar:</strong> Auto-generated from your bills. Sorted by due date, overdue items first.
+    </div>
+
+    <div class="fin-grid fin-grid-2" id="calendarGrid"></div>
+  </div>
+
+  <!-- ═══════════════════════ NET WORTH TAB ═══════════════════════ -->
+  <div id="panel-networth" class="fin-panel">
+
+    <div class="fin-alert info">
+      <strong>Net worth tracker:</strong> Assets minus debts over time. Based on EECU + Apple Card statement data (Mar 2025 — Mar 2026).
+    </div>
+
+    <div class="fin-grid fin-grid-2">
+      <div class="fin-card">
+        <h3>Net Worth Trend (12 months)</h3>
+        <div class="nw-chart" id="nwChart"></div>
+        <div style="display:flex;justify-content:space-between;margin-top:12px;font-size:12px;color:#64748b;">
+          <span>Apr 2025</span>
+          <span>Mar 2026</span>
+        </div>
+        <div id="nwSummary" style="margin-top:16px;padding-top:12px;border-top:1px solid #e2e8f0;"></div>
+      </div>
+
+      <div class="fin-card">
+        <h3>Debt Payoff Projection</h3>
+        <div id="debtPayoff"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ IMPORT TAB ═══════════════════════ -->
+  <div id="panel-import" class="fin-panel">
+
+    <div class="fin-alert info">
+      <strong>Transaction import:</strong> Drop CSV files from EECU or Apple Card to analyze spending. Files are processed locally in your browser — nothing is uploaded.
+    </div>
+
+    <div class="fin-grid fin-grid-2">
+      <div class="fin-card">
+        <div class="import-zone" id="importZone" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" onclick="document.getElementById('fileInput').click()">
+          <input type="file" id="fileInput" accept=".csv,.txt,.pdf,.ofx,.qfx" style="display:none" onchange="handleFile(this.files[0])">
+          <h4>Drop Statement Here</h4>
+          <p>EECU, Apple Card, bank CSV, text, or PDF statement</p>
+          <p style="margin-top:8px;font-size:11px;">Use Accounting Hub for classification and CPA/Frappe exports.</p>
+        </div>
+        <div id="importResults" style="display:none;margin-top:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h3 id="importTitle">Imported Transactions</h3>
+            <span id="importCount" style="font-size:13px;color:#64748b;"></span>
+          </div>
+          <div class="txn-summary" id="importSummary"></div>
+          <div class="txn-list" id="txnList"></div>
+        </div>
+      </div>
+
+      <div class="fin-card">
+        <h3>How to Export Your Data</h3>
+        <div style="margin-bottom:20px;">
+          <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:8px;">EECU Checking</div>
+          <ol style="font-size:13px;color:#64748b;padding-left:20px;line-height:1.8;">
+            <li>Log into myeecu.org</li>
+            <li>Go to Accounts > Checking</li>
+            <li>Click "Export" or "Download transactions"</li>
+            <li>Select date range and CSV format</li>
+            <li>Drop the file here</li>
+          </ol>
+        </div>
+        <div style="margin-bottom:20px;">
+          <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:8px;">Apple Card</div>
+          <ol style="font-size:13px;color:#64748b;padding-left:20px;line-height:1.8;">
+            <li>Open Wallet app on iPhone</li>
+            <li>Tap Apple Card > Card Balance</li>
+            <li>Tap "Total Activity" for a month</li>
+            <li>Scroll down, tap "Export Transactions"</li>
+            <li>Email the CSV to yourself, then drop here</li>
+          </ol>
+        </div>
+        <div style="padding:12px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);border-radius:8px;">
+          <div style="font-size:12px;color:#64748b;">
+            <strong style="color:#3b82f6;">Privacy:</strong> Files are parsed entirely in your browser using JavaScript. No data leaves your device.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:24px;font-size:12px;color:#64748b;">
+    Data managed by Paperclip CTO agent. All changes saved locally. <span id="convexStatus" style="color:#94a3b8;"></span>
+  </div>
+</div>
+
+<div class="toast-msg" id="toast"></div>
+
+<!-- Add Bill Modal -->
+<div class="modal-overlay" id="addBillModal">
+  <div class="modal">
+    <h3 id="billModalTitle">Add New Bill</h3>
+    <input type="hidden" id="editBillId">
+    <label>Bill Name</label>
+    <input type="text" id="billName" placeholder="e.g. PG&E">
+    <label>Due Day (1-31, or leave blank)</label>
+    <input type="number" id="billDueDay" min="1" max="31" placeholder="14">
+    <label>Amount ($)</label>
+    <input type="number" id="billAmount" step="0.01" placeholder="200.00">
+    <label>Status</label>
+    <select id="billStatus">
+      <option value="upcoming">Upcoming</option>
+      <option value="current">Active</option>
+      <option value="overdue">Overdue</option>
+      <option value="autopay">Autopay</option>
+      <option value="paid">Paid</option>
+    </select>
+    <label>Priority</label>
+    <select id="billPriority">
+      <option value="1">P1 — Survival</option>
+      <option value="2">P2 — Insurance/Debt</option>
+      <option value="3">P3 — Necessities</option>
+      <option value="4">P4 — On Credit</option>
+    </select>
+    <label>Account (paid from)</label>
+    <input type="text" id="billAccount" placeholder="e.g. EECU Checking">
+    <label>Notes</label>
+    <input type="text" id="billNotes" placeholder="Optional notes">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('addBillModal')">Cancel</button>
+      <button class="btn-danger" id="deleteBillBtn" style="display:none" onclick="deleteBill()">Delete</button>
+      <button class="btn-save" onclick="saveBill()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Log Payment Modal -->
+<div class="modal-overlay" id="paymentModal">
+  <div class="modal">
+    <h3>Log Payment</h3>
+    <label>Bill</label>
+    <select id="payBill"></select>
+    <label>Amount ($)</label>
+    <input type="number" id="payAmount" step="0.01" placeholder="200.00">
+    <label>Date</label>
+    <input type="date" id="payDate">
+    <label>From Account</label>
+    <select id="payFrom">
+      <option value="EECU Checking">EECU Checking</option>
+      <option value="EECU Savings">EECU Savings</option>
+      <option value="EECU LOC">Line of Credit</option>
+      <option value="Apple Card">Apple Card</option>
+      <option value="Other">Other</option>
+    </select>
+    <label>Notes</label>
+    <input type="text" id="payNotes" placeholder="Optional notes">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('paymentModal')">Cancel</button>
+      <button class="btn-save" onclick="savePayment()">Log Payment</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// DATA STORE — localStorage now, Convex-ready structure
+// ═══════════════════════════════════════════════════════════════
+const STORE_KEY = 'spain-finance-v2';
+const ACCOUNTING_SYNC_URL = '/.netlify/functions/accounting-data';
+const ACCOUNTING_SOURCE_IMPORT_URL = '/.netlify/functions/accounting-source-import';
+const ACCOUNTING_FRAPPE_SYNC_URL = '/.netlify/functions/accounting-frappe-sync';
+const ACCOUNTING_STATUS_URL = '/.netlify/functions/accounting-status';
+const STATUS_CYCLE = ['overdue','upcoming','current','autopay','paid'];
+const STATUS_LABELS = {overdue:'Overdue',upcoming:'Upcoming',current:'Active',autopay:'Autopay',paid:'Paid'};
+const PRIORITY_LABELS = {1:'P1 Survival',2:'P2 Insurance/Debt',3:'P3 Necessities',4:'P4 On Credit'};
+const ACCOUNTING_ENTITIES = {
+  'behavior-school': {
+    label: 'Behavior School',
+    legalNote: 'Business books for behavior school income, Stripe/FreshBooks receipts, software, marketing, and contractor spend.',
+    defaultRevenueAccount: 'Sales',
+  },
+  'rob-spain': {
+    label: 'Rob Spain',
+    legalNote: 'Professional/personal admin books for RobSpain.com operations, speaking, consulting, and shared admin costs.',
+    defaultRevenueAccount: 'Sales',
+  },
+  household: {
+    label: 'Household',
+    legalNote: 'Household cash-flow tracking only. Keep separate from business books unless CPA directs otherwise.',
+    defaultRevenueAccount: 'Owner Contributions',
+  },
+};
+const ACCOUNTING_CATEGORY_RULES = [
+  { match: /openai|anthropic|claude|google|workspace|notion|zoom|calendly|netlify|vercel|github|software|app store|apple\.com\/bill|subscription/i, category: 'Software and subscriptions', taxCategory: 'Office expense', confidence: 0.84 },
+  { match: /stripe fee|processing fee|merchant fee|card fee/i, category: 'Merchant fees', taxCategory: 'Bank charges / merchant fees', confidence: 0.92 },
+  { match: /stripe|payout|freshbooks|invoice|behavior school|gumroad|teachable|kajabi|customer|client payment|course|cohort|tuition|paid invoice/i, category: 'Sales', taxCategory: 'Gross receipts', confidence: 0.91 },
+  { match: /meta|facebook|instagram|google ads|youtube|mailchimp|convertkit|beehiiv|advertising|marketing/i, category: 'Advertising and marketing', taxCategory: 'Advertising', confidence: 0.88 },
+  { match: /fiverr|upwork|contractor|assistant|freelance|supporting hands|collier/i, category: 'Contract labor', taxCategory: 'Contract labor', confidence: 0.78 },
+  { match: /office depot|staples|amazon|printer|paper|supplies/i, category: 'Office supplies', taxCategory: 'Supplies', confidence: 0.73 },
+  { match: /irs|ftb|tax|franchise tax|estimated tax/i, category: 'Taxes and licenses', taxCategory: 'Taxes and licenses', confidence: 0.86 },
+  { match: /pge|xfinity|at&t|att|phone|internet|utilities/i, category: 'Utilities', taxCategory: 'Utilities', confidence: 0.65 },
+  { match: /eecu|transfer|payment|autopay|credit card|apple card|discover|loan/i, category: 'Transfer or debt payment', taxCategory: 'Balance sheet / review', confidence: 0.7 },
+  { match: /costco|target|walmart|grocery|restaurant|doordash|uber eats|starbucks/i, category: 'Meals or personal review', taxCategory: 'Meals / personal review', confidence: 0.52 },
+  { match: /needs ocr|scanned|image-only|document review/i, category: 'Document needs OCR', taxCategory: 'Needs document review', confidence: 0 },
+];
+
+function defaultFrappeSettings() {
+  return {
+    company: '',
+    defaultBankAccount: '',
+    defaultRevenueAccount: 'Sales',
+    defaultExpenseAccount: 'Expenses',
+    categoryAccountMap: defaultCategoryAccountMap(),
+  };
+}
+
+function defaultCategoryAccountMap(settings = {}) {
+  const revenue = settings.defaultRevenueAccount || 'Sales';
+  const expense = settings.defaultExpenseAccount || 'Expenses';
+  return {
+    Sales: revenue,
+    'Software and subscriptions': 'Software and subscriptions',
+    'Merchant fees': 'Bank charges / merchant fees',
+    'Advertising and marketing': 'Advertising and marketing',
+    'Contract labor': 'Contract labor',
+    'Office supplies': 'Office supplies',
+    'Taxes and licenses': 'Taxes and licenses',
+    Utilities: 'Utilities',
+    'Transfer or debt payment': 'Balance sheet / review',
+    'Meals or personal review': 'Meals / personal review',
+    Uncategorized: expense,
+    'Personal / exclude': 'Owner draw / personal',
+    'Document needs OCR': 'Document review',
+  };
+}
+
+function defaultState() {
+  return {
+    bills: [
+      { id:'rent', name:'Valley Vista (Rent)', dueDay:1, amount:2445, status:'upcoming', priority:1, account:'EECU Checking', notes:'' },
+      { id:'support', name:'Supporting Hands', dueDay:null, amount:1800, status:'current', priority:4, account:'Apple Card', notes:'Childcare — on credit' },
+      { id:'auto', name:'EECU Auto Loan', dueDay:5, amount:499, status:'autopay', priority:1, account:'EECU Checking', notes:'' },
+      { id:'apple', name:'Apple Card Min', dueDay:27, amount:366, status:'paid', priority:2, account:'EECU Checking', notes:'' },
+      { id:'collier', name:'Phillip M. Collier', dueDay:null, amount:375, status:'current', priority:4, account:'Apple Card', notes:'2-3x/mo' },
+      { id:'toggle', name:'Toggle Insurance', dueDay:26, amount:202, status:'paid', priority:2, account:'EECU Debit', notes:'Car insurance' },
+      { id:'pge', name:'PG&E', dueDay:14, amount:200, status:'upcoming', priority:1, account:'EECU Checking', notes:'Payment plan' },
+      { id:'att', name:'AT&T Wireless', dueDay:null, amount:129, status:'current', priority:2, account:'EECU Checking', notes:'' },
+      { id:'fresno', name:'City of Fresno', dueDay:1, amount:121, status:'overdue', priority:1, account:'EECU Checking', notes:'Water/sewer — shutoff risk' },
+      { id:'xfinity', name:'Xfinity', dueDay:1, amount:95, status:'paid', priority:1, account:'EECU Checking', notes:'' },
+      { id:'discover', name:'Discover Min', dueDay:18, amount:83, status:'upcoming', priority:2, account:'EECU Checking', notes:'' },
+      { id:'loc', name:'EECU LOC Min', dueDay:26, amount:75, status:'upcoming', priority:2, account:'EECU Checking', notes:'' },
+      { id:'principal', name:'Principal Insurance', dueDay:null, amount:35, status:'current', priority:2, account:'Auto-deduct', notes:'' },
+      { id:'allstate', name:'Allstate Insurance', dueDay:null, amount:25, status:'current', priority:2, account:'Auto-deduct', notes:'' },
+    ],
+    accounts: [
+      { id:'checking', name:'EECU Checking', type:'checking', balance:4009, notes:'After paycheck + payments' },
+      { id:'savings', name:'EECU Savings', type:'savings', balance:87, notes:'Available' },
+      { id:'loc', name:'Line of Credit', type:'loc', balance:-404, notes:'$9,596 available' },
+      { id:'autoloan', name:'Auto Loan', type:'loan', balance:-16354, notes:'Due 04/05 autopay' },
+      { id:'applecard', name:'Apple Card', type:'credit', balance:-16199, notes:'Paid $960 on 3/30' },
+      { id:'discover', name:'Discover', type:'credit', balance:-1000, notes:'Min $83/mo' },
+    ],
+    income: [
+      { id:'kcusd', name:'Kings Canyon USD', amount:4361, frequency:'Biweekly' },
+      { id:'fpu', name:'FPU Payroll', amount:1093, frequency:'Monthly' },
+      { id:'behavior', name:'Behavior School', amount:272, frequency:'Irregular' },
+    ],
+    payments: [
+      { id:'p1', billName:'Toggle Insurance', amount:204, date:'2026-03-29', fromAccount:'EECU Debit', notes:'' },
+      { id:'p2', billName:'Xfinity', amount:95, date:'2026-03-29', fromAccount:'EECU Checking', notes:'' },
+      { id:'p3', billName:'Apple Card', amount:960, date:'2026-03-30', fromAccount:'EECU Checking', notes:'Exceeds $366 min' },
+      { id:'p4', billName:'OFW Basic Plan', amount:110, date:'2026-03-03', fromAccount:'EECU Checking', notes:'Renewed' },
+    ],
+    accounting: {
+      activeEntity: 'behavior-school',
+      defaultFrappeAccount: 'Expenses',
+      reviewQueue: [],
+      importedFiles: [],
+      importRuns: [],
+      frappeRuns: [],
+      vendorRules: [],
+      frappeSettings: defaultFrappeSettings(),
+      cpaNotes: 'Export this package monthly. CPA should confirm entity treatment before business/personal split is finalized.',
+    },
+    lastUpdated: '2026-04-01T00:00:00Z',
+  };
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      // Merge with defaults to pick up new fields
+      const def = defaultState();
+      return {
+        bills: saved.bills || def.bills,
+        accounts: saved.accounts || def.accounts,
+        income: saved.income || def.income,
+        payments: saved.payments || def.payments,
+        accounting: {
+          ...def.accounting,
+          ...(saved.accounting || {}),
+          reviewQueue: saved.accounting?.reviewQueue || def.accounting.reviewQueue,
+          importedFiles: saved.accounting?.importedFiles || def.accounting.importedFiles,
+          importRuns: saved.accounting?.importRuns || def.accounting.importRuns,
+          frappeRuns: saved.accounting?.frappeRuns || def.accounting.frappeRuns,
+          vendorRules: saved.accounting?.vendorRules || def.accounting.vendorRules,
+          frappeSettings: {
+            ...defaultFrappeSettings(),
+            ...(saved.accounting?.frappeSettings || {}),
+            categoryAccountMap: {
+              ...defaultCategoryAccountMap(saved.accounting?.frappeSettings || {}),
+              ...(saved.accounting?.frappeSettings?.categoryAccountMap || {}),
+            },
+          },
+        },
+        lastUpdated: saved.lastUpdated || def.lastUpdated,
+      };
+    }
+  } catch(e) {}
+  // Migrate from v1 localStorage if present
+  try {
+    const v1 = localStorage.getItem('spain-finance-bills');
+    if (v1) {
+      const statuses = JSON.parse(v1);
+      const state = defaultState();
+      state.bills.forEach(b => { if (statuses[b.id]) b.status = statuses[b.id]; });
+      saveState(state);
+      return state;
+    }
+  } catch(e) {}
+  return defaultState();
+}
+
+function saveState(state) {
+  state.lastUpdated = new Date().toISOString();
+  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+  scheduleAccountingSync();
+}
+
+let STATE = loadState();
+let ACCOUNTING_SYNC_TIMER = null;
+let ACCOUNTING_SYNC_IN_FLIGHT = false;
+let ACCOUNTING_STATUS_LOADED = false;
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER FUNCTIONS
+// ═══════════════════════════════════════════════════════════════
+
+function fmt(n) {
+  return '$' + Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+function fmtDate(d) {
+  if (!d) return '';
+  const parts = d.split('-');
+  return parts[1] + '/' + parts[2];
+}
+
+function renderAll() {
+  renderSummary();
+  renderAlerts();
+  renderAccountingHub();
+  renderBills();
+  renderAccounts();
+  renderIncome();
+  renderBudget();
+  renderDeficit();
+  renderPayments();
+  renderEnvelopes();
+  renderCalendar();
+  renderNetWorth();
+  renderDebtPayoff();
+  document.getElementById('lastUpdated').textContent = 'Updated: ' + new Date(STATE.lastUpdated).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+
+function renderSummary() {
+  const cash = STATE.accounts.filter(a => a.type === 'checking' || a.type === 'savings').reduce((s, a) => s + Math.max(0, a.balance), 0);
+  const locAcct = STATE.accounts.find(a => a.type === 'loc');
+  const locAvail = locAcct ? 10000 + locAcct.balance : 0;
+  const totalDebt = STATE.accounts.filter(a => a.balance < 0).reduce((s, a) => s + Math.abs(a.balance), 0);
+  const totalIncome = STATE.income.reduce((s, i) => s + i.amount, 0);
+  const totalBills = STATE.bills.reduce((s, b) => s + b.amount, 0);
+  const deficit = totalIncome - totalBills;
+
+  document.getElementById('summaryCards').innerHTML = `
+    <div class="fin-card">
+      <h3>Cash Available</h3>
+      <div class="fin-stat ${cash > 2000 ? 'yellow' : 'red'}">${fmt(cash)}</div>
+      <div class="fin-sub">${STATE.accounts.filter(a=>a.type==='checking'||a.type==='savings').map(a=>a.name+' '+fmt(a.balance)).join(' + ')}</div>
+    </div>
+    <div class="fin-card">
+      <h3>LOC Available</h3>
+      <div class="fin-stat blue">${fmt(locAvail)}</div>
+      <div class="fin-sub">${fmt(Math.abs(locAcct?.balance||0))} used</div>
+    </div>
+    <div class="fin-card">
+      <h3>Total Debt</h3>
+      <div class="fin-stat red">${fmt(totalDebt)}</div>
+      <div class="fin-sub">${STATE.accounts.filter(a=>a.balance<0).map(a=>a.name).join(', ')}</div>
+    </div>
+    <div class="fin-card">
+      <h3>Monthly ${deficit >= 0 ? 'Surplus' : 'Deficit'}</h3>
+      <div class="fin-stat ${deficit >= 0 ? 'green' : 'red'}">${deficit >= 0 ? '' : '-'}${fmt(Math.abs(deficit))}</div>
+      <div class="fin-sub">Income ${fmt(totalIncome)} vs Bills ${fmt(totalBills)}</div>
+    </div>
+  `;
+}
+
+function renderAlerts() {
+  const totalIncome = STATE.income.reduce((s, i) => s + i.amount, 0);
+  const totalBills = STATE.bills.reduce((s, b) => s + b.amount, 0);
+  const overdue = STATE.bills.filter(b => b.status === 'overdue');
+  let html = '';
+  if (totalBills > totalIncome) {
+    html += `<div class="fin-alert danger"><strong>Structural deficit:</strong> Fixed expenses (${fmt(totalBills)}/mo) exceed income (${fmt(totalIncome)}/mo).</div>`;
+  }
+  if (overdue.length > 0) {
+    html += `<div class="fin-alert danger"><strong>Overdue (${overdue.length}):</strong> ${overdue.map(b => b.name + ' ' + fmt(b.amount)).join(', ')}</div>`;
+  }
+  document.getElementById('alertsContainer').innerHTML = html;
+}
+
+function renderBills() {
+  const tbody = document.getElementById('billsBody');
+  tbody.innerHTML = STATE.bills.map((b, i) => {
+    const dueStr = b.dueDay ? ordinal(b.dueDay) : 'Monthly';
+    return `<tr>
+      <td><span class="editable" onclick="editBill('${b.id}')" title="Click to edit">${esc(b.name)}</span></td>
+      <td>${dueStr}</td>
+      <td class="amt">${fmt(b.amount)}</td>
+      <td><span class="fin-badge ${b.status}" onclick="cycleBill('${b.id}')" title="Click to change status">${STATUS_LABELS[b.status]}</span></td>
+      <td style="white-space:nowrap;">
+        <button class="btn-sm btn-pay" onclick="openPaymentFor('${b.id}')" title="Log payment">$</button>
+        <button class="btn-sm btn-edit" onclick="editBill('${b.id}')" title="Edit">&#9998;</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderAccounts() {
+  const tbody = document.getElementById('accountsBody');
+  tbody.innerHTML = STATE.accounts.map(a => {
+    const color = a.balance < 0 ? 'color:#ef4444' : a.type === 'loc' ? 'color:#3b82f6' : '';
+    return `<tr>
+      <td>${esc(a.name)}</td>
+      <td class="amt"><span class="editable" onclick="editAccountBalance('${a.id}')" style="${color}" title="Click to edit">${a.balance < 0 ? '-' : ''}${fmt(a.balance)}</span></td>
+      <td style="color:#64748b;font-size:13px;"><span class="editable" onclick="editAccountNotes('${a.id}')" title="Click to edit">${esc(a.notes || '—')}</span></td>
+    </tr>`;
+  }).join('');
+
+  // Debt breakdown
+  const debts = STATE.accounts.filter(a => a.balance < 0);
+  const totalDebt = debts.reduce((s, a) => s + Math.abs(a.balance), 0);
+  const colors = ['#ef4444','#eab308','#3b82f6','#22c55e','#a855f7'];
+  document.getElementById('debtBreakdown').innerHTML = debts.length ? `
+    <h3>Debt Breakdown</h3>
+    ${debts.map((a, i) => {
+      const pct = Math.round(Math.abs(a.balance) / totalDebt * 100);
+      return `<div style="margin-top:12px;">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+          <span>${esc(a.name)}</span><span style="color:#64748b">${fmt(Math.abs(a.balance))} (${pct}%)</span>
+        </div>
+        <div class="fin-bar-bg"><div class="fin-bar" style="width:${pct}%;background:${colors[i%colors.length]}"></div></div>
+      </div>`;
+    }).join('')}
+  ` : '';
+}
+
+function renderIncome() {
+  const tbody = document.getElementById('incomeBody');
+  tbody.innerHTML = STATE.income.map(inc => `<tr>
+    <td>${esc(inc.name)}</td>
+    <td class="amt"><span class="editable" onclick="editIncomeAmount('${inc.id}')" title="Click to edit">${fmt(inc.amount)}</span></td>
+    <td style="color:#64748b">${esc(inc.frequency)}</td>
+  </tr>`).join('');
+
+  const total = STATE.income.reduce((s, i) => s + i.amount, 0);
+  document.getElementById('incomeTotalRow').innerHTML = `
+    <span>Total Monthly Income</span>
+    <span class="fin-stat green" style="font-size:20px;">${fmt(total)}</span>
+  `;
+}
+
+function renderBudget() {
+  const totalIncome = STATE.income.reduce((s, i) => s + i.amount, 0);
+  const categories = {};
+  STATE.bills.forEach(b => {
+    const cat = b.priority <= 1 ? (b.name.match(/rent|vista/i) ? 'Housing' : 'Utilities & Essentials')
+      : b.priority === 2 ? 'Insurance & Debt' : b.priority === 3 ? 'Necessities' : 'On Credit';
+    categories[cat] = (categories[cat] || 0) + b.amount;
+  });
+  const colors = { 'Housing':'#ef4444', 'Utilities & Essentials':'#eab308', 'Insurance & Debt':'#3b82f6', 'Necessities':'#22c55e', 'On Credit':'#a855f7' };
+  const totalBills = Object.values(categories).reduce((s, v) => s + v, 0);
+
+  document.getElementById('budgetCard').innerHTML = `
+    <h3>Monthly Budget Breakdown</h3>
+    ${Object.entries(categories).map(([cat, amt]) => {
+      const pct = Math.round(amt / totalIncome * 100);
+      return `<div style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+          <span>${cat}</span><span style="color:#64748b">${fmt(amt)} — ${pct}%</span>
+        </div>
+        <div class="fin-bar-bg"><div class="fin-bar" style="width:${Math.min(pct, 100)}%;background:${colors[cat]||'#94a3b8'}"></div></div>
+      </div>`;
+    }).join('')}
+    <div style="margin-top:16px;padding-top:12px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-weight:600;">
+      <span>Total Recurring</span>
+      <span style="color:${totalBills > totalIncome ? '#ef4444' : '#22c55e'}">${fmt(totalBills)}/mo</span>
+    </div>
+  `;
+}
+
+function renderDeficit() {
+  const totalIncome = STATE.income.reduce((s, i) => s + i.amount, 0);
+  const totalBills = STATE.bills.reduce((s, b) => s + b.amount, 0);
+  const deficit = totalIncome - totalBills;
+  const onCredit = STATE.bills.filter(b => b.priority === 4).reduce((s, b) => s + b.amount, 0);
+
+  document.getElementById('deficitSummary').innerHTML = `
+    <div class="label">Monthly Structural ${deficit >= 0 ? 'Surplus' : 'Deficit'}</div>
+    <div class="amount">${deficit >= 0 ? '+' : '-'}${fmt(Math.abs(deficit))}/mo</div>
+    ${onCredit > 0 ? `<div class="note">${fmt(onCredit)}/mo goes on credit card, adding to debt each month.</div>` : ''}
+    <div style="margin-top: 16px; font-size: 13px; color: #64748b; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
+      <strong style="color:#1e293b;">Biggest levers to close the gap:</strong>
+      <ol style="margin-top: 8px; padding-left: 20px; line-height: 1.8;">
+        <li><strong>Supporting Hands funding</strong> — if IHSS/insurance covers 50%, saves ~$900/mo</li>
+        <li><strong>Increase behavior school income</strong> — currently ${fmt(STATE.income.find(i=>i.id==='behavior')?.amount||272)}/mo avg</li>
+        <li><strong>Move Supporting Hands off Apple Card</strong> — stop interest compounding</li>
+        <li><strong>AT&T plan review</strong> — ${fmt(STATE.bills.find(b=>b.id==='att')?.amount||129)}/mo may be reducible</li>
+      </ol>
+    </div>
+  `;
+}
+
+function renderPayments() {
+  const payments = [...STATE.payments].sort((a, b) => b.date.localeCompare(a.date));
+  document.getElementById('paymentsListFull').innerHTML = payments.length === 0
+    ? '<div style="color:#94a3b8;font-size:13px;padding:16px 0;">No payments logged yet. Click "Log Payment" to start tracking.</div>'
+    : payments.map(p => `<div class="payment-row">
+        <span class="pay-date">${fmtDate(p.date)}</span>
+        <span class="pay-name">${esc(p.billName)}</span>
+        <span class="pay-amt">${fmt(p.amount)}</span>
+        <span class="pay-from">${esc(p.fromAccount || '')}</span>
+        <button class="btn-sm btn-del" onclick="deletePayment('${p.id}')" title="Remove" style="margin-left:4px;">&times;</button>
+      </div>`).join('');
+
+  // Summary
+  const thisMonth = new Date().toISOString().slice(0, 7);
+  const monthPayments = payments.filter(p => p.date.startsWith(thisMonth));
+  const totalMonth = monthPayments.reduce((s, p) => s + p.amount, 0);
+  const totalAll = payments.reduce((s, p) => s + p.amount, 0);
+  const paidBills = STATE.bills.filter(b => b.status === 'paid').length;
+
+  document.getElementById('paymentSummary').innerHTML = `
+    <div style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:14px;">
+        <span>This month</span><span style="font-weight:700;color:#22c55e;font-size:20px;">${fmt(totalMonth)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:14px;">
+        <span>All time logged</span><span style="font-weight:700;color:#64748b;">${fmt(totalAll)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:14px;">
+        <span>Bills marked paid</span><span style="font-weight:700;color:#22c55e;">${paidBills} / ${STATE.bills.length}</span>
+      </div>
+    </div>
+    <div style="border-top:1px solid #e2e8f0;padding-top:16px;">
+      <h3>By Account</h3>
+      ${Object.entries(payments.reduce((acc, p) => { acc[p.fromAccount||'Unknown'] = (acc[p.fromAccount||'Unknown']||0) + p.amount; return acc; }, {}))
+        .sort((a, b) => b[1] - a[1])
+        .map(([acct, total]) => `<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;">
+          <span>${esc(acct)}</span><span style="font-weight:600;">${fmt(total)}</span>
+        </div>`).join('')}
+    </div>
+  `;
+}
+
+function renderEnvelopes() {
+  const totalIncome = STATE.income.reduce((s, i) => s + i.amount, 0);
+  let remaining = totalIncome;
+  const groups = [
+    { p: 1, label: 'Priority 1 — Survival', cls: 'p1' },
+    { p: 2, label: 'Priority 2 — Insurance & Debt Minimums', cls: 'p2' },
+    { p: 3, label: 'Priority 3 — Necessities', cls: 'p3' },
+    { p: 4, label: 'Priority 4 — On Credit (adds to debt)', cls: 'p4' },
+  ];
+
+  let envelopeHtml = '<h3>April 2026 Envelopes</h3>';
+  const groupTotals = [];
+
+  groups.forEach(g => {
+    const bills = STATE.bills.filter(b => b.priority === g.p);
+    const groupTotal = bills.reduce((s, b) => s + b.amount, 0);
+    const funded = g.p <= 3;
+    envelopeHtml += `<div class="env-priority ${g.cls}">${g.label}</div>`;
+    bills.forEach(b => {
+      const isFunded = funded && remaining >= b.amount;
+      if (funded) remaining -= b.amount;
+      envelopeHtml += `<div class="envelope ${g.cls} ${!isFunded && g.p < 4 ? '' : g.p === 4 ? 'unfunded' : ''}">
+        <div class="env-row">
+          <span class="env-name">${esc(b.name)}</span>
+          <span class="env-amt" style="color:${isFunded ? '#22c55e' : '#ef4444'}">${isFunded ? fmt(b.amount) : fmt(b.amount) + ' unfunded'}</span>
+        </div>
+        <div class="env-bar"><div class="env-fill" style="width:${isFunded ? 100 : 0}%;background:${isFunded ? '#22c55e' : '#ef4444'};"></div></div>
+      </div>`;
+    });
+    const afterRemaining = funded ? Math.max(0, remaining) : remaining;
+    envelopeHtml += `<div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin:8px 0 4px 8px;">
+      <span>${g.cls.toUpperCase()} Total: ${fmt(groupTotal)}</span>
+      ${g.p < 4 ? `<span style="color:${afterRemaining > 0 ? '#22c55e' : '#ef4444'}">Remaining: ${fmt(afterRemaining)}</span>` : `<span style="color:#ef4444">This adds to debt</span>`}
+    </div>`;
+    groupTotals.push({ label: g.label, total: groupTotal, cls: g.cls });
+  });
+
+  document.getElementById('envelopesCard').innerHTML = envelopeHtml;
+
+  // Summary
+  const onCredit = STATE.bills.filter(b => b.priority === 4).reduce((s, b) => s + b.amount, 0);
+  const buffer = Math.max(0, totalIncome - STATE.bills.filter(b => b.priority <= 3).reduce((s, b) => s + b.amount, 0));
+  const p1 = STATE.bills.filter(b => b.priority === 1).reduce((s, b) => s + b.amount, 0);
+  const p2 = STATE.bills.filter(b => b.priority === 2).reduce((s, b) => s + b.amount, 0);
+  const p3 = STATE.bills.filter(b => b.priority === 3).reduce((s, b) => s + b.amount, 0);
+
+  document.getElementById('envelopeSummaryCard').innerHTML = `
+    <h3>Envelope Summary</h3>
+    <div style="margin-bottom:24px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-size:14px;">Monthly Income</span>
+        <span style="font-size:20px;font-weight:700;color:#22c55e;">${fmt(totalIncome)}</span>
+      </div>
+      <div class="fin-bar-bg" style="height:24px;border-radius:6px;">
+        <div style="height:100%;display:flex;border-radius:6px;overflow:hidden;">
+          <div style="width:${p1/totalIncome*100}%;background:#ef4444;" title="P1: ${fmt(p1)}"></div>
+          <div style="width:${p2/totalIncome*100}%;background:#eab308;" title="P2: ${fmt(p2)}"></div>
+          <div style="width:${p3/totalIncome*100}%;background:#3b82f6;" title="P3: ${fmt(p3)}"></div>
+          <div style="width:${buffer/totalIncome*100}%;background:#22c55e;" title="Buffer: ${fmt(buffer)}"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;font-size:11px;">
+        <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#ef4444;margin-right:4px;"></span>P1 ${fmt(p1)}</span>
+        <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#eab308;margin-right:4px;"></span>P2 ${fmt(p2)}</span>
+        <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#3b82f6;margin-right:4px;"></span>P3 ${fmt(p3)}</span>
+        <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#22c55e;margin-right:4px;"></span>Buffer ${fmt(buffer)}</span>
+      </div>
+    </div>
+    ${onCredit > 0 ? `
+    <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:16px;margin-bottom:16px;">
+      <div style="font-size:13px;font-weight:600;color:#ef4444;margin-bottom:8px;">THE HIDDEN COST</div>
+      <div style="font-size:13px;color:#1e293b;line-height:1.6;">
+        ${fmt(buffer)} looks like a buffer, but <strong>${fmt(onCredit)}/mo goes on Apple Card</strong> — that's new debt every month. The real deficit is:<br>
+        <span style="font-size:20px;font-weight:700;color:#ef4444;display:block;margin-top:8px;">-${fmt(onCredit - buffer)}/mo net new debt</span>
+        <span style="font-size:12px;color:#64748b;">Plus interest compounding on the balance</span>
+      </div>
+    </div>` : ''}
+    <div style="border-top:1px solid #e2e8f0;padding-top:16px;">
+      <h3>How Envelope Budgeting Helps</h3>
+      <ul style="font-size:13px;color:#64748b;line-height:1.8;padding-left:16px;">
+        <li>P1-P3 are <strong>fully funded</strong> from checking — these get paid first</li>
+        <li>P4 items go on credit — they're <strong>visible as unfunded</strong></li>
+        <li>If Supporting Hands gets insurance coverage, that $1,800 moves from P4 to P1</li>
+        <li>The buffer covers irregular expenses and prevents new LOC draws</li>
+      </ul>
+    </div>
+  `;
+}
+
+function renderCalendar() {
+  const now = new Date();
+  const month = now.getMonth();
+  const year = now.getFullYear();
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  // Build calendar entries from bills
+  const overdue = STATE.bills.filter(b => b.status === 'overdue');
+  const paid = STATE.bills.filter(b => b.status === 'paid');
+  const upcoming = STATE.bills.filter(b => b.status !== 'overdue' && b.status !== 'paid' && b.dueDay);
+
+  let html = '<div class="fin-card"><h3>Overdue & Paid</h3>';
+  overdue.forEach(b => {
+    html += `<div class="cal-row">
+      <div class="cal-day danger"><span class="month">${monthNames[month]}</span><span class="date">${b.dueDay || '?'}</span></div>
+      <div class="cal-info"><div class="name">${esc(b.name)}</div><div class="detail">${esc(b.notes || '')}</div></div>
+      <div class="cal-amt" style="color:#ef4444">${fmt(b.amount)}</div>
+    </div>`;
+  });
+  paid.forEach(b => {
+    html += `<div class="cal-row">
+      <div class="cal-day done"><span class="month">${monthNames[month]}</span><span class="date">${b.dueDay || '?'}</span></div>
+      <div class="cal-info"><div class="name">${esc(b.name)}</div><div class="detail">Paid</div></div>
+      <div class="cal-amt" style="color:#22c55e">${fmt(b.amount)} paid</div>
+    </div>`;
+  });
+  html += '</div>';
+
+  html += '<div class="fin-card"><h3>Upcoming This Month</h3>';
+  upcoming.sort((a, b) => (a.dueDay || 99) - (b.dueDay || 99)).forEach(b => {
+    const isPast = b.dueDay < now.getDate();
+    html += `<div class="cal-row">
+      <div class="cal-day ${isPast ? 'warn' : 'ok'}"><span class="month">${monthNames[month]}</span><span class="date">${b.dueDay}</span></div>
+      <div class="cal-info"><div class="name">${esc(b.name)}</div><div class="detail">${esc(b.account || '')} ${esc(b.notes || '')}</div></div>
+      <div class="cal-amt">${fmt(b.amount)}</div>
+    </div>`;
+  });
+  html += '</div>';
+
+  document.getElementById('calendarGrid').innerHTML = html;
+}
+
+function renderNetWorth() {
+  const data = [
+    { month: 'Apr', nw: -22165 }, { month: 'May', nw: -22115 },
+    { month: 'Jun', nw: -23033 }, { month: 'Jul', nw: -23201 },
+    { month: 'Aug', nw: -23835 }, { month: 'Sep', nw: -24274 },
+    { month: 'Oct', nw: -26278 }, { month: 'Nov', nw: -26482 },
+    { month: 'Dec', nw: -28655 }, { month: 'Jan', nw: -29007 },
+    { month: 'Feb', nw: -30289 }, { month: 'Mar', nw: -31420 }
+  ];
+  // Add current computed net worth
+  const currentNW = STATE.accounts.reduce((s, a) => s + a.balance, 0);
+  data.push({ month: 'Apr', nw: currentNW });
+
+  const maxAbs = Math.max(...data.map(d => Math.abs(d.nw)));
+  const chart = document.getElementById('nwChart');
+  chart.innerHTML = '';
+  data.forEach(d => {
+    const wrap = document.createElement('div');
+    wrap.className = 'nw-bar-wrap';
+    const bar = document.createElement('div');
+    bar.className = 'nw-bar';
+    const pct = (Math.abs(d.nw) / maxAbs) * 100;
+    bar.style.height = pct + '%';
+    bar.style.background = d.nw < -28000 ? '#ef4444' : d.nw < -25000 ? '#eab308' : '#3b82f6';
+    bar.title = d.month + ': -$' + Math.abs(d.nw).toLocaleString();
+    const label = document.createElement('div');
+    label.className = 'nw-label';
+    label.textContent = d.month;
+    wrap.appendChild(bar);
+    wrap.appendChild(label);
+    chart.appendChild(wrap);
+  });
+
+  document.getElementById('nwSummary').innerHTML = `
+    <div style="display:flex;justify-content:space-between;font-size:13px;">
+      <span style="color:#64748b">Current Net Worth</span>
+      <span style="font-weight:700;color:#ef4444;font-size:18px;">${currentNW >= 0 ? '' : '-'}${fmt(Math.abs(currentNW))}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:8px;">
+      <span style="color:#64748b">12-month change</span>
+      <span style="font-weight:600;color:${currentNW > -22165 ? '#22c55e' : '#ef4444'};">${currentNW > -22165 ? '+' : '-'}${fmt(Math.abs(currentNW - (-22165)))} (${currentNW > -22165 ? 'better' : 'worse'})</span>
+    </div>
+  `;
+}
+
+function renderDebtPayoff() {
+  const debts = STATE.accounts.filter(a => a.balance < 0).map(a => {
+    const bill = STATE.bills.find(b => b.name.toLowerCase().includes(a.name.split(' ')[0].toLowerCase()));
+    const minPay = bill ? bill.amount : 0;
+    const bal = Math.abs(a.balance);
+    let payoff = minPay > 0 ? Math.ceil(bal / minPay) : 999;
+    let payoffStr = payoff > 120 ? (Math.round(payoff / 12) + '+ years') : payoff > 12 ? ('~' + Math.round(payoff / 12) + ' years') : ('~' + payoff + ' months');
+    const color = payoff > 60 ? '#ef4444' : payoff > 24 ? '#eab308' : '#22c55e';
+    return { name: a.name, balance: bal, minPay, payoffStr, color };
+  });
+
+  document.getElementById('debtPayoff').innerHTML = `
+    <table class="fin-table">
+      <thead><tr><th>Account</th><th class="amt">Balance</th><th class="amt">Min Pay</th><th>Payoff at Min</th></tr></thead>
+      <tbody>
+        ${debts.map(d => `<tr>
+          <td>${esc(d.name)}</td>
+          <td class="amt" style="color:#ef4444">${fmt(d.balance)}</td>
+          <td class="amt">${d.minPay ? fmt(d.minPay) : '—'}</td>
+          <td style="color:${d.color};font-weight:600;">${d.payoffStr}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid #e2e8f0;">
+      <h3>Avalanche Strategy (save most interest)</h3>
+      <div style="font-size:13px;color:#64748b;margin-bottom:12px;">Pay minimums on everything, throw any extra at the highest-interest debt first.</div>
+      <ol style="font-size:13px;color:#1e293b;padding-left:20px;line-height:2;">
+        <li><strong style="color:#ef4444;">Apple Card</strong> — highest interest rate, balance growing</li>
+        <li><strong style="color:#eab308;">Discover</strong> — likely high rate, small balance = quick win</li>
+        <li><strong style="color:#3b82f6;">EECU LOC</strong> — small balance, LOC rate</li>
+        <li><strong style="color:#64748b;">Auto Loan</strong> — lowest rate, keep at minimum</li>
+      </ol>
+    </div>
+    <div style="margin-top:16px;padding:12px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:8px;">
+      <div style="font-size:13px;font-weight:600;color:#22c55e;margin-bottom:4px;">Quick win: Discover + LOC</div>
+      <div style="font-size:12px;color:#64748b;">Both can be eliminated within 14 months at current minimums. Frees up $158/mo that can attack the Apple Card balance.</div>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ACCOUNTING HUB
+// ═══════════════════════════════════════════════════════════════
+
+function ensureAccountingState() {
+  if (!STATE.accounting) STATE.accounting = defaultState().accounting;
+  if (!Array.isArray(STATE.accounting.reviewQueue)) STATE.accounting.reviewQueue = [];
+  if (!Array.isArray(STATE.accounting.importedFiles)) STATE.accounting.importedFiles = [];
+  if (!Array.isArray(STATE.accounting.importRuns)) STATE.accounting.importRuns = [];
+  if (!Array.isArray(STATE.accounting.frappeRuns)) STATE.accounting.frappeRuns = [];
+  if (!Array.isArray(STATE.accounting.vendorRules)) STATE.accounting.vendorRules = [];
+  if (!STATE.accounting.activeEntity) STATE.accounting.activeEntity = 'behavior-school';
+  if (!STATE.accounting.defaultFrappeAccount) STATE.accounting.defaultFrappeAccount = 'Expenses';
+  STATE.accounting.reviewQueue.forEach(row => {
+    if (!row.payee) row.payee = normalizePayee(row.description, row.amount);
+  });
+  STATE.accounting.frappeSettings = {
+    ...defaultFrappeSettings(),
+    ...(STATE.accounting.frappeSettings || {}),
+    categoryAccountMap: {
+      ...defaultCategoryAccountMap(STATE.accounting.frappeSettings || {}),
+      ...(STATE.accounting.frappeSettings?.categoryAccountMap || {}),
+    },
+  };
+}
+
+function renderAccountingHub() {
+  ensureAccountingState();
+  const entity = ACCOUNTING_ENTITIES[STATE.accounting.activeEntity] || ACCOUNTING_ENTITIES['behavior-school'];
+  const entitySel = document.getElementById('acctEntity');
+  const defaultAcctSel = document.getElementById('acctDefaultAccount');
+  const summaryEl = document.getElementById('accountingEntitySummary');
+  if (!entitySel || !defaultAcctSel || !summaryEl) return;
+
+  entitySel.value = STATE.accounting.activeEntity;
+  defaultAcctSel.value = STATE.accounting.defaultFrappeAccount;
+  const frappeSettings = STATE.accounting.frappeSettings || defaultFrappeSettings();
+  const frappeCompany = document.getElementById('frappeCompany');
+  const frappeBankAccount = document.getElementById('frappeBankAccount');
+  const frappeRevenueAccount = document.getElementById('frappeRevenueAccount');
+  const frappeExpenseAccount = document.getElementById('frappeExpenseAccount');
+  if (frappeCompany) frappeCompany.value = frappeSettings.company || '';
+  if (frappeBankAccount) frappeBankAccount.value = frappeSettings.defaultBankAccount || '';
+  if (frappeRevenueAccount) frappeRevenueAccount.value = frappeSettings.defaultRevenueAccount || 'Sales';
+  if (frappeExpenseAccount) frappeExpenseAccount.value = frappeSettings.defaultExpenseAccount || 'Expenses';
+  summaryEl.innerHTML = `<strong style="color:#1e293b;">${esc(entity.label)}</strong><br>${esc(entity.legalNote)}<br><span style="color:#0f766e;">Revenue defaults to ${esc(entity.defaultRevenueAccount)}.</span>`;
+
+  document.getElementById('accountingRules').innerHTML = ACCOUNTING_CATEGORY_RULES.map(rule =>
+    `<span class="rule-chip"><strong>${esc(rule.category)}</strong>${esc(rule.taxCategory)}</span>`
+  ).join('');
+  renderFrappeAccountMap();
+  renderFrappeAccountOptions();
+  renderVendorRules();
+
+  const queue = STATE.accounting.reviewQueue;
+  const income = queue.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0);
+  const expenses = queue.filter(t => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
+  const approved = queue.filter(t => t.approved).length;
+  const unreviewed = queue.filter(t => !t.approved || t.confidence < 0.75).length;
+  const automationReady = queue.filter(isAutomationReadyForApproval).length;
+  document.getElementById('accountingSummary').innerHTML = `
+    <span>Transactions: <strong>${queue.length}</strong></span>
+    <span>Income: <strong style="color:#16a34a;">${fmtCents(income)}</strong></span>
+    <span>Expenses: <strong style="color:#dc2626;">${fmtCents(expenses)}</strong></span>
+    <span>Approved: <strong>${approved}</strong></span>
+    <span>Needs review: <strong style="color:${unreviewed ? '#dc2626' : '#16a34a'};">${unreviewed}</strong></span>
+    <span>Automation ready: <strong style="color:${automationReady ? '#0f766e' : '#64748b'};">${automationReady}</strong></span>
+  `;
+  renderAccountingCloseStatus();
+  renderAccountingReviewQueue();
+  renderAccountingImportRuns();
+  renderFrappeSyncRuns();
+  renderCpaNotes();
+  if (!ACCOUNTING_STATUS_LOADED) {
+    ACCOUNTING_STATUS_LOADED = true;
+    loadAccountingAutomationStatus();
+  }
+}
+
+function accountingSyncStatus(text, color) {
+  const el = document.getElementById('convexStatus');
+  if (!el) return;
+  el.textContent = text ? 'Accounting sync: ' + text : '';
+  el.style.color = color || '#94a3b8';
+}
+
+function accountingAuthHeaders() {
+  const headers = { 'Content-Type': 'application/json' };
+  const token = localStorage.getItem('robspainAdminApiToken') || localStorage.getItem('adminApiToken') || '';
+  if (token.trim()) headers.Authorization = 'Bearer ' + token.trim();
+  return headers;
+}
+
+function accountingPayload() {
+  ensureAccountingState();
+  return {
+    activeEntity: STATE.accounting.activeEntity,
+    defaultFrappeAccount: STATE.accounting.defaultFrappeAccount,
+    reviewQueue: STATE.accounting.reviewQueue,
+    importedFiles: STATE.accounting.importedFiles,
+    importRuns: STATE.accounting.importRuns,
+    frappeRuns: STATE.accounting.frappeRuns,
+    vendorRules: STATE.accounting.vendorRules,
+    frappeSettings: STATE.accounting.frappeSettings,
+    cpaNotes: STATE.accounting.cpaNotes,
+  };
+}
+
+function mergeAccountingState(remote) {
+  if (!remote || !Array.isArray(remote.reviewQueue)) return false;
+  ensureAccountingState();
+
+  const before = STATE.accounting.reviewQueue.length;
+  const byKey = new Map();
+  [...remote.reviewQueue, ...STATE.accounting.reviewQueue].forEach(row => {
+    const key = row.importKey || row.id || [row.date, row.description, row.amount].join('|');
+    const existing = byKey.get(key);
+    if (!existing) {
+      byKey.set(key, row);
+      return;
+    }
+    const existingUpdated = Date.parse(existing.updatedAt || existing.importedAt || 0) || 0;
+    const rowUpdated = Date.parse(row.updatedAt || row.importedAt || 0) || 0;
+    byKey.set(key, rowUpdated >= existingUpdated ? row : existing);
+  });
+
+  STATE.accounting.reviewQueue = [...byKey.values()];
+  STATE.accounting.importedFiles = mergeImportedFiles(remote.importedFiles || [], STATE.accounting.importedFiles || []);
+  STATE.accounting.importRuns = mergeImportRuns(remote.importRuns || [], STATE.accounting.importRuns || []);
+  STATE.accounting.frappeRuns = mergeFrappeRuns(remote.frappeRuns || [], STATE.accounting.frappeRuns || []);
+  STATE.accounting.vendorRules = mergeVendorRules(remote.vendorRules || [], STATE.accounting.vendorRules || []);
+  STATE.accounting.cpaNotes = STATE.accounting.cpaNotes || remote.cpaNotes || defaultState().accounting.cpaNotes;
+  STATE.accounting.activeEntity = STATE.accounting.activeEntity || remote.activeEntity || 'behavior-school';
+  STATE.accounting.defaultFrappeAccount = STATE.accounting.defaultFrappeAccount || remote.defaultFrappeAccount || 'Expenses';
+  STATE.accounting.frappeSettings = {
+    ...defaultFrappeSettings(),
+    ...(remote.frappeSettings || {}),
+    ...(STATE.accounting.frappeSettings || {}),
+    categoryAccountMap: {
+      ...defaultCategoryAccountMap(remote.frappeSettings || {}),
+      ...(remote.frappeSettings?.categoryAccountMap || {}),
+      ...(STATE.accounting.frappeSettings?.categoryAccountMap || {}),
+    },
+  };
+  STATE.accounting.lastSyncedAt = remote.lastSyncedAt || STATE.accounting.lastSyncedAt || null;
+
+  const changed = STATE.accounting.reviewQueue.length !== before || (remote.importedFiles || []).length > 0 || (remote.importRuns || []).length > 0 || (remote.frappeRuns || []).length > 0;
+  localStorage.setItem(STORE_KEY, JSON.stringify(STATE));
+  return changed;
+}
+
+function mergeImportedFiles(remoteFiles, localFiles) {
+  const byKey = new Map();
+  [...remoteFiles, ...localFiles].forEach(file => {
+    if (!file || !file.name) return;
+    const key = file.fingerprint || [file.name, file.importedAt || '', file.count || 0].join('|');
+    byKey.set(key, file);
+  });
+  return [...byKey.values()].sort((a, b) => String(b.importedAt || '').localeCompare(String(a.importedAt || '')));
+}
+
+function mergeImportRuns(remoteRuns, localRuns) {
+  const byKey = new Map();
+  [...remoteRuns, ...localRuns].forEach(run => {
+    if (!run) return;
+    const key = run.id || [run.startedAt || run.finishedAt || '', run.source || '', run.fingerprint || ''].join('|');
+    if (!key.trim()) return;
+    byKey.set(key, run);
+  });
+  return [...byKey.values()]
+    .sort((a, b) => String(b.startedAt || b.finishedAt || '').localeCompare(String(a.startedAt || a.finishedAt || '')))
+    .slice(0, 100);
+}
+
+function mergeFrappeRuns(remoteRuns, localRuns) {
+  const byKey = new Map();
+  [...remoteRuns, ...localRuns].forEach(run => {
+    if (!run) return;
+    const key = run.id || [run.startedAt || run.finishedAt || '', run.mode || '', run.rowCount || 0].join('|');
+    if (!key.trim()) return;
+    byKey.set(key, run);
+  });
+  return [...byKey.values()]
+    .sort((a, b) => String(b.startedAt || b.finishedAt || '').localeCompare(String(a.startedAt || a.finishedAt || '')))
+    .slice(0, 100);
+}
+
+function mergeVendorRules(remoteRules, localRules) {
+  const byKey = new Map();
+  [...remoteRules, ...localRules].forEach(rule => {
+    if (!rule) return;
+    const key = rule.id || String(rule.match || rule.payee || '').toLowerCase();
+    if (!key.trim()) return;
+    byKey.set(key, {
+      id: rule.id || 'rule_' + simpleFingerprint(key).slice(4),
+      match: String(rule.match || rule.payee || '').trim(),
+      payee: String(rule.payee || rule.match || '').trim(),
+      entity: rule.entity || 'behavior-school',
+      category: rule.category || 'Uncategorized',
+      taxCategory: rule.taxCategory || 'Needs CPA review',
+      frappeAccount: String(rule.frappeAccount || '').trim(),
+      autoApprove: Boolean(rule.autoApprove),
+      confidence: Number(rule.confidence || 0.9),
+      createdAt: rule.createdAt || new Date().toISOString(),
+      updatedAt: rule.updatedAt || rule.createdAt || new Date().toISOString(),
+    });
+  });
+  return [...byKey.values()].sort((a, b) => String(a.payee || a.match).localeCompare(String(b.payee || b.match)));
+}
+
+async function loadAccountingFromRemote() {
+  ensureAccountingState();
+  accountingSyncStatus('loading...', '#64748b');
+  try {
+    const res = await fetch(ACCOUNTING_SYNC_URL, { headers: { Accept: 'application/json' } });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const remote = await res.json();
+    const source = remote.meta?.source || res.headers.get('X-Accounting-Data-Source') || 'unknown';
+    const changed = mergeAccountingState(remote);
+    if (changed) renderAccountingHub();
+    accountingSyncStatus(source === 'netlify-blobs' ? 'loaded from admin store' : 'local fallback', source === 'netlify-blobs' ? '#0f766e' : '#94a3b8');
+  } catch (err) {
+    accountingSyncStatus('local only (' + err.message + ')', '#dc2626');
+  }
+}
+
+function scheduleAccountingSync() {
+  if (!STATE || !STATE.accounting) return;
+  clearTimeout(ACCOUNTING_SYNC_TIMER);
+  ACCOUNTING_SYNC_TIMER = setTimeout(syncAccountingToRemote, 900);
+}
+
+async function syncAccountingToRemote() {
+  if (ACCOUNTING_SYNC_IN_FLIGHT || !STATE.accounting) return;
+  ACCOUNTING_SYNC_IN_FLIGHT = true;
+  accountingSyncStatus('saving...', '#64748b');
+  try {
+    const res = await fetch(ACCOUNTING_SYNC_URL, {
+      method: 'PUT',
+      headers: accountingAuthHeaders(),
+      body: JSON.stringify(accountingPayload()),
+    });
+    const payload = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(payload.error || 'HTTP ' + res.status);
+    if (payload.accounting?.lastSyncedAt) {
+      STATE.accounting.lastSyncedAt = payload.accounting.lastSyncedAt;
+      localStorage.setItem(STORE_KEY, JSON.stringify(STATE));
+    }
+    accountingSyncStatus(payload.persisted ? 'saved to admin store' : 'saved locally only', payload.persisted ? '#0f766e' : '#d97706');
+  } catch (err) {
+    accountingSyncStatus('local only (' + err.message + ')', '#dc2626');
+  } finally {
+    ACCOUNTING_SYNC_IN_FLIGHT = false;
+  }
+}
+
+function sourceImportStatus(text, color) {
+  const el = document.getElementById('sourceImportStatus');
+  if (!el) return;
+  el.textContent = text || '';
+  el.style.color = color || '#64748b';
+}
+
+function recordAccountingImportRun(run) {
+  ensureAccountingState();
+  const now = new Date().toISOString();
+  const item = {
+    id: run.id || 'run_' + Date.now() + '_' + Math.random().toString(16).slice(2, 8),
+    source: run.source || run.sourceFile || 'Accounting import',
+    sourceFile: run.sourceFile || run.source || '',
+    sourceAccount: run.sourceAccount || '',
+    status: run.status || 'success',
+    inserted: Number(run.inserted || 0),
+    skipped: Number(run.skipped || 0),
+    rowCount: Number(run.rowCount ?? run.inserted ?? 0),
+    fingerprint: run.fingerprint || '',
+    persisted: Boolean(run.persisted),
+    duplicateSource: Boolean(run.duplicateSource),
+    errors: Array.isArray(run.errors) ? run.errors : [],
+    startedAt: run.startedAt || now,
+    finishedAt: run.finishedAt || now,
+    note: run.note || '',
+  };
+  STATE.accounting.importRuns = mergeImportRuns([item], STATE.accounting.importRuns || []);
+  return item;
+}
+
+function renderAccountingImportRuns() {
+  const el = document.getElementById('accountingImportRuns');
+  if (!el) return;
+  const runs = [...(STATE.accounting.importRuns || [])]
+    .sort((a, b) => String(b.startedAt || b.finishedAt || '').localeCompare(String(a.startedAt || a.finishedAt || '')))
+    .slice(0, 12);
+  if (!runs.length) {
+    el.innerHTML = '<div style="font-size:13px;color:#64748b;">No import runs recorded yet.</div>';
+    return;
+  }
+  el.innerHTML = runs.map(run => {
+    const ok = run.status === 'success' || run.status === 'partial';
+    const color = run.status === 'failed' ? '#dc2626' : (run.status === 'partial' ? '#d97706' : '#0f766e');
+    const source = run.source || run.sourceFile || 'Accounting import';
+    const detail = [
+      (run.inserted || 0) + ' imported',
+      (run.skipped || 0) + ' skipped',
+      run.persisted ? 'saved' : 'local',
+      run.fingerprint ? 'fingerprint ' + run.fingerprint : '',
+      run.duplicateSource ? 'duplicate source' : '',
+    ].filter(Boolean).join(' · ');
+    const errors = (run.errors || []).map(error => error.source ? error.source + ': ' + error.error : error.error || error).join('; ');
+    return `<div style="border:1px solid #e2e8f0;border-left:4px solid ${color};border-radius:8px;padding:9px 10px;background:${ok ? 'rgba(15,118,110,0.04)' : 'rgba(220,38,38,0.05)'};">
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;">
+        <strong style="font-size:13px;color:#1e293b;">${esc(source)}</strong>
+        <span style="font-size:11px;font-weight:700;color:${color};text-transform:uppercase;">${esc(run.status || 'success')}</span>
+      </div>
+      <div style="font-size:12px;color:#64748b;margin-top:4px;">${esc(detail)}</div>
+      ${errors ? `<div style="font-size:11px;color:#dc2626;margin-top:4px;">${esc(errors)}</div>` : ''}
+      <div style="font-size:11px;color:#94a3b8;margin-top:4px;">${esc(new Date(run.finishedAt || run.startedAt || Date.now()).toLocaleString())}</div>
+    </div>`;
+  }).join('');
+}
+
+function frappeSyncStatus(text, color) {
+  const el = document.getElementById('frappeSyncStatus');
+  if (!el) return;
+  el.textContent = text || '';
+  el.style.color = color || '#64748b';
+}
+
+function recordFrappeSyncRun(run) {
+  ensureAccountingState();
+  const now = new Date().toISOString();
+  const item = {
+    id: run.id || 'frappe_' + Date.now() + '_' + Math.random().toString(16).slice(2, 8),
+    mode: run.mode || (run.dryRun ? 'preview' : 'sync'),
+    status: run.status || 'success',
+    configured: Boolean(run.configured),
+    rowCount: Number(run.rowCount || 0),
+    entryCount: Number(run.entryCount || 0),
+    created: Number(run.created || 0),
+    failed: Number(run.failed || 0),
+    skipped: Number(run.skipped || 0),
+    company: run.company || '',
+    defaultBankAccount: run.defaultBankAccount || '',
+    note: run.note || '',
+    errors: Array.isArray(run.errors) ? run.errors : [],
+    startedAt: run.startedAt || now,
+    finishedAt: run.finishedAt || now,
+  };
+  STATE.accounting.frappeRuns = mergeFrappeRuns([item], STATE.accounting.frappeRuns || []);
+  return item;
+}
+
+function renderFrappeSyncRuns() {
+  const el = document.getElementById('frappeSyncRuns');
+  if (!el) return;
+  const runs = [...(STATE.accounting.frappeRuns || [])]
+    .sort((a, b) => String(b.startedAt || b.finishedAt || '').localeCompare(String(a.startedAt || a.finishedAt || '')))
+    .slice(0, 6);
+  if (!runs.length) {
+    el.innerHTML = '<div style="font-size:12px;color:#94a3b8;">No Frappe preview or sync runs yet.</div>';
+    return;
+  }
+  el.innerHTML = runs.map(run => {
+    const color = run.status === 'failed' ? '#dc2626' : (run.status === 'partial' ? '#d97706' : '#0f766e');
+    const detail = [
+      run.mode || 'preview',
+      (run.entryCount || 0) + ' entries',
+      (run.created || 0) + ' created',
+      (run.failed || 0) + ' failed',
+      (run.skipped || 0) + ' skipped',
+      run.configured ? 'configured' : 'dry-run fallback',
+    ].join(' · ');
+    const errors = (run.errors || []).map(error => error.importKey ? error.importKey + ': ' + error.error : error.error || error).join('; ');
+    return `<div style="border:1px solid #e2e8f0;border-left:4px solid ${color};border-radius:8px;padding:9px 10px;background:rgba(15,118,110,0.04);">
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;">
+        <strong style="font-size:13px;color:#1e293b;">Frappe ${esc(run.mode || 'preview')}</strong>
+        <span style="font-size:11px;font-weight:700;color:${color};text-transform:uppercase;">${esc(run.status || 'success')}</span>
+      </div>
+      <div style="font-size:12px;color:#64748b;margin-top:4px;">${esc(detail)}</div>
+      ${run.note ? `<div style="font-size:11px;color:#64748b;margin-top:4px;">${esc(run.note)}</div>` : ''}
+      ${errors ? `<div style="font-size:11px;color:#dc2626;margin-top:4px;">${esc(errors)}</div>` : ''}
+      <div style="font-size:11px;color:#94a3b8;margin-top:4px;">${esc(new Date(run.finishedAt || run.startedAt || Date.now()).toLocaleString())}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderCpaNotes() {
+  const el = document.getElementById('cpaNotesInput');
+  if (!el || document.activeElement === el) return;
+  el.value = STATE.accounting.cpaNotes || '';
+}
+
+function updateCpaNotes(value) {
+  ensureAccountingState();
+  STATE.accounting.cpaNotes = String(value || '').trim();
+  renderCpaNotes();
+  saveState(STATE);
+}
+
+function fallbackAutomationStatus(reason) {
+  return {
+    generatedAt: new Date().toISOString(),
+    readyCount: 2,
+    totalCount: 3,
+    services: [
+      { id: 'local-storage', label: 'Local Review Queue', configured: true, status: 'ready', detail: 'Browser localStorage is available for local-first accounting work.' },
+      { id: 'browser-ocr', label: 'Browser OCR', configured: true, status: 'ready', detail: 'PDF text extraction and browser OCR are wired in this admin page.' },
+      { id: 'status-endpoint', label: 'Server Status Endpoint', configured: false, status: 'setup-needed', detail: reason || 'Could not read server automation status.', nextStep: 'Deploy Netlify functions or check admin token/network access.' },
+    ],
+  };
+}
+
+async function loadAccountingAutomationStatus() {
+  const summaryEl = document.getElementById('automationStatusSummary');
+  if (summaryEl) summaryEl.textContent = 'Checking automation services...';
+  try {
+    const res = await fetch(ACCOUNTING_STATUS_URL, { headers: accountingAuthHeaders() });
+    const payload = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(payload.error || 'HTTP ' + res.status);
+    renderAutomationStatus(payload);
+  } catch (err) {
+    renderAutomationStatus(fallbackAutomationStatus(err.message));
+  }
+}
+
+function renderAutomationStatus(status) {
+  const summaryEl = document.getElementById('automationStatusSummary');
+  const listEl = document.getElementById('automationStatusList');
+  if (!summaryEl || !listEl) return;
+  const services = Array.isArray(status.services) ? status.services : [];
+  const ready = services.filter(item => item.configured).length;
+  summaryEl.innerHTML = `<strong style="color:${ready === services.length ? '#0f766e' : '#d97706'};">${ready}/${services.length} ready</strong> · Last checked ${esc(new Date(status.generatedAt || Date.now()).toLocaleTimeString())}`;
+  listEl.innerHTML = services.map(item => {
+    const readyColor = item.configured ? '#0f766e' : '#d97706';
+    const bg = item.configured ? 'rgba(15,118,110,0.06)' : 'rgba(217,119,6,0.07)';
+    return `<div style="border:1px solid #e2e8f0;border-left:4px solid ${readyColor};background:${bg};border-radius:8px;padding:10px;">
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;">
+        <strong style="font-size:13px;color:#1e293b;">${esc(item.label)}</strong>
+        <span style="font-size:11px;font-weight:700;color:${readyColor};text-transform:uppercase;">${item.configured ? 'ready' : 'setup'}</span>
+      </div>
+      <div style="font-size:12px;color:#64748b;margin-top:4px;line-height:1.45;">${esc(item.detail || '')}</div>
+      ${item.nextStep ? `<div style="font-size:11px;color:#475569;margin-top:5px;">Next: ${esc(item.nextStep)}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+async function importStripeSource() {
+  const entity = document.getElementById('statementEntity')?.value || STATE.accounting.activeEntity || 'behavior-school';
+  sourceImportStatus('Requesting recent Stripe balance activity...', '#64748b');
+  try {
+    const url = new URL(ACCOUNTING_SOURCE_IMPORT_URL, window.location.origin);
+    url.searchParams.set('source', 'stripe');
+    url.searchParams.set('entity', entity);
+    url.searchParams.set('limit', '50');
+    const res = await fetch(url.pathname + url.search, { headers: accountingAuthHeaders() });
+    await handleSourceImportResponse(res, 'Stripe API');
+  } catch (err) {
+    sourceImportStatus('Stripe import failed: ' + err.message, '#dc2626');
+  }
+}
+
+async function importConnectedSources() {
+  const entity = document.getElementById('statementEntity')?.value || STATE.accounting.activeEntity || 'behavior-school';
+  sourceImportStatus('Requesting all configured accounting sources...', '#64748b');
+  try {
+    const url = new URL(ACCOUNTING_SOURCE_IMPORT_URL, window.location.origin);
+    url.searchParams.set('source', 'all');
+    url.searchParams.set('entity', entity);
+    url.searchParams.set('limit', '50');
+    const res = await fetch(url.pathname + url.search, { headers: accountingAuthHeaders() });
+    await handleSourceImportResponse(res, 'Connected sources');
+  } catch (err) {
+    sourceImportStatus('Connected source import failed: ' + err.message, '#dc2626');
+  }
+}
+
+async function importFreshBooksSource() {
+  const entity = document.getElementById('statementEntity')?.value || STATE.accounting.activeEntity || 'behavior-school';
+  sourceImportStatus('Requesting paid FreshBooks invoices...', '#64748b');
+  try {
+    const url = new URL(ACCOUNTING_SOURCE_IMPORT_URL, window.location.origin);
+    url.searchParams.set('source', 'freshbooks');
+    url.searchParams.set('entity', entity);
+    url.searchParams.set('limit', '50');
+    const res = await fetch(url.pathname + url.search, { headers: accountingAuthHeaders() });
+    await handleSourceImportResponse(res, 'FreshBooks API');
+  } catch (err) {
+    sourceImportStatus('FreshBooks API import failed: ' + err.message, '#dc2626');
+  }
+}
+
+async function importFreshBooksPaste() {
+  const text = document.getElementById('sourceImportPaste').value.trim();
+  if (!text) { sourceImportStatus('Paste FreshBooks JSON or CSV first.', '#dc2626'); return; }
+  const entity = document.getElementById('statementEntity')?.value || STATE.accounting.activeEntity || 'behavior-school';
+  let payload;
+  try {
+    if (text.startsWith('{') || text.startsWith('[')) {
+      const parsed = JSON.parse(text);
+      const invoices = Array.isArray(parsed) ? parsed : parsed.invoices || parsed.response?.result?.invoices || [];
+      payload = { source: 'freshbooks', sourceFile: 'FreshBooks paste', entity, freshBooksInvoices: invoices };
+    } else {
+      payload = { source: 'freshbooks', sourceFile: 'FreshBooks CSV paste', entity, sourceAccount: 'FreshBooks', csv: text };
+    }
+    await postSourceImport(payload, 'FreshBooks paste');
+  } catch (err) {
+    sourceImportStatus('FreshBooks import failed: ' + err.message, '#dc2626');
+  }
+}
+
+async function importGenericCsvPaste() {
+  const text = document.getElementById('sourceImportPaste').value.trim();
+  if (!text) { sourceImportStatus('Paste CSV first.', '#dc2626'); return; }
+  const entity = document.getElementById('statementEntity')?.value || STATE.accounting.activeEntity || 'behavior-school';
+  const sourceAccount = document.getElementById('statementAccount')?.value || 'CSV paste';
+  await postSourceImport({
+    source: 'csv',
+    sourceFile: sourceAccount + ' CSV paste',
+    sourceAccount,
+    entity,
+    csv: text,
+  }, 'CSV paste');
+}
+
+async function postSourceImport(payload, label) {
+  const settings = STATE.accounting.frappeSettings || defaultFrappeSettings();
+  sourceImportStatus('Normalizing ' + label + '...', '#64748b');
+  const res = await fetch(ACCOUNTING_SOURCE_IMPORT_URL, {
+    method: 'POST',
+    headers: accountingAuthHeaders(),
+    body: JSON.stringify({
+      ...payload,
+      defaultRevenueAccount: settings.defaultRevenueAccount || 'Sales',
+      defaultExpenseAccount: settings.defaultExpenseAccount || STATE.accounting.defaultFrappeAccount || 'Expenses',
+      categoryAccountMap: accountingCategoryAccountMap(),
+    }),
+  });
+  await handleSourceImportResponse(res, label);
+}
+
+async function handleSourceImportResponse(res, label) {
+  const payload = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(payload.error || 'HTTP ' + res.status);
+
+  if (payload.accounting) {
+    mergeAccountingState(payload.accounting);
+  } else if (Array.isArray(payload.rows)) {
+    mergeSourceRowsLocally(payload.rows);
+  }
+
+  renderAccountingHub();
+  const inserted = payload.inserted ?? payload.rows?.length ?? 0;
+  const skipped = payload.skipped ?? 0;
+  const persistence = payload.persisted ? 'saved to admin store' : 'merged locally';
+  const warnings = Array.isArray(payload.meta?.errors) && payload.meta.errors.length
+    ? ' Setup needed: ' + payload.meta.errors.map(error => error.source + ' - ' + error.error).join('; ')
+    : '';
+  if (payload.importRun && !payload.accounting) {
+    recordAccountingImportRun(payload.importRun);
+  } else if (!payload.accounting) {
+    recordAccountingImportRun({
+      source: label,
+      sourceFile: payload.meta?.sourceFile || payload.meta?.source || label,
+      status: warnings ? 'partial' : 'success',
+      inserted,
+      skipped,
+      rowCount: payload.rows?.length || 0,
+      persisted: Boolean(payload.persisted),
+      fingerprint: payload.meta?.sourceFingerprint || '',
+      errors: payload.meta?.errors || [],
+    });
+  }
+  renderAccountingImportRuns();
+  sourceImportStatus(`${label}: ${inserted} imported, ${skipped} skipped, ${persistence}.${warnings}`, warnings ? '#d97706' : (payload.persisted ? '#0f766e' : '#d97706'));
+  if (!payload.persisted) scheduleAccountingSync();
+}
+
+function mergeSourceRowsLocally(rows) {
+  ensureAccountingState();
+  const before = STATE.accounting.reviewQueue.length;
+  const byKey = new Map(STATE.accounting.reviewQueue.map(row => [row.importKey || row.id || [row.date, row.description, row.amount].join('|'), row]));
+  const sourceFile = rows.find(row => row.sourceFile)?.sourceFile || 'source-import';
+  const sourceFingerprint = rows.find(row => row.sourceFingerprint)?.sourceFingerprint || sourceFingerprintForRows(sourceFile, rows);
+  rows.forEach(row => {
+    const normalized = normalizeAccountingRow({ ...row, sourceFingerprint }, row.sourceFile || sourceFile, byKey.size);
+    if (!normalized) return;
+    const key = normalized.importKey || normalized.id;
+    if (!byKey.has(key)) byKey.set(key, normalized);
+  });
+  STATE.accounting.reviewQueue = [...byKey.values()];
+  STATE.accounting.importedFiles.push({
+    name: sourceFile,
+    importedAt: new Date().toISOString(),
+    count: STATE.accounting.reviewQueue.length - before,
+    fingerprint: sourceFingerprint,
+  });
+  localStorage.setItem(STORE_KEY, JSON.stringify(STATE));
+}
+
+function isFrappeExportable(t) {
+  return t.approved && t.category !== 'Personal / exclude' && t.category !== 'Document needs OCR' && Number(t.amount) !== 0;
+}
+
+function renderAccountingCloseStatus() {
+  const el = document.getElementById('accountingCloseStatus');
+  if (!el) return;
+  const readiness = accountingCloseReadiness(STATE.accounting.reviewQueue);
+  const readyColor = readiness.ready ? '#0f766e' : '#d97706';
+  const bg = readiness.ready ? 'rgba(15,118,110,0.06)' : 'rgba(217,119,6,0.07)';
+  const blockers = readiness.blockers.length
+    ? readiness.blockers.map(item => `<span style="display:inline-block;margin:3px 6px 0 0;padding:3px 7px;border-radius:999px;background:#fff;border:1px solid #e2e8f0;color:#475569;">${esc(item)}</span>`).join('')
+    : '<span style="color:#0f766e;">Ready for CPA package and Frappe export preview.</span>';
+  el.innerHTML = `<div style="border:1px solid #e2e8f0;border-left:4px solid ${readyColor};background:${bg};border-radius:8px;padding:10px;">
+    <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;">
+      <strong style="font-size:13px;color:#1e293b;">${esc(readiness.periodLabel)} Close</strong>
+      <span style="font-size:11px;font-weight:700;color:${readyColor};text-transform:uppercase;">${readiness.ready ? 'ready' : 'needs review'}</span>
+    </div>
+    <div style="font-size:12px;color:#64748b;margin-top:5px;line-height:1.45;">${readiness.rowCount} rows · ${fmtCents(readiness.income)} income · ${fmtCents(readiness.expenses)} expenses · ${fmtCents(readiness.net)} net · ${readiness.frappePendingCount} Frappe pending</div>
+    <div style="font-size:11px;margin-top:5px;">${blockers}</div>
+  </div>`;
+}
+
+function accountingCloseReadiness(rows) {
+  const allRows = Array.isArray(rows) ? rows : [];
+  const period = latestAccountingPeriod(allRows);
+  const periodRows = allRows.filter(row => String(row.date || '').startsWith(period));
+  const summary = summarizeCpaRows(periodRows);
+  const frappePendingCount = periodRows.filter(row => isFrappeExportable(row) && !row.frappeJournalEntry && !row.frappeSyncedAt).length;
+  const sourceMissingCount = periodRows.filter(row => !row.sourceFile).length;
+  const blockers = [];
+  if (!periodRows.length) blockers.push('no rows in period');
+  if (summary.needsReviewCount) blockers.push(summary.needsReviewCount + ' review exception' + (summary.needsReviewCount === 1 ? '' : 's'));
+  if (summary.balanceMismatchCount) blockers.push(summary.balanceMismatchCount + ' balance mismatch' + (summary.balanceMismatchCount === 1 ? '' : 'es'));
+  if (summary.ocrNeededCount) blockers.push(summary.ocrNeededCount + ' OCR/document item' + (summary.ocrNeededCount === 1 ? '' : 's'));
+  if (sourceMissingCount) blockers.push(sourceMissingCount + ' missing source file' + (sourceMissingCount === 1 ? '' : 's'));
+  if (frappePendingCount) blockers.push(frappePendingCount + ' Frappe export pending');
+  const income = periodRows.filter(row => Number(row.amount) > 0).reduce((sum, row) => sum + Number(row.amount), 0);
+  const expenses = periodRows.filter(row => Number(row.amount) < 0).reduce((sum, row) => sum + Math.abs(Number(row.amount)), 0);
+  return {
+    period,
+    periodLabel: period,
+    rowCount: periodRows.length,
+    income,
+    expenses,
+    net: income - expenses,
+    frappePendingCount,
+    sourceMissingCount,
+    blockers,
+    ready: periodRows.length > 0 && blockers.length === 0,
+  };
+}
+
+function latestAccountingPeriod(rows) {
+  const periods = (Array.isArray(rows) ? rows : [])
+    .map(row => String(row.date || '').match(/^(\d{4}-\d{2})/)?.[1])
+    .filter(Boolean)
+    .sort();
+  return periods[periods.length - 1] || todayStamp().slice(0, 7);
+}
+
+function renderAccountingReviewQueue() {
+  const el = document.getElementById('accountingReviewQueue');
+  if (!el) return;
+  const queue = [...STATE.accounting.reviewQueue].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  if (!queue.length) {
+    el.innerHTML = `<div style="padding:18px 0;color:#64748b;font-size:13px;">No transactions yet. Import a statement or seed from the existing finance data.</div>`;
+    return;
+  }
+  el.innerHTML = `
+    <div class="review-row header">
+      <span>Date</span><span>Description</span><span>Amount</span><span class="mobile-hide">Category</span><span class="mobile-hide">Entity</span><span class="mobile-hide">Frappe Account</span><span class="mobile-hide">Review</span>
+    </div>
+    ${queue.map(t => accountingReviewRow(t)).join('')}
+  `;
+}
+
+function accountingReviewRow(t) {
+  const categories = [...new Set(ACCOUNTING_CATEGORY_RULES.map(r => r.category).concat(['Uncategorized', 'Personal / exclude', 'Transfer or debt payment', 'Document needs OCR']))];
+  const entities = Object.entries(ACCOUNTING_ENTITIES);
+  const amountClass = t.amount >= 0 ? 'income' : 'expense';
+  return `<div class="review-row" data-txn-id="${esc(t.id)}">
+    <input type="date" value="${esc(t.date || '')}" onchange="updateAccountingTxn('${t.id}', 'date', this.value)">
+    <span class="desc" title="${esc(t.description)}">${esc(t.description)}</span>
+    <span class="amount ${amountClass}">${fmtCents(t.amount)}</span>
+    <select class="mobile-hide" onchange="updateAccountingTxn('${t.id}', 'category', this.value)">
+      ${categories.map(c => `<option value="${esc(c)}" ${c === t.category ? 'selected' : ''}>${esc(c)}</option>`).join('')}
+    </select>
+    <select class="mobile-hide" onchange="updateAccountingTxn('${t.id}', 'entity', this.value)">
+      ${entities.map(([key, val]) => `<option value="${key}" ${key === t.entity ? 'selected' : ''}>${esc(val.label)}</option>`).join('')}
+    </select>
+    <input class="mobile-hide" list="frappeAccountOptions" value="${esc(t.frappeAccount || '')}" onchange="updateAccountingTxn('${t.id}', 'frappeAccount', this.value)" placeholder="Frappe account">
+    <span class="mobile-hide" style="display:flex;gap:6px;">
+      <button class="${t.approved ? 'btn-pay' : 'btn-edit'} btn-sm" onclick="toggleAccountingApproval('${t.id}')">${t.approved ? 'Approved' : 'Review'}</button>
+      <button class="btn-edit btn-sm" onclick="createVendorRuleFromTransaction('${t.id}')" title="Create a reusable vendor rule">Rule</button>
+    </span>
+  </div>
+  <div style="font-size:11px;color:#64748b;margin:-4px 0 8px 94px;">
+    ${esc(t.taxCategory || 'Unmapped')} · ${Math.round((t.confidence || 0) * 100)}% confidence · payee ${esc(t.payee || partyForTransaction(t))}${t.automationRuleName ? ' · rule ' + esc(t.automationRuleName) : ''} · ${esc(t.sourceAccount || 'Unknown source')}${t.importProfile ? ' · ' + esc(t.importProfile) : ''}${t.balanceCheck ? ' · balance ' + esc(t.balanceCheck) : ''}${t.reconciliationStatus ? ' · reconcile ' + esc(t.reconciliationStatus) + (t.reconciliationName ? ': ' + esc(t.reconciliationName) : '') : ''}${t.frappeJournalEntry ? ' · Frappe ' + esc(t.frappeJournalEntry) : ''}
+  </div>`;
+}
+
+function setAccountingEntity(entity) {
+  ensureAccountingState();
+  STATE.accounting.activeEntity = entity;
+  document.getElementById('statementEntity').value = entity;
+  saveState(STATE);
+  renderAccountingHub();
+}
+
+function setDefaultFrappeAccount(account) {
+  ensureAccountingState();
+  STATE.accounting.defaultFrappeAccount = account;
+  saveState(STATE);
+  showToast('Default Frappe Books account set to ' + account);
+}
+
+function updateFrappeSetting(field, value) {
+  ensureAccountingState();
+  if (!Object.prototype.hasOwnProperty.call(defaultFrappeSettings(), field)) return;
+  const previous = STATE.accounting.frappeSettings[field];
+  STATE.accounting.frappeSettings[field] = String(value || '').trim();
+  if (field === 'defaultRevenueAccount') {
+    updateDefaultMappedAccounts('Sales', previous || 'Sales', STATE.accounting.frappeSettings[field] || 'Sales');
+    remapFrappeAccountsForCategory('Sales');
+  }
+  if (field === 'defaultExpenseAccount') {
+    updateDefaultMappedAccounts('Uncategorized', previous || 'Expenses', STATE.accounting.frappeSettings[field] || 'Expenses');
+    remapFrappeAccountsForCategory('Uncategorized');
+  }
+  saveState(STATE);
+  renderFrappeAccountMap();
+  renderFrappeAccountOptions();
+}
+
+function updateDefaultMappedAccounts(category, previousValue, nextValue) {
+  const map = STATE.accounting.frappeSettings.categoryAccountMap || {};
+  if (!map[category] || map[category] === previousValue || map[category] === defaultCategoryAccountMap()[category]) {
+    map[category] = nextValue;
+  }
+  STATE.accounting.frappeSettings.categoryAccountMap = map;
+}
+
+function renderFrappeAccountMap() {
+  const el = document.getElementById('frappeAccountMap');
+  if (!el) return;
+  const map = accountingCategoryAccountMap();
+  const categories = [...new Set(ACCOUNTING_CATEGORY_RULES.map(rule => rule.category).concat(['Uncategorized', 'Personal / exclude']))];
+  el.innerHTML = categories.map(category => `
+    <div class="account-map-row">
+      <span>${esc(category)}</span>
+      <input list="frappeAccountOptions" value="${esc(map[category] || '')}" onchange="updateFrappeAccountMapping(${jsArg(category)}, this.value)" placeholder="Frappe account">
+    </div>
+  `).join('');
+}
+
+function renderFrappeAccountOptions() {
+  const el = document.getElementById('frappeAccountOptions');
+  if (!el) return;
+  const settings = STATE.accounting.frappeSettings || defaultFrappeSettings();
+  const accounts = [
+    settings.defaultBankAccount,
+    settings.defaultRevenueAccount,
+    settings.defaultExpenseAccount,
+    STATE.accounting.defaultFrappeAccount,
+    ...Object.values(accountingCategoryAccountMap()),
+    ...STATE.accounting.reviewQueue.map(row => row.frappeAccount),
+  ].map(value => String(value || '').trim()).filter(Boolean);
+  el.innerHTML = [...new Set(accounts)].sort().map(account => `<option value="${esc(account)}"></option>`).join('');
+}
+
+function renderVendorRules() {
+  const el = document.getElementById('accountingVendorRules');
+  if (!el) return;
+  const rules = STATE.accounting.vendorRules || [];
+  if (!rules.length) {
+    el.innerHTML = '<div style="font-size:12px;color:#64748b;">No vendor rules yet. Use the Rule button on a reviewed row to teach future imports.</div>';
+    return;
+  }
+  el.innerHTML = rules.map(rule => {
+    const entity = ACCOUNTING_ENTITIES[rule.entity]?.label || rule.entity || 'Unassigned';
+    const detail = [
+      rule.category || 'Uncategorized',
+      rule.taxCategory || 'Needs CPA review',
+      rule.frappeAccount || '',
+      rule.autoApprove ? 'auto-approval guarded' : 'classify only',
+    ].filter(Boolean).join(' · ');
+    return `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:9px 10px;background:#fff;">
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;">
+        <strong style="font-size:13px;color:#1e293b;">${esc(rule.payee || rule.match)}</strong>
+        <button class="btn-edit btn-sm" onclick="deleteVendorRule('${esc(rule.id)}')">Delete</button>
+      </div>
+      <div style="font-size:12px;color:#64748b;margin-top:4px;">${esc(entity)} · ${esc(detail)}</div>
+      <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Matches: ${esc(rule.match || rule.payee || '')}</div>
+    </div>`;
+  }).join('');
+}
+
+function createVendorRuleFromTransaction(id) {
+  ensureAccountingState();
+  const txn = STATE.accounting.reviewQueue.find(row => row.id === id);
+  if (!txn) return null;
+  const payee = txn.payee || normalizePayee(txn.description, txn.amount);
+  const match = payee || txn.description;
+  const now = new Date().toISOString();
+  const rule = {
+    id: 'rule_' + simpleFingerprint([match, txn.entity, txn.category, txn.frappeAccount].join('|')).slice(4),
+    match,
+    payee,
+    entity: txn.entity || STATE.accounting.activeEntity || 'behavior-school',
+    category: txn.category || 'Uncategorized',
+    taxCategory: txn.taxCategory || 'Needs CPA review',
+    frappeAccount: txn.frappeAccount || frappeAccountForTransaction(txn),
+    autoApprove: Boolean(txn.approved),
+    confidence: Math.max(Number(txn.confidence || 0), 0.9),
+    createdAt: now,
+    updatedAt: now,
+  };
+  STATE.accounting.vendorRules = mergeVendorRules([rule], STATE.accounting.vendorRules || []);
+  const applied = applyVendorRulesToQueue(false);
+  saveState(STATE);
+  renderAccountingHub();
+  showToast('Saved vendor rule for ' + payee + (applied ? ` and applied to ${applied} row${applied === 1 ? '' : 's'}` : ''));
+  return rule;
+}
+
+function deleteVendorRule(id) {
+  ensureAccountingState();
+  STATE.accounting.vendorRules = (STATE.accounting.vendorRules || []).filter(rule => rule.id !== id);
+  saveState(STATE);
+  renderAccountingHub();
+  showToast('Vendor rule deleted');
+}
+
+function applyVendorRulesToQueue(showMessage = true) {
+  ensureAccountingState();
+  let count = 0;
+  STATE.accounting.reviewQueue.forEach(row => {
+    const before = JSON.stringify([row.entity, row.category, row.taxCategory, row.frappeAccount, row.approved, row.automationRuleId]);
+    applyVendorRulesToRow(row);
+    const after = JSON.stringify([row.entity, row.category, row.taxCategory, row.frappeAccount, row.approved, row.automationRuleId]);
+    if (before !== after) {
+      row.updatedAt = new Date().toISOString();
+      count++;
+    }
+  });
+  saveState(STATE);
+  renderAccountingHub();
+  if (showMessage) showToast(count ? `Applied vendor rules to ${count} row${count === 1 ? '' : 's'}` : 'No matching vendor rules found');
+  return count;
+}
+
+function applyVendorRulesToRow(row) {
+  if (!row) return row;
+  const rule = matchingVendorRule(row);
+  if (!rule) return row;
+  row.payee = row.payee || normalizePayee(row.description, row.amount);
+  row.entity = rule.entity || row.entity;
+  row.category = rule.category || row.category;
+  row.taxCategory = rule.taxCategory || row.taxCategory;
+  row.frappeAccount = rule.frappeAccount || frappeAccountForTransaction(row);
+  row.confidence = Math.max(Number(row.confidence || 0), Number(rule.confidence || 0.9));
+  row.automationRuleId = rule.id;
+  row.automationRuleName = rule.payee || rule.match;
+  if (rule.autoApprove && isVendorRuleAutoApprovalSafe(row)) {
+    row.approved = true;
+    row.approvedByAutomation = true;
+    row.approvedAt = row.approvedAt || new Date().toISOString();
+  }
+  return row;
+}
+
+function matchingVendorRule(row) {
+  const haystack = [row.payee, row.description, row.sourceAccount].filter(Boolean).join(' ').toLowerCase();
+  return (STATE.accounting.vendorRules || []).find(rule => {
+    const match = String(rule.match || rule.payee || '').trim().toLowerCase();
+    return match && haystack.includes(match);
+  });
+}
+
+function isVendorRuleAutoApprovalSafe(row) {
+  if (!row.sourceFile || !row.frappeAccount) return false;
+  if (!Number.isFinite(Number(row.amount)) || Number(row.amount) === 0) return false;
+  if (row.category === 'Document needs OCR' || row.category === 'Personal / exclude') return false;
+  if (row.balanceCheck === 'mismatch') return false;
+  return Number(row.confidence || 0) >= 0.75 || row.balanceCheck === 'matched' || row.reconciliationStatus === 'matched';
+}
+
+function updateFrappeAccountMapping(category, value) {
+  ensureAccountingState();
+  const account = String(value || '').trim();
+  STATE.accounting.frappeSettings.categoryAccountMap[category] = account || defaultCategoryAccountMap(STATE.accounting.frappeSettings)[category] || STATE.accounting.defaultFrappeAccount || 'Expenses';
+  remapFrappeAccountsForCategory(category);
+  saveState(STATE);
+  renderAccountingHub();
+  showToast('Updated Frappe account map for ' + category);
+}
+
+function remapFrappeAccountsForCategory(category) {
+  STATE.accounting.reviewQueue.forEach(row => {
+    if (row.category !== category) return;
+    row.frappeAccount = frappeAccountForTransaction(row);
+    row.updatedAt = new Date().toISOString();
+  });
+}
+
+function resetFrappeAccountMapping() {
+  ensureAccountingState();
+  STATE.accounting.frappeSettings.categoryAccountMap = defaultCategoryAccountMap(STATE.accounting.frappeSettings);
+  STATE.accounting.reviewQueue.forEach(row => {
+    row.frappeAccount = frappeAccountForTransaction(row);
+    row.updatedAt = new Date().toISOString();
+  });
+  saveState(STATE);
+  renderAccountingHub();
+  showToast('Frappe account map reset');
+}
+
+function accountingCategoryAccountMap() {
+  ensureAccountingState();
+  const settings = STATE.accounting.frappeSettings || defaultFrappeSettings();
+  return {
+    ...defaultCategoryAccountMap(settings),
+    ...(settings.categoryAccountMap || {}),
+  };
+}
+
+function frappeAccountForTransaction(row) {
+  const settings = STATE.accounting.frappeSettings || defaultFrappeSettings();
+  const map = accountingCategoryAccountMap();
+  const category = row.category || '';
+  if (map[category]) return map[category];
+  if (Number(row.amount) >= 0) return settings.defaultRevenueAccount || ACCOUNTING_ENTITIES[row.entity]?.defaultRevenueAccount || 'Sales';
+  return settings.defaultExpenseAccount || STATE.accounting.defaultFrappeAccount || 'Expenses';
+}
+
+function updateAccountingTxn(id, field, value) {
+  const txn = STATE.accounting.reviewQueue.find(t => t.id === id);
+  if (!txn) return;
+  txn[field] = field === 'frappeAccount' ? String(value || '').trim() : value;
+  txn.updatedAt = new Date().toISOString();
+  if (field === 'category') {
+    const rule = ACCOUNTING_CATEGORY_RULES.find(r => r.category === value);
+    if (rule) txn.taxCategory = rule.taxCategory;
+    txn.frappeAccount = frappeAccountForTransaction(txn);
+  }
+  if (field === 'entity' && Number(txn.amount) >= 0) {
+    txn.frappeAccount = frappeAccountForTransaction(txn);
+  }
+  saveState(STATE);
+  renderAccountingHub();
+}
+
+function toggleAccountingApproval(id) {
+  const txn = STATE.accounting.reviewQueue.find(t => t.id === id);
+  if (!txn) return;
+  txn.approved = !txn.approved;
+  if (!txn.approved) {
+    txn.approvedByAutomation = false;
+    txn.approvedAt = '';
+  } else {
+    txn.approvedAt = new Date().toISOString();
+  }
+  txn.updatedAt = new Date().toISOString();
+  saveState(STATE);
+  renderAccountingHub();
+}
+
+function isAutomationReadyForApproval(row) {
+  if (!row || row.approved) return false;
+  if (row.category === 'Document needs OCR' || row.category === 'Personal / exclude') return false;
+  if (row.balanceCheck === 'mismatch') return false;
+  if (!row.sourceFile || !row.frappeAccount) return false;
+  if (!Number.isFinite(Number(row.amount)) || Number(row.amount) === 0) return false;
+  const confidence = Number(row.confidence) || 0;
+  if (confidence >= 0.85) return true;
+  if (confidence >= 0.75 && row.reconciliationStatus === 'matched') return true;
+  if (confidence >= 0.75 && row.balanceCheck === 'matched') return true;
+  return false;
+}
+
+function approveAutomationReadyRows() {
+  ensureAccountingState();
+  const now = new Date().toISOString();
+  let count = 0;
+  STATE.accounting.reviewQueue.forEach(row => {
+    if (!isAutomationReadyForApproval(row)) return;
+    row.approved = true;
+    row.approvedByAutomation = true;
+    row.approvedAt = now;
+    row.updatedAt = now;
+    count++;
+  });
+  saveState(STATE);
+  renderAccountingHub();
+  showToast(count ? `Approved ${count} automation-ready row${count === 1 ? '' : 's'}` : 'No automation-ready rows found');
+  return count;
+}
+
+function seedAccountingFromExistingFinance() {
+  ensureAccountingState();
+  const seedRows = [];
+  STATE.payments.forEach(p => {
+    seedRows.push({
+      date: p.date,
+      description: p.billName + (p.notes ? ' - ' + p.notes : ''),
+      amount: -Math.abs(p.amount),
+      sourceAccount: p.fromAccount || 'Existing payments',
+      entity: inferEntity(p.billName + ' ' + (p.notes || '')),
+      sourceFile: 'Existing finance payments',
+    });
+  });
+  STATE.income.forEach(i => {
+    seedRows.push({
+      date: new Date().toISOString().slice(0, 10),
+      description: i.name + ' monthly income estimate',
+      amount: Math.abs(i.amount),
+      sourceAccount: 'Existing income',
+      entity: inferEntity(i.name),
+      sourceFile: 'Existing finance income',
+    });
+  });
+  addAccountingTransactions(seedRows, 'existing-finance');
+  showToast('Seeded accounting queue from current finance data');
+}
+
+function clearAccountingReviewQueue() {
+  if (!confirm('Clear the accounting review queue? Existing bills, balances, and payments stay intact.')) return;
+  STATE.accounting.reviewQueue = [];
+  saveState(STATE);
+  renderAccountingHub();
+  showToast('Accounting review queue cleared');
+}
+
+function addAccountingTransactions(rows, sourceFile) {
+  ensureAccountingState();
+  const existingKeys = new Set(STATE.accounting.reviewQueue.map(t => t.importKey));
+  const sourceFingerprint = rows.find(row => row.sourceFingerprint)?.sourceFingerprint || sourceFingerprintForRows(sourceFile, rows);
+  const imported = [];
+  rows.forEach((row, index) => {
+    const normalized = normalizeAccountingRow({ ...row, sourceFingerprint }, sourceFile, index);
+    if (!normalized || existingKeys.has(normalized.importKey)) return;
+    existingKeys.add(normalized.importKey);
+    imported.push(normalized);
+  });
+  const duplicateSource = STATE.accounting.importedFiles.some(file => file.fingerprint === sourceFingerprint);
+  STATE.accounting.reviewQueue.push(...imported);
+  STATE.accounting.importedFiles.push({
+    name: sourceFile,
+    importedAt: new Date().toISOString(),
+    count: imported.length,
+    fingerprint: sourceFingerprint,
+    duplicateSource,
+  });
+  recordAccountingImportRun({
+    source: sourceFile,
+    sourceFile,
+    sourceAccount: rows.find(row => row.sourceAccount)?.sourceAccount || document.getElementById('statementAccount')?.value || '',
+    status: imported.length ? 'success' : 'partial',
+    inserted: imported.length,
+    skipped: rows.length - imported.length,
+    rowCount: rows.length,
+    fingerprint: sourceFingerprint,
+    duplicateSource,
+    persisted: false,
+  });
+  saveState(STATE);
+  renderAccountingHub();
+  logStatementParse(`Imported ${imported.length} new transaction${imported.length === 1 ? '' : 's'} from ${sourceFile}. Source fingerprint: ${sourceFingerprint}${duplicateSource ? ' (source seen before)' : ''}.`);
+  return imported;
+}
+
+function normalizeAccountingRow(row, sourceFile, index) {
+  const desc = String(row.description || row.desc || row.memo || row.name || '').trim();
+  const date = normalizeDate(row.date || row.transactionDate || row.postedDate || '');
+  const amount = normalizeAmount(row.amount);
+  if (!desc || !date || !Number.isFinite(amount) || amount === 0) return null;
+  const entity = row.entity || inferEntity(desc);
+  const classified = classifyTransaction(desc, amount);
+  const category = row.category || classified.category;
+  const mappedFrappeAccount = frappeAccountForTransaction({ amount, entity, category });
+  const incomingFrappeAccount = String(row.frappeAccount || '').trim();
+  const keepIncomingFrappeAccount = incomingFrappeAccount && !['Sales', 'Expenses'].includes(incomingFrappeAccount);
+  const reconciliation = row.reconciliationStatus
+    ? {
+        reconciliationStatus: row.reconciliationStatus,
+        reconciliationType: row.reconciliationType || '',
+        reconciliationName: row.reconciliationName || '',
+        reconciliationId: row.reconciliationId || '',
+        reconciliationConfidence: row.reconciliationConfidence || 0,
+        reconciliationNotes: row.reconciliationNotes || '',
+      }
+    : reconcileExistingFinance({ description: desc, date, amount, sourceAccount: row.sourceAccount });
+  const normalized = {
+    id: 'acct_' + Date.now() + '_' + index + '_' + Math.random().toString(16).slice(2, 8),
+    importKey: row.importKey || [date, desc.toLowerCase(), amount.toFixed(2), sourceFile].join('|'),
+    date,
+    description: desc,
+    payee: row.payee || normalizePayee(desc, amount),
+    amount,
+    sourceAccount: row.sourceAccount || document.getElementById('statementAccount')?.value || 'Imported statement',
+    sourceFile,
+    sourceFingerprint: row.sourceFingerprint || '',
+    ...reconciliation,
+    entity,
+    category,
+    taxCategory: row.taxCategory || classified.taxCategory,
+    frappeAccount: keepIncomingFrappeAccount ? incomingFrappeAccount : mappedFrappeAccount,
+    confidence: row.confidence ?? classified.confidence,
+    approved: typeof row.approved === 'boolean' ? row.approved : (row.confidence ?? classified.confidence) >= 0.85,
+    approvedByAutomation: Boolean(row.approvedByAutomation),
+    approvedAt: row.approvedAt || '',
+    notes: row.notes || '',
+    importProfile: row.importProfile || '',
+    bankBalance: Number.isFinite(normalizeAmount(row.bankBalance ?? row.balance)) ? normalizeAmount(row.bankBalance ?? row.balance) : undefined,
+    balanceCheck: row.balanceCheck || '',
+    importedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  return applyVendorRulesToRow(normalized);
+}
+
+function reconcileExistingFinance(row) {
+  const candidates = [];
+  const date = row.date || '';
+  const amount = Number(row.amount) || 0;
+  const desc = row.description || '';
+
+  (STATE.payments || []).forEach(payment => {
+    const expected = -Math.abs(Number(payment.amount) || 0);
+    const amountScore = amountWithin(amount, expected, 2) ? 0.45 : 0;
+    const dateScore = daysBetween(date, payment.date) <= 7 ? 0.25 : 0;
+    const textScore = textMatchScore(desc, payment.billName);
+    const score = amountScore + dateScore + (textScore * 0.3);
+    if (score >= 0.55) {
+      candidates.push({
+        status: score >= 0.82 ? 'matched' : 'possible',
+        type: 'payment',
+        name: payment.billName,
+        id: payment.id,
+        confidence: Math.min(score, 0.98),
+        notes: `Matches recorded payment ${payment.billName} on ${payment.date}.`,
+      });
+    }
+  });
+
+  (STATE.bills || []).forEach(bill => {
+    const expected = -Math.abs(Number(bill.amount) || 0);
+    const amountScore = amountWithin(amount, expected, Math.max(3, Math.abs(expected) * 0.03)) ? 0.45 : 0;
+    const dueScore = bill.dueDay && date.slice(8, 10) ? (Math.abs(Number(date.slice(8, 10)) - Number(bill.dueDay)) <= 4 ? 0.15 : 0) : 0;
+    const textScore = textMatchScore(desc, bill.name);
+    const score = amountScore + dueScore + (textScore * 0.35);
+    if (score >= 0.58) {
+      candidates.push({
+        status: score >= 0.82 ? 'matched' : 'possible',
+        type: 'bill',
+        name: bill.name,
+        id: bill.id,
+        confidence: Math.min(score, 0.95),
+        notes: `Matches tracked bill ${bill.name}.`,
+      });
+    }
+  });
+
+  (STATE.income || []).forEach(income => {
+    const expected = Math.abs(Number(income.amount) || 0);
+    const amountScore = amountWithin(amount, expected, Math.max(5, expected * 0.05)) ? 0.5 : 0;
+    const textScore = textMatchScore(desc, income.name);
+    const score = amount > 0 ? amountScore + (textScore * 0.4) : 0;
+    if (score >= 0.55) {
+      candidates.push({
+        status: score >= 0.82 ? 'matched' : 'possible',
+        type: 'income',
+        name: income.name,
+        id: income.id,
+        confidence: Math.min(score, 0.95),
+        notes: `Matches tracked income ${income.name}.`,
+      });
+    }
+  });
+
+  candidates.sort((a, b) => b.confidence - a.confidence);
+  const best = candidates[0];
+  if (!best) {
+    return {
+      reconciliationStatus: 'unmatched',
+      reconciliationType: '',
+      reconciliationName: '',
+      reconciliationId: '',
+      reconciliationConfidence: 0,
+      reconciliationNotes: 'No existing bill, payment, or income match found.',
+    };
+  }
+  return {
+    reconciliationStatus: best.status,
+    reconciliationType: best.type,
+    reconciliationName: best.name,
+    reconciliationId: best.id,
+    reconciliationConfidence: best.confidence,
+    reconciliationNotes: best.notes,
+  };
+}
+
+function amountWithin(actual, expected, tolerance) {
+  return Number.isFinite(actual) && Number.isFinite(expected) && Math.abs(actual - expected) <= tolerance;
+}
+
+function daysBetween(a, b) {
+  const aTime = Date.parse(a || '');
+  const bTime = Date.parse(b || '');
+  if (!Number.isFinite(aTime) || !Number.isFinite(bTime)) return Infinity;
+  return Math.abs(aTime - bTime) / 86400000;
+}
+
+function textMatchScore(left, right) {
+  const leftTokens = meaningfulTokens(left);
+  const rightTokens = meaningfulTokens(right);
+  if (!leftTokens.length || !rightTokens.length) return 0;
+  const matches = rightTokens.filter(token => leftTokens.includes(token)).length;
+  return matches / rightTokens.length;
+}
+
+function meaningfulTokens(text) {
+  return String(text || '').toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter(token => token.length >= 3 && !['the', 'and', 'for', 'min', 'payment', 'auto'].includes(token));
+}
+
+function sourceFingerprintForRows(sourceFile, rows, extra = {}) {
+  const safeRows = Array.isArray(rows) ? rows : [];
+  const dates = safeRows.map(row => normalizeDate(row.date || row.transactionDate || row.postedDate || '')).filter(Boolean).sort();
+  const total = safeRows.reduce((sum, row) => sum + (Number(row.amount) || 0), 0);
+  return simpleFingerprint([
+    sourceFile || 'unknown-source',
+    extra.size || '',
+    extra.lastModified || '',
+    safeRows.length,
+    total.toFixed(2),
+    dates[0] || '',
+    dates[dates.length - 1] || '',
+  ].join('|'));
+}
+
+function simpleFingerprint(value) {
+  let hash = 2166136261;
+  const text = String(value || '');
+  for (let index = 0; index < text.length; index++) {
+    hash ^= text.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return 'src_' + (hash >>> 0).toString(16).padStart(8, '0');
+}
+
+function classifyTransaction(description, amount) {
+  const rule = ACCOUNTING_CATEGORY_RULES.find(r => r.match.test(description));
+  if (rule) return rule;
+  if (amount > 0) return { category: 'Sales', taxCategory: 'Gross receipts', confidence: 0.6 };
+  return { category: 'Uncategorized', taxCategory: 'Needs CPA review', confidence: 0.35 };
+}
+
+function normalizePayee(description, amount) {
+  const raw = String(description || '').trim();
+  if (!raw) return Number(amount) >= 0 ? 'Customer' : 'Vendor';
+  const known = [
+    [/openai|chatgpt/i, 'OpenAI'],
+    [/anthropic|claude/i, 'Anthropic'],
+    [/google.*workspace|google/i, 'Google'],
+    [/stripe/i, 'Stripe'],
+    [/freshbooks/i, 'FreshBooks'],
+    [/github/i, 'GitHub'],
+    [/netlify/i, 'Netlify'],
+    [/vercel/i, 'Vercel'],
+    [/zoom/i, 'Zoom'],
+    [/calendly/i, 'Calendly'],
+    [/apple\.com\/bill|apple/i, 'Apple'],
+    [/xfinity|comcast/i, 'Xfinity'],
+    [/at&t|att\b/i, 'AT&T'],
+    [/eecu|educational employees/i, 'EECU'],
+  ];
+  const found = known.find(([pattern]) => pattern.test(raw));
+  if (found) return found[1];
+  const cleaned = raw
+    .replace(/\b(pos|debit|credit|card|purchase|checkcard|visa|mastercard|ach|online|mobile|payment|autopay|withdrawal|deposit|transfer)\b/gi, ' ')
+    .replace(/\b(auth|trace|ref|id|terminal|term|seq|fitid)[:#]?\s*[a-z0-9-]+\b/gi, ' ')
+    .replace(/\b\d{2}\/\d{2}(?:\/\d{2,4})?\b/g, ' ')
+    .replace(/\b\d{4,}\b/g, ' ')
+    .replace(/[*#_]/g, ' ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+  const candidate = cleaned || raw;
+  return candidate
+    .split(/\s+/)
+    .slice(0, 6)
+    .join(' ')
+    .toLowerCase()
+    .replace(/\b[a-z]/g, letter => letter.toUpperCase())
+    .slice(0, 64);
+}
+
+function inferEntity(text) {
+  if (/behavior school|stripe|freshbooks|invoice|rbt|bcba|student|cohort|course|tuition|customer/i.test(text)) return 'behavior-school';
+  if (/robspain|speaking|consulting|calaba|website|rob spain/i.test(text)) return 'rob-spain';
+  return STATE.accounting?.activeEntity || 'behavior-school';
+}
+
+function normalizeDate(value, fallbackYear) {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+  const monthName = raw.match(/^(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t|tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\.?\s+(\d{1,2})(?:,?\s+(\d{2,4}))?$/i);
+  if (monthName) {
+    const currentYear = new Date().getFullYear();
+    const month = monthIndex(monthName[1]);
+    const year = monthName[3] ? Number(monthName[3].length === 2 ? '20' + monthName[3] : monthName[3]) : (fallbackYear || currentYear);
+    return [year, String(month).padStart(2, '0'), String(monthName[2]).padStart(2, '0')].join('-');
+  }
+  const mdy = raw.match(/^(\d{1,2})[\/-](\d{1,2})(?:[\/-](\d{2,4}))?$/);
+  if (mdy) {
+    const currentYear = new Date().getFullYear();
+    const year = mdy[3] ? Number(mdy[3].length === 2 ? '20' + mdy[3] : mdy[3]) : (fallbackYear || currentYear);
+    return [year, String(mdy[1]).padStart(2, '0'), String(mdy[2]).padStart(2, '0')].join('-');
+  }
+  const d = new Date(raw);
+  return Number.isNaN(d.getTime()) ? '' : d.toISOString().slice(0, 10);
+}
+
+function monthIndex(value) {
+  const month = String(value || '').toLowerCase().replace(/\./g, '').slice(0, 3);
+  return ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'].indexOf(month) + 1;
+}
+
+function inferStatementYear(text, sourceName) {
+  const haystack = [sourceName, text].filter(Boolean).join('\n');
+  const explicitYears = [...haystack.matchAll(/\b(20\d{2})\b/g)].map(match => Number(match[1]));
+  if (!explicitYears.length) return new Date().getFullYear();
+  const counts = new Map();
+  explicitYears.forEach(year => counts.set(year, (counts.get(year) || 0) + 1));
+  return [...counts.entries()].sort((a, b) => b[1] - a[1] || b[0] - a[0])[0][0];
+}
+
+function normalizeAmount(value) {
+  if (typeof value === 'number') return value;
+  let raw = String(value || '').trim();
+  const neg = raw.includes('(') && raw.includes(')');
+  raw = raw.replace(/[,$()]/g, '');
+  const num = parseFloat(raw);
+  if (!Number.isFinite(num)) return NaN;
+  return neg ? -Math.abs(num) : num;
+}
+
+function fmtCents(n) {
+  const sign = n < 0 ? '-' : '';
+  return sign + '$' + Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function handleAccountingDrop(e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) handleAccountingFile(file);
+}
+
+async function handleAccountingFile(file) {
+  if (!file) return;
+  const entity = document.getElementById('statementEntity').value || STATE.accounting.activeEntity;
+  STATE.accounting.activeEntity = entity;
+  logStatementParse('Reading ' + file.name + '...');
+  const isPdf = file.name.toLowerCase().endsWith('.pdf');
+  try {
+    let text = '';
+    if (isPdf) {
+      text = await extractPdfText(file);
+    } else {
+      text = await file.text();
+    }
+    const parsed = parseStatementWithProfile(text, file.name);
+    logStatementParse(`Profile: ${parsed.profile.label} (${Math.round(parsed.profile.confidence * 100)}% parser confidence).`);
+    const fingerprintRows = parsed.rows.map(row => ({ ...row, entity }));
+    const sourceFingerprint = sourceFingerprintForRows(file.name, fingerprintRows, { size: file.size, lastModified: file.lastModified });
+    const rows = fingerprintRows.map(row => ({ ...row, sourceFingerprint }));
+    if (!rows.length) {
+      if (isPdf) {
+        addOcrNeededRecord(file, 'PDF text was extracted, but no transaction rows matched. Run OCR or paste extracted text for this statement.');
+        logStatementParse('No transaction rows detected; added an OCR/document-review item to the queue.');
+      } else {
+        logStatementParse('No transaction rows detected. Paste OCR or export text into the statement text box and parse it there.');
+      }
+      showToast(isPdf ? 'Added PDF for OCR review' : 'No transaction rows detected');
+      return;
+    }
+    const imported = addAccountingTransactions(rows, file.name);
+    showAccountingImportPreview(imported, file.name);
+    showToast('Imported ' + imported.length + ' accounting rows');
+  } catch (err) {
+    if (isPdf) {
+      addOcrNeededRecord(file, 'PDF text extraction failed: ' + err.message + '. Run OCR or paste extracted text for this statement.');
+      logStatementParse('PDF text extraction failed; added an OCR/document-review item to the queue.');
+      showToast('Added PDF for OCR review');
+    } else {
+      logStatementParse('Import failed: ' + err.message + '\nPaste statement text as a fallback.');
+      showToast('Statement import failed');
+    }
+  }
+}
+
+async function extractPdfText(file) {
+  let pdf = null;
+  let text = '';
+  try {
+    const pdfjs = await import('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.mjs');
+    pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.mjs';
+    pdf = await pdfjs.getDocument({ data: await file.arrayBuffer() }).promise;
+    const pages = [];
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      const page = await pdf.getPage(pageNum);
+      const content = await page.getTextContent();
+      pages.push(content.items.map(item => item.str).join(' '));
+    }
+    text = pages.join('\n');
+    if (hasTransactionSignals(text)) return text;
+    logStatementParse('PDF text layer is sparse; trying OCR on rendered pages...');
+    const ocrText = await extractPdfOcrText(pdf);
+    if (ocrText.trim()) return [text, ocrText].filter(part => part && part.trim()).join('\n');
+    return text;
+  } catch (err) {
+    const raw = new TextDecoder('utf-8', { fatal: false }).decode(await file.arrayBuffer());
+    text = raw.replace(/[^\x09\x0A\x0D\x20-\x7E]+/g, ' ');
+    if (text.trim().length >= 80) return text;
+    throw err;
+  }
+}
+
+function hasTransactionSignals(text) {
+  const raw = String(text || '');
+  const dateCount = (raw.match(/\b(\d{4}-\d{1,2}-\d{1,2}|\d{1,2}[\/-]\d{1,2}(?:[\/-]\d{2,4})?|(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t|tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\.?\s+\d{1,2}(?:,?\s+\d{2,4})?)\b/gi) || []).length;
+  const moneyCount = (raw.match(/-?\$?\(?\d[\d,]*\.\d{2}\)?/g) || []).length;
+  return dateCount >= 1 && moneyCount >= 1;
+}
+
+async function loadTesseract() {
+  if (window.Tesseract) return window.Tesseract;
+  await new Promise((resolve, reject) => {
+    const existing = document.querySelector('script[data-accounting-ocr="tesseract"]');
+    if (existing) {
+      existing.addEventListener('load', resolve, { once: true });
+      existing.addEventListener('error', reject, { once: true });
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
+    script.async = true;
+    script.dataset.accountingOcr = 'tesseract';
+    script.onload = resolve;
+    script.onerror = () => reject(new Error('Could not load OCR library'));
+    document.head.appendChild(script);
+  });
+  if (!window.Tesseract) throw new Error('OCR library did not initialize');
+  return window.Tesseract;
+}
+
+async function extractPdfOcrText(pdf) {
+  if (!pdf || !document.createElement) return '';
+  const Tesseract = await loadTesseract();
+  const pages = [];
+  const pageLimit = Math.min(pdf.numPages || 0, 8);
+  for (let pageNum = 1; pageNum <= pageLimit; pageNum++) {
+    logStatementParse('OCR page ' + pageNum + ' of ' + pageLimit + '...');
+    const page = await pdf.getPage(pageNum);
+    const viewport = page.getViewport({ scale: 2 });
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.width = Math.ceil(viewport.width);
+    canvas.height = Math.ceil(viewport.height);
+    await page.render({ canvasContext: context, viewport }).promise;
+    const result = await Tesseract.recognize(canvas, 'eng');
+    pages.push(result?.data?.text || '');
+  }
+  const text = pages.join('\n');
+  if (text.trim()) logStatementParse('OCR extracted ' + text.trim().length + ' characters from PDF image pages.');
+  return text;
+}
+
+function parsePastedStatementText() {
+  const text = document.getElementById('statementTextPaste').value;
+  if (!text.trim()) { showToast('Paste statement text first'); return; }
+  const parsed = parseStatementWithProfile(text, 'pasted-statement.txt');
+  logStatementParse(`Pasted statement profile: ${parsed.profile.label} (${Math.round(parsed.profile.confidence * 100)}%).`);
+  const rows = parsed.rows.map(row => ({
+    ...row,
+    entity: document.getElementById('statementEntity').value || STATE.accounting.activeEntity,
+    sourceAccount: document.getElementById('statementAccount').value,
+  }));
+  const sourceFingerprint = sourceFingerprintForRows('pasted-statement.txt', rows);
+  rows.forEach(row => { row.sourceFingerprint = sourceFingerprint; });
+  if (!rows.length) {
+    logStatementParse('No rows detected from pasted statement text.');
+    showToast('No transaction rows detected');
+    return;
+  }
+  const imported = addAccountingTransactions(rows, 'pasted-statement.txt');
+  showAccountingImportPreview(imported, 'pasted statement');
+  showToast('Parsed ' + imported.length + ' rows from pasted text');
+}
+
+function parseStatementText(text, sourceName) {
+  return parseStatementWithProfile(text, sourceName).rows;
+}
+
+function parseStatementWithProfile(text, sourceName) {
+  const trimmed = String(text || '').trim();
+  const profile = detectStatementProfile(trimmed, sourceName);
+  const statementYear = inferStatementYear(trimmed, sourceName);
+  if (!trimmed) return { rows: [], profile, warnings: ['No statement text was provided.'] };
+  let rows = [];
+  if (profile.format === 'csv') {
+    const csvRows = parseStatementCsv(trimmed, { statementYear });
+    if (csvRows.length) rows = csvRows;
+  }
+  if (profile.format === 'ofx') {
+    const ofxRows = parseStatementOfx(trimmed, sourceName);
+    if (ofxRows.length) rows = ofxRows;
+  }
+  if (!rows.length) rows = parseStatementLines(trimmed, sourceName, { statementYear });
+  rows = rows.map(row => ({
+    ...row,
+    confidence: row.confidence ?? profile.confidence,
+    importProfile: profile.id,
+    notes: row.notes || 'Parsed as ' + profile.label,
+  }));
+  const warnings = rows.length ? [] : ['No transaction rows were detected for ' + profile.label + '.'];
+  return { rows, profile, warnings };
+}
+
+function detectStatementProfile(text, sourceName) {
+  const raw = String(text || '');
+  const firstLine = raw.split(/\r?\n/).find(line => line.trim()) || '';
+  const headerHaystack = (String(sourceName || '') + '\n' + firstLine).toLowerCase();
+  const csvLike = isDelimitedHeader(firstLine);
+  const statementDatePattern = String.raw`(?:\d{4}-\d{1,2}-\d{1,2}|\d{1,2}[\/-]\d{1,2}(?:[\/-]\d{2,4})?|(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t|tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\.?\s+\d{1,2}(?:,?\s+\d{2,4})?)`;
+  const transactionLineCount = raw.split(/\r?\n/).filter(line =>
+    new RegExp(`${statementDatePattern}\\s+.+?\\s+-?\\$?\\(?\\d[\\d,]*\\.\\d{2}\\)?\\s*$`, 'i').test(line.trim())
+  ).length;
+
+  if (/<OFX|<STMTTRN|\.ofx|\.qfx/i.test(String(sourceName || '') + '\n' + raw.slice(0, 1000))) {
+    return { id: 'ofx-qfx', label: 'OFX/QFX bank export', confidence: 0.88, format: 'ofx' };
+  }
+  if (/transaction date.*clearing date.*merchant.*amount|amount \(usd\)/i.test(headerHaystack) || /apple card/i.test(String(sourceName || ''))) {
+    return { id: 'apple-card', label: 'Apple Card CSV', confidence: 0.9, format: 'csv' };
+  }
+  if (/balance_transaction|reporting_category|available_on|stripe balance/i.test(headerHaystack) || /stripe/i.test(String(sourceName || '')) && csvLike) {
+    return { id: 'stripe-csv', label: 'Stripe CSV export', confidence: 0.9, format: csvLike ? 'csv' : 'text' };
+  }
+  if (/invoice_number|invoiceid|client_name|customer_name|amount_paid/i.test(headerHaystack) || /freshbooks/i.test(String(sourceName || '')) && csvLike) {
+    return { id: 'freshbooks-csv', label: 'FreshBooks export', confidence: 0.86, format: csvLike ? 'csv' : 'text' };
+  }
+  if (/eecu|educational employees credit union|debit.*credit.*balance|withdrawal.*deposit/i.test(headerHaystack)) {
+    return { id: 'eecu', label: 'EECU statement/export', confidence: 0.84, format: csvLike ? 'csv' : 'text' };
+  }
+  if (csvLike) return { id: 'generic-csv', label: 'Generic CSV statement', confidence: 0.68, format: 'csv' };
+  if (transactionLineCount > 0) {
+    return { id: 'statement-text', label: 'Statement text', confidence: Math.min(0.75, 0.48 + (transactionLineCount * 0.05)), format: 'text' };
+  }
+  return { id: 'unknown', label: 'Unknown statement format', confidence: 0.1, format: 'unknown' };
+}
+
+function parseStatementCsv(text, options = {}) {
+  const lines = text.split(/\r?\n/).filter(l => l.trim());
+  if (lines.length < 2) return [];
+  const delimiter = detectCsvDelimiter(lines[0]) || ',';
+  const headers = parseCSVLine(lines[0], delimiter).map(h => h.toLowerCase().trim());
+  const findIdx = (...needles) => headers.findIndex(h => needles.some(n => h.includes(n)));
+  const dateIdx = findIdx('date', 'posted');
+  const descIdx = findIdx('description', 'merchant', 'payee', 'name', 'memo');
+  const amountIdx = findIdx('amount');
+  const debitIdx = findIdx('debit', 'withdrawal', 'charge');
+  const creditIdx = findIdx('credit', 'deposit');
+  const balanceIdx = findIdx('balance', 'running balance', 'available balance');
+  const typeIdx = findIdx('type');
+  if (dateIdx < 0 || descIdx < 0 || (amountIdx < 0 && debitIdx < 0 && creditIdx < 0)) return [];
+
+  const rows = lines.slice(1).map(line => {
+    const cols = parseCSVLine(line, delimiter);
+    const desc = cols[descIdx] || '';
+    const type = (cols[typeIdx] || '').toLowerCase();
+    let amount = amountIdx >= 0 ? normalizeAmount(cols[amountIdx]) : 0;
+    const debit = debitIdx >= 0 ? normalizeAmount(cols[debitIdx]) : NaN;
+    const credit = creditIdx >= 0 ? normalizeAmount(cols[creditIdx]) : NaN;
+    const balance = balanceIdx >= 0 ? normalizeAmount(cols[balanceIdx]) : NaN;
+    if (Number.isFinite(debit) && Math.abs(debit) > 0) amount = -Math.abs(debit);
+    if (Number.isFinite(credit) && Math.abs(credit) > 0) amount = Math.abs(credit);
+    if (amount > 0 && /purchase|sale|debit|charge|fee/i.test(type)) amount = -Math.abs(amount);
+    return {
+      date: normalizeDate(cols[dateIdx], options.statementYear),
+      description: desc,
+      amount,
+      bankBalance: Number.isFinite(balance) ? balance : undefined,
+      sourceAccount: document.getElementById('statementAccount')?.value || 'Imported CSV',
+    };
+  });
+  return applyCsvBalanceValidation(rows);
+}
+
+function parseStatementOfx(text, sourceName) {
+  const raw = String(text || '');
+  const accountId = ofxTag(raw, 'ACCTID') || document.getElementById('statementAccount')?.value || 'OFX account';
+  const blocks = [...raw.matchAll(/<STMTTRN>([\s\S]*?)(?=<STMTTRN>|<\/BANKTRANLIST>|<\/CREDITCARDMSGSRSV1>|<\/OFX>|$)/gi)]
+    .map(match => match[1]);
+  return blocks.map(block => {
+    const amount = normalizeAmount(ofxTag(block, 'TRNAMT'));
+    const date = normalizeOfxDate(ofxTag(block, 'DTPOSTED') || ofxTag(block, 'DTUSER'));
+    const name = ofxTag(block, 'NAME');
+    const memo = ofxTag(block, 'MEMO');
+    const fitid = ofxTag(block, 'FITID');
+    const description = [name, memo].filter(Boolean).join(' - ') || ofxTag(block, 'TRNTYPE') || 'OFX transaction';
+    if (!description || !date || !Number.isFinite(amount) || amount === 0) return null;
+    return {
+      importKey: fitid ? `ofx|${accountId}|${fitid}` : undefined,
+      date,
+      description,
+      amount,
+      sourceAccount: document.getElementById('statementAccount')?.value || `OFX ${accountId}`,
+      sourceFile: sourceName,
+      notes: fitid ? `OFX FITID ${fitid}` : 'Parsed from OFX/QFX export',
+    };
+  }).filter(Boolean);
+}
+
+function ofxTag(text, tag) {
+  const match = String(text || '').match(new RegExp(`<${tag}>([^<\\r\\n]+)`, 'i'));
+  return match ? match[1].trim() : '';
+}
+
+function normalizeOfxDate(value) {
+  const raw = String(value || '').trim();
+  const match = raw.match(/^(\d{4})(\d{2})(\d{2})/);
+  if (!match) return '';
+  return `${match[1]}-${match[2]}-${match[3]}`;
+}
+
+function applyCsvBalanceValidation(rows) {
+  const parsed = rows.filter(row => row.description && Number.isFinite(row.amount) && row.amount !== 0);
+  const balanceRows = parsed.filter(row => Number.isFinite(row.bankBalance));
+  if (balanceRows.length < 2) return parsed;
+
+  let forwardMatches = 0;
+  let reverseMatches = 0;
+  for (let index = 1; index < parsed.length; index++) {
+    const prev = parsed[index - 1];
+    const row = parsed[index];
+    if (Number.isFinite(prev.bankBalance) && Number.isFinite(row.bankBalance) && Math.abs((prev.bankBalance + row.amount) - row.bankBalance) < 0.01) {
+      forwardMatches++;
+    }
+  }
+  for (let index = 0; index < parsed.length - 1; index++) {
+    const row = parsed[index];
+    const next = parsed[index + 1];
+    if (Number.isFinite(row.bankBalance) && Number.isFinite(next.bankBalance) && Math.abs((row.bankBalance - row.amount) - next.bankBalance) < 0.01) {
+      reverseMatches++;
+    }
+  }
+  const order = reverseMatches > forwardMatches ? 'reverse' : 'forward';
+
+  return parsed.map((row, index) => {
+    let expected = NaN;
+    if (order === 'forward' && index > 0 && Number.isFinite(parsed[index - 1].bankBalance)) {
+      expected = parsed[index - 1].bankBalance + row.amount;
+    } else if (order === 'reverse' && index < parsed.length - 1 && Number.isFinite(parsed[index + 1].bankBalance)) {
+      expected = parsed[index + 1].bankBalance + row.amount;
+    }
+    if (!Number.isFinite(row.bankBalance) || !Number.isFinite(expected)) {
+      return { ...row, balanceCheck: 'unchecked' };
+    }
+    const mismatch = Math.abs(expected - row.bankBalance) >= 0.01;
+    if (!mismatch) return { ...row, balanceCheck: 'matched' };
+    const warning = `Running balance mismatch: expected ${expected.toFixed(2)}, saw ${row.bankBalance.toFixed(2)}.`;
+    return {
+      ...row,
+      balanceCheck: 'mismatch',
+      confidence: Math.min(row.confidence ?? 0.5, 0.45),
+      notes: [row.notes, warning].filter(Boolean).join(' '),
+    };
+  });
+}
+
+function parseStatementLines(text, sourceName, options = {}) {
+  const lines = reconstructStatementLines(text);
+  return applyCsvBalanceValidation(lines.map(line => parseStatementLine(line, sourceName, options)).filter(Boolean));
+}
+
+function reconstructStatementLines(text) {
+  const lines = String(text || '').split(/\r?\n/).map(line => line.replace(/\s+/g, ' ').trim()).filter(Boolean);
+  const dateStart = /^(?:\d{4}-\d{1,2}-\d{1,2}|\d{1,2}[\/-]\d{1,2}(?:[\/-]\d{2,4})?|(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t|tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\.?\s+\d{1,2}(?:,?\s+\d{2,4})?)(?:\s+|$)/i;
+  const rows = [];
+  for (let index = 0; index < lines.length; index++) {
+    if (!dateStart.test(lines[index])) continue;
+    let candidate = lines[index];
+    let cursor = index + 1;
+    while (cursor < lines.length && !dateStart.test(lines[cursor]) && cursor - index <= 8) {
+      candidate += ' ' + lines[cursor];
+      cursor++;
+    }
+    rows.push(candidate);
+    index = cursor - 1;
+  }
+  return rows;
+}
+
+function parseStatementLine(line, sourceName, options = {}) {
+  const linePattern = /^(\d{4}-\d{1,2}-\d{1,2}|\d{1,2}[\/-]\d{1,2}(?:[\/-]\d{2,4})?|(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t|tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\.?\s+\d{1,2}(?:,?\s+\d{2,4})?)\s+(.+)$/i;
+  const match = String(line || '').trim().match(linePattern);
+  if (!match) return null;
+  const date = match[1];
+  const rest = match[2].trim();
+  const moneyPattern = /-?\$?\(?\d[\d,]*\.\d{2}\)?/g;
+  const moneyMatches = [...rest.matchAll(moneyPattern)];
+  if (!moneyMatches.length) return null;
+
+  const lastMoney = moneyMatches[moneyMatches.length - 1];
+  const previousMoney = moneyMatches.length > 1 ? moneyMatches[moneyMatches.length - 2] : null;
+  const hasPossibleBalance = Boolean(previousMoney && lastMoney.index + lastMoney[0].length === rest.length);
+  const amountToken = hasPossibleBalance ? previousMoney[0] : lastMoney[0];
+  const balanceToken = hasPossibleBalance ? lastMoney[0] : '';
+  const descEnd = hasPossibleBalance ? previousMoney.index : lastMoney.index;
+  const desc = rest.slice(0, descEnd).replace(/\s+[-–—]\s*$/, '').trim();
+  if (!desc) return null;
+
+  let amount = normalizeAmount(amountToken);
+  const bankBalance = normalizeAmount(balanceToken);
+  if (amount > 0 && !/deposit|credit|payout|payroll|invoice|stripe|refund|transfer from/i.test(desc)) {
+    amount = -Math.abs(amount);
+  }
+
+  return {
+    date: normalizeDate(date, options.statementYear),
+    description: desc,
+    amount,
+    bankBalance: Number.isFinite(bankBalance) ? bankBalance : undefined,
+    sourceAccount: document.getElementById('statementAccount')?.value || sourceName || 'Imported statement',
+  };
+}
+
+function addOcrNeededRecord(file, reason) {
+  ensureAccountingState();
+  const entity = document.getElementById('statementEntity')?.value || STATE.accounting.activeEntity || 'behavior-school';
+  const sourceAccount = document.getElementById('statementAccount')?.value || 'Imported statement';
+  const sourceFile = file?.name || 'scanned statement';
+  const sourceFingerprint = simpleFingerprint([sourceFile, file?.size || 0, file?.lastModified || 0, entity, sourceAccount, 'ocr-needed'].join('|'));
+  const importKey = ['ocr-needed', sourceFile, file?.size || 0, file?.lastModified || 0, entity, sourceAccount].join('|').toLowerCase();
+  if (STATE.accounting.reviewQueue.some(t => t.importKey === importKey)) return null;
+  const now = new Date().toISOString();
+  const row = {
+    id: 'ocr_' + Date.now() + '_' + Math.random().toString(16).slice(2, 8),
+    importKey,
+    date: now.slice(0, 10),
+    description: 'Needs OCR: ' + sourceFile,
+    amount: 0,
+    sourceAccount,
+    sourceFile,
+    sourceFingerprint,
+    entity,
+    category: 'Document needs OCR',
+    taxCategory: 'Needs document review',
+    frappeAccount: 'Document review',
+    confidence: 0,
+    approved: false,
+    notes: reason || 'PDF appears scanned or image-only; OCR text is needed before transaction import.',
+    importProfile: 'ocr-needed',
+    importedAt: now,
+    updatedAt: now,
+  };
+  STATE.accounting.reviewQueue.push(row);
+  STATE.accounting.importedFiles.push({
+    name: sourceFile,
+    importedAt: now,
+    count: 0,
+    status: 'needs-ocr',
+    fingerprint: sourceFingerprint,
+  });
+  saveState(STATE);
+  renderAccountingHub();
+  return row;
+}
+
+function showAccountingImportPreview(imported, sourceName) {
+  if (!imported || !imported.length) return;
+  document.getElementById('importResults').style.display = 'block';
+  document.getElementById('importTitle').textContent = sourceName;
+  document.getElementById('importCount').textContent = imported.length + ' accounting rows';
+  const income = imported.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0);
+  const expenses = imported.filter(t => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
+  document.getElementById('importSummary').innerHTML =
+    '<span>Total in: <strong style="color:#22c55e">' + fmtCents(income) + '</strong></span>' +
+    '<span>Total out: <strong style="color:#ef4444">' + fmtCents(expenses) + '</strong></span>' +
+    '<span>Net: <strong style="color:' + (income - expenses >= 0 ? '#22c55e' : '#ef4444') + '">' + fmtCents(income - expenses) + '</strong></span>';
+  document.getElementById('txnList').innerHTML = imported.slice(0, 100).map(t => {
+    const isDebit = t.amount < 0;
+    return '<div class="txn-row">' +
+      '<span class="txn-date">' + esc(t.date) + '</span>' +
+      '<span class="txn-desc">' + esc(t.description) + '</span>' +
+      '<span class="txn-amt ' + (isDebit ? 'debit' : 'credit') + '">' + fmtCents(t.amount) + '</span></div>';
+  }).join('');
+}
+
+function logStatementParse(message) {
+  const el = document.getElementById('statementParseLog');
+  if (!el) return;
+  el.style.display = 'block';
+  el.textContent = '[' + new Date().toLocaleTimeString() + '] ' + message + '\n' + el.textContent;
+}
+
+function exportFrappeBooksCsv() {
+  ensureAccountingState();
+  const rows = STATE.accounting.reviewQueue.filter(isFrappeExportable);
+  if (!rows.length) { showToast('Approve transactions before exporting'); return; }
+  const csv = toCsv([
+    ['Date', 'Party', 'Account', 'Debit', 'Credit', 'Description', 'Reference', 'Entity', 'Tax Category'],
+    ...rows.map(t => [
+      t.date,
+      t.payee || partyForTransaction(t),
+      t.frappeAccount || (t.amount >= 0 ? 'Sales' : STATE.accounting.defaultFrappeAccount),
+      t.amount < 0 ? Math.abs(t.amount).toFixed(2) : '',
+      t.amount > 0 ? t.amount.toFixed(2) : '',
+      t.description,
+      t.sourceFile || '',
+      ACCOUNTING_ENTITIES[t.entity]?.label || t.entity,
+      t.taxCategory || '',
+    ]),
+  ]);
+  downloadText('frappe-books-import-' + todayStamp() + '.csv', csv, 'text/csv');
+}
+
+async function syncFrappeBooks(dryRun) {
+  ensureAccountingState();
+  const rows = STATE.accounting.reviewQueue.filter(isFrappeExportable);
+  if (!rows.length) {
+    frappeSyncStatus('No approved Frappe-exportable rows are ready.', '#dc2626');
+    showToast('Approve rows before Frappe sync');
+    return;
+  }
+  const startedAt = new Date().toISOString();
+  frappeSyncStatus((dryRun ? 'Previewing' : 'Syncing') + ' ' + rows.length + ' row' + (rows.length === 1 ? '' : 's') + '...', '#64748b');
+  try {
+    const res = await fetch(ACCOUNTING_FRAPPE_SYNC_URL, {
+      method: 'POST',
+      headers: accountingAuthHeaders(),
+      body: JSON.stringify({
+        dryRun,
+        rows,
+        ...frappeSyncSettingsPayload(),
+      }),
+    });
+    const payload = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(payload.error || 'HTTP ' + res.status);
+    if (!payload.dryRun && Array.isArray(payload.results)) {
+      markRowsSyncedToFrappe(payload.results);
+    }
+    const created = payload.created || 0;
+    const failed = payload.failed || 0;
+    const previewed = payload.entries?.length || 0;
+    recordFrappeSyncRun(payload.frappeRun || {
+      mode: payload.dryRun ? 'preview' : 'sync',
+      status: failed ? (created ? 'partial' : 'failed') : 'success',
+      configured: Boolean(payload.configured),
+      rowCount: rows.length,
+      entryCount: previewed || created,
+      created,
+      failed,
+      skipped: payload.skipped || 0,
+      company: frappeSyncSettingsPayload().company,
+      defaultBankAccount: frappeSyncSettingsPayload().defaultBankAccount,
+      note: payload.note || '',
+      errors: payload.errors || [],
+      startedAt,
+      finishedAt: new Date().toISOString(),
+    });
+    const note = payload.note ? ' ' + payload.note : '';
+    const label = payload.dryRun
+      ? `Frappe preview ready: ${previewed} Journal Entry payload${previewed === 1 ? '' : 's'}.${note}`
+      : `Frappe sync finished: ${created} created, ${failed} failed.`;
+    frappeSyncStatus(label, failed ? '#dc2626' : (payload.dryRun ? '#d97706' : '#0f766e'));
+    showToast(payload.dryRun ? 'Frappe sync preview ready' : 'Frappe sync complete');
+    if (!payload.dryRun && created) {
+      saveState(STATE);
+      renderAccountingHub();
+    } else {
+      saveState(STATE);
+      renderFrappeSyncRuns();
+    }
+  } catch (err) {
+    recordFrappeSyncRun({
+      mode: dryRun ? 'preview' : 'sync',
+      status: 'failed',
+      rowCount: rows.length,
+      entryCount: 0,
+      failed: rows.length,
+      errors: [{ error: err.message }],
+      startedAt,
+      finishedAt: new Date().toISOString(),
+    });
+    saveState(STATE);
+    renderFrappeSyncRuns();
+    frappeSyncStatus('Frappe sync failed: ' + err.message, '#dc2626');
+    showToast('Frappe sync failed');
+  }
+}
+
+function frappeSyncSettingsPayload() {
+  ensureAccountingState();
+  const settings = STATE.accounting.frappeSettings || defaultFrappeSettings();
+  return {
+    company: settings.company || '',
+    defaultBankAccount: settings.defaultBankAccount || '',
+    defaultRevenueAccount: settings.defaultRevenueAccount || '',
+    defaultExpenseAccount: settings.defaultExpenseAccount || STATE.accounting.defaultFrappeAccount || 'Expenses',
+  };
+}
+
+function markRowsSyncedToFrappe(results) {
+  const byKey = new Map((results || []).map(result => [result.importKey, result]));
+  STATE.accounting.reviewQueue.forEach(row => {
+    const result = byKey.get(row.importKey);
+    if (!result) return;
+    row.frappeSyncedAt = new Date().toISOString();
+    row.frappeJournalEntry = result.name || '';
+    row.updatedAt = new Date().toISOString();
+  });
+}
+
+function exportCpaPackage() {
+  ensureAccountingState();
+  const queue = STATE.accounting.reviewQueue;
+  if (!queue.length) { showToast('No accounting rows to export'); return; }
+  const stamp = todayStamp();
+  downloadText('cpa-accounting-review-' + stamp + '.csv', buildCpaReviewCsv(queue), 'text/csv');
+  downloadText('cpa-accounting-summary-' + stamp + '.md', buildCpaSummaryMarkdown(queue), 'text/markdown');
+  downloadText('cpa-accounting-manifest-' + stamp + '.json', JSON.stringify(buildCpaPackageManifest(queue), null, 2), 'application/json');
+}
+
+function buildCpaReviewCsv(queue) {
+  const rows = Array.isArray(queue) ? queue : [];
+  return toCsv([
+    ['Date', 'Entity', 'Source Account', 'Description', 'Payee', 'Amount', 'Bank Balance', 'Balance Check', 'Category', 'Tax Category', 'Frappe Account', 'Approved', 'Approved By Automation', 'Approved At', 'Confidence', 'Source File', 'Source Fingerprint', 'Reconciliation Status', 'Reconciliation Type', 'Reconciliation Name', 'Reconciliation Confidence', 'Import Profile', 'Frappe Journal Entry', 'Notes'],
+    ...rows.map(t => [
+      t.date,
+      ACCOUNTING_ENTITIES[t.entity]?.label || t.entity,
+      t.sourceAccount || '',
+      t.description,
+      t.payee || partyForTransaction(t),
+      t.amount.toFixed(2),
+      Number.isFinite(Number(t.bankBalance)) ? Number(t.bankBalance).toFixed(2) : '',
+      t.balanceCheck || '',
+      t.category || '',
+      t.taxCategory || '',
+      t.frappeAccount || '',
+      t.approved ? 'yes' : 'no',
+      t.approvedByAutomation ? 'yes' : 'no',
+      t.approvedAt || '',
+      Math.round((t.confidence || 0) * 100) + '%',
+      t.sourceFile || '',
+      t.sourceFingerprint || '',
+      t.reconciliationStatus || '',
+      t.reconciliationType || '',
+      t.reconciliationName || '',
+      t.reconciliationConfidence ? Math.round(t.reconciliationConfidence * 100) + '%' : '',
+      t.importProfile || '',
+      t.frappeJournalEntry || '',
+      t.notes || '',
+    ]),
+  ]);
+}
+
+function exportCpaSummary() {
+  ensureAccountingState();
+  const queue = STATE.accounting.reviewQueue;
+  if (!queue.length) { showToast('No accounting rows to summarize'); return; }
+  downloadText('cpa-accounting-summary-' + todayStamp() + '.md', buildCpaSummaryMarkdown(queue), 'text/markdown');
+}
+
+function buildCpaSummaryMarkdown(queue) {
+  const rows = Array.isArray(queue) ? queue : [];
+  const summary = summarizeCpaRows(rows);
+  const lines = [
+    '# CPA Accounting Summary',
+    '',
+    '- Generated: ' + new Date().toISOString(),
+    '- Rows: ' + summary.rowCount,
+    '- Approved: ' + summary.approvedCount,
+    '- Approved by automation: ' + summary.automationApprovedCount,
+    '- Needs review: ' + summary.needsReviewCount,
+    '- OCR/document review: ' + summary.ocrNeededCount,
+    '- Balance mismatches: ' + summary.balanceMismatchCount,
+    '- Frappe synced: ' + summary.frappeSyncedCount,
+    '- Reconciled: ' + summary.reconciledCount,
+    '- Possible existing-finance matches: ' + summary.possibleReconciliationCount,
+    '- Unmatched to existing finance: ' + summary.unmatchedReconciliationCount,
+    '',
+    '## Entity Totals',
+    '',
+    '| Entity | Income | Expenses | Net | Rows |',
+    '| --- | ---: | ---: | ---: | ---: |',
+    ...summary.entityTotals.map(row => `| ${row.label} | ${fmtCents(row.income)} | ${fmtCents(row.expenses)} | ${fmtCents(row.net)} | ${row.count} |`),
+    '',
+    '## Category Totals',
+    '',
+    '| Category | Income | Expenses | Net | Rows |',
+    '| --- | ---: | ---: | ---: | ---: |',
+    ...summary.categoryTotals.map(row => `| ${row.label} | ${fmtCents(row.income)} | ${fmtCents(row.expenses)} | ${fmtCents(row.net)} | ${row.count} |`),
+    '',
+    '## Review Exceptions',
+    '',
+    ...summary.reviewExceptions.map(row => '- ' + [row.date, row.entity, row.description, fmtCents(row.amount), row.reason].filter(Boolean).join(' | ')),
+    '',
+    '## Source Files',
+    '',
+    ...summary.sourceFiles.map(file => '- ' + file.name + (file.fingerprints.length ? ' (' + file.fingerprints.join(', ') + ')' : '')),
+    '',
+    '## Notes',
+    '',
+    STATE.accounting.cpaNotes || 'No CPA notes saved.',
+    '',
+  ];
+  if (!summary.reviewExceptions.length) {
+    const index = lines.indexOf('## Source Files');
+    lines.splice(index - 1, 0, '- No exceptions detected.');
+  }
+  if (!summary.sourceFiles.length) {
+    lines.splice(lines.length - 3, 0, '- No source files recorded.');
+  }
+  return lines.join('\n');
+}
+
+function buildCpaPackageManifest(queue, generatedAt = new Date().toISOString()) {
+  const rows = Array.isArray(queue) ? queue : [];
+  const summary = summarizeCpaRows(rows);
+  const close = accountingCloseReadiness(rows);
+  const stamp = generatedAt.slice(0, 10).replace(/-/g, '');
+  const settings = STATE.accounting?.frappeSettings || defaultFrappeSettings();
+  return {
+    package: 'robspain-accounting-cpa-handoff',
+    generatedAt,
+    period: close.period,
+    readyForCpa: close.ready,
+    blockers: close.blockers,
+    files: [
+      { name: 'cpa-accounting-review-' + stamp + '.csv', type: 'review-csv', description: 'All normalized accounting rows with review status, source fingerprints, reconciliation, Frappe account, and notes.' },
+      { name: 'cpa-accounting-summary-' + stamp + '.md', type: 'summary-markdown', description: 'CPA-facing totals, review exceptions, source list, and notes.' },
+      { name: 'cpa-accounting-manifest-' + stamp + '.json', type: 'manifest-json', description: 'Machine-readable package manifest and close-readiness record.' },
+    ],
+    summary: {
+      rows: summary.rowCount,
+      approved: summary.approvedCount,
+      approvedByAutomation: summary.automationApprovedCount,
+      needsReview: summary.needsReviewCount,
+      ocrNeeded: summary.ocrNeededCount,
+      balanceMismatches: summary.balanceMismatchCount,
+      frappeSynced: summary.frappeSyncedCount,
+      reconciled: summary.reconciledCount,
+      possibleReconciliation: summary.possibleReconciliationCount,
+      unmatchedReconciliation: summary.unmatchedReconciliationCount,
+    },
+    closeReadiness: {
+      period: close.period,
+      rows: close.rowCount,
+      income: Number(close.income.toFixed(2)),
+      expenses: Number(close.expenses.toFixed(2)),
+      net: Number(close.net.toFixed(2)),
+      frappePending: close.frappePendingCount,
+      missingSources: close.sourceMissingCount,
+      ready: close.ready,
+      blockers: close.blockers,
+    },
+    sourceFiles: summary.sourceFiles,
+    entityTotals: summary.entityTotals,
+    categoryTotals: summary.categoryTotals,
+    frappe: {
+      company: settings.company || '',
+      defaultBankAccount: settings.defaultBankAccount || '',
+      defaultRevenueAccount: settings.defaultRevenueAccount || '',
+      defaultExpenseAccount: settings.defaultExpenseAccount || '',
+      categoryAccountMap: accountingCategoryAccountMap(),
+    },
+    notes: STATE.accounting?.cpaNotes || '',
+  };
+}
+
+function summarizeCpaRows(rows) {
+  const entityMap = new Map();
+  const categoryMap = new Map();
+  const sourceFiles = new Map();
+  const reviewExceptions = [];
+
+  rows.forEach(row => {
+    const amount = Number(row.amount) || 0;
+    const entityLabel = ACCOUNTING_ENTITIES[row.entity]?.label || row.entity || 'Unassigned';
+    const categoryLabel = row.category || 'Uncategorized';
+    addSummaryAmount(entityMap, entityLabel, amount);
+    addSummaryAmount(categoryMap, categoryLabel, amount);
+    if (row.sourceFile) {
+      const item = sourceFiles.get(row.sourceFile) || { name: row.sourceFile, fingerprints: new Set() };
+      if (row.sourceFingerprint) item.fingerprints.add(row.sourceFingerprint);
+      sourceFiles.set(row.sourceFile, item);
+    }
+    const reasons = [];
+    if (!row.approved) reasons.push('not approved');
+    if ((row.confidence || 0) < 0.75) reasons.push('low confidence');
+    if (row.balanceCheck === 'mismatch') reasons.push('balance mismatch');
+    if (row.category === 'Document needs OCR') reasons.push('document needs OCR');
+    if (reasons.length) {
+      reviewExceptions.push({
+        date: row.date || '',
+        entity: entityLabel,
+        description: row.description || '',
+        amount,
+        reason: reasons.join(', '),
+      });
+    }
+  });
+
+  return {
+    rowCount: rows.length,
+    approvedCount: rows.filter(row => row.approved).length,
+    automationApprovedCount: rows.filter(row => row.approvedByAutomation).length,
+    needsReviewCount: reviewExceptions.length,
+    ocrNeededCount: rows.filter(row => row.category === 'Document needs OCR').length,
+    balanceMismatchCount: rows.filter(row => row.balanceCheck === 'mismatch').length,
+    frappeSyncedCount: rows.filter(row => row.frappeJournalEntry || row.frappeSyncedAt).length,
+    reconciledCount: rows.filter(row => row.reconciliationStatus === 'matched').length,
+    possibleReconciliationCount: rows.filter(row => row.reconciliationStatus === 'possible').length,
+    unmatchedReconciliationCount: rows.filter(row => row.reconciliationStatus === 'unmatched').length,
+    entityTotals: mapToSummaryRows(entityMap),
+    categoryTotals: mapToSummaryRows(categoryMap),
+    sourceFiles: [...sourceFiles.values()]
+      .map(file => ({ name: file.name, fingerprints: [...file.fingerprints].sort() }))
+      .sort((a, b) => a.name.localeCompare(b.name)),
+    reviewExceptions,
+  };
+}
+
+function addSummaryAmount(map, label, amount) {
+  const item = map.get(label) || { label, income: 0, expenses: 0, net: 0, count: 0 };
+  if (amount >= 0) item.income += amount;
+  else item.expenses += Math.abs(amount);
+  item.net += amount;
+  item.count += 1;
+  map.set(label, item);
+}
+
+function mapToSummaryRows(map) {
+  return [...map.values()].sort((a, b) => Math.abs(b.net) - Math.abs(a.net));
+}
+
+function partyForTransaction(t) {
+  if (t.payee) return t.payee;
+  if (t.amount > 0) return ACCOUNTING_ENTITIES[t.entity]?.label || 'Customer';
+  return (t.description || '').split(/\s+-\s+|\s{2,}/)[0].slice(0, 48) || 'Vendor';
+}
+
+function toCsv(rows) {
+  return rows.map(row => row.map(cell => {
+    const s = String(cell ?? '');
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }).join(',')).join('\n');
+}
+
+function downloadText(filename, text, type) {
+  const blob = new Blob([text], { type: type || 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  showToast('Downloaded ' + filename);
+}
+
+function todayStamp() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ACTIONS
+// ═══════════════════════════════════════════════════════════════
+
+function cycleBill(id) {
+  const bill = STATE.bills.find(b => b.id === id);
+  if (!bill) return;
+  const idx = STATUS_CYCLE.indexOf(bill.status);
+  bill.status = STATUS_CYCLE[(idx + 1) % STATUS_CYCLE.length];
+  saveState(STATE);
+  renderAll();
+  showToast(bill.name + ' → ' + STATUS_LABELS[bill.status]);
+}
+
+function openAddBillModal() {
+  document.getElementById('billModalTitle').textContent = 'Add New Bill';
+  document.getElementById('editBillId').value = '';
+  document.getElementById('billName').value = '';
+  document.getElementById('billDueDay').value = '';
+  document.getElementById('billAmount').value = '';
+  document.getElementById('billStatus').value = 'upcoming';
+  document.getElementById('billPriority').value = '3';
+  document.getElementById('billAccount').value = 'EECU Checking';
+  document.getElementById('billNotes').value = '';
+  document.getElementById('deleteBillBtn').style.display = 'none';
+  document.getElementById('addBillModal').classList.add('open');
+}
+
+function editBill(id) {
+  const bill = STATE.bills.find(b => b.id === id);
+  if (!bill) return;
+  document.getElementById('billModalTitle').textContent = 'Edit Bill';
+  document.getElementById('editBillId').value = id;
+  document.getElementById('billName').value = bill.name;
+  document.getElementById('billDueDay').value = bill.dueDay || '';
+  document.getElementById('billAmount').value = bill.amount;
+  document.getElementById('billStatus').value = bill.status;
+  document.getElementById('billPriority').value = bill.priority;
+  document.getElementById('billAccount').value = bill.account || '';
+  document.getElementById('billNotes').value = bill.notes || '';
+  document.getElementById('deleteBillBtn').style.display = 'inline-block';
+  document.getElementById('addBillModal').classList.add('open');
+}
+
+function saveBill() {
+  const id = document.getElementById('editBillId').value;
+  const name = document.getElementById('billName').value.trim();
+  const amount = parseFloat(document.getElementById('billAmount').value);
+  if (!name || isNaN(amount)) { showToast('Name and amount required'); return; }
+
+  const data = {
+    name,
+    dueDay: parseInt(document.getElementById('billDueDay').value) || null,
+    amount,
+    status: document.getElementById('billStatus').value,
+    priority: parseInt(document.getElementById('billPriority').value),
+    account: document.getElementById('billAccount').value.trim(),
+    notes: document.getElementById('billNotes').value.trim(),
+  };
+
+  if (id) {
+    const bill = STATE.bills.find(b => b.id === id);
+    if (bill) Object.assign(bill, data);
+    showToast('Updated ' + name);
+  } else {
+    data.id = 'bill_' + Date.now();
+    STATE.bills.push(data);
+    showToast('Added ' + name);
+  }
+  saveState(STATE);
+  closeModal('addBillModal');
+  renderAll();
+}
+
+function deleteBill() {
+  const id = document.getElementById('editBillId').value;
+  if (!id) return;
+  const bill = STATE.bills.find(b => b.id === id);
+  if (bill && confirm('Delete "' + bill.name + '"?')) {
+    STATE.bills = STATE.bills.filter(b => b.id !== id);
+    saveState(STATE);
+    closeModal('addBillModal');
+    renderAll();
+    showToast('Deleted ' + bill.name);
+  }
+}
+
+function openPaymentFor(billId) {
+  const bill = STATE.bills.find(b => b.id === billId);
+  openPaymentModal(bill ? bill.name : '', bill ? bill.amount : '');
+}
+
+function openPaymentModal(billName, amount) {
+  const sel = document.getElementById('payBill');
+  sel.innerHTML = '<option value="">— Select bill —</option>' +
+    STATE.bills.map(b => `<option value="${esc(b.name)}" ${b.name === billName ? 'selected' : ''}>${esc(b.name)}</option>`).join('') +
+    '<option value="__other__">Other...</option>';
+  document.getElementById('payAmount').value = amount || '';
+  document.getElementById('payDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('payNotes').value = '';
+  document.getElementById('paymentModal').classList.add('open');
+}
+
+function savePayment() {
+  let billName = document.getElementById('payBill').value;
+  if (billName === '__other__') billName = prompt('Bill name:');
+  const amount = parseFloat(document.getElementById('payAmount').value);
+  if (!billName || isNaN(amount)) { showToast('Bill and amount required'); return; }
+
+  STATE.payments.push({
+    id: 'pay_' + Date.now(),
+    billName,
+    amount,
+    date: document.getElementById('payDate').value,
+    fromAccount: document.getElementById('payFrom').value,
+    notes: document.getElementById('payNotes').value.trim(),
+  });
+
+  // Auto-mark bill as paid
+  const bill = STATE.bills.find(b => b.name === billName);
+  if (bill && bill.status !== 'paid') {
+    bill.status = 'paid';
+  }
+
+  saveState(STATE);
+  closeModal('paymentModal');
+  renderAll();
+  showToast('Logged ' + fmt(amount) + ' for ' + billName);
+}
+
+function deletePayment(id) {
+  STATE.payments = STATE.payments.filter(p => p.id !== id);
+  saveState(STATE);
+  renderAll();
+  showToast('Payment removed');
+}
+
+function editAccountBalance(id) {
+  const acct = STATE.accounts.find(a => a.id === id);
+  if (!acct) return;
+  const val = prompt('New balance for ' + acct.name + ' (use negative for debt):', acct.balance);
+  if (val === null) return;
+  const num = parseFloat(val);
+  if (isNaN(num)) return;
+  acct.balance = num;
+  saveState(STATE);
+  renderAll();
+  showToast(acct.name + ' → ' + (num < 0 ? '-' : '') + fmt(Math.abs(num)));
+}
+
+function editAccountNotes(id) {
+  const acct = STATE.accounts.find(a => a.id === id);
+  if (!acct) return;
+  const val = prompt('Notes for ' + acct.name + ':', acct.notes || '');
+  if (val === null) return;
+  acct.notes = val;
+  saveState(STATE);
+  renderAll();
+}
+
+function editIncomeAmount(id) {
+  const inc = STATE.income.find(i => i.id === id);
+  if (!inc) return;
+  const val = prompt('Monthly amount for ' + inc.name + ':', inc.amount);
+  if (val === null) return;
+  const num = parseFloat(val);
+  if (isNaN(num)) return;
+  inc.amount = num;
+  saveState(STATE);
+  renderAll();
+  showToast(inc.name + ' → ' + fmt(num));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════════════════
+
+function showPanel(name, el) {
+  document.querySelectorAll('.fin-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.fin-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function showToast(text) {
+  const t = document.getElementById('toast');
+  t.textContent = text;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function jsArg(value) {
+  return JSON.stringify(String(value || '')).replace(/</g, '\\u003c');
+}
+
+function ordinal(n) {
+  if (!n) return '';
+  const s = ['th','st','nd','rd'];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+});
+
+// CSV Import
+function handleDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('dragover'); }
+function handleDragLeave(e) { e.currentTarget.classList.remove('dragover'); }
+function handleDrop(e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) handleFile(file);
+}
+
+function handleFile(file) {
+  if (!file) return;
+  if (!file.name.toLowerCase().endsWith('.csv')) {
+    handleAccountingFile(file);
+    showPanel('accounting', document.querySelector('.fin-tab[onclick*="accounting"]'));
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const lines = e.target.result.split('\n').filter(l => l.trim());
+    if (lines.length < 2) return;
+    const header = lines[0].toLowerCase();
+    let txns = [];
+
+    if (header.includes('transaction date') && header.includes('merchant')) {
+      for (let i = 1; i < lines.length; i++) {
+        const cols = parseCSVLine(lines[i]);
+        if (cols.length < 7) continue;
+        txns.push({ date: cols[0], desc: cols[2] || cols[1], amount: parseFloat(cols[6]) || 0 });
+      }
+    } else {
+      for (let i = 1; i < lines.length; i++) {
+        const cols = parseCSVLine(lines[i]);
+        if (cols.length < 3) continue;
+        const amtCol = parseFloat((cols[cols.length - 2] || cols[cols.length - 1] || '0').replace(/[,$]/g, ''));
+        if (isNaN(amtCol)) continue;
+        txns.push({ date: cols[0], desc: cols[1], amount: amtCol });
+      }
+    }
+
+    if (txns.length === 0) { showToast('Could not parse transactions'); return; }
+
+    addAccountingTransactions(txns.map(t => ({
+      date: t.date,
+      description: t.desc,
+      amount: t.amount,
+      sourceAccount: document.getElementById('statementAccount')?.value || 'Legacy CSV import',
+      entity: document.getElementById('statementEntity')?.value || STATE.accounting.activeEntity,
+    })), file.name);
+
+    const totalOut = txns.filter(t => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
+    const totalIn = txns.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0);
+
+    document.getElementById('importResults').style.display = 'block';
+    document.getElementById('importTitle').textContent = file.name;
+    document.getElementById('importCount').textContent = txns.length + ' transactions';
+    document.getElementById('importSummary').innerHTML =
+      '<span>Total in: <strong style="color:#22c55e">$' + totalIn.toFixed(2) + '</strong></span>' +
+      '<span>Total out: <strong style="color:#ef4444">$' + totalOut.toFixed(2) + '</strong></span>' +
+      '<span>Net: <strong style="color:' + (totalIn - totalOut >= 0 ? '#22c55e' : '#ef4444') + '">$' + (totalIn - totalOut).toFixed(2) + '</strong></span>';
+
+    const list = document.getElementById('txnList');
+    list.innerHTML = txns.slice(0, 100).map(t => {
+      const isDebit = t.amount < 0;
+      return '<div class="txn-row">' +
+        '<span class="txn-date">' + (t.date || '').substring(0, 10) + '</span>' +
+        '<span class="txn-desc">' + esc(t.desc || 'Unknown') + '</span>' +
+        '<span class="txn-amt ' + (isDebit ? 'debit' : 'credit') + '">$' + Math.abs(t.amount).toFixed(2) + '</span></div>';
+    }).join('');
+    if (txns.length > 100) list.innerHTML += '<div style="text-align:center;padding:8px;color:#64748b;font-size:12px;">Showing first 100 of ' + txns.length + '</div>';
+  };
+  reader.readAsText(file);
+}
+
+function isDelimitedHeader(line) {
+  const delimiter = detectCsvDelimiter(line);
+  return Boolean(delimiter) && /date|posted|description|merchant|amount|debit|credit|balance|transaction|invoice|customer|memo/i.test(line);
+}
+
+function detectCsvDelimiter(line) {
+  const raw = String(line || '');
+  const candidates = [',', '\t', ';', '|'];
+  let best = '';
+  let bestCount = 0;
+  candidates.forEach(delimiter => {
+    const count = parseCSVLine(raw, delimiter).length - 1;
+    if (count > bestCount) {
+      best = delimiter;
+      bestCount = count;
+    }
+  });
+  return bestCount > 0 ? best : '';
+}
+
+function parseCSVLine(line, delimiter = ',') {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') { inQuotes = !inQuotes; }
+    else if (ch === delimiter && !inQuotes) { result.push(current.trim()); current = ''; }
+    else { current += ch; }
+  }
+  result.push(current.trim());
+  return result;
+}
+
+// Initial render
+renderAll();
+loadAccountingFromRemote();
+</script>

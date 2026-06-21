@@ -7,7 +7,9 @@
     "dev": "npx @11ty/eleventy --serve",
     "build": "npx @11ty/eleventy",
     "audit:images": "node scripts/check-local-image-refs.mjs _site",
-    "deploy": "netlify deploy --prod"
+    "deploy": "netlify deploy --prod",
+    "test:accounting": "node scripts/verify-accounting-hub.mjs",
+    "test:accounting:smoke": "node scripts/verify-accounting-hub.mjs"
   },
   "dependencies": {
     "@11ty/eleventy-img": "^6.0.4",

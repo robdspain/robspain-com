@@ -43,12 +43,6 @@
   force = true
 
 [[redirects]]
-  from = "/admin/finance/"
-  to = "/admin/family/"
-  status = 301
-  force = true
-
-[[redirects]]
   from = "/admin"
   to = "/.netlify/functions/admin-gate?path=dashboard/"
   status = 200

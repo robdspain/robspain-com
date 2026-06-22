@@ -11,9 +11,11 @@ permalink: /admin/seo/index.html
 <style>
   :root {
     --chalkboard-green: #1E3A34;
+    --deep-green: #123628;
     --vintage-gold: #E3B23C;
     --cream: #FAF3E0;
     --emerald: #047857;
+    --mint: #d7f8e7;
     --bg-slate: #f8fafc;
     --border-light: #e2e8f0;
     --text-dark: #1f2937;
@@ -28,7 +30,9 @@ permalink: /admin/seo/index.html
   
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--bg-slate);
+    background:
+      radial-gradient(circle at top left, rgba(4, 120, 87, .1), transparent 34rem),
+      linear-gradient(180deg, #f6faf7 0%, #f8fafc 46%, #eef5f1 100%);
     color: var(--text-dark);
     min-height: 100vh;
   }
@@ -36,10 +40,13 @@ permalink: /admin/seo/index.html
   /* Admin Nav */
   .admin-nav {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     gap: 0;
-    background: #ffffff;
-    border-bottom: 2px solid var(--border-light);
+    background: rgba(255, 255, 255, .92);
+    border-bottom: 1px solid rgba(30, 58, 52, .12);
+    box-shadow: 0 16px 34px rgba(30, 58, 52, .08);
+    backdrop-filter: blur(16px);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -67,20 +74,32 @@ permalink: /admin/seo/index.html
 
   /* Header */
   .seo-header {
-    background: linear-gradient(135deg, var(--chalkboard-green) 0%, var(--emerald) 100%);
+    background:
+      linear-gradient(135deg, rgba(18, 54, 40, .96) 0%, rgba(4, 120, 87, .94) 100%),
+      radial-gradient(circle at 20% 20%, rgba(215, 248, 231, .3), transparent 28rem);
     color: white;
-    padding: 3rem 2rem 2rem;
-    text-align: center;
+    padding: 3rem 2rem 2.5rem;
+    text-align: left;
+  }
+
+  .seo-header-inner {
+    max-width: 1400px;
+    margin: 0 auto;
   }
 
   .seo-title {
-    font-size: 2.5rem;
+    font-size: clamp(2.25rem, 6vw, 4.5rem);
+    line-height: .95;
     font-weight: 800;
-    margin-bottom: 0.5rem;
+    letter-spacing: 0;
+    margin-bottom: 0.75rem;
   }
 
   .seo-subtitle {
-    font-size: 1.1rem;
+    color: rgba(255,255,255,.84);
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    line-height: 1.55;
+    max-width: 760px;
     opacity: 0.95;
   }
 
@@ -88,30 +107,54 @@ permalink: /admin/seo/index.html
   .seo-container {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 2rem 1rem;
+    padding: 1.75rem 1rem 3rem;
+  }
+
+  .status-banner {
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid rgba(30, 58, 52, .12);
+    border-radius: 16px;
+    box-shadow: 0 18px 45px rgba(30, 58, 52, .08);
+    color: #3f5148;
+    display: flex;
+    gap: .8rem;
+    justify-content: space-between;
+    margin: -3rem 0 1.5rem;
+    padding: 1rem 1.1rem;
+  }
+
+  .status-banner strong {
+    color: var(--deep-green);
+  }
+
+  .status-banner.error-state {
+    background: #fff7ed;
+    border-color: #fed7aa;
+    color: #9a3412;
   }
 
   /* Overview Cards */
   .overview-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 3rem;
+    gap: 1rem;
+    margin-bottom: 2rem;
   }
 
   .kpi-card {
     background: white;
-    border-radius: 12px;
+    border: 1px solid rgba(30, 58, 52, .1);
+    border-radius: 16px;
     padding: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    text-align: center;
-    border-left: 4px solid var(--emerald);
+    box-shadow: 0 18px 40px rgba(30, 58, 52, .07);
+    text-align: left;
   }
 
   .kpi-value {
     font-size: 2.5rem;
     font-weight: 800;
-    color: var(--emerald);
+    color: var(--deep-green);
     margin-bottom: 0.5rem;
   }
 
@@ -128,7 +171,7 @@ permalink: /admin/seo/index.html
     font-size: 1.75rem;
     font-weight: 800;
     color: var(--chalkboard-green);
-    margin: 3rem 0 1.5rem;
+    margin: 2.25rem 0 1rem;
     padding-bottom: 0.75rem;
     border-bottom: 3px solid var(--vintage-gold);
   }
@@ -137,15 +180,17 @@ permalink: /admin/seo/index.html
   .data-table {
     width: 100%;
     background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(30, 58, 52, .1);
+    border-radius: 16px;
+    overflow-x: auto;
+    box-shadow: 0 18px 40px rgba(30, 58, 52, .07);
     margin-bottom: 2rem;
   }
 
   .data-table table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 900px;
   }
 
   .data-table thead {
@@ -177,6 +222,7 @@ permalink: /admin/seo/index.html
   .data-table td {
     padding: 1rem;
     font-size: 0.9rem;
+    vertical-align: top;
   }
 
   .data-table td.numeric {
@@ -227,9 +273,10 @@ permalink: /admin/seo/index.html
   /* Action Items */
   .action-items {
     background: white;
-    border-radius: 12px;
+    border: 1px solid rgba(30, 58, 52, .1);
+    border-radius: 16px;
     padding: 2rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 18px 40px rgba(30, 58, 52, .07);
     margin-bottom: 2rem;
   }
 
@@ -256,9 +303,10 @@ permalink: /admin/seo/index.html
   /* Keyword Tracker */
   .keyword-form {
     background: white;
-    border-radius: 12px;
+    border: 1px solid rgba(30, 58, 52, .1);
+    border-radius: 16px;
     padding: 2rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 18px 40px rgba(30, 58, 52, .07);
     margin-bottom: 1.5rem;
   }
 
@@ -312,7 +360,7 @@ permalink: /admin/seo/index.html
   }
 
   .btn-secondary {
-    background: var(--vintage-gold);
+    background: var(--deep-green);
   }
 
   .btn-secondary:hover {
@@ -334,6 +382,18 @@ permalink: /admin/seo/index.html
     border-radius: 8px;
     color: #991b1b;
     margin-bottom: 1.5rem;
+  }
+
+  .empty-state {
+    color: var(--text-muted);
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
   }
 
   @media (max-width: 768px) {
@@ -365,6 +425,18 @@ permalink: /admin/seo/index.html
     .form-row {
       grid-template-columns: 1fr;
     }
+
+    .admin-nav a {
+      flex: 1 1 50%;
+      padding: .8rem .5rem;
+      text-align: center;
+    }
+
+    .status-banner {
+      align-items: flex-start;
+      flex-direction: column;
+      margin-top: -2rem;
+    }
   }
 </style>
 </head>
@@ -378,11 +450,18 @@ permalink: /admin/seo/index.html
 </nav>
 
 <div class="seo-header">
-  <h1 class="seo-title">SEO KPI Tracker</h1>
-  <p class="seo-subtitle">Monitor blog performance, track keywords, and identify optimization opportunities</p>
+  <div class="seo-header-inner">
+    <h1 class="seo-title">SEO KPI Tracker</h1>
+    <p class="seo-subtitle">Monitor blog performance, track keywords, and identify optimization opportunities without digging through markdown files or Netlify function logs.</p>
+  </div>
 </div>
 
 <div class="seo-container">
+  <div class="status-banner" id="seo-status">
+    <span><strong>Loading SEO audit...</strong> Checking blog content and keyword data.</span>
+    <span id="seo-source">Waiting for API response</span>
+  </div>
+
   <!-- Overview Cards -->
   <div class="overview-cards">
     <div class="kpi-card">
@@ -466,8 +545,10 @@ permalink: /admin/seo/index.html
         <input type="number" id="volume-input" placeholder="1500">
       </div>
     </div>
-    <button class="btn" onclick="addKeyword()">Add Keyword</button>
-    <button class="btn btn-secondary" onclick="refreshKeywords()" style="margin-left: 1rem;">Refresh</button>
+    <div class="button-row">
+      <button class="btn" onclick="addKeyword()">Add Keyword</button>
+      <button class="btn btn-secondary" onclick="refreshKeywords()">Refresh</button>
+    </div>
   </div>
 
   <div class="data-table">
@@ -495,15 +576,30 @@ permalink: /admin/seo/index.html
 let auditData = null;
 let keywordsData = [];
 
+function setStatus(message, detail, isError) {
+  const status = document.getElementById('seo-status');
+  const source = document.getElementById('seo-source');
+  if (!status || !source) return;
+  status.classList.toggle('error-state', Boolean(isError));
+  status.querySelector('span').innerHTML = `<strong>${message}</strong> ${detail || ''}`;
+  source.textContent = isError ? 'Needs attention' : source.textContent;
+}
+
 // Load SEO audit data
 async function loadAuditData() {
   try {
     const response = await fetch('/api/seo-audit');
-    if (!response.ok) throw new Error('Failed to load audit data');
-    auditData = await response.json();
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || 'Failed to load audit data');
+    auditData = data;
     renderAuditData();
+    const generatedAt = auditData.source?.generatedAt ? new Date(auditData.source.generatedAt).toLocaleString() : 'just now';
+    document.getElementById('seo-source').textContent = `Updated ${generatedAt}`;
+    setStatus('SEO audit loaded.', `${auditData.posts.length} content items scanned.`, false);
   } catch (e) {
-    document.getElementById('blog-audit-body').innerHTML = '<tr><td colspan="10" class="error">Error loading blog data: ' + e.message + '</td></tr>';
+    setStatus('SEO audit failed.', e.message, true);
+    document.getElementById('blog-audit-body').innerHTML = '<tr><td colspan="10"><div class="error">Error loading blog data: ' + escapeHtml(e.message) + '</div></td></tr>';
+    document.getElementById('action-items-list').innerHTML = '<li><span class="action-icon">⚠</span> SEO audit API needs attention before recommendations can load.</li>';
   }
 }
 
@@ -516,8 +612,18 @@ async function loadKeywords() {
     keywordsData = data.keywords || [];
     renderKeywords();
   } catch (e) {
-    document.getElementById('keywords-body').innerHTML = '<tr><td colspan="6" class="error">Error loading keywords: ' + e.message + '</td></tr>';
+    document.getElementById('keywords-body').innerHTML = '<tr><td colspan="6"><div class="error">Error loading keywords: ' + escapeHtml(e.message) + '</div></td></tr>';
   }
+}
+
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, char => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  })[char]);
 }
 
 // Render audit data
@@ -525,16 +631,21 @@ function renderAuditData() {
   if (!auditData) return;
 
   // Update overview cards
-  document.getElementById('total-posts').textContent = auditData.summary.totalPosts;
-  document.getElementById('faq-count').textContent = auditData.summary.postsWithFAQ;
-  document.getElementById('image-count').textContent = auditData.summary.postsWithImage;
+  document.getElementById('total-posts').textContent = auditData.summary?.totalPosts ?? 0;
+  document.getElementById('faq-count').textContent = auditData.summary?.postsWithFAQ ?? 0;
+  document.getElementById('image-count').textContent = auditData.summary?.postsWithImage ?? 0;
   document.getElementById('newsletter-count').textContent = '0'; // Placeholder
   document.getElementById('indexed-count').textContent = '-'; // Placeholder
-  document.getElementById('avg-meta-length').textContent = Math.round(auditData.summary.avgMetaDescLength);
+  document.getElementById('avg-meta-length').textContent = Math.round(auditData.summary?.avgMetaDescLength || 0);
 
   // Render blog posts
   const tbody = document.getElementById('blog-audit-body');
   tbody.innerHTML = '';
+
+  if (!auditData.posts?.length) {
+    tbody.innerHTML = '<tr><td colspan="10" class="empty-state">No blog posts found in the audit source.</td></tr>';
+    return;
+  }
 
   auditData.posts.forEach(post => {
     const row = document.createElement('tr');
@@ -545,14 +656,14 @@ function renderAuditData() {
                          post.metaDescLength <= 160 ? 'length-warn' : 'length-bad';
 
     row.innerHTML = `
-      <td><a href="https://robspain.com${post.url}" target="_blank">${post.title}</a></td>
+      <td><a href="https://robspain.com${post.url}" target="_blank">${escapeHtml(post.title)}</a></td>
       <td>${post.status === 'published' ? '✅ Published' : '🔴 Draft'}</td>
       <td class="numeric"><span class="status-icon ${post.hasFAQ ? 'yes' : 'no'}">${post.hasFAQ ? '✓' : '✗'}</span></td>
       <td class="numeric"><span class="status-icon ${post.hasImage ? 'yes' : 'no'}">${post.hasImage ? '✓' : '✗'}</span></td>
       <td class="numeric ${metaTitleClass}">${post.metaTitleLength}</td>
       <td class="numeric ${metaDescClass}">${post.metaDescLength}</td>
       <td class="numeric"><span class="status-icon ${post.hasNewsletter ? 'yes' : 'no'}">${post.hasNewsletter ? '✓' : '✗'}</span></td>
-      <td class="numeric">${post.wordCount.toLocaleString()}</td>
+      <td class="numeric">${Number(post.wordCount || 0).toLocaleString()}</td>
       <td class="numeric">${post.internalLinks}</td>
       <td>${post.date ? new Date(post.date).toLocaleDateString() : '-'}</td>
     `;
@@ -600,7 +711,7 @@ function renderActionItems() {
 
   issues.slice(0, 20).forEach(issue => {
     const li = document.createElement('li');
-    li.innerHTML = `<span class="action-icon">${issue.icon}</span> ${issue.text}`;
+    li.innerHTML = `<span class="action-icon">${escapeHtml(issue.icon)}</span> ${escapeHtml(issue.text)}`;
     list.appendChild(li);
   });
 
@@ -624,8 +735,8 @@ function renderKeywords() {
   keywordsData.forEach((kw, index) => {
     const row = document.createElement('tr');
     row.innerHTML = `
-      <td>${kw.keyword}</td>
-      <td>${kw.targetPage}</td>
+      <td>${escapeHtml(kw.keyword)}</td>
+      <td>${escapeHtml(kw.targetPage)}</td>
       <td class="numeric">${kw.rank || '-'}</td>
       <td class="numeric">${kw.volume ? kw.volume.toLocaleString() : '-'}</td>
       <td>${kw.lastChecked ? new Date(kw.lastChecked).toLocaleDateString() : '-'}</td>

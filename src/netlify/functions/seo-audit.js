@@ -19,23 +19,30 @@ exports.handler = async (event) => {
   }
 
   try {
-    // Find blog posts directory
-    const postsDir = path.join(__dirname, '../../posts');
+    const postsDir = findContentDir('posts');
+    const draftsDir = findContentDir('_drafts');
     
     if (!fs.existsSync(postsDir)) {
       return {
         statusCode: 404,
         headers,
-        body: JSON.stringify({ error: 'Posts directory not found', path: postsDir })
+        body: JSON.stringify({
+          error: 'Posts directory not found',
+          checkedPaths: candidateContentDirs('posts')
+        })
       };
     }
 
     const files = fs.readdirSync(postsDir).filter(f => f.endsWith('.md'));
+    const draftFiles = fs.existsSync(draftsDir)
+      ? fs.readdirSync(draftsDir).filter(f => f.endsWith('.md')).map(f => ({ file: f, dir: draftsDir, isDraft: true }))
+      : [];
+    const sourceFiles = files.map(f => ({ file: f, dir: postsDir, isDraft: false })).concat(draftFiles);
     const posts = [];
 
-    for (const file of files) {
-      const content = fs.readFileSync(path.join(postsDir, file), 'utf8');
-      const post = parsePost(content, file);
+    for (const sourceFile of sourceFiles) {
+      const content = fs.readFileSync(path.join(sourceFile.dir, sourceFile.file), 'utf8');
+      const post = parsePost(content, sourceFile.file, sourceFile.isDraft);
       if (post) posts.push(post);
     }
 
@@ -52,7 +59,15 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ posts, summary })
+      body: JSON.stringify({
+        posts,
+        summary,
+        source: {
+          postsDir,
+          draftsDir: fs.existsSync(draftsDir) ? draftsDir : null,
+          generatedAt: new Date().toISOString()
+        }
+      })
     };
 
   } catch (e) {
@@ -64,7 +79,20 @@ exports.handler = async (event) => {
   }
 };
 
-function parsePost(content, filename) {
+function candidateContentDirs(name) {
+  return [
+    path.join(__dirname, '../../', name),
+    path.join(process.cwd(), 'src', name),
+    path.join(process.cwd(), name),
+    path.join('/var/task/src', name)
+  ];
+}
+
+function findContentDir(name) {
+  return candidateContentDirs(name).find(dir => fs.existsSync(dir)) || candidateContentDirs(name)[0];
+}
+
+function parsePost(content, filename, isDraftFile = false) {
   try {
     // Extract frontmatter
     const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
@@ -77,7 +105,7 @@ function parsePost(content, filename) {
     const title = frontmatter.title || filename.replace('.md', '');
     const metaTitle = frontmatter.meta_title || frontmatter.title || '';
     const metaDesc = frontmatter.description || frontmatter.meta_description || '';
-    const status = frontmatter.draft === true || frontmatter.draft === 'true' ? 'draft' : 'published';
+    const status = isDraftFile || frontmatter.draft === true || frontmatter.draft === 'true' ? 'draft' : 'published';
     const featuredImage = frontmatter.image || frontmatter.featured_image || null;
     const date = frontmatter.date || null;
 

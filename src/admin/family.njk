@@ -718,6 +718,7 @@ const STATUS_LABELS = {overdue:'Overdue',review:'Review',upcoming:'Upcoming',cur
 const PRIORITY_LABELS = {1:'P1 Survival',2:'P2 Insurance/Debt',3:'P3 Necessities',4:'P4 On Credit'};
 const APPLE_CARD_DRIVE_FOLDER_URL = 'https://drive.google.com/drive/u/0/folders/1H56BpX45Qw-IknCPW9Jqk1fE7qeWS2Wf';
 const DISCOVER_DRIVE_FOLDER_URL = 'https://drive.google.com/drive/folders/1hAAC17YDBk-Evo9kOkJECauXPIhtrjkM';
+const EECU_DRIVE_FOLDER_URL = 'https://drive.google.com/drive/folders/1PGznnodjFkdpsDfDkzaiY_RRf1C13wYZ';
 const STATEMENT_SOURCES = [
   { key:'eecu', label:'EECU', folderLabel:'EECU Drive folder URL', note:'Checking, savings, auto loan, LOC, and EECU card statements.' },
   { key:'discover', label:'Discover', folderLabel:'Discover Drive folder URL', note:'Discover folder currently has CSV/activity records; monthly PDF statements still need to be downloaded.' },
@@ -756,6 +757,22 @@ const DISCOVER_DRIVE_FILES = [
     title:'Discover Recent Activity and Statement Summary - 2026-06-09',
     url:'https://docs.google.com/spreadsheets/d/187ypZq7BHeUINO5jOhBMaodAua0ZBzzz2RJ7sqYSnmc',
     notes:'Summary sheet found: May 18 statement balance $4,896.25; Jun 9 balance $5,641.78; $98 minimum due Jun 17. Still need the May PDF statement.'
+  }
+];
+const EECU_DRIVE_FILES = [
+  ...Array.from({ length: 12 }, (_, index) => ({
+    month: `2025-${String(index + 1).padStart(2, '0')}`,
+    status: 'partial',
+    title: 'January-2026-eecu-checking.csv',
+    url: 'https://drive.google.com/file/d/1ed_ylJaanCnmnyhJkWVDr2BaPSadV7-4/view?usp=drivesdk',
+    notes: 'Checking CSV found in Drive. Drive summary says this export covers 01/02/2025 - 01/31/2026; monthly PDF statements still need to be downloaded if EECU offers them.'
+  })),
+  {
+    month:'2026-01',
+    status:'partial',
+    title:'January-2026-eecu-checking.csv + January-2026-eecu-savings.csv',
+    url:'https://drive.google.com/file/d/1ed_ylJaanCnmnyhJkWVDr2BaPSadV7-4/view?usp=drivesdk',
+    notes:'Checking and savings CSV exports found in Drive. Monthly PDF statement still needs to be downloaded if available.'
   }
 ];
 const BUSINESS_CHARGE_RULES = [
@@ -917,7 +934,7 @@ function defaultState() {
       notes: 'Amex MyCreditGuide shows FICO 666, Fair, +15 as of Jun 21, 2026. Protect payment history first; reduce revolving utilization next; build reserves before mortgage shopping.'
     },
     statementFolders: {
-      eecu: '',
+      eecu: EECU_DRIVE_FOLDER_URL,
       discover: DISCOVER_DRIVE_FOLDER_URL,
       appleCard: APPLE_CARD_DRIVE_FOLDER_URL
     },
@@ -996,6 +1013,8 @@ function applyCurrentFinanceCorrections(state) {
   });
   if (!state.statementFolders.appleCard) state.statementFolders.appleCard = APPLE_CARD_DRIVE_FOLDER_URL;
   if (!state.statementFolders.discover) state.statementFolders.discover = DISCOVER_DRIVE_FOLDER_URL;
+  if (!state.statementFolders.eecu) state.statementFolders.eecu = EECU_DRIVE_FOLDER_URL;
+  applyEecuDriveSnapshot(false, state);
   applyAppleCardDriveSnapshot(false, state);
   applyDiscoverDriveSnapshot(false, state);
 
@@ -1170,6 +1189,35 @@ function normalizeStatements(existing, sourceKey) {
     });
   }
   return expected.sort((a, b) => b.month.localeCompare(a.month));
+}
+
+function applyEecuDriveSnapshot(showMessage, targetState) {
+  const state = targetState || STATE;
+  state.statementFolders = state.statementFolders || {};
+  state.statements = state.statements || {};
+  state.statementFolders.eecu = state.statementFolders.eecu || EECU_DRIVE_FOLDER_URL;
+  state.statements.eecu = normalizeStatements(state.statements.eecu || [], 'eecu');
+
+  EECU_DRIVE_FILES.forEach(file => {
+    let item = state.statements.eecu.find(statement => statement.month === file.month);
+    if (!item) {
+      item = { month: file.month, status: 'missing', fileName: '', driveUrl: '', updatedAt: '', notes: '' };
+      state.statements.eecu.push(item);
+    }
+    const hasPdf = item.status === 'uploaded' || item.status === 'imported';
+    if (!hasPdf) item.status = file.status;
+    item.fileName = item.fileName || file.title;
+    item.driveUrl = item.driveUrl || file.url;
+    item.notes = hasPdf ? item.notes : file.notes;
+    item.updatedAt = item.updatedAt || new Date().toISOString();
+  });
+
+  state.statements.eecu = normalizeStatements(state.statements.eecu, 'eecu');
+  if (!targetState) {
+    saveState(state);
+    renderAll();
+  }
+  if (showMessage) showToast(`Imported ${EECU_DRIVE_FILES.length} EECU Drive records`);
 }
 
 function applyAppleCardDriveSnapshot(showMessage, targetState) {
@@ -1927,7 +1975,9 @@ function renderStatementSource(source) {
     ? '<button class="btn-add" onclick="applyAppleCardDriveSnapshot(true)">Import Drive Snapshot</button>'
     : source.key === 'discover'
       ? '<button class="btn-add" onclick="applyDiscoverDriveSnapshot(true)">Import Drive Records</button>'
-    : '';
+      : source.key === 'eecu'
+        ? '<button class="btn-add" onclick="applyEecuDriveSnapshot(true)">Import Drive Records</button>'
+        : '';
 
   return `
     <section class="statement-account">

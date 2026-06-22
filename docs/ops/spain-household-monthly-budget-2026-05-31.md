@@ -1,6 +1,6 @@
 # Spain Household Monthly Budget - May 31, 2026
 
-Purpose: source-backed operating budget for the `robspain.com/admin/finance/` dashboard. This is a cash-flow planning view, not legal or tax advice.
+Purpose: source-backed operating budget for the `robspain.com/admin/family/` dashboard. This is a cash-flow planning view, not legal or tax advice.
 
 ## Executive View
 
@@ -63,7 +63,7 @@ Purpose: source-backed operating budget for the `robspain.com/admin/finance/` da
 
 ## Source Trail
 
-- `src/admin/finance.njk` and `convex/seed.ts`: existing dashboard defaults for rent, Supporting Hands, auto loan, utilities, debt minimums, accounts, and income.
+- `src/admin/family.njk` and `convex/seed.ts`: existing dashboard defaults for rent, Supporting Hands, auto loan, utilities, debt minimums, accounts, and income.
 - Drive monthly budget sheet: prior planning floors for food and basic household categories.
 - May 2026 settlement/evidence documents: child-support baseline, court-ordered therapy cost mechanics, Supporting Hands as an ongoing monitoring cost, and Tipton fee exposure.
 - Supporting Hands Clover Receipt Manifest - May 31 2026: receipt-level support for monitored-visitation payments.

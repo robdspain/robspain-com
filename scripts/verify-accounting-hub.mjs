@@ -17,7 +17,7 @@ const {
   normalizePayee,
 } = require('../src/netlify/functions/accounting-normalize.js');
 
-const source = fs.readFileSync('src/admin/finance.njk', 'utf8');
+const source = fs.readFileSync('src/admin/family.njk', 'utf8');
 const scripts = [...source.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((match) => match[1]);
 const accountingScript = scripts.find((script) => script.includes('function parseStatementText'));
 const protectedHeaders = () => (
@@ -55,6 +55,7 @@ function element(id = '') {
 
 const sandbox = {
   console,
+  URLSearchParams,
   Blob: class Blob {
     constructor(parts, options) {
       this.parts = parts;
@@ -66,6 +67,12 @@ const sandbox = {
       return 'blob:verify';
     },
     revokeObjectURL() {},
+  },
+  window: {
+    location: {
+      search: '',
+      hash: '',
+    },
   },
   document: {
     getElementById: element,
@@ -113,7 +120,7 @@ const sandbox = {
 };
 
 vm.createContext(sandbox);
-vm.runInContext(accountingScript, sandbox, { filename: 'finance-accounting-inline.js' });
+vm.runInContext(accountingScript, sandbox, { filename: 'family-accounting-inline.js' });
 
 const fallbackStatus = sandbox.fallbackAutomationStatus('offline');
 assert.equal(fallbackStatus.services.some((item) => item.id === 'browser-ocr' && item.configured), true);

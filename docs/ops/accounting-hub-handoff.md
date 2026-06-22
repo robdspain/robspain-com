@@ -4,7 +4,7 @@ Status: local implementation ready for deploy review. Live credential-backed imp
 
 ## What Is Built
 
-- `/admin/finance/` includes an Accounting Hub tab for Rob Spain, Behavior School, and household accounting workflows.
+- `/admin/family/?panel=accounting` includes the Accounting Hub for Rob Spain, Behavior School, and household accounting workflows. `/admin/finance/` is a compatibility redirect into that consolidated tab.
 - Statement imports support CSV, TXT, pasted statement text, OFX/QFX, browser PDF text extraction, and browser OCR fallback for scanned PDFs.
 - Imports normalize date, entity, source account, description, payee, amount, bank balance, category, tax category, Frappe account, source fingerprint, import profile, confidence, and review status.
 - Existing bills, payments, and income are used to reconcile imported rows when amount/date/text evidence is strong enough.
@@ -16,7 +16,7 @@ Status: local implementation ready for deploy review. Live credential-backed imp
 
 ## Operating Flow
 
-1. Open `/admin/finance/` and use the Accounting Hub tab.
+1. Open `/admin/family/?panel=accounting` and use the Accounting Hub tab.
 2. Configure Frappe company, bank, revenue, expense, and category account mapping.
 3. Import bank/card statements, pasted statement text, OFX/QFX, Stripe/FreshBooks exports, or connected sources.
 4. Review low-confidence, OCR, balance mismatch, personal, and ambiguous rows.
@@ -44,7 +44,7 @@ Local gates to run before deploy:
 npm run test:accounting
 npm run test:accounting:smoke
 npm run build
-node -e "const fs=require('fs'); const html=fs.readFileSync('_site/admin/finance/index.html','utf8'); const vm=require('vm'); const scripts=[...html.matchAll(/<script>([\\s\\S]*?)<\\/script>/g)].map(m=>m[1]); scripts.forEach((s,i)=>new vm.Script(s,{filename:'finance-inline-'+i+'.js'})); console.log('checked', scripts.length, 'inline scripts');"
+node -e "const fs=require('fs'); const html=fs.readFileSync('_site/admin/family/index.html','utf8'); const vm=require('vm'); const scripts=[...html.matchAll(/<script>([\\s\\S]*?)<\\/script>/g)].map(m=>m[1]); scripts.forEach((s,i)=>new vm.Script(s,{filename:'family-inline-'+i+'.js'})); console.log('checked', scripts.length, 'inline scripts');"
 ```
 
 Production checks after deploy:

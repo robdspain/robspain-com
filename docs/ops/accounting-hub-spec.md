@@ -1,6 +1,6 @@
 # RobSpain Accounting Hub
 
-Purpose: make `/admin/finance/` the single intake and review surface for Rob Spain, Behavior School, and household finance records before they are exported to Frappe Books or sent to the CPA.
+Purpose: make `/admin/family/?panel=accounting` the single intake and review surface for Rob Spain, Behavior School, and household finance records before they are exported to Frappe Books or sent to the CPA.
 
 ## System Boundary
 
@@ -39,7 +39,7 @@ Current entities:
    - import profile
    - confidence
    - review status
-3. Auto-classify using rules in `src/admin/finance.njk`.
+3. Auto-classify using rules in `src/admin/family.njk`.
 4. Reconcile against existing bills, recorded payments, and income estimates when amount/date/text evidence is strong enough.
 5. Normalize raw bank descriptors into payee/vendor/customer names so Frappe party names and CPA review files are usable.
 6. Save vendor rules from reviewed rows so future matching bank/PDF/import rows inherit the same entity, category, tax category, and Frappe account.

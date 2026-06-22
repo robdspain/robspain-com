@@ -773,6 +773,13 @@ const EECU_DRIVE_FILES = [
     title:'January-2026-eecu-checking.csv + January-2026-eecu-savings.csv',
     url:'https://drive.google.com/file/d/1ed_ylJaanCnmnyhJkWVDr2BaPSadV7-4/view?usp=drivesdk',
     notes:'Checking and savings CSV exports found in Drive. Monthly PDF statement still needs to be downloaded if available.'
+  },
+  {
+    month:'2026-05',
+    status:'partial',
+    title:'EECU current exports 2026-05-24 to 2026-06-22',
+    url:'https://drive.google.com/file/d/1Q2eXo8PIMosmILC0n6H3Z9bsSV-97CvP/view?usp=drivesdk',
+    notes:'Current EECU exports uploaded Jun 22: checking, savings, LOC, and auto loan CSVs covering 05/24/2026 - 06/22/2026. This is transaction export coverage, not a monthly PDF statement.'
   }
 ];
 const BUSINESS_CHARGE_RULES = [
@@ -837,7 +844,7 @@ function defaultState() {
       { id:'fresno', name:'City of Fresno', dueDay:1, amount:121, status:'paid', priority:1, account:'EECU Checking', payUrl:'https://www.fresno.gov/utilitypayments', notes:'Paid through next month; confirm amount from payment receipt.' },
       { id:'xfinity', name:'Xfinity', dueDay:1, amount:95, status:'paid', priority:1, account:'EECU Checking', payUrl:'https://www.xfinity.com/', notes:'' },
       { id:'discover', name:'Discover Min', dueDay:17, amount:98, status:'paid', priority:2, account:'EECU Checking', payUrl:'https://www.discover.com/', notes:'Minimum paid from phone app on Jun 12; statement due date Jun 17.' },
-      { id:'loc', name:'EECU LOC Min', dueDay:26, amount:75, status:'upcoming', priority:2, account:'EECU Checking', payUrl:'https://www.myeecu.org/', notes:'Needs live EECU refresh for current payoff; last app value shows $9,596 available.' },
+      { id:'loc', name:'EECU LOC Min', dueDay:26, amount:75, status:'upcoming', priority:2, account:'EECU Checking', payUrl:'https://www.myeecu.org/', notes:'EECU Jun 22: $75 due Jul 26; LOC balance $111.68; payoff $111.86.' },
       { id:'principal', name:'Principal Insurance', dueDay:null, amount:35, status:'current', priority:2, account:'Auto-deduct', payUrl:'https://www.principal.com/', notes:'' },
       { id:'allstate', name:'Allstate Insurance', dueDay:null, amount:25, status:'current', priority:2, account:'Auto-deduct', payUrl:'https://www.allstate.com/', notes:'' },
       { id:'ofw', name:'OurFamilyWizard', dueDay:null, amount:9, status:'current', priority:3, account:'EECU Checking', payUrl:'https://www.ourfamilywizard.com/', notes:'Annual renewal normalized to monthly budget' },
@@ -846,10 +853,10 @@ function defaultState() {
       { id:'legalreserve', name:'Legal Fee Reserve', dueDay:null, amount:750, status:'current', priority:4, account:'EECU Checking', payUrl:'', notes:'Working reserve against active 2026 Tipton invoices; pause before adding new card debt' },
     ],
     accounts: [
-      { id:'checking', name:'EECU Checking', type:'checking', balance:242.70, notes:'EECU Jun 15 forecast: $461.70 available before $219 Fast Action payment; estimated $242.70 available after pest control clears.' },
-      { id:'savings', name:'EECU Savings', type:'savings', balance:374.91, notes:'EECU Jun 15: $374.91 available; $379.91 current.' },
-      { id:'loc', name:'Line of Credit', type:'loc', balance:-185.40, notes:'EECU Jun 15: $185.40 balance; $9,814.60 available; $75 due Jun 26.' },
-      { id:'autoloan', name:'Auto Loan', type:'loan', balance:-15023.01, notes:'EECU Jun 15: $15,023.01 balance; $15,041.53 payoff today; $499.12 due Jul 5.' },
+      { id:'checking', name:'EECU Checking', type:'checking', balance:344.25, notes:'EECU Jun 22: $344.25 available/current after City of Fresno, Discover, Xfinity, and Fast Action payments cleared.' },
+      { id:'savings', name:'EECU Savings', type:'savings', balance:519.92, notes:'EECU Jun 22: $519.92 available; $524.92 current with $5 minimum balance hold.' },
+      { id:'loc', name:'Line of Credit', type:'loc', balance:-111.68, notes:'EECU Jun 22: $111.68 balance; $9,888.32 available; $111.86 payoff; $75 due Jul 26.' },
+      { id:'autoloan', name:'Auto Loan', type:'loan', balance:-15023.01, notes:'EECU Jun 22: $15,023.01 balance; $15,054.50 payoff today; $499.12 due Jul 5.' },
       { id:'applecard', name:'Apple Card', type:'credit', balance:-19107.18, notes:'May 31 2026 statement balance; $434 minimum due Jun 30 via scheduled recurring payment.' },
       { id:'discover', name:'Discover', type:'credit', balance:-5641.78, notes:'Live Discover Jun 12: $5,641.78 balance, $858 available; $98 minimum paid from phone app.' },
     ],
@@ -879,18 +886,18 @@ function defaultState() {
       activeMonth: '2026-06',
       lastRollover: '',
       checklist: [
-        { id:'eecu_login', label:'Refresh EECU balances', cadence:'weekly', lastDone:'2026-06-15', source:'Chrome/EECU', note:'Checking, savings, LOC, and auto loan balances.' },
+        { id:'eecu_login', label:'Refresh EECU balances', cadence:'weekly', lastDone:'2026-06-22', source:'Chrome/EECU', note:'Checking, savings, LOC, and auto loan balances.' },
         { id:'pge_login', label:'Refresh PG&E payment plan and true-up', cadence:'monthly', lastDone:'2026-06-15', source:'Chrome/PG&E', note:'Confirm amount needed to stay on plan and update solar true-up estimate.' },
         { id:'discover_login', label:'Refresh Discover card', cadence:'weekly', lastDone:'2026-06-12', source:'Discover', note:'Balance, available credit, due date, and minimum payment.' },
         { id:'apple_statement', label:'Import Apple Card statement/CSV', cadence:'monthly', lastDone:'2026-06-09', source:'Drive + Apple Card', note:'PDF to Drive, CSV to Import tab when available.' },
         { id:'credit_score_sync', label:'Refresh credit score and factors', cadence:'monthly', lastDone:'2026-06-22', source:'Amex MyCreditGuide + Discover Scorecard', note:'Capture score, rating, score movement, and top factors before making debt payoff decisions.' },
-        { id:'eecu_statement', label:'Upload EECU statement/export', cadence:'monthly', lastDone:'', source:'EECU + Drive', note:'Download monthly statements and transaction CSV/export.' },
+        { id:'eecu_statement', label:'Upload EECU statement/export', cadence:'monthly', lastDone:'2026-06-22', source:'EECU + Drive', note:'Current checking, savings, LOC, and auto loan CSV exports uploaded to Drive.' },
         { id:'bill_scan', label:'Scan Gmail for bills and failed payments', cadence:'weekly', lastDone:'2026-06-15', source:'Gmail', note:'Search utilities, cards, legal, therapy, school, insurance, and pest control.' },
         { id:'business_leakage', label:'Review business charges on personal cards', cadence:'monthly', lastDone:'', source:'Imports', note:'OpenAI, Anthropic, domains, hosting, and business subscriptions.' },
         { id:'monthly_close', label:'Close prior month budget', cadence:'monthly', lastDone:'', source:'Family app', note:'Mark bills paid, confirm statement coverage, update balances, and reset unpaid statuses.' }
       ],
       accountSync: [
-        { id:'eecu', label:'EECU', accountIds:['checking','savings','loc','autoloan'], cadence:'weekly', lastRefreshed:'2026-06-15', source:'Chrome/EECU', note:'Checking, savings, line of credit, and auto loan.' },
+        { id:'eecu', label:'EECU', accountIds:['checking','savings','loc','autoloan'], cadence:'weekly', lastRefreshed:'2026-06-22', source:'Chrome/EECU', note:'Checking, savings, line of credit, and auto loan refreshed from live EECU.' },
         { id:'discover', label:'Discover Card', accountIds:['discover'], cadence:'weekly', lastRefreshed:'2026-06-12', source:'Discover', note:'Balance, available credit, minimum, due date, and autopay.' },
         { id:'applecard', label:'Apple Card', accountIds:['applecard'], cadence:'weekly', lastRefreshed:'2026-06-09', source:'Apple Card / Drive', note:'Balance, available credit, statement, minimum, and scheduled payment.' },
         { id:'pge', label:'PG&E', accountIds:[], cadence:'monthly', lastRefreshed:'2026-06-15', source:'Chrome/PG&E', note:'Payment plan amount, total balance, and solar true-up estimate.' },
@@ -1017,6 +1024,18 @@ function applyCurrentFinanceCorrections(state) {
   applyEecuDriveSnapshot(false, state);
   applyAppleCardDriveSnapshot(false, state);
   applyDiscoverDriveSnapshot(false, state);
+  const eecuChecklist = state.monthlyOps.checklist.find(item => item.id === 'eecu_login');
+  if (eecuChecklist) eecuChecklist.lastDone = '2026-06-22';
+  const eecuStatementChecklist = state.monthlyOps.checklist.find(item => item.id === 'eecu_statement');
+  if (eecuStatementChecklist) {
+    eecuStatementChecklist.lastDone = '2026-06-22';
+    eecuStatementChecklist.note = 'Current checking, savings, LOC, and auto loan CSV exports uploaded to Drive.';
+  }
+  const eecuSync = state.monthlyOps.accountSync.find(item => item.id === 'eecu');
+  if (eecuSync) {
+    eecuSync.lastRefreshed = '2026-06-22';
+    eecuSync.note = 'Checking, savings, line of credit, and auto loan refreshed from live EECU.';
+  }
 
   const fpu = state.income?.find(i => i.id === 'fpu' || /FPU|Fresno Pacific/i.test(i.name || ''));
   if (fpu) {
@@ -1034,10 +1053,10 @@ function applyCurrentFinanceCorrections(state) {
   const accountCorrections = [
     { id:'applecard', name:'Apple Card', type:'credit', balance:-19107.18, notes:'May 31 2026 statement balance; $434 minimum due Jun 30 via scheduled recurring payment.' },
     { id:'discover', name:'Discover', type:'credit', balance:-5641.78, notes:'Live Discover Jun 12: $5,641.78 balance, $858 available; $98 minimum paid from phone app.' },
-    { id:'checking', name:'EECU Checking', type:'checking', balance:242.70, notes:'EECU Jun 15 forecast: $461.70 available before $219 Fast Action payment; estimated $242.70 available after pest control clears.' },
-    { id:'savings', name:'EECU Savings', type:'savings', balance:374.91, notes:'EECU Jun 15: $374.91 available; $379.91 current.' },
-    { id:'loc', name:'Line of Credit', type:'loc', balance:-185.40, notes:'EECU Jun 15: $185.40 balance; $9,814.60 available; $75 due Jun 26.' },
-    { id:'autoloan', name:'Auto Loan', type:'loan', balance:-15023.01, notes:'EECU Jun 15: $15,023.01 balance; $15,041.53 payoff today; $499.12 due Jul 5.' },
+    { id:'checking', name:'EECU Checking', type:'checking', balance:344.25, notes:'EECU Jun 22: $344.25 available/current after City of Fresno, Discover, Xfinity, and Fast Action payments cleared.' },
+    { id:'savings', name:'EECU Savings', type:'savings', balance:519.92, notes:'EECU Jun 22: $519.92 available; $524.92 current with $5 minimum balance hold.' },
+    { id:'loc', name:'Line of Credit', type:'loc', balance:-111.68, notes:'EECU Jun 22: $111.68 balance; $9,888.32 available; $111.86 payoff; $75 due Jul 26.' },
+    { id:'autoloan', name:'Auto Loan', type:'loan', balance:-15023.01, notes:'EECU Jun 22: $15,023.01 balance; $15,054.50 payoff today; $499.12 due Jul 5.' },
   ];
   state.accounts = Array.isArray(state.accounts) ? state.accounts : [];
   accountCorrections.forEach(correction => {
@@ -1057,8 +1076,8 @@ function applyCurrentFinanceCorrections(state) {
     { id:'discover', name:'Discover Min', dueDay:17, amount:98, status:'paid', priority:2, account:'EECU Checking', payUrl:'https://www.discover.com/', notes:'Minimum paid from phone app on Jun 12; statement due date Jun 17.' },
     { id:'pge', name:'PG&E', dueDay:14, amount:0, status:'current', priority:1, account:'EECU Checking', payUrl:'https://www.pge.com/', notes:'PG&E Jun 15: on payment plan; $0.00 needed today to stay on plan. Total balance remaining $428.61. Last paid $250.00 on Jun 3. Solar true-up estimate $970 charges due Aug 2026.' },
     { id:'fastaction', name:'Fast Action Pest Control', dueDay:null, amount:60, status:'paid', priority:2, account:'EECU Checking', payUrl:'https://fastactionpestcontrol.com/', notes:'Paid $219 on Jun 15. Going-forward budget: $120 every two months, normalized to $60/mo. Next scheduled service shown for Aug 2026.' },
-    { id:'loc', name:'EECU LOC Min', dueDay:26, amount:75, status:'upcoming', priority:2, account:'EECU Checking', payUrl:'https://www.myeecu.org/', notes:'Needs live EECU refresh for current payoff; last app value shows $9,596 available.' },
-    { id:'auto', name:'EECU Auto Loan', dueDay:5, amount:499, status:'autopay', priority:1, account:'EECU Checking', payUrl:'https://www.myeecu.org/', notes:'Needs live EECU refresh for current payoff and next due date.' },
+    { id:'loc', name:'EECU LOC Min', dueDay:26, amount:75, status:'upcoming', priority:2, account:'EECU Checking', payUrl:'https://www.myeecu.org/', notes:'EECU Jun 22: $75 due Jul 26; LOC balance $111.68; payoff $111.86.' },
+    { id:'auto', name:'EECU Auto Loan', dueDay:5, amount:499, status:'autopay', priority:1, account:'EECU Checking', payUrl:'https://www.myeecu.org/', notes:'EECU Jun 22: $499.12 due Jul 5; balance $15,023.01; payoff $15,054.50.' },
     { id:'fresno', name:'City of Fresno', dueDay:1, amount:121, status:'paid', priority:1, account:'EECU Checking', payUrl:'https://www.fresno.gov/utilitypayments', notes:'Paid through next month; confirm amount from payment receipt.' },
   ];
   state.bills = Array.isArray(state.bills) ? state.bills : [];
@@ -1167,6 +1186,17 @@ function applyCurrentFinanceCorrections(state) {
       notes: 'Paid past-due balance; budget future service at $60/mo.'
     });
   }
+
+  [
+    { id:'xfinity_20260610', billName:'Xfinity', amount:190, date:'2026-06-10', fromAccount:'EECU Checking', notes:'Cleared in EECU checking export.' },
+    { id:'discover_20260615', billName:'Discover Min', amount:98, date:'2026-06-15', fromAccount:'EECU Checking', notes:'WEBDISCOVER E-payment cleared in EECU checking export.' },
+    { id:'fresno_20260617', billName:'City of Fresno', amount:504.58, date:'2026-06-17', fromAccount:'EECU Checking', notes:'City of Fresno utility payment cleared in EECU checking export.' },
+    { id:'fresno_fee_20260617', billName:'City of Fresno Fee', amount:11.61, date:'2026-06-17', fromAccount:'EECU Checking', notes:'Related City of Fresno payment/fee cleared in EECU checking export.' },
+    { id:'loc_20260617', billName:'EECU LOC Min', amount:75, date:'2026-06-17', fromAccount:'EECU Savings', notes:'LOC payment cleared from savings; next due Jul 26.' },
+    { id:'auto_20260605', billName:'EECU Auto Loan', amount:499.12, date:'2026-06-05', fromAccount:'EECU Checking', notes:'Auto loan payment cleared; next due Jul 5.' }
+  ].forEach(payment => {
+    if (!state.payments.some(existing => existing.id === payment.id)) state.payments.unshift(payment);
+  });
 }
 
 function normalizeStatements(existing, sourceKey) {

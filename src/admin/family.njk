@@ -880,7 +880,11 @@ function defaultState() {
       reserveFloor: CASH_RESERVE_FLOOR,
       sixMonthHorizon: 6,
       contributionTarget: 0,
-      notes: 'Use this to make the monthly gap explicit before bills fall behind.'
+      notes: 'Use this to make the monthly gap explicit before bills fall behind.',
+      temporarySupport: [
+        { id:'parents_supporting_hands_202607', month:'2026-07', payer:'Parents', billId:'support', label:'Parents covering Supporting Hands', amount:1800, notes:'Temporary next-month bridge support so childcare does not hit EECU/Apple Card cash flow.' },
+        { id:'cristal_groceries_202607', month:'2026-07', payer:'Cristal', billId:'groceries', label:'Cristal covering groceries', amount:500, notes:'Temporary next-month grocery support.' }
+      ]
     },
     monthlyOps: {
       activeMonth: '2026-06',
@@ -1002,6 +1006,7 @@ function applyCurrentFinanceCorrections(state) {
   state.statements = state.statements || {};
   state.transactions = Array.isArray(state.transactions) ? state.transactions : [];
   state.householdPlan = state.householdPlan || { reserveFloor: CASH_RESERVE_FLOOR, sixMonthHorizon: 6, contributionTarget: 0, notes: '' };
+  state.householdPlan.temporarySupport = mergeTemporarySupport(def.householdPlan.temporarySupport, state.householdPlan.temporarySupport || []);
   state.monthlyOps = state.monthlyOps || def.monthlyOps;
   state.monthlyOps.checklist = mergeChecklist(def.monthlyOps.checklist, state.monthlyOps.checklist || []);
   state.monthlyOps.accountSync = mergeChecklist(def.monthlyOps.accountSync, state.monthlyOps.accountSync || []);
@@ -1047,7 +1052,14 @@ function applyCurrentFinanceCorrections(state) {
   if (support) {
     support.account = 'EECU Checking';
     support.priority = 1;
-    support.notes = 'Childcare — no longer on Apple Card';
+    support.notes = 'Childcare — no longer on Apple Card. July 2026 bridge: parents are covering this for next month.';
+  }
+
+  const groceries = state.bills?.find(b => b.id === 'groceries' || /Groceries/i.test(b.name || ''));
+  if (groceries) {
+    groceries.account = 'Cristal / household support';
+    groceries.priority = 1;
+    groceries.notes = 'July 2026 bridge: Cristal is covering groceries for next month.';
   }
 
   const accountCorrections = [
@@ -1093,7 +1105,7 @@ function applyCurrentFinanceCorrections(state) {
 
   const requiredBudgetBills = [
     { id:'childsupport', name:'Child Support / DCSS', dueDay:1, amount:2100, status:'current', priority:1, account:'Payroll/DCSS', notes:'Court-ordered support baseline; set to $0 here if already withheld from net pay', payUrl:'https://www.childsupport.ca.gov/payment-options/' },
-    { id:'groceries', name:'Groceries / Household', dueDay:null, amount:500, status:'current', priority:1, account:'EECU Checking', notes:'Planning floor from prior monthly budget', payUrl:'' },
+    { id:'groceries', name:'Groceries / Household', dueDay:null, amount:500, status:'current', priority:1, account:'Cristal / household support', notes:'July 2026 bridge: Cristal is covering groceries for next month.', payUrl:'' },
     { id:'fuel', name:'Fuel / Transportation', dueDay:null, amount:250, status:'current', priority:1, account:'EECU Checking', notes:'Monthly operating reserve; adjust from card/bank imports', payUrl:'' },
     { id:'familytherapy', name:'Child / Family Therapy Reserve', dueDay:null, amount:260, status:'current', priority:1, account:'EECU Checking', notes:'Assumes Rob half-share of four $130 sessions; update to actual order/provider cadence', payUrl:'' },
     { id:'ofw', name:'OurFamilyWizard', dueDay:null, amount:9, status:'current', priority:3, account:'EECU Checking', notes:'Annual renewal normalized to monthly budget', payUrl:'https://www.ourfamilywizard.com/' },
@@ -1407,9 +1419,11 @@ function renderSummary() {
   const locAcct = STATE.accounts.find(a => a.type === 'loc');
   const locAvail = locAcct ? 10000 + locAcct.balance : 0;
   const totalDebt = STATE.accounts.filter(a => a.balance < 0).reduce((s, a) => s + Math.abs(a.balance), 0);
-  const totalIncome = STATE.income.reduce((s, i) => s + i.amount, 0);
-  const totalBills = STATE.bills.reduce((s, b) => s + b.amount, 0);
-  const deficit = totalIncome - totalBills;
+  const totalIncome = getMonthlyIncomeTotal();
+  const totalBills = getMonthlyBillTotal();
+  const robBills = getRobMonthlyBillTotal();
+  const deficit = totalIncome - robBills;
+  const supportCredits = getTemporarySupportCredits().reduce((s, item) => s + item.amount, 0);
 
   document.getElementById('summaryCards').innerHTML = `
     <div class="fin-card">
@@ -1430,18 +1444,22 @@ function renderSummary() {
     <div class="fin-card">
       <h3>Monthly ${deficit >= 0 ? 'Surplus' : 'Deficit'}</h3>
       <div class="fin-stat ${deficit >= 0 ? 'green' : 'red'}">${deficit >= 0 ? '' : '-'}${fmt(Math.abs(deficit))}</div>
-      <div class="fin-sub">Income ${fmt(totalIncome)} vs Bills ${fmt(totalBills)}</div>
+      <div class="fin-sub">Income ${fmt(totalIncome)} vs Rob cash need ${fmt(robBills)}${supportCredits ? ` (${fmt(totalBills)} total, ${fmt(supportCredits)} covered)` : ''}</div>
     </div>
   `;
 }
 
 function renderAlerts() {
-  const totalIncome = STATE.income.reduce((s, i) => s + i.amount, 0);
-  const totalBills = STATE.bills.reduce((s, b) => s + b.amount, 0);
+  const totalIncome = getMonthlyIncomeTotal();
+  const totalBills = getRobMonthlyBillTotal();
+  const supportCredits = getTemporarySupportCredits();
   const overdue = STATE.bills.filter(b => b.status === 'overdue');
   let html = '';
   if (totalBills > totalIncome) {
-    html += `<div class="fin-alert danger"><strong>Structural deficit:</strong> Fixed expenses (${fmt(totalBills)}/mo) exceed income (${fmt(totalIncome)}/mo).</div>`;
+    html += `<div class="fin-alert danger"><strong>Structural deficit:</strong> Rob cash obligations (${fmt(totalBills)}/mo) exceed income (${fmt(totalIncome)}/mo).</div>`;
+  }
+  if (supportCredits.length > 0) {
+    html += `<div class="fin-alert info"><strong>July bridge plan:</strong> ${supportCredits.map(item => `${esc(item.payer)} covers ${fmt(item.amount)} for ${esc(item.label.replace(`${item.payer} covering `, ''))}`).join('; ')}.</div>`;
   }
   if (overdue.length > 0) {
     html += `<div class="fin-alert danger"><strong>Overdue (${overdue.length}):</strong> ${overdue.map(b => b.name + ' ' + fmt(b.amount)).join(', ')}</div>`;
@@ -1453,8 +1471,8 @@ function renderAdvisor() {
   const cash = getCashAvailable();
   const reserveFloor = Number(STATE.householdPlan?.reserveFloor ?? CASH_RESERVE_FLOOR);
   const spendableCash = Math.max(0, cash - reserveFloor);
-  const totalIncome = STATE.income.reduce((s, i) => s + Number(i.amount || 0), 0);
-  const totalBills = STATE.bills.reduce((s, b) => s + Number(b.amount || 0), 0);
+  const totalIncome = getMonthlyIncomeTotal();
+  const totalBills = getRobMonthlyBillTotal();
   const deficit = totalBills - totalIncome;
   const sixMonthGap = Math.max(0, deficit) * Number(STATE.householdPlan?.sixMonthHorizon || 6);
   const billPlan = buildBillPayPlan(spendableCash);
@@ -1488,8 +1506,8 @@ function renderAdvisor() {
 
   const cashPlan = document.getElementById('advisorCashPlan');
   if (cashPlan) {
-    const fundedTotal = billPlan.filter(item => item.funded).reduce((s, item) => s + item.bill.amount, 0);
-    const unfundedTotal = billPlan.filter(item => !item.funded).reduce((s, item) => s + item.bill.amount, 0);
+    const fundedTotal = billPlan.filter(item => item.funded).reduce((s, item) => s + item.amountDue, 0);
+    const unfundedTotal = billPlan.filter(item => !item.funded).reduce((s, item) => s + item.amountDue, 0);
     cashPlan.innerHTML = `
       <h3>Available Cash Plan</h3>
       <div style="display:grid;gap:12px;">
@@ -1522,7 +1540,7 @@ function renderAdvisorBillOrder(plan) {
           <div class="advisor-title">${esc(item.bill.name)} <span class="advisor-pill ${item.funded ? 'green' : 'red'}">${status}</span></div>
           <div class="advisor-note">${dueText}. ${esc(item.reason)} ${item.bill.notes ? esc(item.bill.notes) : ''}</div>
         </div>
-        <div class="advisor-amount">${fmt(item.bill.amount)}</div>
+        <div class="advisor-amount">${item.supportCredit ? `${fmt(item.amountDue)}<div class="fin-sub">${fmt(item.supportCredit)} covered</div>` : fmt(item.amountDue)}</div>
       </div>`;
   }).join('') : '<div class="advisor-note">No unpaid bills are currently listed.</div>';
 }
@@ -1574,13 +1592,16 @@ function renderAdvisorSixMonth(totalIncome, totalBills, deficit, sixMonthGap, bu
   if (!target) return;
   const monthlyGap = Math.max(0, deficit);
   const businessLeak = businessCharges.reduce((s, item) => s + item.amount, 0);
+  const supportCredits = getTemporarySupportCredits();
+  const supportTotal = supportCredits.reduce((s, item) => s + item.amount, 0);
   const contributionTarget = Number(STATE.householdPlan?.contributionTarget || 0) || monthlyGap;
   target.innerHTML = `
     <div style="display:grid;gap:12px;">
       <div style="display:flex;justify-content:space-between;align-items:baseline;"><span class="fin-sub">Monthly income</span><strong style="font-size:20px;color:#1f4d3f;">${fmt(totalIncome)}</strong></div>
-      <div style="display:flex;justify-content:space-between;align-items:baseline;"><span class="fin-sub">Monthly bills/obligations</span><strong style="font-size:20px;color:#123628;">${fmt(totalBills)}</strong></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;"><span class="fin-sub">Rob cash obligations</span><strong style="font-size:20px;color:#123628;">${fmt(totalBills)}</strong></div>
       <div style="display:flex;justify-content:space-between;align-items:baseline;"><span class="fin-sub">Monthly gap</span><strong style="font-size:24px;color:${monthlyGap ? '#b91c1c' : '#1f4d3f'};">${monthlyGap ? fmt(monthlyGap) : '$0'}</strong></div>
       <div style="display:flex;justify-content:space-between;align-items:baseline;"><span class="fin-sub">Six-month gap</span><strong style="font-size:24px;color:${sixMonthGap ? '#b91c1c' : '#1f4d3f'};">${fmt(sixMonthGap)}</strong></div>
+      ${supportTotal ? `<div class="fin-alert info" style="margin:0;"><strong>July bridge:</strong> ${supportCredits.map(item => `${esc(item.label)} ${fmt(item.amount)}`).join('; ')}. Recheck before August because this should not be assumed permanent.</div>` : ''}
       <div class="fin-alert ${monthlyGap ? 'danger' : 'info'}" style="margin:4px 0 0;">
         <strong>Household contribution target:</strong> ${fmt(contributionTarget)}/mo closes the current budget gap before debt payoff. If that cannot happen, the dashboard should force a choice: defer lower-priority bills, reduce costs, or use a temporary family/settlement/tax bridge.
       </div>
@@ -1653,7 +1674,7 @@ function renderIncome() {
     <td style="color:#64748b">${esc(inc.frequency)}</td>
   </tr>`).join('');
 
-  const total = STATE.income.reduce((s, i) => s + i.amount, 0);
+  const total = getMonthlyIncomeTotal();
   document.getElementById('incomeTotalRow').innerHTML = `
     <span>Total Monthly Income</span>
     <span class="fin-stat green" style="font-size:20px;">${fmt(total)}</span>
@@ -1661,15 +1682,17 @@ function renderIncome() {
 }
 
 function renderBudget() {
-  const totalIncome = STATE.income.reduce((s, i) => s + i.amount, 0);
+  const totalIncome = getMonthlyIncomeTotal();
   const categories = {};
   STATE.bills.forEach(b => {
     const cat = b.priority <= 1 ? (b.name.match(/rent|vista/i) ? 'Housing' : 'Utilities & Essentials')
       : b.priority === 2 ? 'Insurance & Debt' : b.priority === 3 ? 'Necessities' : 'On Credit';
-    categories[cat] = (categories[cat] || 0) + b.amount;
+    categories[cat] = (categories[cat] || 0) + robBillAmount(b);
   });
   const colors = { 'Housing':'#ef4444', 'Utilities & Essentials':'#eab308', 'Insurance & Debt':'#3b82f6', 'Necessities':'#22c55e', 'On Credit':'#a855f7' };
   const totalBills = Object.values(categories).reduce((s, v) => s + v, 0);
+  const grossBills = getMonthlyBillTotal();
+  const supportTotal = getTemporarySupportCredits().reduce((s, item) => s + item.amount, 0);
 
   document.getElementById('budgetCard').innerHTML = `
     <h3>Monthly Budget Breakdown</h3>
@@ -1686,14 +1709,15 @@ function renderBudget() {
       <span>Total Recurring</span>
       <span style="color:${totalBills > totalIncome ? '#ef4444' : '#22c55e'}">${fmt(totalBills)}/mo</span>
     </div>
+    ${supportTotal ? `<div class="fin-sub" style="margin-top:8px;">Gross obligations ${fmt(grossBills)}/mo; July support covers ${fmt(supportTotal)}.</div>` : ''}
   `;
 }
 
 function renderDeficit() {
-  const totalIncome = STATE.income.reduce((s, i) => s + i.amount, 0);
-  const totalBills = STATE.bills.reduce((s, b) => s + b.amount, 0);
+  const totalIncome = getMonthlyIncomeTotal();
+  const totalBills = getRobMonthlyBillTotal();
   const deficit = totalIncome - totalBills;
-  const onCredit = STATE.bills.filter(b => b.priority === 4).reduce((s, b) => s + b.amount, 0);
+  const onCredit = STATE.bills.filter(b => b.priority === 4).reduce((s, b) => s + robBillAmount(b), 0);
 
   document.getElementById('deficitSummary').innerHTML = `
     <div class="label">Monthly Structural ${deficit >= 0 ? 'Surplus' : 'Deficit'}</div>
@@ -1702,7 +1726,7 @@ function renderDeficit() {
     <div style="margin-top: 16px; font-size: 13px; color: #64748b; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
       <strong style="color:#1e293b;">Biggest levers to close the gap:</strong>
       <ol style="margin-top: 8px; padding-left: 20px; line-height: 1.8;">
-        <li><strong>Supporting Hands funding</strong> — if IHSS/insurance covers 50%, saves ~$900/mo</li>
+        <li><strong>July bridge confirmed</strong> — parents cover Supporting Hands and Cristal covers groceries for next month</li>
         <li><strong>Increase behavior school income</strong> — currently ${fmt(STATE.income.find(i=>i.id==='behavior')?.amount||272)}/mo avg</li>
         <li><strong>Keep Supporting Hands off Apple Card</strong> — avoid restarting interest compounding</li>
         <li><strong>AT&T plan review</strong> — ${fmt(STATE.bills.find(b=>b.id==='att')?.amount||129)}/mo may be reducible</li>
@@ -1754,7 +1778,7 @@ function renderPayments() {
 }
 
 function renderEnvelopes() {
-  const totalIncome = STATE.income.reduce((s, i) => s + i.amount, 0);
+  const totalIncome = getMonthlyIncomeTotal();
   let remaining = totalIncome;
   const groups = [
     { p: 1, label: 'Priority 1 — Survival', cls: 'p1' },
@@ -1768,16 +1792,18 @@ function renderEnvelopes() {
 
   groups.forEach(g => {
     const bills = STATE.bills.filter(b => b.priority === g.p);
-    const groupTotal = bills.reduce((s, b) => s + b.amount, 0);
+    const groupTotal = bills.reduce((s, b) => s + robBillAmount(b), 0);
     const funded = g.p <= 3;
     envelopeHtml += `<div class="env-priority ${g.cls}">${g.label}</div>`;
     bills.forEach(b => {
-      const isFunded = funded && remaining >= b.amount;
-      if (funded) remaining -= b.amount;
+      const amountDue = robBillAmount(b);
+      const supportCredit = getBillSupportCredit(b.id);
+      const isFunded = funded && remaining >= amountDue;
+      if (funded) remaining -= amountDue;
       envelopeHtml += `<div class="envelope ${g.cls} ${!isFunded && g.p < 4 ? '' : g.p === 4 ? 'unfunded' : ''}">
         <div class="env-row">
           <span class="env-name">${esc(b.name)}</span>
-          <span class="env-amt" style="color:${isFunded ? '#22c55e' : '#ef4444'}">${isFunded ? fmt(b.amount) : fmt(b.amount) + ' unfunded'}</span>
+          <span class="env-amt" style="color:${isFunded ? '#22c55e' : '#ef4444'}">${supportCredit ? `${fmt(amountDue)} (${fmt(supportCredit)} covered)` : isFunded ? fmt(amountDue) : fmt(amountDue) + ' unfunded'}</span>
         </div>
         <div class="env-bar"><div class="env-fill" style="width:${isFunded ? 100 : 0}%;background:${isFunded ? '#22c55e' : '#ef4444'};"></div></div>
       </div>`;
@@ -1793,11 +1819,11 @@ function renderEnvelopes() {
   document.getElementById('envelopesCard').innerHTML = envelopeHtml;
 
   // Summary
-  const onCredit = STATE.bills.filter(b => b.priority === 4).reduce((s, b) => s + b.amount, 0);
-  const buffer = Math.max(0, totalIncome - STATE.bills.filter(b => b.priority <= 3).reduce((s, b) => s + b.amount, 0));
-  const p1 = STATE.bills.filter(b => b.priority === 1).reduce((s, b) => s + b.amount, 0);
-  const p2 = STATE.bills.filter(b => b.priority === 2).reduce((s, b) => s + b.amount, 0);
-  const p3 = STATE.bills.filter(b => b.priority === 3).reduce((s, b) => s + b.amount, 0);
+  const onCredit = STATE.bills.filter(b => b.priority === 4).reduce((s, b) => s + robBillAmount(b), 0);
+  const buffer = Math.max(0, totalIncome - STATE.bills.filter(b => b.priority <= 3).reduce((s, b) => s + robBillAmount(b), 0));
+  const p1 = STATE.bills.filter(b => b.priority === 1).reduce((s, b) => s + robBillAmount(b), 0);
+  const p2 = STATE.bills.filter(b => b.priority === 2).reduce((s, b) => s + robBillAmount(b), 0);
+  const p3 = STATE.bills.filter(b => b.priority === 3).reduce((s, b) => s + robBillAmount(b), 0);
 
   document.getElementById('envelopeSummaryCard').innerHTML = `
     <h3>Envelope Summary</h3>
@@ -2064,17 +2090,23 @@ function getCashAvailable() {
 function buildBillPayPlan(spendableCash) {
   let remaining = spendableCash;
   return STATE.bills
-    .filter(bill => bill.status !== 'paid' && bill.amount > 0)
-    .map(bill => ({ bill, score: billUrgencyScore(bill), reason: billUrgencyReason(bill) }))
+    .map(bill => ({
+      bill,
+      amountDue: robBillAmount(bill),
+      supportCredit: getBillSupportCredit(bill.id),
+      score: billUrgencyScore(bill),
+      reason: billUrgencyReason(bill)
+    }))
+    .filter(item => item.bill.status !== 'paid' && item.amountDue > 0)
     .sort((a, b) => b.score - a.score || Number(a.bill.dueDay || 99) - Number(b.bill.dueDay || 99))
     .map(item => {
-      const funded = remaining >= item.bill.amount;
-      if (funded) remaining -= item.bill.amount;
+      const funded = remaining >= item.amountDue;
+      if (funded) remaining -= item.amountDue;
       return {
         ...item,
         funded,
         remainingCash: remaining,
-        remainingShort: funded ? 0 : Math.max(0, item.bill.amount - remaining)
+        remainingShort: funded ? 0 : Math.max(0, item.amountDue - remaining)
       };
     });
 }
@@ -2190,6 +2222,42 @@ function mergeChecklist(defaultItems, savedItems) {
   return defaultItems.map(item => Object.assign({}, item, savedById.get(item.id) || {}));
 }
 
+function mergeTemporarySupport(defaultItems, savedItems) {
+  const savedById = new Map((savedItems || []).map(item => [item.id, item]));
+  return defaultItems.map(item => Object.assign({}, item, savedById.get(item.id) || {}));
+}
+
+function getTemporarySupportCredits() {
+  return (STATE.householdPlan?.temporarySupport || [])
+    .filter(item => item.month === '2026-07')
+    .map(item => ({
+      ...item,
+      amount: Math.max(0, Number(item.amount || 0))
+    }));
+}
+
+function getBillSupportCredit(billId) {
+  return getTemporarySupportCredits()
+    .filter(item => item.billId === billId)
+    .reduce((sum, item) => sum + item.amount, 0);
+}
+
+function robBillAmount(bill) {
+  return Math.max(0, Number(bill.amount || 0) - getBillSupportCredit(bill.id));
+}
+
+function getMonthlyIncomeTotal() {
+  return STATE.income.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+}
+
+function getMonthlyBillTotal() {
+  return STATE.bills.reduce((sum, bill) => sum + Number(bill.amount || 0), 0);
+}
+
+function getRobMonthlyBillTotal() {
+  return STATE.bills.reduce((sum, bill) => sum + robBillAmount(bill), 0);
+}
+
 function renderMonthlyClose() {
   renderMonthlyRunway();
   renderOwnerDraw();
@@ -2207,15 +2275,15 @@ function renderMonthlyRunway() {
   const spendableCash = Math.max(0, cash - reserveFloor);
   const unpaid = buildBillPayPlan(spendableCash);
   const mustPay = unpaid.filter(item => item.bill.priority <= 2 || item.bill.status === 'overdue' || item.bill.status === 'autopay');
-  const funded = mustPay.filter(item => item.funded).reduce((s, item) => s + item.bill.amount, 0);
-  const unfunded = mustPay.filter(item => !item.funded).reduce((s, item) => s + item.bill.amount, 0);
+  const funded = mustPay.filter(item => item.funded).reduce((s, item) => s + item.amountDue, 0);
+  const unfunded = mustPay.filter(item => !item.funded).reduce((s, item) => s + item.amountDue, 0);
   const nextUnfunded = mustPay.find(item => !item.funded);
   const tone = unfunded ? 'danger' : spendableCash < 200 ? 'warn' : '';
   target.innerHTML = `
     <h3>Bill Runway</h3>
     <div class="advisor-headline">${unfunded ? `${fmt(unfunded)} short for priority bills` : `${fmt(spendableCash)} spendable after reserve`}</div>
     <div class="advisor-copy">
-      Cash is ${fmt(cash)} with a ${fmt(reserveFloor)} floor. Priority bills funded from the current plan: ${fmt(funded)}. ${nextUnfunded ? `Next unfunded bill: ${esc(nextUnfunded.bill.name)} for ${fmt(nextUnfunded.bill.amount)}.` : 'No urgent unfunded bill is currently showing.'}
+      Cash is ${fmt(cash)} with a ${fmt(reserveFloor)} floor. Priority bills funded from the current plan: ${fmt(funded)}. ${nextUnfunded ? `Next unfunded bill: ${esc(nextUnfunded.bill.name)} for ${fmt(nextUnfunded.amountDue)}.` : 'No urgent unfunded bill is currently showing.'}
     </div>
     <div class="fin-alert ${tone || 'info'}" style="margin:14px 0 0;">
       <strong>Operating rule:</strong> pay minimums and survival bills first. Do not accelerate debt until this card says the next 30 days are covered.
@@ -2262,7 +2330,7 @@ function buildOwnerDrawDecision() {
   const spendableCash = Math.max(0, cash - reserveFloor);
   const urgentUnfunded = buildBillPayPlan(spendableCash)
     .filter(item => !item.funded && (item.bill.priority <= 2 || item.bill.status === 'overdue' || item.bill.status === 'autopay'))
-    .reduce((s, item) => s + item.bill.amount, 0);
+    .reduce((s, item) => s + item.amountDue, 0);
   const businessCash = getNovoBalance();
   const businessDebt = Number(plan.businessDebt || 0);
   const businessDebtApr = Number(plan.businessDebtApr || 0);
@@ -2757,8 +2825,8 @@ function editReserveFloor() {
 }
 
 function editContributionTarget() {
-  const totalIncome = STATE.income.reduce((s, i) => s + Number(i.amount || 0), 0);
-  const totalBills = STATE.bills.reduce((s, b) => s + Number(b.amount || 0), 0);
+  const totalIncome = getMonthlyIncomeTotal();
+  const totalBills = getRobMonthlyBillTotal();
   const suggested = Math.max(0, totalBills - totalIncome);
   const current = Number(STATE.householdPlan?.contributionTarget || suggested);
   const val = prompt('Monthly household contribution target to close the budget gap:', current);

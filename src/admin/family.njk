@@ -284,8 +284,13 @@ family_pwa: true
   .ops-meter { height: 10px; background: #e8dfd2; border-radius: 999px; overflow: hidden; }
   .ops-meter > span { display: block; height: 100%; border-radius: 999px; background: #1f4d3f; }
   .ops-decision { border-left: 4px solid #1f4d3f; padding-left: 12px; font-size: 13px; color: #526158; line-height: 1.55; }
+  .ops-decision.success { border-left-color: #1f4d3f; }
   .ops-decision.warn { border-left-color: #d97706; }
   .ops-decision.danger { border-left-color: #b91c1c; }
+  .fin-metric { border: 1px solid #e8e2d5; border-radius: 14px; background: #fffdf8; padding: 12px; min-width: 0; }
+  .fin-metric span { display: block; font-size: 11px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: #526158; }
+  .fin-metric strong { display: block; margin-top: 4px; font-size: 26px; line-height: 1; color: #123628; font-variant-numeric: tabular-nums; }
+  .fin-metric small { display: block; margin-top: 6px; color: #526158; line-height: 1.35; }
   .ops-toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
   .ops-toolbar button { padding: 8px 12px; border-radius: 10px; border: 1px solid #d9d1c4; background: #fffdf8; color: #1f4d3f; font-size: 12px; font-weight: 800; cursor: pointer; }
   .ops-toolbar button.primary { background: #1f4d3f; color: #fffdf8; border-color: #1f4d3f; }
@@ -861,6 +866,7 @@ function defaultState() {
         { id:'pge_login', label:'Refresh PG&E payment plan and true-up', cadence:'monthly', lastDone:'2026-06-15', source:'Chrome/PG&E', note:'Confirm amount needed to stay on plan and update solar true-up estimate.' },
         { id:'discover_login', label:'Refresh Discover card', cadence:'weekly', lastDone:'2026-06-12', source:'Discover', note:'Balance, available credit, due date, and minimum payment.' },
         { id:'apple_statement', label:'Import Apple Card statement/CSV', cadence:'monthly', lastDone:'2026-06-09', source:'Drive + Apple Card', note:'PDF to Drive, CSV to Import tab when available.' },
+        { id:'credit_score_sync', label:'Refresh credit score and factors', cadence:'monthly', lastDone:'2026-06-22', source:'Amex MyCreditGuide + Discover Scorecard', note:'Capture score, rating, score movement, and top factors before making debt payoff decisions.' },
         { id:'eecu_statement', label:'Upload EECU statement/export', cadence:'monthly', lastDone:'', source:'EECU + Drive', note:'Download monthly statements and transaction CSV/export.' },
         { id:'bill_scan', label:'Scan Gmail for bills and failed payments', cadence:'weekly', lastDone:'2026-06-15', source:'Gmail', note:'Search utilities, cards, legal, therapy, school, insurance, and pest control.' },
         { id:'business_leakage', label:'Review business charges on personal cards', cadence:'monthly', lastDone:'', source:'Imports', note:'OpenAI, Anthropic, domains, hosting, and business subscriptions.' },
@@ -871,7 +877,8 @@ function defaultState() {
         { id:'discover', label:'Discover Card', accountIds:['discover'], cadence:'weekly', lastRefreshed:'2026-06-12', source:'Discover', note:'Balance, available credit, minimum, due date, and autopay.' },
         { id:'applecard', label:'Apple Card', accountIds:['applecard'], cadence:'weekly', lastRefreshed:'2026-06-09', source:'Apple Card / Drive', note:'Balance, available credit, statement, minimum, and scheduled payment.' },
         { id:'pge', label:'PG&E', accountIds:[], cadence:'monthly', lastRefreshed:'2026-06-15', source:'Chrome/PG&E', note:'Payment plan amount, total balance, and solar true-up estimate.' },
-        { id:'novo', label:'Novo Business', accountIds:[], cadence:'weekly', lastRefreshed:'', source:'Novo', note:'Business cash available for owner draw and business debt decisions.' }
+        { id:'novo', label:'Novo Business', accountIds:[], cadence:'weekly', lastRefreshed:'', source:'Novo', note:'Business cash available for owner draw and business debt decisions.' },
+        { id:'creditguide', label:'Credit Score', accountIds:['applecard','discover','loc','autoloan'], cadence:'monthly', lastRefreshed:'2026-06-22', source:'Amex MyCreditGuide + Discover Scorecard', note:'Track score movement and factors alongside Apple, Discover, LOC, and auto loan balances.' }
       ]
     },
     businessPlan: {
@@ -885,10 +892,29 @@ function defaultState() {
       notes: 'Update Novo cash and business debt before using owner-draw guidance.'
     },
     creditPlan: {
+      currentScore: 666,
+      scoreChange: 15,
+      scoreBand: 'Fair',
+      scoreSource: 'Amex MyCreditGuide',
+      scoreDate: '2026-06-21',
+      goalScore: 700,
       targetReserve: 1000,
       targetCardUtilization: 0.3,
+      nextUtilizationTarget: 0.5,
       homeCashTarget: 10000,
-      notes: 'Protect payment history first; reduce revolving utilization next; build reserves before mortgage shopping.'
+      factors: [
+        'Keep every bill and card minimum current; payment history is the first rule.',
+        'Use less of the available credit on Apple Card and Discover; statement balances matter.',
+        'Keep open accounts in good standing and avoid new hard inquiries while preparing for a mortgage.',
+        'Separate business charges from personal cards so personal utilization stops rising.'
+      ],
+      actions: [
+        'Pay minimums before extra principal every month.',
+        'When extra cash exists, reduce the card with the highest utilization before lower-rate installment debt.',
+        'Make extra card payments before statement close when possible, not only by the due date.',
+        'Refresh Amex/Discover score data monthly and record the top score factors.'
+      ],
+      notes: 'Amex MyCreditGuide shows FICO 666, Fair, +15 as of Jun 21, 2026. Protect payment history first; reduce revolving utilization next; build reserves before mortgage shopping.'
     },
     statementFolders: {
       eecu: '',
@@ -960,6 +986,8 @@ function applyCurrentFinanceCorrections(state) {
   state.businessPlan = Object.assign({}, def.businessPlan, state.businessPlan || {});
   if (!state.businessPlan.novoBalance && state.businessPlan.businessCash) state.businessPlan.novoBalance = state.businessPlan.businessCash;
   state.creditPlan = Object.assign({}, def.creditPlan, state.creditPlan || {});
+  state.creditPlan.factors = Array.isArray(state.creditPlan.factors) ? state.creditPlan.factors : def.creditPlan.factors;
+  state.creditPlan.actions = Array.isArray(state.creditPlan.actions) ? state.creditPlan.actions : def.creditPlan.actions;
   if (!state.householdPlan.reserveFloor && state.householdPlan.reserveFloor !== 0) state.householdPlan.reserveFloor = CASH_RESERVE_FLOOR;
   if (!state.householdPlan.sixMonthHorizon) state.householdPlan.sixMonthHorizon = 6;
   STATEMENT_SOURCES.forEach(source => {
@@ -2344,10 +2372,38 @@ function renderCreditReadiness() {
   const paymentScore = overdue ? 25 : unpaidCredit ? 70 : 100;
   const utilizationScore = cardDebt <= 5000 ? 80 : cardDebt <= 10000 ? 55 : 30;
   const readiness = Math.round((reserveScore * 0.25) + (paymentScore * 0.45) + (utilizationScore * 0.30));
+  const currentScore = Number(plan.currentScore || 0);
+  const goalScore = Number(plan.goalScore || 700);
+  const scoreGap = Math.max(0, goalScore - currentScore);
+  const scoreChange = Number(plan.scoreChange || 0);
+  const scoreColor = currentScore >= 740 ? '#1f4d3f' : currentScore >= 700 ? '#3f6f54' : currentScore >= 660 ? '#d97706' : '#b91c1c';
+  const scoreDate = plan.scoreDate ? fmtDate(plan.scoreDate) : 'Not refreshed';
+  const factors = Array.isArray(plan.factors) ? plan.factors : [];
+  const actions = Array.isArray(plan.actions) ? plan.actions : [];
   target.innerHTML = `
     <div style="display:grid;gap:14px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;">
+        <div class="fin-metric">
+          <span>FICO score</span>
+          <strong style="color:${scoreColor};">${currentScore || 'Set'}</strong>
+          <small>${esc(plan.scoreBand || 'Unknown')} via ${esc(plan.scoreSource || 'Credit guide')}</small>
+        </div>
+        <div class="fin-metric">
+          <span>Latest move</span>
+          <strong style="color:${scoreChange >= 0 ? '#1f4d3f' : '#b91c1c'};">${scoreChange >= 0 ? '+' : ''}${scoreChange}</strong>
+          <small>Refreshed ${esc(scoreDate)}</small>
+        </div>
+        <div class="fin-metric">
+          <span>Home target</span>
+          <strong>${goalScore}+</strong>
+          <small>${scoreGap ? `${scoreGap} points to first target` : 'At or above first target'}</small>
+        </div>
+      </div>
       <div style="display:flex;justify-content:space-between;align-items:baseline;"><span class="fin-sub">Readiness score</span><strong style="font-size:32px;color:${readiness >= 75 ? '#1f4d3f' : readiness >= 50 ? '#d97706' : '#b91c1c'};">${readiness}/100</strong></div>
       <div class="ops-meter"><span style="width:${readiness}%;background:${readiness >= 75 ? '#1f4d3f' : readiness >= 50 ? '#d97706' : '#b91c1c'};"></span></div>
+      <div class="ops-decision ${currentScore >= goalScore ? 'success' : 'warn'}">
+        Credit score plan: keep every required payment current first, then use extra cash to lower Apple/Discover utilization before taking on new credit or mortgage inquiries.
+      </div>
       <div class="advisor-item ${overdue ? 'critical' : ''}">
         <div class="advisor-rank">1</div><div><div class="advisor-title">No missed payments</div><div class="advisor-note">${overdue ? `${overdue} overdue bill(s) still listed.` : 'No overdue bills are currently listed.'}</div></div><div class="advisor-amount">${paymentScore}/100</div>
       </div>
@@ -2357,7 +2413,15 @@ function renderCreditReadiness() {
       <div class="advisor-item warn">
         <div class="advisor-rank">3</div><div><div class="advisor-title">Revolving debt</div><div class="advisor-note">Credit-card balances listed total ${fmt(cardDebt)}. Utilization needs exact credit limits from Apple/Discover imports.</div></div><div class="advisor-amount">${utilizationScore}/100</div>
       </div>
+      <div style="font-size:13px;color:#526158;line-height:1.6;">
+        <strong>Factors to monitor:</strong>
+        <ul style="margin:8px 0 0 18px;padding:0;">
+          ${factors.map(factor => `<li>${esc(factor)}</li>`).join('')}
+        </ul>
+      </div>
       <div class="advisor-controls">
+        <button onclick="editCreditScorePlan('currentScore','Current FICO score')">Score</button>
+        <button onclick="editCreditScorePlan('goalScore','Goal score')">Goal</button>
         <button onclick="editCreditPlan('targetReserve','Target cash reserve')">Reserve Target</button>
         <button onclick="activatePanel('statements')">Fix Statements</button>
       </div>
@@ -2383,6 +2447,12 @@ function renderCreditReadiness() {
     </div>
     <div style="margin-top:14px;font-size:13px;color:#526158;line-height:1.6;">
       Listed total debt: <strong>${fmt(totalDebt)}</strong>. Before shopping for a house, this dashboard should show no overdue bills, current statements for all accounts, and a repeatable monthly surplus or documented household contribution.
+    </div>
+    <div style="margin-top:14px;font-size:13px;color:#526158;line-height:1.6;">
+      <strong>Monthly score actions:</strong>
+      <ul style="margin:8px 0 0 18px;padding:0;">
+        ${actions.map(action => `<li>${esc(action)}</li>`).join('')}
+      </ul>
     </div>
   `;
 }
@@ -2715,6 +2785,19 @@ function editCreditPlan(field, label) {
   saveState(STATE);
   renderAll();
   showToast(label + ' set to ' + fmt(num));
+}
+
+function editCreditScorePlan(field, label) {
+  STATE.creditPlan = STATE.creditPlan || {};
+  const current = Number(STATE.creditPlan[field] || 0);
+  const val = prompt(label + ':', current);
+  if (val === null) return;
+  const num = parseInt(val, 10);
+  if (isNaN(num) || num < 300 || num > 850) return;
+  STATE.creditPlan[field] = num;
+  saveState(STATE);
+  renderAll();
+  showToast(label + ' set to ' + num);
 }
 
 function saveImportedTransactions(fileName, source, txns) {

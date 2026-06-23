@@ -1,0 +1,55 @@
+<svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+    <title id="title">AI for BCBAs: Building Custom Tools to Bridge Practice and Research</title>
+    <desc id="desc">Rob Spain BehaviorLive event thumbnail with an AI systems diagram motif.</desc>
+    <defs>
+        <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#052e24"/>
+            <stop offset="48%" stop-color="#065f46"/>
+            <stop offset="100%" stop-color="#0f766e"/>
+        </linearGradient>
+        <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#6ee7b7"/>
+            <stop offset="100%" stop-color="#10b981"/>
+        </linearGradient>
+        <pattern id="grid" width="44" height="44" patternUnits="userSpaceOnUse">
+            <path d="M 44 0 L 0 0 0 44" fill="none" stroke="#a7f3d0" stroke-width="0.75" opacity="0.14"/>
+        </pattern>
+        <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#001b14" flood-opacity="0.32"/>
+        </filter>
+    </defs>
+
+    <rect width="1280" height="720" fill="url(#bg)"/>
+    <rect width="1280" height="720" fill="url(#grid)"/>
+
+    <path d="M-60 190 C150 70 280 310 470 178 S790 70 1018 206 1284 174 1360 92" fill="none" stroke="#6ee7b7" stroke-width="4" opacity="0.24"/>
+    <path d="M-80 584 C158 450 274 656 500 530 S848 410 1058 548 1285 530 1364 450" fill="none" stroke="#34d399" stroke-width="3" opacity="0.20"/>
+
+    <g transform="translate(760 128)" filter="url(#softShadow)">
+        <rect x="0" y="0" width="390" height="424" rx="36" fill="#ecfdf5" opacity="0.96"/>
+        <rect x="46" y="62" width="116" height="116" rx="32" fill="#d1fae5"/>
+        <circle cx="104" cy="120" r="34" fill="url(#accent)"/>
+        <path d="M104 76 V44 M104 196 V164 M60 120 H28 M180 120 H148" stroke="#064e3b" stroke-width="12" stroke-linecap="round" opacity="0.28"/>
+        <rect x="198" y="76" width="120" height="18" rx="9" fill="#059669" opacity="0.30"/>
+        <rect x="198" y="116" width="146" height="18" rx="9" fill="#059669" opacity="0.20"/>
+        <rect x="198" y="156" width="104" height="18" rx="9" fill="#059669" opacity="0.18"/>
+        <rect x="48" y="242" width="294" height="28" rx="14" fill="#064e3b" opacity="0.12"/>
+        <rect x="48" y="296" width="230" height="28" rx="14" fill="#064e3b" opacity="0.12"/>
+        <rect x="48" y="350" width="264" height="28" rx="14" fill="#064e3b" opacity="0.12"/>
+    </g>
+
+    <g transform="translate(84 82)">
+        <rect x="0" y="0" width="270" height="48" rx="24" fill="#d1fae5" opacity="0.95"/>
+        <text x="135" y="31" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="800" fill="#064e3b" letter-spacing="2">BEHAVIORLIVE EVENT</text>
+    </g>
+
+    <text x="84" y="224" font-family="Inter, Arial, sans-serif" font-size="38" font-weight="800" fill="#6ee7b7" letter-spacing="3">AI FOR BCBAs</text>
+    <text x="84" y="322" font-family="Inter, Arial, sans-serif" font-size="76" font-weight="900" fill="#ffffff">Building Custom</text>
+    <text x="84" y="410" font-family="Inter, Arial, sans-serif" font-size="76" font-weight="900" fill="#ffffff">Tools to Bridge</text>
+    <text x="84" y="498" font-family="Inter, Arial, sans-serif" font-size="76" font-weight="900" fill="#ffffff">Practice + Research</text>
+
+    <g transform="translate(84 588)">
+        <rect x="0" y="0" width="306" height="54" rx="27" fill="url(#accent)"/>
+        <text x="153" y="35" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="900" fill="#043828">ROB SPAIN, BCBA, IBA</text>
+    </g>
+</svg>

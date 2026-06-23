@@ -28,7 +28,7 @@ const VIDEO_TYPES = {
 const CTA_OPTIONS = {
   'transformation-program': {
     url: 'https://behaviorschool.com/transformation-program',
-    description: 'the 8-Week Transformation Program for school BCBAs'
+    description: 'the 6-Week Transformation Program for school BCBAs'
   },
   'study': {
     url: 'https://behaviorschool.com/study',

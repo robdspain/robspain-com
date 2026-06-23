@@ -1,5 +1,5 @@
 ---
-title: "Video 09: The 8-Week Transformation Program"
+title: "Video 09: The 6-Week Transformation Program"
 series: "school-bcba"
 published: true
 step: 9
@@ -14,13 +14,13 @@ I've done workshops. I've done conference presentations. But I kept seeing the s
 
 Because real transformation doesn't happen in a one-hour webinar. It happens through sustained support, accountability, and implementation.
 
-That's why I created the **8-Week Transformation Program.**
+That's why I created the **6-Week Transformation Program.**
 
 **[What it is]**
 
 This is an intensive coaching program designed specifically for BCBAs in schools who are ready to stop surviving and start leading.
 
-Over 8 weeks, I'll guide you through the complete Systems Leadership framework—not just the theory, but the actual implementation.
+Over 6 weeks, I'll guide you through the complete Systems Leadership framework—not just the theory, but the actual implementation.
 
 **[What's included]**
 
@@ -40,8 +40,7 @@ Week by week, we build your Systems Leadership foundation:
 
 - Weeks 1-2: Audit your current situation and identify your biggest leverage points
 - Weeks 3-4: Build your Tier 1 and Tier 2 prevention systems
-- Weeks 5-6: Develop your staff training and communication strategies
-- Weeks 7-8: Create sustainable boundaries and long-term maintenance plans
+- Weeks 5-6: Develop your staff training, communication strategies, sustainable boundaries, and long-term maintenance plans
 
 By the end, you'll have a complete transformation blueprint customized to your specific district.
 

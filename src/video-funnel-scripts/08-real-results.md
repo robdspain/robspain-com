@@ -32,6 +32,6 @@ When you stop trying to be everything to everyone — when you start building sy
 
 Now, I know what you might be wondering: "How do I actually make this shift? Where do I even start?"
 
-That's exactly why I created the 8-Week Transformation Program. And in the next video, I'm going to tell you all about it.
+That's exactly why I created the 6-Week Transformation Program. And in the next video, I'm going to tell you all about it.
 
 See you there.

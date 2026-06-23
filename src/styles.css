@@ -677,28 +677,6 @@ h2 {
 .social-link.instagram:hover { color: #10B981; }
 .social-link.twitter:hover { color: #10B981; }
 
-/* BACB Info */
-.bacb-info {
-    margin-top: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    background: rgba(16, 185, 129, 0.1);
-    border-radius: 0.5rem;
-    border-left: 3px solid #10B981;
-}
-
-.bacb-details p {
-    margin: 0.25rem 0;
-    font-size: 0.875rem;
-    color: #cccccc;
-}
-
-.ace-logo-badge {
-    flex: 0 0 auto;
-}
-
 /* Footer Bottom */
 .footer-bottom {
     border-top: 1px solid #333;

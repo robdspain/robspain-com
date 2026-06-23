@@ -1883,56 +1883,6 @@
     }
 }
 
-/* Footer Logo Styles */
-.bacb-logos {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-4);
-    margin-top: var(--space-6);
-    padding: var(--space-4);
-}
-
-.ace-logo-badge {
-    width: 76px;
-    min-height: 76px;
-    display: grid;
-    place-items: center;
-    padding: 0.65rem 0.5rem;
-    border: 1px solid rgba(167, 243, 208, 0.48);
-    border-radius: 8px;
-    background: rgba(6, 78, 59, 0.38);
-    color: #ecfdf5;
-    text-align: center;
-    line-height: 1.05;
-    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
-}
-
-.ace-logo-badge span,
-.ace-logo-badge small {
-    font-size: 0.68rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-}
-
-.ace-logo-badge strong {
-    font-size: 1.05rem;
-    letter-spacing: 0.04em;
-}
-
-@media (max-width: 768px) {
-    .bacb-logos {
-        gap: var(--space-3);
-        margin-top: var(--space-4);
-        padding: var(--space-3);
-    }
-
-    .ace-logo-badge {
-        width: 68px;
-        min-height: 68px;
-    }
-}
-
 /* Unified Services Section */
 .service-tiers {
     display: flex;

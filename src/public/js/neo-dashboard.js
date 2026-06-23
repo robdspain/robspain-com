@@ -87,17 +87,6 @@ const defaultData = {
       prdPath: ''
     },
     {
-      id: 'ace-ceu',
-      name: 'ACE CEU Platform',
-      emoji: '🎓',
-      status: 'active',
-      progress: 45,
-      phase: 'Building',
-      blockedReason: '',
-      lastUpdated: '2026-02-21T14:30:00Z',
-      prdPath: ''
-    },
-    {
       id: 'iep-goal-writer',
       name: 'IEP Goal Writer',
       emoji: '📝',
@@ -168,19 +157,6 @@ const defaultData = {
       relatedProject: ''
     },
     {
-      id: 'stripe-price-id',
-      title: 'Create Stripe price ID for ACE CEU subscription',
-      description: 'Set up a recurring price in Stripe dashboard and copy the price_xxx ID into the config',
-      estimateMinutes: 10,
-      type: 'action',
-      previewUrl: '',
-      actionUrl: 'https://dashboard.stripe.com/products',
-      status: 'pending',
-      createdAt: '2026-02-23T08:00:00Z',
-      completedAt: null,
-      relatedProject: 'ace-ceu'
-    },
-    {
       id: 'resend-pro',
       title: 'Upgrade to Resend Pro for transactional email',
       description: 'Current free tier is hitting limits. Upgrade plan and verify sending domain',
@@ -245,12 +221,11 @@ function saveData(data) {
 // Revenue potential ranking: lower number = higher revenue potential
 const REVENUE_RANK = {
   'iep-goal-writer': 1,
-  'ace-ceu': 2,
-  'behavior-school-pro': 3,
-  'observationpro': 4,
-  'schoolrbt': 5,
-  'reunifyscience': 6,
-  'kcusd-hub': 7
+  'behavior-school-pro': 2,
+  'observationpro': 3,
+  'schoolrbt': 4,
+  'reunifyscience': 5,
+  'kcusd-hub': 6
 };
 
 function getRevenueRank(project) {

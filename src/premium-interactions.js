@@ -288,11 +288,12 @@ class PremiumInteractions {
             // Support custom thumbnail via data-thumb (e.g., non-YouTube platforms)
             const dataThumb = card.getAttribute('data-thumb');
             if (dataThumb) {
+                const thumbFit = card.getAttribute('data-thumb-fit') === 'contain' ? 'contain' : 'cover';
                 // Only apply custom thumbnail after confirming it loads
                 const timg = new Image();
                 timg.onload = () => {
                     thumb.style.backgroundImage = `url('${dataThumb}')`;
-                    thumb.style.backgroundSize = 'cover';
+                    thumb.style.backgroundSize = thumbFit;
                     thumb.style.backgroundPosition = 'center';
                     thumb.style.backgroundRepeat = 'no-repeat';
                 };

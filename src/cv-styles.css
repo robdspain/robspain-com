@@ -1319,6 +1319,7 @@ body {
     gap: 1rem;
     border-left: 4px solid transparent;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-decoration: none;
 }
 
 .presentation-card:hover {
@@ -1349,11 +1350,42 @@ body {
     font-style: italic;
 }
 
+.presentation-thumb {
+    overflow: hidden;
+    border-radius: 14px;
+    border: 1px solid var(--border-light);
+    background: #ecfdf5;
+    aspect-ratio: 3 / 2;
+}
+
+.presentation-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.presentation-card-featured {
+    border-left-color: var(--accent-color);
+}
+
 /* Specific tag colors for better categorization */
 .tag.behavior {
     background: linear-gradient(135deg, #ddd6fe, #e0e7ff);
     color: #5b21b6;
     border-color: rgba(91, 33, 182, 0.2);
+}
+
+.tag.ai {
+    background: linear-gradient(135deg, #ccfbf1, #d1fae5);
+    color: #0f766e;
+    border-color: rgba(15, 118, 110, 0.2);
+}
+
+.tag.research-practice {
+    background: linear-gradient(135deg, #dbeafe, #e0f2fe);
+    color: #1d4ed8;
+    border-color: rgba(29, 78, 216, 0.2);
 }
 
 .tag.extended-learning {

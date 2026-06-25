@@ -877,12 +877,14 @@
 .about-image {
     display: block;
     width: 100%;
-    aspect-ratio: 4 / 5;
-    object-fit: cover;
-    object-position: center top;
+    height: auto;
+    aspect-ratio: 1280 / 657;
+    object-fit: contain;
+    object-position: center center;
     border-radius: var(--radius-2xl);
     border: 1px solid var(--gray-200);
     box-shadow: var(--shadow-lg);
+    background: var(--gray-950);
 }
 
 .about-image-placeholder {

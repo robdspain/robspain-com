@@ -53,16 +53,16 @@
     {% endif %}
 
     <!-- SEO & Social Meta Tags -->
-    <meta property="og:title" content="{{ seo.metaTitle or title or "Rob Spain - School BCBA" }}">
-    <meta property="og:description" content="{{ seo.metaDesc or description or "Rob Spain, School BCBA." }}">
-    <meta property="og:image" content="https://robspain.com{{ seo.socialImage or image or "/images/profile-Rob.png" }}">
-    <meta property="og:url" content="https://robspain.com{{ page.url }}">
-    <meta property="og:type" content="article">
+    <meta property="og:title" content="{{ resolvedTitle }}">
+    <meta property="og:description" content="{{ resolvedDescription }}">
+    <meta property="og:image" content="{{ resolvedImage | absoluteUrl }}">
+    <meta property="og:url" content="{{ resolvedUrl | absoluteUrl }}">
+    <meta property="og:type" content="{% if layout == "post.njk" %}article{% else %}website{% endif %}">
     
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{ seo.metaTitle or title or "Rob Spain - School BCBA" }}">
-    <meta name="twitter:description" content="{{ seo.metaDesc or description or "Rob Spain, School BCBA." }}">
-    <meta name="twitter:image" content="https://robspain.com{{ seo.socialImage or image or "/images/profile-Rob.png" }}">
+    <meta name="twitter:title" content="{{ resolvedTitle }}">
+    <meta name="twitter:description" content="{{ resolvedDescription }}">
+    <meta name="twitter:image" content="{{ resolvedImage | absoluteUrl }}">
     <meta name="twitter:creator" content="@robspainBCBA">
 
     <script type="application/ld+json">
@@ -207,15 +207,169 @@
     {% else %}
     {
       "@context": "https://schema.org",
-      "@type": "WebSite",
-      "url": "https://robspain.com/",
-      "name": "Rob Spain, BCBA",
-      "author": {
-        "@type": "Person",
-        "name": "Rob Spain",
-        "url": "https://robspain.com"
-      },
-      "description": "{{ seo.metaDesc or description or 'Rob Spain, School BCBA.' }}"
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://robspain.com/#website",
+          "url": "https://robspain.com/",
+          "name": "Rob Spain, BCBA",
+          "description": {{ resolvedDescription | json | safe }},
+          "publisher": {
+            "@id": "https://robspain.com/#rob-spain"
+          },
+          "inLanguage": "en-US"
+        },
+        {
+          "@type": "Person",
+          "@id": "https://robspain.com/#rob-spain",
+          "name": "Rob Spain",
+          "url": "https://robspain.com/",
+          "image": "https://robspain.com/public/images/profile-Rob.png",
+          "jobTitle": "School BCBA",
+          "description": "Rob Spain is a school-based BCBA focused on practical behavior systems, educator coaching, PBIS integration, and implementation support for public schools.",
+          "sameAs": [
+            "https://www.linkedin.com/in/robspain/",
+            "https://twitter.com/robspainBCBA",
+            "https://behaviorschool.com"
+          ],
+          "knowsAbout": [
+            "School BCBA",
+            "school-based behavior analysis",
+            "PBIS",
+            "FBA and BIP systems",
+            "behavior intervention plans",
+            "educator coaching",
+            "implementation fidelity",
+            "Acceptance and Commitment Training in schools",
+            "AI tools for BCBAs"
+          ],
+          "alumniOf": {
+            "@type": "CollegeOrUniversity",
+            "name": "Fresno Pacific University"
+          },
+          "affiliation": {
+            "@type": "Organization",
+            "name": "Behavior School",
+            "url": "https://behaviorschool.com"
+          }
+        },
+        {
+          "@type": "ProfessionalService",
+          "@id": "https://robspain.com/#school-bcba-services",
+          "name": "Rob Spain School BCBA Training and Consulting",
+          "url": "https://robspain.com/",
+          "image": "{{ resolvedImage | absoluteUrl }}",
+          "description": "School BCBA training, presentations, consulting, and practical behavior systems support for educators, behavior intervention teams, and district leaders.",
+          "areaServed": [
+            {
+              "@type": "Country",
+              "name": "United States"
+            },
+            {
+              "@type": "State",
+              "name": "California"
+            }
+          ],
+          "provider": {
+            "@id": "https://robspain.com/#rob-spain"
+          },
+          "serviceType": [
+            "School BCBA consulting",
+            "Behavior systems training",
+            "PBIS implementation support",
+            "FBA and BIP systems support",
+            "Professional development presentations"
+          ],
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "School BCBA Services",
+            "itemListElement": [
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Transformation Program",
+                  "url": "https://robspain.com/transformation-program/"
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "School BCBA presentations",
+                  "url": "https://robspain.com/cv/#presentations"
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "School behavior systems articles",
+                  "url": "https://robspain.com/blog/"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "@type": "WebPage",
+          "@id": "{{ resolvedUrl | absoluteUrl }}#webpage",
+          "url": "{{ resolvedUrl | absoluteUrl }}",
+          "name": {{ resolvedTitle | json | safe }},
+          "description": {{ resolvedDescription | json | safe }},
+          "image": "{{ resolvedImage | absoluteUrl }}",
+          "isPartOf": {
+            "@id": "https://robspain.com/#website"
+          },
+          "primaryImageOfPage": {
+            "@type": "ImageObject",
+            "url": "{{ resolvedImage | absoluteUrl }}"
+          },
+          "author": {
+            "@id": "https://robspain.com/#rob-spain"
+          },
+          "about": [
+            "School BCBA",
+            "school-based behavior analysis",
+            "PBIS",
+            "behavior intervention systems",
+            "Transformation Program",
+            "Behavior School"
+          ]
+          {% if page.url == "/" %},
+          "mainEntity": {
+            "@type": "ItemList",
+            "name": "Rob Spain School BCBA resources",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "School BCBA Blog",
+                "url": "https://robspain.com/blog/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Transformation Program",
+                "url": "https://robspain.com/transformation-program/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Rob Spain CV and Presentations",
+                "url": "https://robspain.com/cv/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 4,
+                "name": "What Does a School BCBA Do?",
+                "url": "https://robspain.com/blog/what-does-a-school-bcba-do/"
+              }
+            ]
+          }
+          {% endif %}
+        }
+      ]
     }
     {% endif %}
     </script>

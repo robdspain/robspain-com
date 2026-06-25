@@ -1,3 +1,7 @@
+---
+eleventyExcludeFromCollections: true
+---
+
 # Symposium: Beyond Observable Behavior
 ## Measuring and Modifying the Function of Thought in School-Based Assessment
 **Date:** March 7, 2026 | **Time:** 2:55 PM - 3:55 PM

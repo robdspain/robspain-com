@@ -10,6 +10,8 @@ tags:
   - automation
   - engineering
 draft: true
+permalink: false
+eleventyExcludeFromCollections: true
 ---
 *AI-assisted draft; reviewed and edited by Rob Spain, BCBA, IBA.*
 

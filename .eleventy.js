@@ -68,6 +68,8 @@ function plainImageShortcode(src, alt) {
 module.exports = function(eleventyConfig) {
   // Ignore video scripts - these are for CMS editing only, never published
   eleventyConfig.ignores.add("src/video-funnel-scripts/**");
+  // Ignore draft content so unfinished posts cannot publish or land in sitemap.xml.
+  eleventyConfig.ignores.add("src/_drafts/**");
   // Ignore the archived duplicate homepage so crawlers only see the canonical home page.
   eleventyConfig.ignores.add("src/index 2.html");
 

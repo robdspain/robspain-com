@@ -11,6 +11,15 @@ tags:
   - burnout-prevention
   - systems-thinking
   - behavior-analysis
+resourceLinks:
+  - label: BCBA Burnout
+    url: /bcba-burnout/
+  - label: School BCBA Resource Hub
+    url: /school-bcba/
+  - label: School Behavior Systems
+    url: /school-behavior-systems/
+  - label: Transformation Program
+    url: /transformation-program/
 ---
 The statistics are alarming: **research shows that over 72% of behavior analysts report medium to high levels of burnout**, and turnover in school-based positions remains a persistent concern. As someone who has worked in school systems for over 20 years, I've seen this pattern repeat itself across districts, states, and even countries.
 

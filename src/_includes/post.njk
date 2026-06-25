@@ -39,6 +39,21 @@ layout: base.njk
 
         <p class="post-ai-disclosure">AI-assisted draft; reviewed and edited by Rob Spain.</p>
 
+        {% if resourceLinks %}
+        <aside class="post-topic-cluster" aria-label="Continue this topic">
+            <p class="post-topic-kicker">Continue this topic</p>
+            <h2>Related School BCBA systems guides</h2>
+            <div class="post-topic-links">
+                {% for resource in resourceLinks %}
+                <a href="{{ resource.url }}">
+                    <span>{{ resource.label }}</span>
+                    <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                </a>
+                {% endfor %}
+            </div>
+        </aside>
+        {% endif %}
+
         {% set newsletterId = "post" %}
         {% set newsletterSource = page.url %}
         {% set newsletterTitle = "Want the newsletter version of these articles?" %}
@@ -190,6 +205,50 @@ layout: base.njk
             gap: 0.85rem;
             align-items: center;
         }
+        .post-topic-cluster {
+            margin-top: 2.75rem;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            background: #fff;
+            border: 1px solid rgba(15, 107, 85, 0.14);
+            box-shadow: 0 18px 45px rgba(15, 49, 40, 0.06);
+        }
+        .post-topic-kicker {
+            margin: 0 0 0.5rem;
+            color: #0f766e !important;
+            font-size: 0.78rem !important;
+            font-weight: 850;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .post-topic-cluster h2 {
+            margin: 0 0 1rem;
+            color: #18212f;
+            font-size: 1.45rem;
+            line-height: 1.15;
+        }
+        .post-topic-links {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.75rem;
+        }
+        .post-topic-links a {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding: 0.85rem 1rem;
+            border: 1px solid rgba(15, 107, 85, 0.14);
+            border-radius: 0.85rem;
+            color: #0f6b55;
+            font-weight: 800;
+            text-decoration: none;
+            background: #f7fbf8;
+        }
+        .post-topic-links a:hover {
+            border-color: rgba(16, 185, 129, 0.38);
+            text-decoration: underline;
+        }
         .post-author-box {
             margin-top: 3rem;
             padding: 1.5rem;
@@ -280,6 +339,9 @@ layout: base.njk
             .post-conversion-actions a {
                 width: 100%;
                 justify-content: center;
+            }
+            .post-topic-links {
+                grid-template-columns: 1fr;
             }
         }
         </style>

@@ -1,0 +1,420 @@
+---
+layout: base.njk
+pagination:
+  data: seoResourcePages
+  size: 1
+  alias: resource
+permalink: "{{ resource.permalink }}"
+eleventyExcludeFromCollections: true
+eleventyComputed:
+  title: "{{ resource.metaTitle }}"
+  description: "{{ resource.metaDescription }}"
+  keywords: "{{ resource.title }}, School BCBA, BCBA in schools, FBA BIP support, PBIS, school behavior systems"
+  image: "/public/images/rob-speaking-calaba.jpg"
+  seo:
+    metaTitle: "{{ resource.metaTitle }}"
+    metaDesc: "{{ resource.metaDescription }}"
+    socialImage: "/public/images/rob-speaking-calaba.jpg"
+---
+
+<main class="resource-page">
+  <section class="resource-hero">
+    <div class="resource-wrap resource-hero-grid">
+      <div>
+        <p class="resource-kicker">{{ resource.kicker }}</p>
+        <h1>{{ resource.heading }}</h1>
+        <p class="resource-lede">{{ resource.lede }}</p>
+        <div class="resource-actions">
+          <a class="resource-button resource-button-primary" href="{{ resource.primaryCta.url }}">{{ resource.primaryCta.label }}</a>
+          <a class="resource-button resource-button-secondary" href="{{ resource.secondaryCta.url }}">{{ resource.secondaryCta.label }}</a>
+        </div>
+      </div>
+      <aside class="resource-hero-card" aria-label="{{ resource.title }} quick framework">
+        <p class="resource-card-kicker">Practical Framework</p>
+        <h2>What to make clear first</h2>
+        <ul>
+          {% for item in resource.checklist %}
+          {% if loop.index <= 4 %}
+          <li>{{ item }}</li>
+          {% endif %}
+          {% endfor %}
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <section class="resource-body resource-wrap">
+    <div class="resource-main">
+      {% for section in resource.sections %}
+      <section class="resource-section-card">
+        <span class="resource-step">{{ loop.index }}</span>
+        <div>
+          <h2>{{ section.heading }}</h2>
+          <p>{{ section.body }}</p>
+        </div>
+      </section>
+      {% endfor %}
+
+      <section class="resource-section-card resource-checklist-card">
+        <span class="resource-step"><i class="fas fa-check" aria-hidden="true"></i></span>
+        <div>
+          <h2>{{ resource.title }} checklist</h2>
+          <ul>
+            {% for item in resource.checklist %}
+            <li>{{ item }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </section>
+
+      <section class="resource-section-card resource-faq-card">
+        <span class="resource-step">?</span>
+        <div>
+          <h2>Questions this page answers</h2>
+          <div class="resource-faq-list">
+            {% for faq in resource.faqs %}
+            <details>
+              <summary>{{ faq.question }}</summary>
+              <p>{{ faq.answer }}</p>
+            </details>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="resource-sidebar">
+      <div class="resource-side-card">
+        <p class="resource-card-kicker">Related Articles</p>
+        {% for post in resource.relatedPosts %}
+        <a href="{{ post.url }}">{{ post.title }}</a>
+        {% endfor %}
+      </div>
+
+      <div class="resource-side-card">
+        <p class="resource-card-kicker">Related Resources</p>
+        {% for related in resource.relatedResources %}
+        <a href="{{ related.url }}">{{ related.title }}</a>
+        {% endfor %}
+      </div>
+
+      <div class="resource-side-card resource-side-cta">
+        <p class="resource-card-kicker">Next Step</p>
+        <h2>Build the system behind the support.</h2>
+        <p>Use the 6-week Transformation Program to turn role clarity, referrals, coaching, and implementation into a working school behavior system.</p>
+        <a class="resource-button resource-button-primary" href="/transformation-program/">View the Program</a>
+      </div>
+    </aside>
+  </section>
+
+  <section class="resource-bottom-cta">
+    <div class="resource-wrap resource-bottom-grid">
+      <div>
+        <p class="resource-kicker">School BCBA Systems Letter</p>
+        <h2>Get practical implementation prompts by email.</h2>
+        <p>Each issue turns one school behavior systems idea into a short action step for BCBAs, educators, and district teams.</p>
+      </div>
+      <div>
+        {% set newsletterId = resource.slug %}
+        {% set newsletterSource = resource.permalink %}
+        {% set newsletterTitle = "Get the next School BCBA systems article by email." %}
+        {% set newsletterDescription = "Practical implementation prompts for school behavior systems, FBA/BIP workflows, PBIS support, and sustainable BCBA practice." %}
+        {% include "newsletter-signup.njk" %}
+      </div>
+    </div>
+  </section>
+</main>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {% for faq in resource.faqs %}
+    {
+      "@type": "Question",
+      "name": {{ faq.question | dump | safe }},
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ faq.answer | dump | safe }}
+      }
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+
+<style>
+  .resource-page {
+    background:
+      radial-gradient(circle at top left, rgba(16, 185, 129, 0.13), transparent 34rem),
+      linear-gradient(180deg, #f7fbf8 0%, #ffffff 42%, #f4f8f5 100%);
+    color: #17231f;
+  }
+
+  .resource-wrap {
+    width: min(1120px, calc(100% - 32px));
+    margin: 0 auto;
+  }
+
+  .resource-hero {
+    padding: clamp(4rem, 8vw, 7rem) 0 clamp(2.5rem, 5vw, 4.25rem);
+    background:
+      linear-gradient(to right, rgba(16, 185, 129, 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(16, 185, 129, 0.06) 1px, transparent 1px);
+    background-size: 42px 42px;
+  }
+
+  .resource-hero-grid,
+  .resource-body,
+  .resource-bottom-grid {
+    display: grid;
+    gap: clamp(1.4rem, 4vw, 3rem);
+  }
+
+  .resource-hero-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 0.46fr);
+    align-items: center;
+  }
+
+  .resource-kicker,
+  .resource-card-kicker {
+    color: #0f8a69;
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0.14em;
+    margin: 0 0 0.9rem;
+    text-transform: uppercase;
+  }
+
+  .resource-hero h1 {
+    max-width: 900px;
+    margin: 0;
+    color: #10231f;
+    font-size: clamp(2.8rem, 7vw, 5.8rem);
+    line-height: 0.95;
+    letter-spacing: 0;
+  }
+
+  .resource-lede {
+    max-width: 760px;
+    margin: 1.4rem 0 0;
+    color: #4e5f59;
+    font-size: clamp(1.08rem, 2vw, 1.28rem);
+    line-height: 1.72;
+  }
+
+  .resource-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    margin-top: 2rem;
+  }
+
+  .resource-button {
+    align-items: center;
+    border-radius: 999px;
+    display: inline-flex;
+    font-weight: 850;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0.85rem 1.2rem;
+    text-decoration: none;
+  }
+
+  .resource-button-primary {
+    background: #0f8a69;
+    color: #fff;
+    box-shadow: 0 18px 42px rgba(15, 138, 105, 0.22);
+  }
+
+  .resource-button-secondary {
+    background: #fff;
+    border: 1px solid rgba(15, 107, 85, 0.22);
+    color: #123628;
+  }
+
+  .resource-hero-card,
+  .resource-section-card,
+  .resource-side-card {
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(15, 107, 85, 0.14);
+    border-radius: 24px;
+    box-shadow: 0 24px 70px rgba(15, 49, 40, 0.08);
+  }
+
+  .resource-hero-card {
+    padding: 1.6rem;
+  }
+
+  .resource-hero-card h2,
+  .resource-side-cta h2 {
+    margin: 0 0 1rem;
+    color: #10231f;
+    font-size: 1.45rem;
+    line-height: 1.15;
+  }
+
+  .resource-hero-card ul,
+  .resource-checklist-card ul {
+    display: grid;
+    gap: 0.8rem;
+    margin: 0;
+    padding: 0 0 0 1.1rem;
+    color: #4e5f59;
+    line-height: 1.55;
+  }
+
+  .resource-body {
+    grid-template-columns: minmax(0, 1fr) 330px;
+    align-items: start;
+    padding: clamp(2rem, 5vw, 4rem) 0;
+  }
+
+  .resource-main,
+  .resource-sidebar {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .resource-sidebar {
+    position: sticky;
+    top: 1rem;
+  }
+
+  .resource-section-card {
+    display: grid;
+    grid-template-columns: 3rem 1fr;
+    gap: 1.1rem;
+    padding: clamp(1.25rem, 3vw, 2rem);
+  }
+
+  .resource-step {
+    align-items: center;
+    background: #dffbf0;
+    border-radius: 999px;
+    color: #0f6b55;
+    display: inline-flex;
+    font-weight: 900;
+    height: 3rem;
+    justify-content: center;
+    width: 3rem;
+  }
+
+  .resource-section-card h2 {
+    margin: 0 0 0.6rem;
+    color: #10231f;
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
+    line-height: 1.15;
+  }
+
+  .resource-section-card p {
+    margin: 0;
+    color: #4e5f59;
+    font-size: 1.04rem;
+    line-height: 1.78;
+  }
+
+  .resource-side-card {
+    display: grid;
+    gap: 0.85rem;
+    padding: 1.25rem;
+  }
+
+  .resource-side-card a {
+    color: #0f6b55;
+    font-weight: 800;
+    line-height: 1.35;
+    text-decoration: none;
+  }
+
+  .resource-side-card a:hover {
+    text-decoration: underline;
+  }
+
+  .resource-side-card p {
+    color: #5a6a64;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .resource-faq-list {
+    display: grid;
+    gap: 0.65rem;
+  }
+
+  .resource-faq-list details {
+    background: #f7fbf8;
+    border: 1px solid rgba(15, 107, 85, 0.12);
+    border-radius: 16px;
+    padding: 1rem;
+  }
+
+  .resource-faq-list summary {
+    color: #123628;
+    cursor: pointer;
+    font-weight: 850;
+  }
+
+  .resource-faq-list p {
+    margin-top: 0.75rem;
+  }
+
+  .resource-bottom-cta {
+    padding: 0 0 clamp(3rem, 6vw, 5rem);
+  }
+
+  .resource-bottom-grid {
+    align-items: center;
+    background: linear-gradient(135deg, rgba(6, 78, 59, 0.97), rgba(16, 185, 129, 0.9));
+    border-radius: 28px;
+    color: #fff;
+    grid-template-columns: minmax(0, 0.9fr) minmax(340px, 1fr);
+    padding: clamp(1.3rem, 4vw, 2.2rem);
+  }
+
+  .resource-bottom-grid .resource-kicker,
+  .resource-bottom-grid h2,
+  .resource-bottom-grid p {
+    color: #fff;
+  }
+
+  .resource-bottom-grid h2 {
+    margin: 0 0 0.65rem;
+    font-size: clamp(1.6rem, 3vw, 2.35rem);
+    line-height: 1.1;
+  }
+
+  .resource-bottom-grid p {
+    color: rgba(255, 255, 255, 0.82);
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  .resource-bottom-grid .newsletter-signup {
+    margin: 0;
+  }
+
+  @media (max-width: 860px) {
+    .resource-hero-grid,
+    .resource-body,
+    .resource-bottom-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .resource-sidebar {
+      position: static;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .resource-section-card {
+      grid-template-columns: 1fr;
+    }
+
+    .resource-actions .resource-button,
+    .resource-side-cta .resource-button {
+      width: 100%;
+    }
+  }
+</style>

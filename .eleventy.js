@@ -75,6 +75,11 @@ module.exports = function(eleventyConfig) {
 
   // Pass-through copies for static assets
   eleventyConfig.addPassthroughCopy("src/public");
+  eleventyConfig.addPassthroughCopy({ "src/favicon.png": "favicon.png" });
+  eleventyConfig.addPassthroughCopy({ "src/public/css": "css" });
+  eleventyConfig.addPassthroughCopy({ "src/public/js": "js" });
+  eleventyConfig.addPassthroughCopy({ "src/public/email-capture.css": "email-capture.css" });
+  eleventyConfig.addPassthroughCopy({ "src/public/email-capture.js": "email-capture.js" });
   eleventyConfig.addPassthroughCopy({ "src/public/family-command.webmanifest": "family-command.webmanifest" });
   eleventyConfig.addPassthroughCopy({ "src/public/family-command-sw.js": "family-command-sw.js" });
   eleventyConfig.addPassthroughCopy("src/*.css");
@@ -150,6 +155,10 @@ module.exports = function(eleventyConfig) {
 
   eleventyConfig.addFilter("json", function(value) {
     return JSON.stringify(value);
+  });
+
+  eleventyConfig.addFilter("isArray", function(value) {
+    return Array.isArray(value);
   });
 
   // Custom Markdown Settings

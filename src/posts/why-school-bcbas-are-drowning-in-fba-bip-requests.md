@@ -16,6 +16,15 @@ keywords:
   - BIP
   - school behavior support
   - functional behavior assessment
+resourceLinks:
+  - label: FBA and BIP Support
+    url: /fba-bip-support/
+  - label: School Behavior Systems
+    url: /school-behavior-systems/
+  - label: PBIS and BCBAs
+    url: /pbis-and-bcbas/
+  - label: School BCBA Resource Hub
+    url: /school-bcba/
 permalink: /blog/school-bcba-fba-bip-requests/
 ---
 If you spend time around school-based BCBAs right now, the same theme keeps showing up:

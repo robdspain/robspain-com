@@ -8,6 +8,15 @@ tags:
   - systems-thinking
   - school-behavior
   - leadership
+resourceLinks:
+  - label: School Behavior Systems
+    url: /school-behavior-systems/
+  - label: BCBA in Schools
+    url: /bcba-in-schools/
+  - label: School BCBA Resource Hub
+    url: /school-bcba/
+  - label: FBA and BIP Support
+    url: /fba-bip-support/
 permalink: /blog/the-myth-of-the-behavior-kid/
 ---
 

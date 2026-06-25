@@ -16,6 +16,15 @@ keywords:
   - BCBA in schools
   - school based BCBA responsibilities
   - BCBA teacher collaboration
+resourceLinks:
+  - label: School BCBA Resource Hub
+    url: /school-bcba/
+  - label: BCBA in Schools
+    url: /bcba-in-schools/
+  - label: School Behavior Systems
+    url: /school-behavior-systems/
+  - label: BCBA Burnout
+    url: /bcba-burnout/
 permalink: /blog/what-does-a-school-bcba-do/
 ---
 If you ask ten people what a school BCBA does, you may get ten different answers.

@@ -1,0 +1,284 @@
+[
+  {
+    "slug": "school-bcba",
+    "permalink": "/school-bcba/",
+    "title": "School BCBA",
+    "metaTitle": "School BCBA Resources | Role, Systems, Training, and Support",
+    "metaDescription": "A practical guide to the School BCBA role, including systems leadership, FBA/BIP workflows, PBIS support, educator coaching, and sustainable implementation.",
+    "kicker": "School BCBA Resource Hub",
+    "heading": "School BCBA work is systems work.",
+    "lede": "A strong School BCBA does more than respond to crises or write behavior plans. The role is most useful when it helps adults build predictable, teachable, and sustainable behavior systems across classrooms, teams, and tiers of support.",
+    "primaryCta": { "label": "Read the Role Guide", "url": "/blog/what-does-a-school-bcba-do/" },
+    "secondaryCta": { "label": "Explore the Program", "url": "/transformation-program/" },
+    "sections": [
+      {
+        "heading": "What a School BCBA actually contributes",
+        "body": "In public schools, behavior problems rarely sit inside one student alone. A School BCBA helps teams clarify the environment, routines, reinforcement patterns, data signals, staff support needs, and implementation barriers that shape student behavior. That means the work includes assessment, coaching, prevention, collaboration, and system design."
+      },
+      {
+        "heading": "The role should not become a crisis pipeline",
+        "body": "When every difficult behavior turns into an urgent FBA request, the BCBA becomes the bottleneck. A healthier model uses clear triage, Tier 1 and Tier 2 routines, practical teacher consultation, and reserved Tier 3 assessment capacity for students who truly need intensive individualized support."
+      },
+      {
+        "heading": "What schools need from the role",
+        "body": "Schools need BCBAs who can translate behavior analysis into routines educators can actually use. That includes shorter feedback loops, simple fidelity checks, team decision rules, function-based supports, and coaching that respects the realities of classrooms."
+      }
+    ],
+    "checklist": [
+      "Clear referral and triage process before FBA/BIP work starts",
+      "Defined BCBA role across Tier 1, Tier 2, and Tier 3",
+      "Teacher coaching routines that support implementation",
+      "Data habits that help teams adjust early",
+      "Leadership agreement about prevention, not just crisis response"
+    ],
+    "relatedPosts": [
+      { "title": "What Does a School BCBA Actually Do?", "url": "/blog/what-does-a-school-bcba-do/" },
+      { "title": "Why School BCBAs Are Drowning in FBA and BIP Requests", "url": "/blog/school-bcba-fba-bip-requests/" },
+      { "title": "The School BCBA Crisis: Why So Many Behavior Analysts Burn Out", "url": "/posts/the-school-bcba-crisis-burnout-prevention/" }
+    ],
+    "relatedResources": [
+      { "title": "Rob Spain CV and Presentations", "url": "/cv/" },
+      { "title": "Behavior School", "url": "https://behaviorschool.com" }
+    ],
+    "faqs": [
+      { "question": "What is a School BCBA?", "answer": "A School BCBA is a board certified behavior analyst who works in educational settings to support students, educators, and teams through assessment, intervention design, coaching, data review, and behavior system development." },
+      { "question": "Is a School BCBA only responsible for FBA and BIP paperwork?", "answer": "No. FBA and BIP work is part of the role, but the strongest School BCBA work includes prevention, team consultation, PBIS support, educator coaching, and implementation routines." },
+      { "question": "How can a district use a School BCBA more effectively?", "answer": "Districts can use a School BCBA more effectively by defining the role across tiers, creating referral decision rules, protecting coaching time, and using data to decide when individualized assessment is needed." }
+    ]
+  },
+  {
+    "slug": "bcba-in-schools",
+    "permalink": "/bcba-in-schools/",
+    "title": "BCBA in Schools",
+    "metaTitle": "BCBA in Schools | Practical Role Guide for Education Teams",
+    "metaDescription": "How BCBAs work in schools, including collaboration with educators, PBIS teams, special education, FBA/BIP workflows, coaching, and district behavior systems.",
+    "kicker": "BCBA in Schools",
+    "heading": "A BCBA in schools has to translate behavior science into daily routines.",
+    "lede": "School settings require a different kind of behavior analytic practice. The work has to fit classrooms, IEP teams, schedules, staffing realities, PBIS systems, and the language educators already use.",
+    "primaryCta": { "label": "Read the School BCBA Guide", "url": "/blog/what-does-a-school-bcba-do/" },
+    "secondaryCta": { "label": "View Presentations", "url": "/cv/#presentations" },
+    "sections": [
+      {
+        "heading": "The school setting changes the job",
+        "body": "A BCBA in schools works through adults, teams, routines, and systems. The question is not only what intervention might work. The question is what intervention can be taught, supported, measured, and maintained in a real classroom."
+      },
+      {
+        "heading": "Collaboration is not optional",
+        "body": "The school BCBA role depends on collaboration with teachers, administrators, school psychologists, speech-language pathologists, counselors, families, and paraprofessionals. Better outcomes come from shared routines and clear decisions, not isolated expert recommendations."
+      },
+      {
+        "heading": "The goal is capacity, not dependence",
+        "body": "If every behavior question requires the BCBA to personally solve it, the system will stay overwhelmed. The best school-based behavior work builds staff capacity through repeatable tools, coaching, and decision-making routines."
+      }
+    ],
+    "checklist": [
+      "Use educator-friendly language without watering down behavior analysis",
+      "Build support around classroom routines, not abstract plans",
+      "Clarify when consultation, coaching, or formal assessment is needed",
+      "Help teams measure implementation, not only student behavior",
+      "Create systems that continue when the BCBA is not in the room"
+    ],
+    "relatedPosts": [
+      { "title": "The Myth of the Behavior Kid", "url": "/blog/the-myth-of-the-behavior-kid/" },
+      { "title": "What Does a School BCBA Actually Do?", "url": "/blog/what-does-a-school-bcba-do/" },
+      { "title": "Why School BCBAs Are Drowning in FBA and BIP Requests", "url": "/blog/school-bcba-fba-bip-requests/" }
+    ],
+    "relatedResources": [
+      { "title": "Transformation Program", "url": "/transformation-program/" },
+      { "title": "AI for BCBAs Course", "url": "https://behaviorlive.com/courses/ai-for-bcbas-building-custom-tools-to-bridge-practice-and-research1" }
+    ],
+    "faqs": [
+      { "question": "What does a BCBA do in schools?", "answer": "A BCBA in schools supports assessment, behavior planning, staff coaching, data review, PBIS alignment, special education teams, and implementation systems." },
+      { "question": "How is school-based BCBA work different from clinic work?", "answer": "School-based work is less about direct control of the environment and more about helping educators implement practical routines across complex classrooms and teams." },
+      { "question": "Should a BCBA in schools focus only on intensive students?", "answer": "No. Intensive student support matters, but BCBAs are often most effective when they also strengthen prevention, targeted supports, and staff capacity across tiers." }
+    ]
+  },
+  {
+    "slug": "fba-bip-support",
+    "permalink": "/fba-bip-support/",
+    "title": "FBA and BIP Support",
+    "metaTitle": "FBA and BIP Support | School BCBA Systems for Behavior Plans",
+    "metaDescription": "Practical FBA and BIP support for schools, including referral triage, function-based planning, educator coaching, implementation checks, and tiered behavior systems.",
+    "kicker": "FBA and BIP Support",
+    "heading": "FBA and BIP support should produce implementation, not just paperwork.",
+    "lede": "Functional behavior assessments and behavior intervention plans matter, but they only help when the team can use them. Schools need a workflow that connects assessment, planning, coaching, and data-based revision.",
+    "primaryCta": { "label": "Read the FBA/BIP Systems Article", "url": "/blog/school-bcba-fba-bip-requests/" },
+    "secondaryCta": { "label": "Build the Workflow", "url": "/transformation-program/" },
+    "sections": [
+      {
+        "heading": "The bottleneck is usually the system",
+        "body": "When FBA and BIP requests pile up, the issue is often weak triage and thin lower-tier supports. Teams need a way to decide what can be solved with classroom routines, what needs targeted support, and what requires a formal individualized assessment."
+      },
+      {
+        "heading": "Function-based support belongs across tiers",
+        "body": "Function-based thinking can improve universal routines, targeted interventions, and individualized plans. Reserving it only for the most serious cases leaves teachers without tools until the problem has already escalated."
+      },
+      {
+        "heading": "A useful BIP is coachable",
+        "body": "A behavior plan should be specific enough to guide action and simple enough to implement. That means observable routines, clear adult responses, reinforcement plans, replacement behavior teaching, and a plan for checking fidelity."
+      }
+    ],
+    "checklist": [
+      "Referral question is clear before assessment starts",
+      "Team knows what has already been tried and measured",
+      "FBA identifies conditions the team can actually adjust",
+      "BIP includes replacement teaching and adult implementation steps",
+      "Follow-up dates and fidelity checks are scheduled before the meeting ends"
+    ],
+    "relatedPosts": [
+      { "title": "Why School BCBAs Are Drowning in FBA and BIP Requests", "url": "/blog/school-bcba-fba-bip-requests/" },
+      { "title": "What Does a School BCBA Actually Do?", "url": "/blog/what-does-a-school-bcba-do/" },
+      { "title": "The Myth of the Behavior Kid", "url": "/blog/the-myth-of-the-behavior-kid/" }
+    ],
+    "relatedResources": [
+      { "title": "CALABA 2026: Beyond Observable Behavior", "url": "/calaba-2026/" },
+      { "title": "Transformation Program", "url": "/transformation-program/" }
+    ],
+    "faqs": [
+      { "question": "What makes FBA and BIP support effective?", "answer": "Effective support connects assessment to implementable routines, staff coaching, fidelity checks, and data-based follow-up." },
+      { "question": "Why do schools get overwhelmed with FBA requests?", "answer": "Schools often become overwhelmed when every behavior concern moves straight to Tier 3 paperwork instead of passing through a clear tiered support and triage process." },
+      { "question": "What should happen after a BIP is written?", "answer": "The team should teach the plan to implementers, check fidelity, monitor student response, and revise the plan based on data." }
+    ]
+  },
+  {
+    "slug": "pbis-and-bcbas",
+    "permalink": "/pbis-and-bcbas/",
+    "title": "PBIS and BCBAs",
+    "metaTitle": "PBIS and BCBAs | How School BCBAs Support PBIS Systems",
+    "metaDescription": "How BCBAs support PBIS in schools through data, practices, systems, staff coaching, fidelity checks, and tiered behavior support.",
+    "kicker": "PBIS and BCBAs",
+    "heading": "PBIS works better when BCBAs support the system, not just individual cases.",
+    "lede": "PBIS gives schools a structure for prevention, teaching, reinforcement, and data-based decisions. BCBAs can strengthen that structure when their expertise is connected to team routines across Tier 1, Tier 2, and Tier 3.",
+    "primaryCta": { "label": "View the CALABA PBIS Panel", "url": "/presentations/calaba-2026-pbis-panel/" },
+    "secondaryCta": { "label": "Read the PBIS CA Session", "url": "/presentations/pbis-ca-2025-bcbas-pbis/" },
+    "sections": [
+      {
+        "heading": "BCBAs can strengthen PBIS data systems",
+        "body": "Behavior analysts can help teams define behaviors clearly, interpret patterns, monitor fidelity, and make decisions before problems become intensive. The goal is to improve team action, not create more complex spreadsheets."
+      },
+      {
+        "heading": "PBIS needs coaching, not just expectations posters",
+        "body": "Strong PBIS implementation depends on adult behavior. BCBAs can support staff practice through modeling, feedback, reinforcement routines, and practical classroom systems."
+      },
+      {
+        "heading": "Tier 3 should connect back to the system",
+        "body": "Individualized support should not sit outside PBIS. FBA/BIP workflows, targeted interventions, and schoolwide routines should inform each other so teams learn from intensive cases and strengthen prevention."
+      }
+    ],
+    "checklist": [
+      "PBIS team uses data to choose priorities",
+      "Staff know what practices look like in classrooms",
+      "Coaching routines support implementation fidelity",
+      "Tier 2 interventions are available before crisis escalation",
+      "Tier 3 plans connect back to schoolwide expectations and supports"
+    ],
+    "relatedPosts": [
+      { "title": "Why School BCBAs Are Drowning in FBA and BIP Requests", "url": "/blog/school-bcba-fba-bip-requests/" },
+      { "title": "What Does a School BCBA Actually Do?", "url": "/blog/what-does-a-school-bcba-do/" },
+      { "title": "The School BCBA Crisis: Why So Many Behavior Analysts Burn Out", "url": "/posts/the-school-bcba-crisis-burnout-prevention/" }
+    ],
+    "relatedResources": [
+      { "title": "CALABA 2026 PBIS Panel", "url": "/presentations/calaba-2026-pbis-panel/" },
+      { "title": "PBIS CA 2025 Presentation", "url": "/presentations/pbis-ca-2025-bcbas-pbis/" }
+    ],
+    "faqs": [
+      { "question": "How can BCBAs support PBIS?", "answer": "BCBAs can support PBIS by strengthening data systems, coaching staff, clarifying practices, supporting fidelity, and aligning individualized supports with the larger tiered system." },
+      { "question": "Does PBIS replace FBA and BIP work?", "answer": "No. PBIS creates a tiered prevention and support structure, while FBA and BIP work remains important for students who need individualized assessment and intervention." },
+      { "question": "Should BCBAs be on PBIS teams?", "answer": "Often, yes. A BCBA can help PBIS teams use behavior science practically, especially around data interpretation, reinforcement systems, implementation fidelity, and intensive support workflows." }
+    ]
+  },
+  {
+    "slug": "school-behavior-systems",
+    "permalink": "/school-behavior-systems/",
+    "title": "School Behavior Systems",
+    "metaTitle": "School Behavior Systems | Practical Frameworks for BCBAs and Teams",
+    "metaDescription": "Build school behavior systems that reduce crisis response through prevention, referral triage, coaching, data routines, PBIS alignment, and implementation support.",
+    "kicker": "School Behavior Systems",
+    "heading": "Better behavior support starts with the system around the student.",
+    "lede": "Schools get better outcomes when behavior support is organized as a system: clear routines, early support, shared data, educator coaching, and a way to move between tiers without waiting for crisis.",
+    "primaryCta": { "label": "Explore the Transformation Program", "url": "/transformation-program/" },
+    "secondaryCta": { "label": "Read the Blog", "url": "/blog/" },
+    "sections": [
+      {
+        "heading": "Systems reduce repeated crisis response",
+        "body": "Without a system, teams rely on urgency. The same students get discussed repeatedly, teachers wait too long for support, and BCBAs spend their time reacting. A system creates predictable pathways for support before the work becomes an emergency."
+      },
+      {
+        "heading": "A useful system has decision rules",
+        "body": "Teams need to know when to use classroom consultation, when to start a targeted intervention, when to request FBA/BIP support, and when to revise a plan. Decision rules reduce confusion and help staff trust the process."
+      },
+      {
+        "heading": "Implementation is the center",
+        "body": "The best framework is only useful if adults can use it. School behavior systems should include implementation checks, coaching routines, simple tools, and leadership follow-through."
+      }
+    ],
+    "checklist": [
+      "Shared language for behavior support across teams",
+      "Referral triage that protects BCBA time",
+      "Tier 2 routines for common patterns",
+      "FBA/BIP workflow with coaching and follow-up",
+      "Progress monitoring that includes implementation"
+    ],
+    "relatedPosts": [
+      { "title": "The Myth of the Behavior Kid", "url": "/blog/the-myth-of-the-behavior-kid/" },
+      { "title": "Why School BCBAs Are Drowning in FBA and BIP Requests", "url": "/blog/school-bcba-fba-bip-requests/" },
+      { "title": "What Does a School BCBA Actually Do?", "url": "/blog/what-does-a-school-bcba-do/" }
+    ],
+    "relatedResources": [
+      { "title": "Transformation Program", "url": "/transformation-program/" },
+      { "title": "Behavior School", "url": "https://behaviorschool.com" }
+    ],
+    "faqs": [
+      { "question": "What is a school behavior system?", "answer": "A school behavior system is a set of routines, decision rules, supports, data habits, and coaching practices that help teams prevent and respond to behavior needs consistently." },
+      { "question": "How is a behavior system different from a behavior plan?", "answer": "A behavior plan supports an individual student. A behavior system helps the school decide how support is requested, delivered, implemented, monitored, and improved across students and classrooms." },
+      { "question": "Why do school behavior systems reduce burnout?", "answer": "They reduce burnout by making support more predictable, distributing responsibility across teams, and reducing the repeated crisis cycles that leave educators and BCBAs overwhelmed." }
+    ]
+  },
+  {
+    "slug": "bcba-burnout",
+    "permalink": "/bcba-burnout/",
+    "title": "BCBA Burnout",
+    "metaTitle": "BCBA Burnout in Schools | Prevention Through Systems Leadership",
+    "metaDescription": "Understand school BCBA burnout and how prevention systems, role clarity, workload triage, coaching routines, and leadership support can reduce it.",
+    "kicker": "BCBA Burnout",
+    "heading": "BCBA burnout is often a systems signal.",
+    "lede": "When school BCBAs are overloaded, isolated, and pulled from crisis to crisis, the answer is not just better self-care. The work has to be redesigned so the role is clear, supported, and sustainable.",
+    "primaryCta": { "label": "Read the Burnout Article", "url": "/posts/the-school-bcba-crisis-burnout-prevention/" },
+    "secondaryCta": { "label": "Build Sustainable Systems", "url": "/transformation-program/" },
+    "sections": [
+      {
+        "heading": "Burnout grows when the role is unclear",
+        "body": "If a BCBA is expected to handle every crisis, every FBA, every staff concern, every parent question, and every implementation problem, the job becomes impossible. Role clarity protects quality and sustainability."
+      },
+      {
+        "heading": "Workload has to be triaged",
+        "body": "Not every concern needs the same level of support. A sustainable model separates consultation, targeted support, formal assessment, direct coaching, and leadership work so urgent requests do not consume the entire role."
+      },
+      {
+        "heading": "Prevention is a workload strategy",
+        "body": "Prevention systems are not just good for students. They protect staff and BCBA capacity by reducing repeated crises, improving implementation, and making support easier to access earlier."
+      }
+    ],
+    "checklist": [
+      "Clear agreement on what the BCBA role includes and excludes",
+      "Protected time for coaching and systems work",
+      "Referral triage before urgent FBA/BIP requests",
+      "Leadership support for implementation follow-through",
+      "Data review that monitors workload and outcomes"
+    ],
+    "relatedPosts": [
+      { "title": "The School BCBA Crisis: Why So Many Behavior Analysts Burn Out", "url": "/posts/the-school-bcba-crisis-burnout-prevention/" },
+      { "title": "Why School BCBAs Are Drowning in FBA and BIP Requests", "url": "/blog/school-bcba-fba-bip-requests/" },
+      { "title": "What Does a School BCBA Actually Do?", "url": "/blog/what-does-a-school-bcba-do/" }
+    ],
+    "relatedResources": [
+      { "title": "Transformation Program", "url": "/transformation-program/" },
+      { "title": "School Behavior Systems", "url": "/school-behavior-systems/" }
+    ],
+    "faqs": [
+      { "question": "Why do school BCBAs burn out?", "answer": "School BCBAs often burn out when they have unclear roles, overwhelming reactive caseloads, weak implementation support, isolation, and limited authority to build preventive systems." },
+      { "question": "Can systems work reduce BCBA burnout?", "answer": "Yes. Clear triage, prevention routines, coaching systems, and leadership alignment can reduce repeated crisis response and make the role more sustainable." },
+      { "question": "Is BCBA burnout only an individual self-care issue?", "answer": "No. Self-care matters, but burnout often reflects workload design, role expectations, support systems, and organizational conditions." }
+    ]
+  }
+]

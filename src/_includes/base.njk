@@ -10,7 +10,7 @@
     <title>{{ resolvedTitle }}</title>
     <meta name="description" content="{{ resolvedDescription }}">
     {% if keywords %}
-    <meta name="keywords" content="{{ keywords | join(', ') }}">
+    <meta name="keywords" content="{% if keywords | isArray %}{{ keywords | join(', ') }}{% else %}{{ keywords }}{% endif %}">
     {% endif %}
     <meta name="robots" content="index, follow">
     <meta name="author" content="Rob Spain, BCBA, IBA">
@@ -101,6 +101,9 @@
           "sameAs": [
             "https://www.linkedin.com/in/robspain/",
             "https://twitter.com/robspainBCBA",
+            "https://www.youtube.com/@BehaviorSchool",
+            "https://www.instagram.com/robdspain/",
+            "https://www.facebook.com/people/Rob-Spain-BCBA-IBA/61572496964176/",
             "https://behaviorschool.com"
           ]
         },
@@ -177,21 +180,18 @@
     {
       "@context": "https://schema.org",
       "@type": "BlogPosting",
-      "mainEntityOfPage": "{{ resolvedUrl | absoluteUrl }}",
-      "headline": "{{ resolvedTitle }}",
+      "@id": "{{ resolvedUrl | absoluteUrl }}#blogposting",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "{{ resolvedUrl | absoluteUrl }}#webpage",
+        "url": "{{ resolvedUrl | absoluteUrl }}"
+      },
+      "headline": {{ resolvedTitle | json | safe }},
       "image": ["{{ resolvedImage | absoluteUrl }}"],
       "datePublished": "{{ date.toISOString() }}",
       "dateModified": "{{ date.toISOString() }}",
       "author": {
-        "@type": "Person",
-        "name": "Rob Spain",
-        "url": "https://robspain.com/cv/",
-        "jobTitle": "School BCBA",
-        "sameAs": [
-          "https://www.linkedin.com/in/robspain/",
-          "https://twitter.com/robspainBCBA",
-          "https://behaviorschool.com"
-        ]
+        "@id": "https://robspain.com/#rob-spain"
       },
       "publisher": {
         "@type": "Organization",
@@ -201,8 +201,27 @@
           "url": "https://robspain.com/public/images/icon/robspain-icon.png"
         }
       },
-      "description": "{{ resolvedDescription }}"{% if tags or keywords %},
-      "keywords": "{{ (tags or keywords) | join(', ') }}"{% endif %}
+      "description": {{ resolvedDescription | json | safe }},
+      "isPartOf": {
+        "@type": "Blog",
+        "@id": "https://robspain.com/blog/#blog",
+        "name": "School BCBA Blog",
+        "url": "https://robspain.com/blog/"
+      },
+      "about": [
+        "School BCBA",
+        "school-based behavior analysis",
+        "school behavior systems",
+        "PBIS",
+        "FBA and BIP support",
+        "educator coaching"
+      ]{% if tags %},
+      "articleSection": [
+        {% for tag in tags %}
+        {{ tag | json | safe }}{% if not loop.last %},{% endif %}
+        {% endfor %}
+      ]{% endif %}{% if tags or keywords %},
+      "keywords": {% if keywords %}{% if keywords | isArray %}{{ (keywords | join(', ')) | json | safe }}{% else %}{{ keywords | json | safe }}{% endif %}{% else %}{{ (tags | join(', ')) | json | safe }}{% endif %}{% endif %}
     }
     {% else %}
     {
@@ -230,6 +249,9 @@
           "sameAs": [
             "https://www.linkedin.com/in/robspain/",
             "https://twitter.com/robspainBCBA",
+            "https://www.youtube.com/@BehaviorSchool",
+            "https://www.instagram.com/robdspain/",
+            "https://www.facebook.com/people/Rob-Spain-BCBA-IBA/61572496964176/",
             "https://behaviorschool.com"
           ],
           "knowsAbout": [
@@ -540,6 +562,18 @@
                         <a href="/transformation-program/" class="footer-link">
                             <i class="fas fa-rocket"></i>
                             Transformation Program
+                        </a>
+                        <a href="/school-bcba/" class="footer-link">
+                            <i class="fas fa-school"></i>
+                            School BCBA Resource Hub
+                        </a>
+                        <a href="/fba-bip-support/" class="footer-link">
+                            <i class="fas fa-clipboard-check"></i>
+                            FBA and BIP Support
+                        </a>
+                        <a href="/pbis-and-bcbas/" class="footer-link">
+                            <i class="fas fa-layer-group"></i>
+                            PBIS and BCBAs
                         </a>
                         <a href="https://reunifyscience.com" target="_blank" class="footer-link">
                             <i class="fas fa-hands-helping"></i>

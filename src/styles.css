@@ -607,7 +607,7 @@ h2 {
     margin-bottom: 2rem;
 }
 
-.footer-section h4 {
+.footer-section .footer-heading {
     color: #10B981;
     font-size: 1.1rem;
     font-weight: 600;

@@ -35,6 +35,8 @@ class PremiumInteractions {
         const navContent = document.querySelector('.nav-content-premium');
         const mobileMenuBtn = document.createElement('button');
         mobileMenuBtn.className = 'mobile-menu-btn';
+        mobileMenuBtn.setAttribute('aria-label', 'Open navigation menu');
+        mobileMenuBtn.setAttribute('type', 'button');
         mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
 
         // Only add if screen is mobile size
@@ -278,12 +280,13 @@ class PremiumInteractions {
             return null;
         };
 
-        cards.forEach(async (card) => {
+        const loadThumbnail = (card) => {
             const explicitId = card.getAttribute('data-video-id');
             const href = card.getAttribute('href');
             const id = explicitId || getYouTubeId(href);
             const thumb = card.querySelector('.video-thumb');
-            if (!thumb) return;
+            if (!thumb || card.dataset.thumbLoaded === 'true') return;
+            card.dataset.thumbLoaded = 'true';
 
             // Support custom thumbnail via data-thumb (e.g., non-YouTube platforms)
             const dataThumb = card.getAttribute('data-thumb');
@@ -301,23 +304,20 @@ class PremiumInteractions {
                 timg.src = dataThumb;
             } else if (id) {
                 const hq = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
-                const maxres = `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`;
                 // Set HQ first for instant display
                 thumb.style.backgroundImage = `url('${hq}')`;
                 thumb.style.backgroundSize = 'cover';
                 thumb.style.backgroundPosition = 'center';
                 thumb.style.backgroundRepeat = 'no-repeat';
 
-                // Try to upgrade to max resolution if available
-                const testImg = new Image();
-                testImg.onload = () => {
-                    if (testImg.naturalWidth >= 1280) {
-                        thumb.style.backgroundImage = `url('${maxres}')`;
-                    }
-                };
-                testImg.onerror = () => { /* keep HQ */ };
-                testImg.src = maxres;
+                // Avoid probing maxresdefault.jpg; many valid YouTube videos 404 there.
             }
+        };
+
+        cards.forEach(async (card) => {
+            const explicitId = card.getAttribute('data-video-id');
+            const href = card.getAttribute('href');
+            const id = explicitId || getYouTubeId(href);
 
             // Populate title via YouTube oEmbed (if not explicitly provided)
             const titleOverride = card.getAttribute('data-title');
@@ -345,6 +345,21 @@ class PremiumInteractions {
                 titleEl.textContent = 'Video';
             }
         });
+
+        if ('IntersectionObserver' in window) {
+            const thumbnailObserver = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        loadThumbnail(entry.target);
+                        thumbnailObserver.unobserve(entry.target);
+                    }
+                });
+            }, { rootMargin: '450px 0px' });
+
+            cards.forEach((card) => thumbnailObserver.observe(card));
+        } else {
+            cards.forEach(loadThumbnail);
+        }
     }
 
     // Cursor effects removed

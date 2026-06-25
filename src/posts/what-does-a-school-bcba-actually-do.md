@@ -3,7 +3,7 @@ layout: post.njk
 title: "What Does a School BCBA Actually Do?"
 date: 2026-06-10
 image: /public/images/uploads/what-does-a-school-bcba-do.png
-description: A school BCBA is more than an FBA writer or crisis responder. The strongest role is systems partner, adult coach, data translator, and implementation support.
+description: A school BCBA is more than an FBA writer or crisis responder. The strongest role is systems partner, team coach, data translator, and implementation support.
 tags:
   - school-bcba
   - collaboration

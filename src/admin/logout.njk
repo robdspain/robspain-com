@@ -1,0 +1,25 @@
+---
+layout: null
+permalink: /admin/logout/
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Signing out - Rob Spain Admin</title>
+  <script>
+    try {
+      localStorage.removeItem('robspain-admin-auth');
+      sessionStorage.clear();
+    } catch (error) {
+      console.warn('Unable to clear browser storage during logout.', error);
+    }
+    window.location.replace('/admin/');
+  </script>
+</head>
+<body>
+  <p>Signing out. <a href="/admin/">Return to admin login</a>.</p>
+</body>
+</html>

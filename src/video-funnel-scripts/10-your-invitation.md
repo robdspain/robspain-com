@@ -36,4 +36,4 @@ If you want help getting there, I’d be honored to work with you.
 
 Take care of yourself. And I’ll talk to you soon.
 
-**[CTA on screen: robspain.com/transformation-program]**
+**[CTA on screen: https://robspain.com/transformation-program]**

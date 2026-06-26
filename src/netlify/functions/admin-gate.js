@@ -203,6 +203,17 @@ function serveAdminFile(event) {
 }
 
 exports.handler = async (event) => {
+  if (requestedAdminPath(event).replace(/\/+$/, '') === '/logout') {
+    return {
+      statusCode: 302,
+      headers: headers({
+        Location: '/admin/',
+        'Set-Cookie': COOKIE_NAME + '=; Path=/admin; Max-Age=0; HttpOnly; Secure; SameSite=Lax'
+      }),
+      body: ''
+    };
+  }
+
   if (event.httpMethod === 'POST') {
     try {
       const body = JSON.parse(event.body || '{}');

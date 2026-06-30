@@ -1,0 +1,61 @@
+<svg width="1200" height="675" viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">School BCBA vs Clinic BCBA</title>
+  <desc id="desc">A branded comparison graphic showing how clinic ABA skills translate into school BCBA systems work.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#064E3B"/>
+      <stop offset="0.5" stop-color="#0F766E"/>
+      <stop offset="1" stop-color="#14B8A6"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.97"/>
+      <stop offset="1" stop-color="#ECFDF5" stop-opacity="0.91"/>
+    </linearGradient>
+    <filter id="shadow" x="-15%" y="-20%" width="130%" height="145%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#022C22" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <g opacity="0.17" fill="none" stroke="#D1FAE5" stroke-width="2">
+    <path d="M0 132 C170 68 345 198 530 124 S890 64 1200 146"/>
+    <path d="M0 540 C170 475 360 590 575 526 S930 460 1200 555"/>
+    <path d="M178 0 L655 675"/>
+    <path d="M548 0 L1030 675"/>
+    <path d="M0 238 H1200"/>
+    <path d="M0 438 H1200"/>
+  </g>
+  <g transform="translate(82 74)">
+    <text x="0" y="0" fill="#D1FAE5" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="900" letter-spacing="2">BCBA IN SCHOOLS</text>
+    <text x="0" y="68" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="62" font-weight="900">School BCBA vs</text>
+    <text x="0" y="132" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="62" font-weight="900">Clinic BCBA</text>
+    <text x="0" y="184" fill="#D1FAE5" font-family="Inter, Arial, sans-serif" font-size="27" font-weight="750">Same science. Different operating conditions.</text>
+  </g>
+  <g transform="translate(84 315)" filter="url(#shadow)">
+    <rect x="0" y="0" width="318" height="218" rx="22" fill="url(#panel)"/>
+    <circle cx="46" cy="47" r="20" fill="#0EA5E9"/>
+    <text x="78" y="55" fill="#064E3B" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="900">Clinic model</text>
+    <text x="34" y="102" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="750">structured treatment space</text>
+    <text x="34" y="136" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="750">direct supervision routines</text>
+    <text x="34" y="170" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="750">cleaner intervention control</text>
+  </g>
+  <g transform="translate(441 355)" filter="url(#shadow)">
+    <rect x="0" y="0" width="318" height="178" rx="22" fill="url(#panel)"/>
+    <circle cx="46" cy="47" r="20" fill="#F59E0B"/>
+    <text x="78" y="55" fill="#064E3B" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="900">Translation work</text>
+    <text x="34" y="104" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="750">make plans feasible</text>
+    <text x="34" y="138" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="750">coach real routines</text>
+  </g>
+  <g transform="translate(798 315)" filter="url(#shadow)">
+    <rect x="0" y="0" width="318" height="218" rx="22" fill="url(#panel)"/>
+    <circle cx="46" cy="47" r="20" fill="#10B981"/>
+    <text x="78" y="55" fill="#064E3B" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="900">School model</text>
+    <text x="34" y="102" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="750">classroom implementation</text>
+    <text x="34" y="136" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="750">IEP and PBIS alignment</text>
+    <text x="34" y="170" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="750">team-based systems</text>
+  </g>
+  <g fill="none" stroke="#A7F3D0" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M404 424 C426 424 419 444 441 444"/>
+    <path d="M759 444 C781 444 776 424 798 424"/>
+  </g>
+  <text x="84" y="612" fill="#D1FAE5" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="850">robspain.com</text>
+</svg>

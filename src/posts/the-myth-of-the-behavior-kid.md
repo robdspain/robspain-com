@@ -3,7 +3,7 @@ layout: post.njk
 title: "The Myth of the Behavior Kid"
 date: 2026-03-14
 image: /public/images/uploads/the-myth-of-the-behavior-kid.png
-description: After 25 years in schools, I've learned that there's no such thing as "the behavior kid." There are only kids in environments that aren't working for them.
+description: After 25 years in schools, I've learned there is no such thing as "the behavior kid." There are kids in environments that are not working for them.
 tags:
   - systems-thinking
   - school-behavior

@@ -12,7 +12,7 @@
     {% if keywords %}
     <meta name="keywords" content="{% if keywords | isArray %}{{ keywords | join(', ') }}{% else %}{{ keywords }}{% endif %}">
     {% endif %}
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="{{ robots or 'index, follow' }}">
     <meta name="author" content="Rob Spain, BCBA, IBA">
     <link rel="canonical" href="{{ resolvedUrl | absoluteUrl }}">
     

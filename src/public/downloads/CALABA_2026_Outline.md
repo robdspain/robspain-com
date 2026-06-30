@@ -1,5 +1,9 @@
 ---
 eleventyExcludeFromCollections: true
+permalink: false
+title: "CALABA 2026 Presentation Outline"
+description: "Support outline for Rob Spain's CALABA 2026 symposium on ACT-informed functional assessment and school-based behavior intervention planning."
+robots: "noindex, follow"
 ---
 
 # Symposium: Beyond Observable Behavior

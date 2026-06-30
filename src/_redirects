@@ -5,6 +5,8 @@
 /about  /#about 302
 /posts/  /blog/ 302
 /contact  /#contact 302
+/public/downloads/CALABA_2026_Outline/  /calaba-2026/  301
+/public/downloads/CALABA_2026_Outline  /calaba-2026/  301
 
 # Presentation detail pages
 /presentations/calaba-2026-pbis-panel  /presentations/calaba-2026-pbis-panel/index.html  200

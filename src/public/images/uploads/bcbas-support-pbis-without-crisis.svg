@@ -1,0 +1,67 @@
+<svg width="1200" height="675" viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">How BCBAs support PBIS without becoming the Tier 3 crisis person</title>
+  <desc id="desc">A branded systems graphic showing BCBAs strengthening PBIS across data, practices, coaching, and tiered decision rules.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#064E3B"/>
+      <stop offset="0.52" stop-color="#0F766E"/>
+      <stop offset="1" stop-color="#14B8A6"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.97"/>
+      <stop offset="1" stop-color="#ECFDF5" stop-opacity="0.92"/>
+    </linearGradient>
+    <filter id="shadow" x="-18%" y="-22%" width="136%" height="150%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#022C22" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <g opacity="0.17" fill="none" stroke="#D1FAE5" stroke-width="2">
+    <path d="M0 136 C168 72 348 202 536 126 S890 66 1200 148"/>
+    <path d="M0 542 C175 472 372 594 575 526 S930 460 1200 555"/>
+    <path d="M168 0 L650 675"/>
+    <path d="M552 0 L1035 675"/>
+    <path d="M0 247 H1200"/>
+    <path d="M0 446 H1200"/>
+  </g>
+  <g transform="translate(80 68)">
+    <text x="0" y="0" fill="#D1FAE5" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="900" letter-spacing="2">PBIS + SCHOOL BCBA</text>
+    <text x="0" y="66" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="58" font-weight="900">How BCBAs Support PBIS</text>
+    <text x="0" y="126" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="58" font-weight="900">Without Becoming Tier 3</text>
+    <text x="0" y="176" fill="#D1FAE5" font-family="Inter, Arial, sans-serif" font-size="27" font-weight="750">Move from crisis overflow to system support.</text>
+  </g>
+  <g transform="translate(84 326)" filter="url(#shadow)">
+    <rect x="0" y="0" width="235" height="178" rx="22" fill="url(#panel)"/>
+    <circle cx="43" cy="43" r="19" fill="#10B981"/>
+    <text x="75" y="51" fill="#064E3B" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="900">Data</text>
+    <text x="32" y="101" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="750">patterns</text>
+    <text x="32" y="132" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="750">decision rules</text>
+  </g>
+  <g transform="translate(348 378)" filter="url(#shadow)">
+    <rect x="0" y="0" width="235" height="178" rx="22" fill="url(#panel)"/>
+    <circle cx="43" cy="43" r="19" fill="#F59E0B"/>
+    <text x="75" y="51" fill="#064E3B" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="900">Practices</text>
+    <text x="32" y="101" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="750">routines</text>
+    <text x="32" y="132" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="750">reinforcement</text>
+  </g>
+  <g transform="translate(612 326)" filter="url(#shadow)">
+    <rect x="0" y="0" width="235" height="178" rx="22" fill="url(#panel)"/>
+    <circle cx="43" cy="43" r="19" fill="#0EA5E9"/>
+    <text x="75" y="51" fill="#064E3B" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="900">Coaching</text>
+    <text x="32" y="101" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="750">adult fluency</text>
+    <text x="32" y="132" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="750">fidelity checks</text>
+  </g>
+  <g transform="translate(876 378)" filter="url(#shadow)">
+    <rect x="0" y="0" width="235" height="178" rx="22" fill="url(#panel)"/>
+    <circle cx="43" cy="43" r="19" fill="#EF4444"/>
+    <text x="75" y="51" fill="#064E3B" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="900">Tier 3</text>
+    <text x="32" y="101" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="750">connected</text>
+    <text x="32" y="132" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="750">not isolated</text>
+  </g>
+  <g fill="none" stroke="#A7F3D0" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M319 418 C346 414 329 466 348 467"/>
+    <path d="M583 467 C610 469 594 418 612 418"/>
+    <path d="M847 418 C875 414 858 467 876 467"/>
+  </g>
+  <text x="84" y="612" fill="#D1FAE5" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="850">robspain.com</text>
+</svg>

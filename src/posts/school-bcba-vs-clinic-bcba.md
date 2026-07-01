@@ -19,12 +19,12 @@ keywords:
 resourceLinks:
   - label: BCBA in Schools
     url: /bcba-in-schools/
-  - label: School BCBA Resource Hub
-    url: /school-bcba/
-  - label: School Behavior Systems
-    url: /school-behavior-systems/
-  - label: FBA and BIP Support
-    url: /fba-bip-support/
+  - label: Transformation Program
+    url: /transformation-program/
+  - label: What Does a School BCBA Do?
+    url: /blog/what-does-a-school-bcba-do/
+  - label: PBIS Without Tier 3 Overload
+    url: /blog/how-bcbas-support-pbis-without-becoming-tier-3-crisis/
 permalink: /blog/school-bcba-vs-clinic-bcba/
 ---
 The science does not change when a BCBA moves from a clinic to a school.

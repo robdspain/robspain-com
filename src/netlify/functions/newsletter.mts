@@ -2,10 +2,11 @@ import type { Handler, HandlerEvent, HandlerContext } from "@netlify/functions";
 
 interface NewsletterRequest {
   email: string;
+  name?: string;
   source?: string;
 }
 
-const CONVEX_URL = "https://third-loris-453.convex.cloud";
+const DEFAULT_CONVEX_URL = "https://quixotic-fox-157.convex.cloud";
 
 const jsonHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -60,62 +61,48 @@ const handler: Handler = async (event: HandlerEvent, context: HandlerContext) =>
       return json(400, { error: "Invalid JSON body" });
     }
 
-    const { email, source } = request;
+    const { email, name, source } = request;
 
     if (!email || !email.includes("@")) {
       return json(400, { error: "Valid email required" });
     }
 
-    const convexResponse = await fetch(`${CONVEX_URL}/api/mutation`, {
+    const convexUrl = (
+      process.env.NEWSLETTER_CONVEX_URL ||
+      process.env.CONVEX_URL ||
+      process.env.NEXT_PUBLIC_CONVEX_URL ||
+      DEFAULT_CONVEX_URL
+    ).replace(/\/$/, "");
+
+    const convexResponse = await fetch(`${convexUrl}/api/mutation`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        path: "newsletter:subscribe",
+        path: "newsletter:subscribeToNewsletter",
         args: {
           email: email.toLowerCase().trim(),
           source: source || "robspain-blog",
-          firstName: null,
+          name: name || undefined,
+          tags: ["robspain.com", "school-bcba-systems-letter"],
         },
       }),
     });
 
     if (!convexResponse.ok) {
-      console.error("Convex error:", await convexResponse.text());
+      const errorText = await convexResponse.text();
+      console.error("Convex error:", errorText);
+      return json(convexResponse.status, { error: "Failed to subscribe" });
     }
 
-    const RESEND_API_KEY = process.env.RESEND_API_KEY;
-    if (RESEND_API_KEY) {
-      try {
-        await fetch("https://api.resend.com/emails", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${RESEND_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            from: "Rob Spain <rob@robspain.com>",
-            to: email,
-            subject: "Welcome to the newsletter!",
-            text: `Hi,
+    const result = await convexResponse.json().catch(() => ({}));
 
-Thanks for subscribing to my newsletter!
-
-You'll receive weekly tips on evidence-based behavior analysis for school settings. No fluff, just practical strategies you can use immediately.
-
-If you have questions or topics you'd like me to cover, just reply to this email.
-
-— Rob Spain, BCBA
-https://robspain.com`,
-          }),
-        });
-      } catch (e) {
-        console.error("Resend error:", e);
-      }
-    }
-
-    return json(200, { success: true });
+    return json(200, {
+      success: true,
+      isNew: result?.value?.isNew ?? true,
+      message: "Successfully subscribed",
+    });
   } catch (error) {
     console.error("Newsletter error:", error);
     return json(500, { error: "Failed to subscribe" });

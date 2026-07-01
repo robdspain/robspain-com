@@ -9,14 +9,14 @@ tags:
   - school-behavior
   - leadership
 resourceLinks:
-  - label: School Behavior Systems
-    url: /school-behavior-systems/
   - label: BCBA in Schools
     url: /bcba-in-schools/
-  - label: School BCBA Resource Hub
-    url: /school-bcba/
-  - label: FBA and BIP Support
-    url: /fba-bip-support/
+  - label: Transformation Program
+    url: /transformation-program/
+  - label: What Does a School BCBA Do?
+    url: /blog/what-does-a-school-bcba-do/
+  - label: FBA/BIP Request Systems
+    url: /blog/school-bcba-fba-bip-requests/
 permalink: /blog/the-myth-of-the-behavior-kid/
 ---
 

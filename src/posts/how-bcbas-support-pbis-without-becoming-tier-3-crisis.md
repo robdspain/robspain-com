@@ -1,9 +1,9 @@
 ---
 layout: post.njk
-title: "How BCBAs Support PBIS Without Becoming the Tier 3 Crisis Person"
+title: "How BCBAs Can Support PBIS Without Becoming the Tier 3 Crisis Team"
 date: 2026-06-30T12:00:00-07:00
 image: /public/images/uploads/bcbas-support-pbis-without-crisis.png
-description: BCBAs can strengthen PBIS through data, coaching, fidelity, and tiered systems without becoming the default person for every Tier 3 crisis.
+description: BCBAs can strengthen PBIS through data, coaching, fidelity, and tiered systems without becoming the default Tier 3 crisis team.
 tags:
   - school-bcba
   - pbis
@@ -17,14 +17,14 @@ keywords:
   - PBIS Tier 3 support
   - school behavior systems
 resourceLinks:
-  - label: PBIS and BCBAs
-    url: /pbis-and-bcbas/
   - label: BCBA in Schools
     url: /bcba-in-schools/
-  - label: School Behavior Systems
-    url: /school-behavior-systems/
-  - label: FBA and BIP Support
-    url: /fba-bip-support/
+  - label: Transformation Program
+    url: /transformation-program/
+  - label: FBA/BIP Request Systems
+    url: /blog/school-bcba-fba-bip-requests/
+  - label: School BCBA vs Clinic BCBA
+    url: /blog/school-bcba-vs-clinic-bcba/
 permalink: /blog/how-bcbas-support-pbis-without-becoming-tier-3-crisis/
 ---
 PBIS and behavior analysis should work beautifully together.
